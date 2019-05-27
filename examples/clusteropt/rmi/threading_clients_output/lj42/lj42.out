@@ -1,0 +1,1079 @@
+
+
+THIS IS OGOLEM, VERSION 2016.CURRENT
+
+
+     OOO OOO    GGG GGGG   OOO OOO   LLLL       EEEE EEEE  MMM   MMM
+    OOOO OOOO  GGGG  GGG  OOOO OOOO  LLLL       EEEE  EEE  MMMM MMMM
+    OOOO OOOO  GGGG       OOOO OOOO  LLLL       EEEE E     MMMM MMMM
+    OOOO OOOO  GGGG GGGG  OOOO OOOO  LLLL  LLL  EEEE  EEE  MMMM MMMM
+     OOO OOO    GGG GGGG   OOO OOO   LLLL LLLL  EEEE EEEE  MMMM MMMM
+
+THE OGOLEM.ORG PROJECT
+Developed at the Institute for Physical Chemistry, University of Kiel,
+          at the Institute for Physical Chemistry, University of Goettingen and
+          at the Department of Mechanical&Aerospace Engineering, Princeton University
+
+
+
+Copyright (c) 2009-2016, J. M. Dieterich and B. Hartke
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+
+      This product includes software of the ogolem.org project developed by
+      J. M. Dieterich and B. Hartke (Christian-Albrechts-University Kiel, Germany)
+      and contributors.
+
+    * Neither the name of the ogolem.org project, the University of Kiel
+      nor the names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+OGOLEM uses (and wants to thank):
+* Atomdroid (J. Feldt, R. A. Mata and J. M. Dieterich)
+  license: proprietary
+* Lionbench (M. Kammler and J. M. Dieterich)
+  license: 4-clause BSD
+* L-BFGS from RISO (J. Nocedal/R. Dodier)
+  license: GPL2 / public domain
+* BOBYQA (Apache Software Foundation)
+  license: Apache
+* NEWUOA (code by J. Feldt and J. M. Dieterich, original M. J. D. Powell)
+  license: public domain
+* JAMA
+* Apache Commons Math
+* Scala
+* Numal
+* Arpack/Netlib/MTJ/EJML
+* SLF4J
+
+OGOLEM was partly inspired by:
+* phenix v0-42
+* Tinker
+
+####################################################################
+####################################################################
+                  AND OUR PROBLEM OF THE DAY IS:
+                  org.ogolem.core.Geometry
+####################################################################
+####################################################################
+**************************
+
+CONFIGURATION
+
+**************************
+
+
+CARTESIANS OF MOLECULE 0:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 0:
+
+	99
+
+CARTESIANS OF MOLECULE 1:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 1:
+
+	99
+
+CARTESIANS OF MOLECULE 2:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 2:
+
+	99
+
+CARTESIANS OF MOLECULE 3:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 3:
+
+	99
+
+CARTESIANS OF MOLECULE 4:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 4:
+
+	99
+
+CARTESIANS OF MOLECULE 5:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 5:
+
+	99
+
+CARTESIANS OF MOLECULE 6:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 6:
+
+	99
+
+CARTESIANS OF MOLECULE 7:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 7:
+
+	99
+
+CARTESIANS OF MOLECULE 8:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 8:
+
+	99
+
+CARTESIANS OF MOLECULE 9:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 9:
+
+	99
+
+CARTESIANS OF MOLECULE 10:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 10:
+
+	99
+
+CARTESIANS OF MOLECULE 11:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 11:
+
+	99
+
+CARTESIANS OF MOLECULE 12:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 12:
+
+	99
+
+CARTESIANS OF MOLECULE 13:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 13:
+
+	99
+
+CARTESIANS OF MOLECULE 14:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 14:
+
+	99
+
+CARTESIANS OF MOLECULE 15:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 15:
+
+	99
+
+CARTESIANS OF MOLECULE 16:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 16:
+
+	99
+
+CARTESIANS OF MOLECULE 17:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 17:
+
+	99
+
+CARTESIANS OF MOLECULE 18:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 18:
+
+	99
+
+CARTESIANS OF MOLECULE 19:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 19:
+
+	99
+
+CARTESIANS OF MOLECULE 20:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 20:
+
+	99
+
+CARTESIANS OF MOLECULE 21:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 21:
+
+	99
+
+CARTESIANS OF MOLECULE 22:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 22:
+
+	99
+
+CARTESIANS OF MOLECULE 23:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 23:
+
+	99
+
+CARTESIANS OF MOLECULE 24:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 24:
+
+	99
+
+CARTESIANS OF MOLECULE 25:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 25:
+
+	99
+
+CARTESIANS OF MOLECULE 26:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 26:
+
+	99
+
+CARTESIANS OF MOLECULE 27:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 27:
+
+	99
+
+CARTESIANS OF MOLECULE 28:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 28:
+
+	99
+
+CARTESIANS OF MOLECULE 29:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 29:
+
+	99
+
+CARTESIANS OF MOLECULE 30:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 30:
+
+	99
+
+CARTESIANS OF MOLECULE 31:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 31:
+
+	99
+
+CARTESIANS OF MOLECULE 32:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 32:
+
+	99
+
+CARTESIANS OF MOLECULE 33:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 33:
+
+	99
+
+CARTESIANS OF MOLECULE 34:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 34:
+
+	99
+
+CARTESIANS OF MOLECULE 35:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 35:
+
+	99
+
+CARTESIANS OF MOLECULE 36:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 36:
+
+	99
+
+CARTESIANS OF MOLECULE 37:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 37:
+
+	99
+
+CARTESIANS OF MOLECULE 38:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 38:
+
+	99
+
+CARTESIANS OF MOLECULE 39:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 39:
+
+	99
+
+CARTESIANS OF MOLECULE 40:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 40:
+
+	99
+
+CARTESIANS OF MOLECULE 41:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 41:
+
+	99
+
+------------------------------------------------------
+       EXPLICIT INTERNAL DEGREES OF FREEDOM           
+------------------------------------------------------
+molecule 0 is not flexible
+molecule 1 is not flexible
+molecule 2 is not flexible
+molecule 3 is not flexible
+molecule 4 is not flexible
+molecule 5 is not flexible
+molecule 6 is not flexible
+molecule 7 is not flexible
+molecule 8 is not flexible
+molecule 9 is not flexible
+molecule 10 is not flexible
+molecule 11 is not flexible
+molecule 12 is not flexible
+molecule 13 is not flexible
+molecule 14 is not flexible
+molecule 15 is not flexible
+molecule 16 is not flexible
+molecule 17 is not flexible
+molecule 18 is not flexible
+molecule 19 is not flexible
+molecule 20 is not flexible
+molecule 21 is not flexible
+molecule 22 is not flexible
+molecule 23 is not flexible
+molecule 24 is not flexible
+molecule 25 is not flexible
+molecule 26 is not flexible
+molecule 27 is not flexible
+molecule 28 is not flexible
+molecule 29 is not flexible
+molecule 30 is not flexible
+molecule 31 is not flexible
+molecule 32 is not flexible
+molecule 33 is not flexible
+molecule 34 is not flexible
+molecule 35 is not flexible
+molecule 36 is not flexible
+molecule 37 is not flexible
+molecule 38 is not flexible
+molecule 39 is not flexible
+molecule 40 is not flexible
+molecule 41 is not flexible
+
+------------------------------------------------------
+                     CONSTRAINTS                      
+------------------------------------------------------
+molecule 	 constricted? 	 atom 	 coordinate
+	 0 	 unconstricted
+	 1 	 unconstricted
+	 2 	 unconstricted
+	 3 	 unconstricted
+	 4 	 unconstricted
+	 5 	 unconstricted
+	 6 	 unconstricted
+	 7 	 unconstricted
+	 8 	 unconstricted
+	 9 	 unconstricted
+	 10 	 unconstricted
+	 11 	 unconstricted
+	 12 	 unconstricted
+	 13 	 unconstricted
+	 14 	 unconstricted
+	 15 	 unconstricted
+	 16 	 unconstricted
+	 17 	 unconstricted
+	 18 	 unconstricted
+	 19 	 unconstricted
+	 20 	 unconstricted
+	 21 	 unconstricted
+	 22 	 unconstricted
+	 23 	 unconstricted
+	 24 	 unconstricted
+	 25 	 unconstricted
+	 26 	 unconstricted
+	 27 	 unconstricted
+	 28 	 unconstricted
+	 29 	 unconstricted
+	 30 	 unconstricted
+	 31 	 unconstricted
+	 32 	 unconstricted
+	 33 	 unconstricted
+	 34 	 unconstricted
+	 35 	 unconstricted
+	 36 	 unconstricted
+	 37 	 unconstricted
+	 38 	 unconstricted
+	 39 	 unconstricted
+	 40 	 unconstricted
+	 41 	 unconstricted
+
+------------------------------------------------------
+                      CHARGES                         
+------------------------------------------------------
+the total system is uncharged
+
+
+------------------------------------------------------
+                  GENERAL SETTINGS                    
+------------------------------------------------------
+
+pool size is 200
+we are doing a fresh start
+the number of global iterations is set to 4200
+number of tries in globopt: 200
+
+parent selector: fitnessrankbased:gausswidth1=0.1,perniche,sameniche=0.5
+
+algorithms used:
+*** global optimization: GENERIC GEOMETRY DARWIN IMPLEMENTATION
+using (for geometry): 
+	xover    SWEDEN GEOMETRY XOVER:
+BASIC SWEDEN
+phenotype X-Over
+	globopt style: 2 which probability 100.0%
+	mutation Monte Carlo mutation: 
+	mode: 2
+	maxmove: 0.2 which probability 5.0%
+using (for molecule): 
+	xover    germany, width: 0.3 which probability 100.0%
+	mutation GERMANY
+molecule genotype mutation
+	 aggressive? false
+	 bondFactor: 0.3 which probability 5.0%
+fitness  L-BFGS LOCAL OPTIMIZATION using:
+	LJ Force Field for homogenous cases
+*** local optimization: L-BFGS LOCAL OPTIMIZATION using:
+	LJ Force Field for homogenous cases
+*** diversity check: percentage fitness diversity, percentage 0.03%
+*** molecular mutation: SOME
+
+threshhold settings for local optimization (not all might apply):
+	 in local optimization (coordinates): 1.0E-8
+	 in local optimization (gradient): 1.0E-7
+
+maximum number of iterations in local optimization: 2000
+
+informations related to dissociation and collision detection:
+	 blow factor in initial bond detection: 1.65
+	 blow factor in collision detection: 1.65
+	 blow factor in dissociation detection: 3.5
+	 choice of collision detection engine: SIMPLEPAIRWISE
+
+**************************
+
+END OF CONFIGURATION
+
+**************************
+#-----------------------------------------------------------
+#
+# Individuals in initial pool coming, fitness units unknown.
+#
+# pool position        individual id                 fitness
+     0          154       -0.0726666718
+     1          101       -0.0725540112
+     2            9       -0.0725319576
+     3           12       -0.0724984079
+     4          159       -0.0724941657
+     5          105       -0.0724787106
+     6          118       -0.0724326407
+     7           18       -0.0723691313
+     8            0       -0.0723689242
+     9          147       -0.0722413684
+    10          130       -0.0722160476
+    11          139       -0.0721763938
+    12          165       -0.0721590887
+    13           68       -0.0721181649
+    14          192       -0.0720979409
+    15           22       -0.0720315743
+    16           95       -0.0719904363
+    17           65       -0.0719486322
+    18          131       -0.0719343919
+    19          173       -0.0719241159
+    20           77       -0.0719198253
+    21          143       -0.0718347367
+    22          126       -0.0718318113
+    23           47       -0.0718295065
+    24           97       -0.0718172263
+    25           71       -0.0718106340
+    26           88       -0.0717408393
+    27          194       -0.0717258117
+    28           76       -0.0717185067
+    29          188       -0.0717089815
+    30          172       -0.0717060404
+    31          180       -0.0717001488
+    32          123       -0.0717001207
+    33          178       -0.0716997722
+    34           50       -0.0716847040
+    35           64       -0.0716653148
+    36          169       -0.0716534125
+    37          125       -0.0716477706
+    38           61       -0.0716461336
+    39           10       -0.0716283614
+    40           33       -0.0716175880
+    41          110       -0.0716168606
+    42           16       -0.0715908718
+    43           86       -0.0715666179
+    44           69       -0.0715092183
+    45          102       -0.0714791356
+    46          109       -0.0714647383
+    47          153       -0.0714608969
+    48          181       -0.0714495346
+    49           99       -0.0714315198
+    50           82       -0.0714041677
+    51           46       -0.0714038322
+    52           38       -0.0713904681
+    53          160       -0.0713875786
+    54          146       -0.0713754828
+    55          120       -0.0713545609
+    56           24       -0.0713483380
+    57          161       -0.0713457727
+    58           39       -0.0713128814
+    59          199       -0.0712707355
+    60          197       -0.0712582828
+    61           31       -0.0712104650
+    62          162       -0.0712031356
+    63           34       -0.0711898322
+    64           32       -0.0711801404
+    65          187       -0.0711785856
+    66          112       -0.0711778722
+    67           36       -0.0711696019
+    68          108       -0.0711685291
+    69          132       -0.0711648004
+    70          122       -0.0711504975
+    71           35       -0.0711480402
+    72          166       -0.0710933654
+    73          198       -0.0710774566
+    74           20       -0.0710748496
+    75            2       -0.0710724997
+    76            4       -0.0710646926
+    77            5       -0.0710595515
+    78          189       -0.0710145435
+    79           40       -0.0709956108
+    80          163       -0.0709811799
+    81           30       -0.0709730528
+    82           74       -0.0709444604
+    83          127       -0.0709401004
+    84           83       -0.0708999555
+    85          191       -0.0708748030
+    86          121       -0.0708587013
+    87          128       -0.0708267968
+    88           49       -0.0707880918
+    89           58       -0.0707845352
+    90          177       -0.0707823662
+    91           75       -0.0707638232
+    92           37       -0.0707515066
+    93          100       -0.0707501405
+    94          111       -0.0707492974
+    95          134       -0.0707490829
+    96          115       -0.0707271309
+    97           85       -0.0707244411
+    98           26       -0.0707236900
+    99          116       -0.0707168651
+   100          193       -0.0707091758
+   101           23       -0.0707038801
+   102           45       -0.0706854554
+   103           67       -0.0706727460
+   104          119       -0.0706668106
+   105          155       -0.0706656931
+   106           62       -0.0706612694
+   107          103       -0.0706431125
+   108          190       -0.0706344892
+   109          142       -0.0706280229
+   110           90       -0.0706270810
+   111           92       -0.0706230920
+   112          135       -0.0706131479
+   113           78       -0.0706033399
+   114          145       -0.0706021759
+   115           27       -0.0706000145
+   116           14       -0.0705821700
+   117          107       -0.0705686543
+   118          137       -0.0705668041
+   119          195       -0.0705274922
+   120            3       -0.0704992784
+   121          106       -0.0704943574
+   122           13       -0.0704875385
+   123          156       -0.0704619164
+   124           17       -0.0704318731
+   125           56       -0.0704115847
+   126          144       -0.0703900385
+   127          185       -0.0703672919
+   128           89       -0.0703595605
+   129           51       -0.0703350966
+   130          136       -0.0703300178
+   131           54       -0.0703224264
+   132           87       -0.0703132979
+   133           55       -0.0702920347
+   134          174       -0.0702817289
+   135           93       -0.0702635440
+   136           25       -0.0702507145
+   137          124       -0.0702475626
+   138           48       -0.0702232669
+   139           52       -0.0702139357
+   140           21       -0.0702046141
+   141           60       -0.0701906385
+   142          167       -0.0701897410
+   143          182       -0.0701811743
+   144            1       -0.0701606636
+   145          158       -0.0701487094
+   146           66       -0.0701440935
+   147           79       -0.0701381618
+   148           15       -0.0701302054
+   149          171       -0.0700427479
+   150           53       -0.0700364843
+   151          168       -0.0700208502
+   152          186       -0.0699811830
+   153           29       -0.0699648508
+   154          141       -0.0699320579
+   155           63       -0.0698671905
+   156           28       -0.0697168684
+   157           96       -0.0697151965
+   158          138       -0.0696933343
+   159          104       -0.0696454528
+   160           11       -0.0696310063
+   161          133       -0.0696267954
+   162           94       -0.0696022474
+   163           80       -0.0695831196
+   164          184       -0.0695733483
+   165          151       -0.0695706603
+   166           43       -0.0695265078
+   167           41       -0.0694909262
+   168          140       -0.0694274130
+   169           84       -0.0694059996
+   170          164       -0.0693342879
+   171           42       -0.0693302717
+   172          183       -0.0693144118
+   173            7       -0.0692915609
+   174          129       -0.0692906512
+   175           72       -0.0692833128
+   176          148       -0.0692346036
+   177           59       -0.0692186972
+   178          179       -0.0691938813
+   179          152       -0.0691908428
+   180           57       -0.0691133516
+   181            8       -0.0690617007
+   182          175       -0.0690493979
+   183           44       -0.0690480640
+   184           91       -0.0689368581
+   185           98       -0.0688671184
+   186           73       -0.0688604592
+   187          114       -0.0687138845
+   188           81       -0.0686667533
+   189          170       -0.0685273752
+   190          157       -0.0684171846
+   191          150       -0.0684011618
+   192          113       -0.0683445391
+   193            6       -0.0681316967
+   194          196       -0.0680574177
+   195          149       -0.0678255606
+   196           70       -0.0677643375
+   197           19       -0.0676052052
+   198          117       -0.0670040036
+   199          176       -0.0663768913
+#
+#-----------------------------------------------------------
+-----------------------------------------------------------
+Overall genetic history
+	total number of trial genetic pool entries:    0
+	percentage of unsuccessful genetic operations: NaN%
+	percentage of accepted pool entries:           NaN%
+-----------------------------------------------------------
+#-----------------------------------------------------------
+#
+# Individuals in final pool coming, fitness units unknown.
+#
+# pool position        individual id                 fitness
+     0         3720       -0.0744645482
+     1         4223       -0.0742897842
+     2         3683       -0.0742594603
+     3         2609       -0.0741991557
+     4          594       -0.0741581596
+     5         3488       -0.0741083761
+     6         4382       -0.0740602624
+     7         2536       -0.0740206548
+     8         4363       -0.0739555711
+     9         2399       -0.0739239499
+    10         3871       -0.0738800603
+    11          648       -0.0738510549
+    12         1737       -0.0738198742
+    13         3774       -0.0737968654
+    14         3629       -0.0737516074
+    15         3317       -0.0737149143
+    16         4208       -0.0736861019
+    17         4328       -0.0736603977
+    18         3526       -0.0736032398
+    19         4262       -0.0735795681
+    20         4381       -0.0735555239
+    21         4122       -0.0735255904
+    22         4170       -0.0734858176
+    23         4019       -0.0734637378
+    24         4371       -0.0734397943
+    25         4322       -0.0733763001
+    26         4270       -0.0733504703
+    27         4313       -0.0733139841
+    28         4204       -0.0732802419
+    29         3929       -0.0732438116
+    30         2641       -0.0732033825
+    31         4360       -0.0731791421
+    32         4368       -0.0731540261
+    33         3737       -0.0731293675
+    34         4378       -0.0730991639
+    35         4049       -0.0730638647
+    36         4103       -0.0730400888
+    37         4355       -0.0730033759
+    38         3456       -0.0729789820
+    39         4326       -0.0729564747
+    40         4172       -0.0729309038
+    41         4095       -0.0729061631
+    42         4310       -0.0728811042
+    43         4345       -0.0728527529
+    44         4283       -0.0728269153
+    45         3705       -0.0727698144
+    46         3847       -0.0727476906
+    47         3814       -0.0727175153
+    48         4330       -0.0726950699
+    49         3284       -0.0726692661
+    50         4191       -0.0726424045
+    51         3444       -0.0726164528
+    52         4333       -0.0725932895
+    53         3250       -0.0725636306
+    54         3754       -0.0725387885
+    55         3939       -0.0725148558
+    56          159       -0.0724941657
+    57          105       -0.0724787106
+    58         3511       -0.0724561317
+    59         3002       -0.0724337939
+    60         3958       -0.0724118052
+    61         3692       -0.0723899658
+    62         4394       -0.0723641313
+    63         3804       -0.0723387981
+    64         4364       -0.0723161001
+    65         3193       -0.0722843700
+    66         3578       -0.0722625289
+    67         4193       -0.0722391413
+    68         4380       -0.0722147304
+    69         3670       -0.0721881442
+    70         3820       -0.0721634293
+    71         4001       -0.0721331897
+    72         4369       -0.0721047458
+    73         3965       -0.0720778957
+    74         4037       -0.0720477513
+    75         4176       -0.0720241950
+    76         2186       -0.0720023075
+    77         2968       -0.0719803005
+    78         3809       -0.0719585788
+    79         4231       -0.0719367005
+    80           77       -0.0719198253
+    81         3566       -0.0718973675
+    82         4123       -0.0718744869
+    83         4045       -0.0718514875
+    84          126       -0.0718318113
+    85           47       -0.0718295065
+    86           97       -0.0718172263
+    87           71       -0.0718106340
+    88         3616       -0.0717883175
+    89         4278       -0.0717607093
+    90         3687       -0.0717375127
+    91           76       -0.0717185067
+    92          188       -0.0717089815
+    93          172       -0.0717060404
+    94          180       -0.0717001488
+    95          123       -0.0717001207
+    96          178       -0.0716997722
+    97           50       -0.0716847040
+    98           64       -0.0716653148
+    99          169       -0.0716534125
+   100          125       -0.0716477706
+   101           61       -0.0716461336
+   102           10       -0.0716283614
+   103           33       -0.0716175880
+   104          110       -0.0716168606
+   105         1848       -0.0715948535
+   106         3548       -0.0715726271
+   107         3773       -0.0715510043
+   108         3346       -0.0715254426
+   109         3838       -0.0715026629
+   110         4398       -0.0714724159
+   111          153       -0.0714608969
+   112          181       -0.0714495346
+   113           99       -0.0714315198
+   114         4149       -0.0714097504
+   115           46       -0.0714038322
+   116           38       -0.0713904681
+   117          160       -0.0713875786
+   118          146       -0.0713754828
+   119          120       -0.0713545609
+   120           24       -0.0713483380
+   121          161       -0.0713457727
+   122         2717       -0.0713232873
+   123         4100       -0.0713008825
+   124         3051       -0.0712760864
+   125         1941       -0.0712491277
+   126         4030       -0.0712266270
+   127         3805       -0.0711989884
+   128           32       -0.0711801404
+   129          187       -0.0711785856
+   130          112       -0.0711778722
+   131           36       -0.0711696019
+   132          108       -0.0711685291
+   133          132       -0.0711648004
+   134          122       -0.0711504975
+   135           35       -0.0711480402
+   136         1729       -0.0711239285
+   137         3839       -0.0710991983
+   138          198       -0.0710774566
+   139           20       -0.0710748496
+   140            2       -0.0710724997
+   141            4       -0.0710646926
+   142            5       -0.0710595515
+   143          996       -0.0710362474
+   144         3930       -0.0710145728
+   145         3922       -0.0709871823
+   146           30       -0.0709730528
+   147         3386       -0.0709516437
+   148          127       -0.0709401004
+   149          424       -0.0709179053
+   150         1978       -0.0708923924
+   151         1654       -0.0708708227
+   152         3496       -0.0708494738
+   153         3508       -0.0708236553
+   154         3323       -0.0707898160
+   155          177       -0.0707823662
+   156           75       -0.0707638232
+   157           37       -0.0707515066
+   158          100       -0.0707501405
+   159          111       -0.0707492974
+   160          134       -0.0707490829
+   161          115       -0.0707271309
+   162           85       -0.0707244411
+   163           26       -0.0707236900
+   164          116       -0.0707168651
+   165          193       -0.0707091758
+   166           23       -0.0707038801
+   167           45       -0.0706854554
+   168           67       -0.0706727460
+   169          119       -0.0706668106
+   170          155       -0.0706656931
+   171           62       -0.0706612694
+   172          103       -0.0706431125
+   173          190       -0.0706344892
+   174          142       -0.0706280229
+   175           90       -0.0706270810
+   176           92       -0.0706230920
+   177          135       -0.0706131479
+   178           78       -0.0706033399
+   179          145       -0.0706021759
+   180           27       -0.0706000145
+   181           14       -0.0705821700
+   182          107       -0.0705686543
+   183          137       -0.0705668041
+   184         4257       -0.0705454883
+   185         1134       -0.0705029428
+   186          106       -0.0704943574
+   187           13       -0.0704875385
+   188          156       -0.0704619164
+   189          465       -0.0704395122
+   190         1741       -0.0704141799
+   191          144       -0.0703900385
+   192          185       -0.0703672919
+   193           89       -0.0703595605
+   194         2926       -0.0703356006
+   195          136       -0.0703300178
+   196           54       -0.0703224264
+   197           87       -0.0703132979
+   198           55       -0.0702920347
+   199          174       -0.0702817289
+#
+#-----------------------------------------------------------

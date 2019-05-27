@@ -1,0 +1,2 @@
+#! /bin/bash
+java -Djava.rmi.server.codebase=file:ogolem-snapshot.jar -Djava.security.policy=client.policy -jar ogolem-snapshot.jar --rmiclient --server localhost --sleeptime 2 --serverregistryport 1099 &> client2.errout &

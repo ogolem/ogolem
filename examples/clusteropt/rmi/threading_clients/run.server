@@ -1,0 +1,2 @@
+#! /bin/bash
+java -Djava.security.main -Djava.rmi.server.codebase=file:ogolem-snapshot.jar -Djava.security.policy=polfile.txt -jar ogolem-snapshot.jar --rmiserver --jobtype geom --inputfile lj42.ogo --timeout 50 --timeoutjob 500 --myserverport 2500 --myregistryport 1099 --noproxies 1 &> server.errout &

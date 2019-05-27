@@ -1,0 +1,5281 @@
+
+
+THIS IS OGOLEM, VERSION 2016.CURRENT
+
+
+     OOO OOO    GGG GGGG   OOO OOO   LLLL       EEEE EEEE  MMM   MMM
+    OOOO OOOO  GGGG  GGG  OOOO OOOO  LLLL       EEEE  EEE  MMMM MMMM
+    OOOO OOOO  GGGG       OOOO OOOO  LLLL       EEEE E     MMMM MMMM
+    OOOO OOOO  GGGG GGGG  OOOO OOOO  LLLL  LLL  EEEE  EEE  MMMM MMMM
+     OOO OOO    GGG GGGG   OOO OOO   LLLL LLLL  EEEE EEEE  MMMM MMMM
+
+THE OGOLEM.ORG PROJECT
+Developed at the Institute for Physical Chemistry, University of Kiel,
+          at the Institute for Physical Chemistry, University of Goettingen and
+          at the Department of Mechanical&Aerospace Engineering, Princeton University
+
+
+
+Copyright (c) 2009-2016, J. M. Dieterich and B. Hartke
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+
+      This product includes software of the ogolem.org project developed by
+      J. M. Dieterich and B. Hartke (Christian-Albrechts-University Kiel, Germany)
+      and contributors.
+
+    * Neither the name of the ogolem.org project, the University of Kiel
+      nor the names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+OGOLEM uses (and wants to thank):
+* Atomdroid (J. Feldt, R. A. Mata and J. M. Dieterich)
+  license: proprietary
+* Lionbench (M. Kammler and J. M. Dieterich)
+  license: 4-clause BSD
+* L-BFGS from RISO (J. Nocedal/R. Dodier)
+  license: GPL2 / public domain
+* BOBYQA (Apache Software Foundation)
+  license: Apache
+* NEWUOA (code by J. Feldt and J. M. Dieterich, original M. J. D. Powell)
+  license: public domain
+* JAMA
+* Apache Commons Math
+* Scala
+* Numal
+* Arpack/Netlib/MTJ/EJML
+* SLF4J
+
+OGOLEM was partly inspired by:
+* phenix v0-42
+* Tinker
+
+####################################################################
+####################################################################
+                  AND OUR PROBLEM OF THE DAY IS:
+                  org.ogolem.core.Geometry
+####################################################################
+####################################################################
+**************************
+
+CONFIGURATION
+
+**************************
+
+
+CARTESIANS OF MOLECULE 0:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 0:
+
+	99
+
+CARTESIANS OF MOLECULE 1:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 1:
+
+	99
+
+CARTESIANS OF MOLECULE 2:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 2:
+
+	99
+
+CARTESIANS OF MOLECULE 3:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 3:
+
+	99
+
+CARTESIANS OF MOLECULE 4:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 4:
+
+	99
+
+CARTESIANS OF MOLECULE 5:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 5:
+
+	99
+
+CARTESIANS OF MOLECULE 6:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 6:
+
+	99
+
+CARTESIANS OF MOLECULE 7:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 7:
+
+	99
+
+CARTESIANS OF MOLECULE 8:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 8:
+
+	99
+
+CARTESIANS OF MOLECULE 9:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 9:
+
+	99
+
+CARTESIANS OF MOLECULE 10:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 10:
+
+	99
+
+CARTESIANS OF MOLECULE 11:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 11:
+
+	99
+
+CARTESIANS OF MOLECULE 12:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 12:
+
+	99
+
+CARTESIANS OF MOLECULE 13:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 13:
+
+	99
+
+CARTESIANS OF MOLECULE 14:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 14:
+
+	99
+
+CARTESIANS OF MOLECULE 15:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 15:
+
+	99
+
+CARTESIANS OF MOLECULE 16:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 16:
+
+	99
+
+CARTESIANS OF MOLECULE 17:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 17:
+
+	99
+
+CARTESIANS OF MOLECULE 18:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 18:
+
+	99
+
+CARTESIANS OF MOLECULE 19:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 19:
+
+	99
+
+CARTESIANS OF MOLECULE 20:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 20:
+
+	99
+
+CARTESIANS OF MOLECULE 21:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 21:
+
+	99
+
+CARTESIANS OF MOLECULE 22:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 22:
+
+	99
+
+CARTESIANS OF MOLECULE 23:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 23:
+
+	99
+
+CARTESIANS OF MOLECULE 24:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 24:
+
+	99
+
+CARTESIANS OF MOLECULE 25:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 25:
+
+	99
+
+CARTESIANS OF MOLECULE 26:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 26:
+
+	99
+
+CARTESIANS OF MOLECULE 27:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 27:
+
+	99
+
+CARTESIANS OF MOLECULE 28:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 28:
+
+	99
+
+CARTESIANS OF MOLECULE 29:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 29:
+
+	99
+
+CARTESIANS OF MOLECULE 30:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 30:
+
+	99
+
+CARTESIANS OF MOLECULE 31:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 31:
+
+	99
+
+CARTESIANS OF MOLECULE 32:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 32:
+
+	99
+
+CARTESIANS OF MOLECULE 33:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 33:
+
+	99
+
+CARTESIANS OF MOLECULE 34:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 34:
+
+	99
+
+CARTESIANS OF MOLECULE 35:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 35:
+
+	99
+
+CARTESIANS OF MOLECULE 36:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 36:
+
+	99
+
+CARTESIANS OF MOLECULE 37:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 37:
+
+	99
+
+CARTESIANS OF MOLECULE 38:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 38:
+
+	99
+
+CARTESIANS OF MOLECULE 39:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 39:
+
+	99
+
+CARTESIANS OF MOLECULE 40:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 40:
+
+	99
+
+CARTESIANS OF MOLECULE 41:
+
+1
+Energy:               0.0000
+Ar              0.0000000              0.0000000              0.0000000
+
+BOND MATRIX OF MOLECULE 41:
+
+	99
+
+------------------------------------------------------
+       EXPLICIT INTERNAL DEGREES OF FREEDOM           
+------------------------------------------------------
+molecule 0 is not flexible
+molecule 1 is not flexible
+molecule 2 is not flexible
+molecule 3 is not flexible
+molecule 4 is not flexible
+molecule 5 is not flexible
+molecule 6 is not flexible
+molecule 7 is not flexible
+molecule 8 is not flexible
+molecule 9 is not flexible
+molecule 10 is not flexible
+molecule 11 is not flexible
+molecule 12 is not flexible
+molecule 13 is not flexible
+molecule 14 is not flexible
+molecule 15 is not flexible
+molecule 16 is not flexible
+molecule 17 is not flexible
+molecule 18 is not flexible
+molecule 19 is not flexible
+molecule 20 is not flexible
+molecule 21 is not flexible
+molecule 22 is not flexible
+molecule 23 is not flexible
+molecule 24 is not flexible
+molecule 25 is not flexible
+molecule 26 is not flexible
+molecule 27 is not flexible
+molecule 28 is not flexible
+molecule 29 is not flexible
+molecule 30 is not flexible
+molecule 31 is not flexible
+molecule 32 is not flexible
+molecule 33 is not flexible
+molecule 34 is not flexible
+molecule 35 is not flexible
+molecule 36 is not flexible
+molecule 37 is not flexible
+molecule 38 is not flexible
+molecule 39 is not flexible
+molecule 40 is not flexible
+molecule 41 is not flexible
+
+------------------------------------------------------
+                     CONSTRAINTS                      
+------------------------------------------------------
+molecule 	 constricted? 	 atom 	 coordinate
+	 0 	 unconstricted
+	 1 	 unconstricted
+	 2 	 unconstricted
+	 3 	 unconstricted
+	 4 	 unconstricted
+	 5 	 unconstricted
+	 6 	 unconstricted
+	 7 	 unconstricted
+	 8 	 unconstricted
+	 9 	 unconstricted
+	 10 	 unconstricted
+	 11 	 unconstricted
+	 12 	 unconstricted
+	 13 	 unconstricted
+	 14 	 unconstricted
+	 15 	 unconstricted
+	 16 	 unconstricted
+	 17 	 unconstricted
+	 18 	 unconstricted
+	 19 	 unconstricted
+	 20 	 unconstricted
+	 21 	 unconstricted
+	 22 	 unconstricted
+	 23 	 unconstricted
+	 24 	 unconstricted
+	 25 	 unconstricted
+	 26 	 unconstricted
+	 27 	 unconstricted
+	 28 	 unconstricted
+	 29 	 unconstricted
+	 30 	 unconstricted
+	 31 	 unconstricted
+	 32 	 unconstricted
+	 33 	 unconstricted
+	 34 	 unconstricted
+	 35 	 unconstricted
+	 36 	 unconstricted
+	 37 	 unconstricted
+	 38 	 unconstricted
+	 39 	 unconstricted
+	 40 	 unconstricted
+	 41 	 unconstricted
+
+------------------------------------------------------
+                      CHARGES                         
+------------------------------------------------------
+the total system is uncharged
+
+
+------------------------------------------------------
+                  GENERAL SETTINGS                    
+------------------------------------------------------
+
+pool size is 200
+we are doing a fresh start
+the number of global iterations is set to 4200
+number of tries in globopt: 200
+
+parent selector: fitnessrankbased:bothfitness,gausswidth1=0.5,gausswidth2=0.01
+
+algorithms used:
+*** global optimization: GENERIC GEOMETRY DARWIN IMPLEMENTATION
+using (for geometry): 
+	xover    SWEDEN GEOMETRY XOVER:
+BASIC SWEDEN
+phenotype X-Over
+	globopt style: 2 which probability 100.0%
+	mutation Monte Carlo mutation: 
+	mode: 2
+	maxmove: 0.2 which probability 5.0%
+using (for molecule): 
+	xover    germany, width: 0.3 which probability 100.0%
+	mutation GERMANY
+molecule genotype mutation
+	 aggressive? false
+	 bondFactor: 0.3 which probability 5.0%
+fitness  L-BFGS LOCAL OPTIMIZATION using:
+	LJ Force Field for homogenous cases
+*** local optimization: L-BFGS LOCAL OPTIMIZATION using:
+	LJ Force Field for homogenous cases
+*** diversity check: percentage fitness diversity, percentage 0.03%
+*** molecular mutation: SOME
+
+threshhold settings for local optimization (not all might apply):
+	 in local optimization (coordinates): 1.0E-8
+	 in local optimization (gradient): 1.0E-7
+
+maximum number of iterations in local optimization: 2000
+
+informations related to dissociation and collision detection:
+	 blow factor in initial bond detection: 1.65
+	 blow factor in collision detection: 1.65
+	 blow factor in dissociation detection: 3.5
+	 choice of collision detection engine: SIMPLEPAIRWISE
+
+**************************
+
+END OF CONFIGURATION
+
+**************************
+#-----------------------------------------------------------
+#
+# Individuals in initial pool coming, fitness units unknown.
+#
+# pool position        individual id                 fitness
+     0           65       -0.0734475185
+     1           55       -0.0731477785
+     2          195       -0.0728353907
+     3          107       -0.0728208269
+     4          127       -0.0726530238
+     5          122       -0.0725359074
+     6           90       -0.0724169279
+     7          133       -0.0723885239
+     8           95       -0.0723494036
+     9           22       -0.0723150901
+    10          156       -0.0723056157
+    11          155       -0.0722290341
+    12          143       -0.0721853642
+    13           94       -0.0721813789
+    14          190       -0.0721757574
+    15           66       -0.0721653908
+    16           71       -0.0721579571
+    17           74       -0.0721181175
+    18           77       -0.0721134715
+    19            3       -0.0720981831
+    20          196       -0.0720939980
+    21          187       -0.0720860002
+    22          159       -0.0720403761
+    23           99       -0.0719757112
+    24           42       -0.0719738638
+    25          152       -0.0719583635
+    26          188       -0.0719566407
+    27          193       -0.0718813932
+    28          141       -0.0717584619
+    29           20       -0.0717580382
+    30           12       -0.0717484328
+    31          178       -0.0717117114
+    32          140       -0.0717106717
+    33          160       -0.0717060882
+    34          161       -0.0717029298
+    35          148       -0.0716713367
+    36          134       -0.0716216938
+    37          121       -0.0716058765
+    38           84       -0.0715782024
+    39           51       -0.0715756855
+    40          132       -0.0715166916
+    41          199       -0.0714845434
+    42           49       -0.0714631506
+    43          101       -0.0714289591
+    44           58       -0.0714226771
+    45          135       -0.0714033703
+    46           32       -0.0713976204
+    47           64       -0.0713860787
+    48            5       -0.0713403242
+    49           44       -0.0713126817
+    50           26       -0.0713126289
+    51          154       -0.0713123826
+    52          174       -0.0713116557
+    53          166       -0.0712990081
+    54          183       -0.0712948111
+    55           40       -0.0712677923
+    56           13       -0.0712647971
+    57            8       -0.0712638888
+    58           98       -0.0712396532
+    59          105       -0.0712316270
+    60          136       -0.0712264242
+    61          118       -0.0711486305
+    62          179       -0.0710981363
+    63           70       -0.0710784071
+    64           81       -0.0710675107
+    65          144       -0.0710563919
+    66          108       -0.0710543432
+    67          169       -0.0710243421
+    68           53       -0.0710230586
+    69           76       -0.0710180325
+    70          184       -0.0710139391
+    71           25       -0.0710092182
+    72           82       -0.0709865702
+    73          100       -0.0709837053
+    74           18       -0.0709707723
+    75          103       -0.0708932833
+    76          192       -0.0708903557
+    77           29       -0.0708826049
+    78          163       -0.0708532382
+    79           96       -0.0708526472
+    80           91       -0.0708466710
+    81           78       -0.0708256622
+    82          150       -0.0708186839
+    83          115       -0.0708119816
+    84          142       -0.0708051807
+    85           86       -0.0707952585
+    86           50       -0.0707905513
+    87          109       -0.0707636706
+    88          120       -0.0707436314
+    89          171       -0.0707358779
+    90           33       -0.0707299550
+    91          181       -0.0707253722
+    92           10       -0.0707221647
+    93          139       -0.0707069322
+    94           52       -0.0706962707
+    95          185       -0.0706799245
+    96            9       -0.0706282668
+    97          116       -0.0706198647
+    98          175       -0.0706026779
+    99           35       -0.0705597784
+   100           59       -0.0705423779
+   101          180       -0.0705288102
+   102           21       -0.0705045564
+   103           38       -0.0704968845
+   104          198       -0.0704950902
+   105          173       -0.0704892328
+   106          119       -0.0704882059
+   107          104       -0.0704758849
+   108           41       -0.0704753421
+   109            6       -0.0704593928
+   110           73       -0.0704169065
+   111           72       -0.0703885567
+   112          102       -0.0703876089
+   113          149       -0.0703740453
+   114          186       -0.0703719119
+   115           57       -0.0703610979
+   116           34       -0.0703430299
+   117           97       -0.0703364621
+   118           87       -0.0703324145
+   119           27       -0.0703285839
+   120          191       -0.0703262344
+   121          147       -0.0703104749
+   122          170       -0.0702913667
+   123            7       -0.0702682321
+   124          117       -0.0702223847
+   125          197       -0.0701916504
+   126           80       -0.0701697205
+   127           24       -0.0701645958
+   128           79       -0.0701643990
+   129          125       -0.0700859883
+   130           19       -0.0700234841
+   131          168       -0.0699793771
+   132          128       -0.0699392781
+   133           60       -0.0699174321
+   134          106       -0.0699055804
+   135           54       -0.0698902913
+   136           92       -0.0698824783
+   137          177       -0.0698723563
+   138          145       -0.0698691805
+   139           48       -0.0698630650
+   140           23       -0.0698242164
+   141           56       -0.0698142113
+   142          153       -0.0698061130
+   143           75       -0.0697999667
+   144            1       -0.0697821268
+   145           69       -0.0697654871
+   146          165       -0.0697536646
+   147            4       -0.0697475370
+   148           68       -0.0697344523
+   149           39       -0.0697081876
+   150           93       -0.0696712640
+   151           11       -0.0696636400
+   152           61       -0.0696224933
+   153          162       -0.0696026607
+   154          137       -0.0695852363
+   155          164       -0.0695569254
+   156          172       -0.0695342490
+   157          138       -0.0695275118
+   158           28       -0.0694877017
+   159           46       -0.0694667663
+   160           88       -0.0694577143
+   161           15       -0.0694423608
+   162           14       -0.0694398985
+   163          131       -0.0694257863
+   164          194       -0.0694238606
+   165           31       -0.0694150283
+   166          167       -0.0694021962
+   167           83       -0.0693874317
+   168           63       -0.0693694830
+   169          114       -0.0693500029
+   170          189       -0.0693218317
+   171           37       -0.0692595294
+   172          129       -0.0692485660
+   173          113       -0.0692289404
+   174          151       -0.0691957423
+   175           67       -0.0691913614
+   176           89       -0.0691503968
+   177          146       -0.0691407681
+   178           85       -0.0691191057
+   179          112       -0.0691019400
+   180            2       -0.0690964091
+   181          123       -0.0690598665
+   182          157       -0.0690313737
+   183           62       -0.0690305217
+   184          182       -0.0690126666
+   185           16       -0.0690034934
+   186          124       -0.0689395310
+   187           17       -0.0688382212
+   188          111       -0.0686283695
+   189          130       -0.0686142526
+   190           45       -0.0684832410
+   191          126       -0.0682852957
+   192          176       -0.0682729838
+   193          110       -0.0682407518
+   194           47       -0.0681325944
+   195           43       -0.0680960102
+   196           36       -0.0678775354
+   197           30       -0.0678245910
+   198            0       -0.0676894126
+   199          158       -0.0675623236
+#
+#-----------------------------------------------------------
+The following genetic history was created during the run.
+	Child	Mother	Father	got accepted?	unsucessful genetic operations?
+	200	65	132	false			false
+	201	195	94	false			false
+	202	65	121	false			false
+	203	195	25	true			false
+	204	65	179	true			false
+	205	55	49	false			false
+	206	65	95	true			false
+	207	204	107	false			false
+	208	55	123	false			false
+	209	55	143	false			false
+	210	55	90	true			false
+	211	55	171	true			false
+	212	65	95	true			false
+	213	55	1	true			false
+	214	195	99	false			false
+	215	107	74	true			false
+	216	55	59	false			false
+	217	212	171	false			false
+	218	55	149	true			false
+	219	212	109	false			false
+	220	212	9	true			false
+	221	55	7	false			false
+	222	218	175	true			false
+	223	220	155	true			false
+	224	222	193	true			false
+	225	222	81	false			false
+	226	218	222	false			false
+	227	224	173	true			false
+	228	218	38	false			false
+	229	222	29	true			false
+	230	212	81	false			false
+	231	227	90	false			false
+	232	212	49	false			false
+	233	227	18	true			false
+	234	233	127	true			false
+	235	233	174	false			false
+	236	233	153	false			false
+	237	233	192	true			false
+	238	233	55	true			false
+	239	233	233	true			false
+	240	234	229	true			false
+	241	239	178	false			false
+	242	238	49	true			false
+	243	239	206	false			false
+	244	242	152	false			false
+	245	242	180	true			false
+	246	239	240	true			false
+	247	234	82	true			false
+	248	227	38	true			false
+	249	246	215	true			false
+	250	247	5	true			false
+	251	242	50	true			false
+	252	250	218	true			false
+	253	252	183	false			false
+	254	251	40	false			false
+	255	252	178	true			false
+	256	250	54	true			false
+	257	250	122	true			false
+	258	251	38	true			false
+	259	251	12	true			false
+	260	257	22	true			false
+	261	257	55	false			false
+	262	251	245	true			false
+	263	259	148	true			false
+	264	257	52	false			false
+	265	263	104	true			false
+	266	257	76	true			false
+	267	257	100	false			false
+	268	251	29	true			false
+	269	257	193	true			false
+	270	257	204	true			false
+	271	263	101	true			false
+	272	270	80	false			false
+	273	271	122	false			false
+	274	270	262	true			false
+	275	268	51	false			false
+	276	271	274	false			false
+	277	274	115	false			false
+	278	274	144	false			false
+	279	250	64	true			false
+	280	271	165	false			false
+	281	268	66	true			false
+	282	268	178	false			false
+	283	274	203	false			false
+	284	274	29	false			false
+	285	271	97	false			false
+	286	268	50	true			false
+	287	252	40	true			false
+	288	274	152	true			false
+	289	268	29	true			false
+	290	271	187	true			false
+	291	274	105	false			false
+	292	274	164	false			false
+	293	268	210	true			false
+	294	268	268	true			false
+	295	271	262	false			false
+	296	274	1	true			false
+	297	271	122	true			false
+	298	274	32	false			false
+	299	274	49	false			false
+	300	271	48	true			false
+	301	274	256	false			false
+	302	274	195	false			false
+	303	271	162	false			false
+	304	294	106	true			false
+	305	271	289	false			false
+	306	238	136	false			false
+	307	294	293	false			false
+	308	274	210	false			false
+	309	271	132	false			false
+	310	294	180	false			false
+	311	274	69	true			false
+	312	274	121	true			false
+	313	250	42	false			false
+	314	294	297	false			false
+	315	271	250	false			false
+	316	271	81	false			false
+	317	294	5	false			false
+	318	294	179	true			false
+	319	274	35	false			false
+	320	238	40	true			false
+	321	271	148	false			false
+	322	274	11	false			false
+	323	274	35	false			false
+	324	252	297	false			false
+	325	294	288	false			false
+	326	271	152	true			false
+	327	271	183	false			false
+	328	274	213	false			false
+	329	271	255	false			false
+	330	274	175	false			false
+	331	274	103	true			false
+	332	274	311	false			false
+	333	238	262	false			false
+	334	294	29	true			false
+	335	271	51	false			false
+	336	274	1	false			false
+	337	274	218	false			false
+	338	274	212	true			false
+	339	271	100	false			false
+	340	274	91	false			false
+	341	252	238	true			false
+	342	271	269	true			false
+	343	294	94	false			false
+	344	271	64	true			false
+	345	294	120	true			false
+	346	274	163	false			false
+	347	274	156	false			false
+	348	274	42	false			false
+	349	271	5	false			false
+	350	274	33	false			false
+	351	274	187	false			false
+	352	274	279	false			false
+	353	274	74	true			false
+	354	271	271	false			false
+	355	271	341	false			false
+	356	271	55	false			false
+	357	294	69	false			false
+	358	294	271	false			false
+	359	294	14	true			false
+	360	353	198	false			false
+	361	271	142	false			false
+	362	294	320	true			false
+	363	271	190	false			false
+	364	271	74	false			false
+	365	271	338	false			false
+	366	353	84	false			false
+	367	250	300	false			false
+	368	294	20	false			false
+	369	271	120	false			false
+	370	353	179	false			false
+	371	353	118	false			false
+	372	359	21	true			false
+	373	294	19	false			false
+	374	294	29	false			false
+	375	353	338	true			false
+	376	359	21	false			false
+	377	271	98	false			false
+	378	271	269	true			false
+	379	294	99	false			false
+	380	271	93	false			false
+	381	353	115	false			false
+	382	353	64	true			false
+	383	271	120	false			false
+	384	353	181	false			false
+	385	353	222	false			false
+	386	294	82	true			false
+	387	271	122	false			false
+	388	294	95	false			false
+	389	359	190	false			false
+	390	271	199	false			false
+	391	271	180	false			false
+	392	271	271	false			false
+	393	359	66	true			false
+	394	353	73	true			false
+	395	353	187	false			false
+	396	271	160	false			false
+	397	271	326	false			false
+	398	359	353	false			false
+	399	271	184	false			false
+	400	271	27	false			false
+	401	250	262	false			false
+	402	353	94	false			false
+	403	353	294	false			false
+	404	353	95	false			false
+	405	359	262	false			false
+	406	353	139	true			false
+	407	353	91	false			false
+	408	294	183	false			false
+	409	294	218	false			false
+	410	353	20	true			false
+	411	353	105	true			false
+	412	271	51	false			false
+	413	271	13	false			false
+	414	353	411	false			false
+	415	353	256	false			false
+	416	359	86	false			false
+	417	353	311	false			false
+	418	271	394	true			false
+	419	353	382	true			false
+	420	271	410	false			false
+	421	353	215	true			false
+	422	294	109	false			false
+	423	353	66	false			false
+	424	271	297	false			false
+	425	294	222	false			false
+	426	250	160	false			false
+	427	250	378	true			false
+	428	353	262	false			false
+	429	294	427	false			false
+	430	353	171	false			false
+	431	353	331	false			false
+	432	353	406	false			false
+	433	271	149	true			false
+	434	353	71	false			false
+	435	353	410	true			false
+	436	353	378	false			false
+	437	353	91	true			false
+	438	353	109	true			false
+	439	353	81	false			false
+	440	427	132	false			false
+	441	353	100	false			false
+	442	271	320	false			false
+	443	294	25	false			false
+	444	359	178	true			false
+	445	353	300	false			false
+	446	353	40	true			false
+	447	271	255	false			false
+	448	353	24	false			false
+	449	353	411	false			false
+	450	353	94	false			false
+	451	353	362	false			false
+	452	271	188	false			false
+	453	271	94	true			false
+	454	353	71	false			false
+	455	271	148	false			false
+	456	353	160	false			false
+	457	353	135	false			false
+	458	271	40	true			false
+	459	353	206	false			false
+	460	427	77	true			false
+	461	353	41	false			false
+	462	353	34	false			false
+	463	271	279	false			false
+	464	271	12	false			false
+	465	353	77	false			false
+	466	294	382	false			false
+	467	294	359	true			false
+	468	294	77	false			false
+	469	271	382	false			false
+	470	294	255	false			false
+	471	353	178	false			false
+	472	353	196	true			false
+	473	353	410	true			false
+	474	359	32	false			false
+	475	353	311	true			false
+	476	353	26	false			false
+	477	353	32	false			false
+	478	353	135	false			false
+	479	353	152	false			false
+	480	359	77	false			false
+	481	353	185	false			false
+	482	271	475	false			false
+	483	353	378	false			false
+	484	271	386	false			false
+	485	353	105	false			false
+	486	294	437	true			false
+	487	294	427	false			false
+	488	271	406	false			false
+	489	294	467	false			false
+	490	359	410	false			false
+	491	353	286	false			false
+	492	353	187	false			false
+	493	359	240	false			false
+	494	353	198	false			false
+	495	294	393	true			false
+	496	353	3	false			false
+	497	359	82	false			false
+	498	353	311	false			false
+	499	271	49	false			false
+	500	353	118	false			false
+	501	294	86	false			false
+	502	294	203	false			false
+	503	294	475	false			false
+	504	294	136	false			false
+	505	359	38	false			false
+	506	353	311	false			false
+	507	271	240	false			false
+	508	294	141	false			false
+	509	271	294	false			false
+	510	271	177	false			false
+	511	271	190	false			false
+	512	359	107	false			false
+	513	353	122	true			false
+	514	353	152	false			false
+	515	271	32	true			false
+	516	353	215	true			false
+	517	353	188	true			false
+	518	271	134	false			false
+	519	353	26	false			false
+	520	271	213	false			false
+	521	294	435	false			false
+	522	271	342	false			false
+	523	353	57	true			false
+	524	353	269	true			false
+	525	271	160	false			false
+	526	271	362	false			false
+	527	353	472	false			false
+	528	294	172	false			false
+	529	359	279	true			false
+	530	271	516	false			false
+	531	271	344	false			false
+	532	353	101	false			false
+	533	271	269	true			false
+	534	529	155	false			false
+	535	294	294	false			false
+	536	529	71	false			false
+	537	294	318	false			false
+	538	271	418	false			false
+	539	353	318	false			false
+	540	271	342	false			false
+	541	271	524	false			false
+	542	271	119	false			false
+	543	271	406	false			false
+	544	294	262	false			false
+	545	353	271	true			false
+	546	353	75	false			false
+	547	271	533	false			false
+	548	353	82	false			false
+	549	271	206	false			false
+	550	271	134	false			false
+	551	353	147	true			false
+	552	551	49	false			false
+	553	551	516	true			false
+	554	427	394	false			false
+	555	551	12	false			false
+	556	271	98	false			false
+	557	271	166	false			false
+	558	271	121	false			false
+	559	271	147	true			false
+	560	271	51	false			false
+	561	271	279	false			false
+	562	271	472	false			false
+	563	551	21	false			false
+	564	271	334	false			false
+	565	271	161	false			false
+	566	551	132	false			false
+	567	271	187	false			false
+	568	271	107	false			false
+	569	551	453	false			false
+	570	271	279	true			false
+	571	427	99	false			false
+	572	271	155	false			false
+	573	551	149	false			false
+	574	551	185	false			false
+	575	271	96	false			false
+	576	294	98	false			false
+	577	529	134	false			false
+	578	551	533	false			false
+	579	551	269	false			false
+	580	551	86	false			false
+	581	551	190	false			false
+	582	551	156	false			false
+	583	271	99	false			false
+	584	294	433	false			false
+	585	529	524	false			false
+	586	294	94	false			false
+	587	529	73	false			false
+	588	529	18	false			false
+	589	271	406	true			false
+	590	529	192	false			false
+	591	427	318	true			false
+	592	271	421	false			false
+	593	294	8	false			false
+	594	271	421	false			false
+	595	551	190	false			false
+	596	529	188	false			false
+	597	294	553	false			false
+	598	271	215	false			false
+	599	551	98	false			false
+	600	271	52	true			false
+	601	271	38	false			false
+	602	294	427	false			false
+	603	551	51	false			false
+	604	271	551	false			false
+	605	294	92	false			false
+	606	551	533	false			false
+	607	486	570	false			false
+	608	294	3	false			false
+	609	271	199	true			false
+	610	271	523	false			false
+	611	271	108	true			false
+	612	294	80	false			false
+	613	271	240	false			false
+	614	294	48	false			false
+	615	551	533	false			false
+	616	294	229	false			false
+	617	551	446	false			false
+	618	271	211	false			false
+	619	529	516	false			false
+	620	551	64	false			false
+	621	551	453	false			false
+	622	551	107	false			false
+	623	294	103	false			false
+	624	551	559	false			false
+	625	294	223	false			false
+	626	294	438	true			false
+	627	529	362	false			false
+	628	294	410	true			false
+	629	271	81	false			false
+	630	271	517	false			false
+	631	551	187	false			false
+	632	551	311	false			false
+	633	551	141	true			false
+	634	271	179	true			false
+	635	271	35	false			false
+	636	271	70	false			false
+	637	551	78	false			false
+	638	529	101	true			false
+	639	551	294	false			false
+	640	271	18	true			false
+	641	271	84	false			false
+	642	551	48	false			false
+	643	529	9	true			false
+	644	643	517	false			false
+	645	271	40	false			false
+	646	271	467	false			false
+	647	643	294	false			false
+	648	643	154	true			false
+	649	271	104	false			false
+	650	271	49	true			false
+	651	529	26	false			false
+	652	551	222	true			false
+	653	294	286	true			false
+	654	643	287	false			false
+	655	529	140	false			false
+	656	551	648	false			false
+	657	643	156	false			false
+	658	643	460	false			false
+	659	643	150	true			false
+	660	643	653	false			false
+	661	271	342	false			false
+	662	271	156	false			false
+	663	271	102	false			false
+	664	643	179	true			false
+	665	271	149	true			false
+	666	551	453	true			false
+	667	643	73	false			false
+	668	551	600	false			false
+	669	643	320	false			false
+	670	271	551	false			false
+	671	271	372	false			false
+	672	643	71	false			false
+	673	643	223	false			false
+	674	551	294	false			false
+	675	643	171	true			false
+	676	643	192	false			false
+	677	271	626	false			false
+	678	551	418	false			false
+	679	643	32	false			false
+	680	643	64	false			false
+	681	643	91	false			false
+	682	294	210	true			false
+	683	271	185	false			false
+	684	271	473	true			false
+	685	643	29	false			false
+	686	271	600	true			false
+	687	551	99	false			false
+	688	271	54	false			false
+	689	643	51	false			false
+	690	643	21	false			false
+	691	643	199	true			false
+	692	691	100	false			false
+	693	682	529	false			false
+	694	682	132	false			false
+	695	682	472	false			false
+	696	271	553	false			false
+	697	551	179	true			false
+	698	551	179	false			false
+	699	691	591	false			false
+	700	551	240	false			false
+	701	551	180	false			false
+	702	551	229	false			false
+	703	691	109	false			false
+	704	271	626	false			false
+	705	691	684	false			false
+	706	691	215	false			false
+	707	271	279	false			false
+	708	551	49	false			false
+	709	691	183	false			false
+	710	551	559	false			false
+	711	551	19	false			false
+	712	691	178	false			false
+	713	551	49	false			false
+	714	551	362	false			false
+	715	691	279	false			false
+	716	691	190	false			false
+	717	529	411	false			false
+	718	691	86	false			false
+	719	551	545	false			false
+	720	271	81	true			false
+	721	691	103	false			false
+	722	271	269	true			false
+	723	551	33	false			false
+	724	271	70	false			false
+	725	682	40	false			false
+	726	551	472	false			false
+	727	271	211	false			false
+	728	691	435	true			false
+	729	551	132	false			false
+	730	551	149	false			false
+	731	691	362	false			false
+	732	691	665	true			false
+	733	691	163	false			false
+	734	271	666	false			false
+	735	691	203	false			false
+	736	551	82	false			false
+	737	271	320	false			false
+	738	691	545	true			false
+	739	551	148	false			false
+	740	691	211	false			false
+	741	691	121	false			false
+	742	551	686	false			false
+	743	271	41	true			false
+	744	682	180	false			false
+	745	271	223	true			false
+	746	551	609	false			false
+	747	551	722	false			false
+	748	682	372	false			false
+	749	691	682	false			false
+	750	551	125	false			false
+	751	271	116	true			false
+	752	271	279	false			false
+	753	691	155	false			false
+	754	551	155	false			false
+	755	682	697	false			false
+	756	551	697	true			false
+	757	271	529	false			false
+	758	682	58	false			false
+	759	691	105	false			false
+	760	551	84	false			false
+	761	691	18	false			false
+	762	682	166	false			false
+	763	682	433	false			false
+	764	551	653	false			false
+	765	271	134	false			false
+	766	682	58	false			false
+	767	691	40	false			false
+	768	271	648	false			false
+	769	427	52	false			false
+	770	271	545	false			false
+	771	691	7	false			false
+	772	551	119	false			false
+	773	682	686	false			false
+	774	691	262	false			false
+	775	691	213	true			false
+	776	551	515	false			false
+	777	551	203	true			false
+	778	682	77	false			false
+	779	691	372	false			false
+	780	691	659	false			false
+	781	682	653	false			false
+	782	691	51	true			false
+	783	691	640	true			false
+	784	551	406	false			false
+	785	529	94	false			false
+	786	691	460	true			false
+	787	551	152	true			false
+	788	271	427	false			false
+	789	551	56	false			false
+	790	691	40	true			false
+	791	551	659	false			false
+	792	691	102	false			false
+	793	691	84	true			false
+	794	551	183	true			false
+	796	691	103	false			false
+	797	551	545	false			false
+	798	551	8	false			false
+	799	691	686	false			false
+	800	691	460	false			false
+	801	691	427	false			false
+	802	271	49	false			false
+	803	691	18	false			false
+	795	691	3	false			false
+	804	691	787	false			false
+	806	691	406	true			false
+	807	691	269	false			false
+	808	691	99	false			false
+	805	551	486	false			false
+	809	551	20	false			false
+	810	551	411	false			false
+	811	691	372	false			false
+	813	691	118	false			false
+	814	691	787	false			false
+	812	691	393	false			false
+	815	691	185	false			false
+	816	551	777	false			false
+	817	427	229	false			false
+	819	551	49	false			false
+	818	551	732	false			false
+	820	691	775	false			false
+	822	691	50	false			false
+	823	551	438	true			false
+	821	271	64	false			false
+	824	551	107	false			false
+	826	691	300	false			false
+	827	551	59	false			false
+	825	691	107	false			false
+	828	691	99	false			false
+	830	794	203	true			false
+	829	691	82	false			false
+	831	691	121	false			false
+	833	551	823	false			false
+	832	551	64	false			false
+	834	691	460	false			false
+	836	551	115	true			false
+	835	691	545	false			false
+	837	271	551	false			false
+	838	691	104	false			false
+	838	551	790	false			false
+	840	691	169	false			false
+	841	551	418	false			false
+	842	551	745	false			false
+	844	271	553	false			false
+	843	271	53	true			false
+	845	691	279	false			false
+	846	691	830	false			false
+	847	551	13	false			false
+	848	551	775	false			false
+	848	551	185	false			false
+	850	271	94	true			false
+	851	691	18	false			false
+	852	691	108	false			false
+	853	682	78	false			false
+	854	271	94	true			false
+	855	271	418	false			false
+	856	691	106	false			false
+	857	551	86	false			false
+	858	682	155	false			false
+	860	682	121	true			false
+	859	551	79	false			false
+	861	551	175	false			false
+	862	551	107	false			false
+	863	551	64	false			false
+	864	691	686	true			false
+	865	551	823	false			false
+	866	691	154	false			false
+	867	830	722	false			false
+	868	271	697	false			false
+	869	691	437	false			false
+	870	271	240	false			false
+	871	551	87	false			false
+	872	551	8	false			false
+	873	691	262	false			false
+	874	271	682	false			false
+	876	271	160	false			false
+	875	691	154	false			false
+	877	691	72	false			false
+	878	682	609	false			false
+	879	551	300	false			false
+	880	551	3	true			false
+	881	691	196	false			false
+	883	551	134	false			false
+	882	271	76	false			false
+	884	551	150	false			false
+	885	551	140	false			false
+	886	271	686	false			false
+	887	682	311	false			false
+	888	271	184	false			false
+	889	271	786	false			false
+	890	691	745	false			false
+	891	551	783	false			false
+	891	271	100	false			false
+	893	551	472	false			false
+	894	682	756	false			false
+	895	691	460	false			false
+	896	271	115	false			false
+	898	691	650	false			false
+	897	691	240	false			false
+	899	271	100	false			false
+	900	271	372	false			false
+	902	551	52	false			false
+	901	691	722	false			false
+	903	551	64	false			false
+	904	551	782	false			false
+	905	551	94	false			false
+	906	691	50	false			false
+	907	551	98	false			false
+	908	551	697	false			false
+	909	691	516	true			false
+	910	691	362	false			false
+	911	551	823	false			false
+	912	691	141	false			false
+	913	682	460	false			false
+	914	691	486	false			false
+	915	427	78	false			false
+	916	691	163	true			false
+	917	551	5	false			false
+	918	271	609	false			false
+	919	551	743	false			false
+	921	551	27	false			false
+	920	551	850	false			false
+	923	551	50	true			false
+	922	682	105	false			false
+	924	916	187	false			false
+	926	427	472	true			false
+	925	916	20	true			false
+	927	916	652	false			false
+	928	271	271	false			false
+	929	271	51	false			false
+	931	916	777	true			false
+	930	916	393	false			false
+	932	916	427	true			false
+	933	271	854	false			false
+	934	932	3	false			false
+	935	551	697	false			false
+	936	551	141	false			false
+	937	932	551	false			false
+	938	551	931	false			false
+	939	551	141	false			false
+	940	682	909	true			false
+	941	932	925	false			false
+	942	551	806	false			false
+	944	830	174	false			false
+	943	551	311	false			false
+	945	932	152	true			false
+	946	932	169	false			false
+	947	551	686	false			false
+	948	932	271	false			false
+	949	551	64	false			false
+	950	551	140	false			false
+	951	551	117	false			false
+	952	271	830	false			false
+	953	932	262	true			false
+	954	932	684	false			false
+	955	271	71	false			false
+	957	932	185	false			false
+	956	932	156	false			false
+	958	551	551	false			false
+	960	551	362	false			false
+	959	271	823	false			false
+	961	551	472	true			false
+	963	830	931	false			false
+	962	551	909	true			false
+	964	932	84	true			false
+	966	551	633	false			false
+	965	551	777	false			false
+	967	932	140	false			false
+	969	682	745	false			false
+	968	932	720	false			false
+	970	551	782	false			false
+	971	932	50	false			false
+	972	932	107	false			false
+	973	932	686	false			false
+	974	932	666	false			false
+	975	271	697	false			false
+	976	551	108	false			false
+	977	551	854	false			false
+	978	932	633	false			false
+	980	932	107	false			false
+	979	551	169	false			false
+	981	932	102	false			false
+	983	932	71	false			false
+	982	551	372	false			false
+	984	932	161	false			false
+	985	932	830	false			false
+	987	551	860	false			false
+	986	682	198	false			false
+	988	551	213	false			false
+	989	551	628	false			false
+	990	551	925	false			false
+	991	932	42	false			false
+	992	932	134	false			false
+	993	271	180	false			false
+	994	682	418	false			false
+	995	932	203	false			false
+	996	551	271	false			false
+	997	932	433	false			false
+	999	830	880	false			false
+	998	932	77	false			false
+	1000	682	173	false			false
+	1002	271	427	false			false
+	1001	830	150	false			false
+	1003	682	438	false			false
+	1004	932	107	false			false
+	1005	271	156	false			false
+	1006	551	864	false			false
+	1007	932	240	true			false
+	1008	932	775	false			false
+	1009	682	132	false			false
+	1010	551	961	true			false
+	1011	271	213	false			false
+	1012	682	105	false			false
+	1013	271	13	false			false
+	1014	932	437	false			false
+	1015	551	71	false			false
+	1016	932	545	false			false
+	1017	551	732	false			false
+	1019	271	179	false			false
+	1018	932	790	false			false
+	1020	551	823	false			false
+	1021	932	909	false			false
+	1023	271	923	false			false
+	1022	551	169	false			false
+	1024	682	433	false			false
+	1025	551	697	false			false
+	1026	932	152	false			false
+	1027	932	166	false			false
+	1028	932	686	false			false
+	1029	551	166	false			false
+	1030	271	71	false			false
+	1031	932	71	false			false
+	1032	551	609	false			false
+	1033	932	648	false			false
+	1035	271	433	true			false
+	1034	551	92	false			false
+	1036	932	925	false			false
+	1037	932	140	false			false
+	1039	551	51	false			false
+	1038	682	60	true			false
+	1041	830	188	false			false
+	1040	551	102	false			false
+	1042	551	666	false			false
+	1043	551	697	false			false
+	1044	551	5	false			false
+	1045	271	66	false			false
+	1046	932	880	false			false
+	1047	932	3	false			false
+	1048	551	545	true			false
+	1049	551	652	true			false
+	1050	932	94	false			false
+	1051	551	99	false			false
+	1052	271	854	false			false
+	1054	932	154	true			false
+	1055	271	166	false			false
+	1053	271	213	true			false
+	1056	551	80	false			false
+	1058	932	777	false			false
+	1059	551	269	false			false
+	1057	932	71	false			false
+	1060	271	932	false			false
+	1062	682	732	false			false
+	1061	551	84	true			false
+	1063	551	516	false			false
+	1065	271	418	true			false
+	1066	271	132	false			false
+	1064	932	684	false			false
+	1067	932	188	true			false
+	1068	271	25	false			false
+	1069	682	134	false			false
+	1070	932	66	false			false
+	1071	271	372	false			false
+	1072	551	372	false			false
+	1072	551	156	false			false
+	1074	551	472	false			false
+	1075	932	551	false			false
+	1077	551	823	false			false
+	1076	932	97	false			false
+	1078	932	70	false			false
+	1079	271	438	false			false
+	1080	932	962	true			false
+	1081	932	777	false			false
+	1082	682	961	false			false
+	1083	271	144	false			false
+	1084	551	105	false			false
+	1085	932	163	false			false
+	1086	932	1054	false			false
+	1088	932	1010	false			false
+	1087	551	633	false			false
+	1089	932	203	false			false
+	1090	271	777	false			false
+	1092	271	101	false			false
+	1091	932	132	false			false
+	1093	271	777	false			false
+	1094	551	102	false			false
+	1095	271	8	false			false
+	1096	551	271	false			false
+	1097	830	1054	false			false
+	1098	271	925	false			false
+	1099	932	49	false			false
+	1100	932	100	false			false
+	1101	932	1053	false			false
+	1103	271	190	false			false
+	1102	271	163	false			false
+	1104	271	183	false			false
+	1106	551	121	false			false
+	1105	551	850	false			false
+	1107	271	187	false			false
+	1108	551	1061	false			false
+	1109	271	98	true			false
+	1110	932	311	false			false
+	1111	551	793	false			false
+	1112	551	830	true			false
+	1113	551	1035	true			false
+	1113	932	49	false			false
+	1115	932	20	false			false
+	1116	932	269	false			false
+	1117	932	102	false			false
+	1118	551	609	false			false
+	1119	932	650	false			false
+	1120	932	1010	false			false
+	1121	271	393	false			false
+	1122	551	682	false			false
+	1123	271	70	false			false
+	1124	271	104	false			false
+	1126	271	1054	false			false
+	1125	551	775	true			false
+	1127	932	609	false			false
+	1129	682	1113	false			false
+	1130	551	743	false			false
+	1128	830	393	true			false
+	1131	932	682	false			false
+	1133	551	140	false			false
+	1132	551	786	false			false
+	1134	932	51	false			false
+	1135	830	229	false			false
+	1136	932	178	false			false
+	1137	551	551	false			false
+	1138	551	684	false			false
+	1140	932	684	false			false
+	1139	271	652	false			false
+	1141	551	650	false			false
+	1142	932	1080	false			false
+	1143	271	1049	false			false
+	1145	551	1080	false			false
+	1146	682	756	false			false
+	1144	271	26	false			false
+	1147	551	71	false			false
+	1148	932	609	false			false
+	1149	551	190	false			false
+	1150	932	99	false			false
+	1151	271	823	false			false
+	1153	551	932	false			false
+	1152	932	144	false			false
+	1155	932	961	false			false
+	1154	551	152	false			false
+	1156	932	76	false			false
+	1157	932	1048	false			false
+	1158	551	12	false			false
+	1159	932	909	false			false
+	1160	271	98	false			false
+	1161	682	142	false			false
+	1162	932	171	false			false
+	1163	551	135	false			false
+	1164	682	103	true			false
+	1165	271	393	false			false
+	1166	271	141	false			false
+	1167	830	775	false			false
+	1168	271	196	false			false
+	1169	932	132	false			false
+	1170	551	125	false			false
+	1172	551	393	false			false
+	1171	682	438	false			false
+	1174	551	10	false			false
+	1173	551	41	false			false
+	1176	551	786	false			false
+	1175	682	551	false			false
+	1177	551	777	false			false
+	1178	271	697	false			false
+	1179	932	880	false			false
+	1179	551	183	false			false
+	1181	932	49	false			false
+	1182	932	94	false			false
+	1183	271	925	false			false
+	1185	551	27	false			false
+	1184	551	775	false			false
+	1186	551	751	false			false
+	1187	932	961	false			false
+	1189	932	10	false			false
+	1188	932	553	false			false
+	1190	271	163	true			false
+	1191	932	171	false			false
+	1192	551	628	false			false
+	1193	932	185	false			false
+	1194	551	777	false			false
+	1196	271	1112	false			false
+	1195	932	1049	false			false
+	1198	932	54	false			false
+	1197	932	148	false			false
+	1199	830	142	false			false
+	1200	551	92	false			false
+	1201	932	160	false			false
+	1202	932	1125	false			false
+	1203	551	860	false			false
+	1204	271	187	false			false
+	1205	271	666	false			false
+	1206	551	652	false			false
+	1207	932	51	false			false
+	1208	932	697	false			false
+	1209	551	190	false			false
+	1210	932	1125	false			false
+	1211	271	438	false			false
+	1212	932	1164	false			false
+	1213	551	179	false			false
+	1214	551	1128	false			false
+	1215	932	427	false			false
+	1217	551	108	false			false
+	1216	551	173	false			false
+	1219	932	135	true			false
+	1218	551	648	false			false
+	1220	932	666	true			false
+	1221	932	438	false			false
+	1222	932	652	false			false
+	1223	551	1109	false			false
+	1224	271	1038	false			false
+	1225	271	516	true			false
+	1226	932	187	false			false
+	1227	551	940	false			false
+	1228	551	9	false			false
+	1229	932	78	false			false
+	1230	551	793	false			false
+	1231	271	58	false			false
+	1233	932	99	false			false
+	1232	551	1048	false			false
+	1235	271	203	false			false
+	1234	932	311	false			false
+	1236	271	161	false			false
+	1237	925	57	false			false
+	1238	932	932	false			false
+	1239	682	551	false			false
+	1240	932	652	false			false
+	1241	932	102	false			false
+	1242	932	84	false			false
+	1244	551	628	false			false
+	1243	551	628	false			false
+	1245	932	1113	true			false
+	1246	682	793	false			false
+	1247	551	144	false			false
+	1248	932	148	false			false
+	1248	271	775	true			false
+	1250	551	1061	false			false
+	1251	932	262	true			false
+	1253	932	108	true			false
+	1252	271	125	false			false
+	1255	682	102	false			false
+	1254	551	411	false			false
+	1256	551	203	false			false
+	1257	932	179	false			false
+	1258	932	1054	false			false
+	1259	551	48	false			false
+	1261	551	160	true			false
+	1260	551	860	false			false
+	1263	932	148	true			false
+	1262	682	175	false			false
+	1265	551	58	false			false
+	1264	551	132	false			false
+	1266	551	830	false			false
+	1268	1263	196	false			false
+	1267	271	406	false			false
+	1269	682	860	false			false
+	1270	1263	823	false			false
+	1271	271	472	false			false
+	1272	551	155	false			false
+	1274	551	121	false			false
+	1273	551	132	false			false
+	1275	1263	786	false			false
+	1277	551	100	true			false
+	1276	1263	119	false			false
+	1278	551	155	false			false
+	1278	551	437	false			false
+	1280	271	271	false			false
+	1281	1263	1113	false			false
+	1282	1263	1010	false			false
+	1283	271	1038	false			false
+	1284	551	190	false			false
+	1285	551	1225	false			false
+	1286	1263	551	false			false
+	1288	1263	121	false			false
+	1287	551	880	false			false
+	1289	1263	720	true			false
+	1291	1263	72	false			false
+	1290	1263	743	false			false
+	1292	551	945	true			false
+	1293	551	87	false			false
+	1294	551	72	false			false
+	1296	1263	551	false			false
+	1295	1263	199	false			false
+	1297	682	925	false			false
+	1298	1263	300	false			false
+	1299	271	171	false			false
+	1300	551	42	false			false
+	1301	551	1251	false			false
+	1302	1263	53	false			false
+	1303	1263	393	false			false
+	1304	1263	830	false			false
+	1305	1263	1292	false			false
+	1306	830	1164	false			false
+	1307	1263	1109	false			false
+	1308	271	372	false			false
+	1309	551	187	false			false
+	1311	682	186	false			false
+	1310	271	148	false			false
+	1312	1263	187	false			false
+	1313	427	103	false			false
+	1314	1263	57	false			false
+	1315	271	609	false			false
+	1316	271	633	false			false
+	1317	1263	3	false			false
+	1318	1263	102	false			false
+	1320	271	860	false			false
+	1319	271	1277	false			false
+	1321	551	830	false			false
+	1323	551	29	false			false
+	1322	1263	300	false			false
+	1324	1263	1251	false			false
+	1326	1263	1245	true			false
+	1325	1263	1054	false			false
+	1327	271	553	false			false
+	1328	271	648	false			false
+	1329	551	686	false			false
+	1330	1263	1054	false			false
+	1331	1263	1038	false			false
+	1332	682	516	false			false
+	1334	551	109	false			false
+	1333	551	1049	false			false
+	1336	1263	196	false			false
+	1335	1263	25	false			false
+	1337	1263	262	false			false
+	1337	271	372	false			false
+	1339	551	1263	false			false
+	1340	551	156	false			false
+	1341	1263	1292	false			false
+	1342	271	156	false			false
+	1343	271	823	false			false
+	1345	551	372	false			false
+	1344	1263	76	false			false
+	1346	1263	20	false			false
+	1347	551	21	false			false
+	1348	1263	141	true			false
+	1349	271	743	true			false
+	1351	271	823	false			false
+	1350	271	229	false			false
+	1353	682	84	false			false
+	1352	551	66	false			false
+	1354	1263	1251	false			false
+	1355	271	107	false			false
+	1356	271	1263	false			false
+	1358	551	850	false			false
+	1357	1263	684	false			false
+	1359	1263	1253	false			false
+	1361	551	26	false			false
+	1360	1263	1038	false			false
+	1362	682	909	false			false
+	1364	551	1248	false			false
+	1363	1263	909	true			false
+	1365	1263	155	false			false
+	1366	1263	925	false			false
+	1367	271	682	false			false
+	1368	551	854	false			false
+	1369	427	923	false			false
+	1371	1263	551	false			false
+	1372	271	686	false			false
+	1370	551	945	false			false
+	1373	682	1113	false			false
+	1375	1263	148	false			false
+	1374	271	823	false			false
+	1376	271	185	false			false
+	1378	1263	1038	false			false
+	1377	271	1053	false			false
+	1379	1263	1038	false			false
+	1381	1263	854	false			false
+	1380	551	880	false			false
+	1382	1263	135	false			false
+	1384	1263	860	false			false
+	1383	271	184	false			false
+	1385	682	5	true			false
+	1387	1263	553	false			false
+	1386	551	1348	false			false
+	1388	1263	628	false			false
+	1389	271	199	false			false
+	1390	682	1190	false			false
+	1392	830	1219	false			false
+	1391	551	105	false			false
+	1393	271	128	false			false
+	1395	271	52	false			false
+	1394	427	13	false			false
+	1396	271	823	false			false
+	1397	830	190	true			false
+	1398	1263	94	false			false
+	1399	1263	1080	false			false
+	1400	1263	311	false			false
+	1401	1263	7	false			false
+	1402	1263	1049	true			false
+	1404	271	269	false			false
+	1403	271	58	false			false
+	1405	271	652	false			false
+	1406	551	173	false			false
+	1407	271	100	true			false
+	1408	551	190	false			false
+	1409	1263	154	false			false
+	1411	551	1251	true			false
+	1410	551	32	false			false
+	1412	1263	406	false			false
+	1414	551	52	false			false
+	1413	1263	300	true			false
+	1415	551	199	false			false
+	1416	682	76	false			false
+	1417	271	1413	true			false
+	1419	1263	156	false			false
+	1418	1263	29	false			false
+	1420	1263	652	false			false
+	1422	1263	1113	false			false
+	1423	1263	1263	false			false
+	1421	1263	185	false			false
+	1424	551	1251	false			false
+	1425	1263	940	false			false
+	1427	551	551	false			false
+	1426	1417	945	false			false
+	1428	1263	135	true			false
+	1429	830	411	false			false
+	1431	551	1038	false			false
+	1430	1263	1349	false			false
+	1433	1263	940	true			false
+	1432	551	120	false			false
+	1435	1263	628	false			false
+	1434	682	107	true			false
+	1436	551	438	false			false
+	1437	551	1190	false			false
+	1439	1417	1109	false			false
+	1438	1263	628	false			false
+	1440	1417	372	false			false
+	1441	1417	148	false			false
+	1443	551	81	false			false
+	1442	551	186	true			false
+	1445	551	320	false			false
+	1444	1263	188	false			false
+	1446	551	1263	false			false
+	1447	1263	12	false			false
+	1448	1263	790	false			false
+	1449	1263	156	true			false
+	1451	1417	96	false			false
+	1450	551	1402	false			false
+	1452	551	141	false			false
+	1453	551	786	false			false
+	1454	1263	1109	false			false
+	1456	682	836	false			false
+	1455	551	609	false			false
+	1457	1263	99	false			false
+	1458	1263	136	false			false
+	1460	1263	1080	false			false
+	1459	551	48	false			false
+	1461	551	155	false			false
+	1463	1417	756	false			false
+	1462	551	782	false			false
+	1464	1263	1048	false			false
+	1466	551	75	true			false
+	1465	551	777	false			false
+	1467	551	1413	true			false
+	1469	1417	79	false			false
+	1468	551	125	false			false
+	1470	830	147	false			false
+	1472	551	782	false			false
+	1471	1263	782	false			false
+	1473	1263	438	false			false
+	1474	1263	925	false			false
+	1475	1263	666	false			false
+	1477	1263	13	false			false
+	1476	1263	860	false			false
+	1478	1417	633	true			false
+	1480	830	1417	false			false
+	1479	1263	1466	false			false
+	1481	1263	64	false			false
+	1483	1417	515	false			false
+	1482	1417	1292	false			false
+	1484	1417	94	false			false
+	1485	551	185	false			false
+	1486	551	1407	false			false
+	1488	551	32	false			false
+	1487	1417	648	true			false
+	1490	682	311	false			false
+	1491	682	945	false			false
+	1489	1263	103	false			false
+	1493	1263	1349	false			false
+	1492	551	686	false			false
+	1494	551	179	true			false
+	1496	1263	13	false			false
+	1495	1263	91	false			false
+	1497	551	187	false			false
+	1498	1263	49	false			false
+	1499	1263	472	false			false
+	1501	551	925	false			false
+	1502	682	98	true			false
+	1500	1417	964	false			false
+	1503	1417	1428	true			false
+	1503	682	1263	false			false
+	1505	1263	10	false			false
+	1507	1263	109	true			false
+	1508	1263	836	false			false
+	1506	1263	1402	false			false
+	1509	1263	964	false			false
+	1510	551	136	false			false
+	1511	1263	76	true			false
+	1513	830	38	false			false
+	1512	1417	81	true			false
+	1514	1417	135	false			false
+	1515	1263	1251	false			false
+	1516	551	633	false			false
+	1517	682	99	false			false
+	1518	1263	427	false			false
+	1519	551	84	false			false
+	1520	682	142	true			false
+	1521	551	135	false			false
+	1522	551	26	false			false
+	1524	830	1434	false			false
+	1525	682	51	false			false
+	1523	1263	1417	false			false
+	1527	551	144	false			false
+	1526	1417	184	true			false
+	1529	1263	1349	true			false
+	1528	1263	12	false			false
+	1530	1417	1487	false			false
+	1532	551	1251	false			false
+	1531	1417	945	true			false
+	1533	682	32	true			false
+	1535	1417	132	false			false
+	1534	551	1109	false			false
+	1536	1263	77	true			false
+	1538	682	843	false			false
+	1537	551	1048	false			false
+	1539	551	1225	false			false
+	1541	1263	145	false			false
+	1540	1263	411	true			false
+	1542	1417	20	false			false
+	1544	1263	101	false			false
+	1545	551	1520	false			false
+	1543	551	1520	false			false
+	1546	682	1363	false			false
+	1547	1417	107	false			false
+	1548	1417	964	false			false
+	1550	551	150	false			false
+	1551	551	1038	false			false
+	1549	1263	1536	true			false
+	1552	551	777	false			false
+	1554	682	142	false			false
+	1553	1263	152	false			false
+	1555	1417	144	false			false
+	1557	551	50	false			false
+	1558	427	790	false			false
+	1556	1263	666	false			false
+	1559	1417	1053	false			false
+	1561	551	925	false			false
+	1560	551	128	false			false
+	1562	1263	1397	false			false
+	1564	551	10	false			false
+	1563	1263	1531	false			false
+	1565	551	187	false			false
+	1567	1417	1407	false			false
+	1566	551	823	false			false
+	1568	1417	551	false			false
+	1570	551	1487	false			false
+	1569	1263	684	false			false
+	1571	1263	1478	false			false
+	1572	1263	438	false			false
+	1573	1417	8	false			false
+	1575	551	551	false			false
+	1576	1417	64	false			false
+	1574	551	1502	false			false
+	1577	682	1263	false			false
+	1579	1263	78	true			false
+	1578	1263	196	false			false
+	1580	682	191	false			false
+	1582	551	850	false			false
+	1581	1263	1397	false			false
+	1584	551	117	false			false
+	1583	1263	854	true			false
+	1586	551	101	false			false
+	1585	1263	180	false			false
+	1587	1263	1397	false			false
+	1587	1263	1190	true			false
+	1589	682	160	false			false
+	1591	551	320	false			false
+	1592	1417	751	false			false
+	1590	551	144	false			false
+	1593	1263	516	false			false
+	1595	1417	782	false			false
+	1594	551	1048	true			false
+	1596	551	135	false			false
+	1598	551	156	false			false
+	1597	1263	125	false			false
+	1599	1263	87	true			false
+	1601	1263	269	false			false
+	1600	551	1594	false			false
+	1602	551	650	false			false
+	1604	1263	119	false			false
+	1603	551	1261	false			false
+	1605	682	1109	false			false
+	1606	1263	945	false			false
+	1607	551	132	false			false
+	1608	551	136	false			false
+	1609	1263	1038	false			false
+	1611	1263	3	false			false
+	1612	551	94	false			false
+	1610	1263	169	false			false
+	1613	1263	1503	false			false
+	1615	1263	1190	false			false
+	1614	1263	166	false			false
+	1616	682	1428	false			false
+	1618	682	682	false			false
+	1617	682	1526	true			false
+	1619	551	1583	false			false
+	1621	830	51	false			false
+	1620	1417	269	false			false
+	1622	1263	1277	false			false
+	1623	551	1385	false			false
+	1624	1417	684	false			false
+	1626	1263	161	false			false
+	1627	830	1053	false			false
+	1625	682	648	false			false
+	1628	551	1503	false			false
+	1629	1263	1467	false			false
+	1630	551	23	false			false
+	1631	1417	101	false			false
+	1632	1263	141	false			false
+	1633	551	42	true			false
+	1634	1417	830	false			false
+	1636	1263	666	true			false
+	1637	551	140	false			false
+	1635	682	1109	false			false
+	1638	682	1292	false			false
+	1639	551	427	false			false
+	1640	1263	516	false			false
+	1642	682	1417	false			false
+	1641	682	59	false			false
+	1643	551	1397	false			false
+	1644	551	173	false			false
+	1645	1263	311	true			false
+	1647	551	1061	false			false
+	1646	1263	32	false			false
+	1648	682	72	false			false
+	1650	551	777	false			false
+	1651	682	1261	false			false
+	1649	551	1292	true			false
+	1652	1263	1633	false			false
+	1654	1263	144	false			false
+	1653	1263	142	false			false
+	1655	1263	1520	false			false
+	1656	1263	87	false			false
+	1657	1263	117	false			false
+	1658	1417	1531	false			false
+	1659	1263	169	false			false
+	1660	551	1061	false			false
+	1661	551	26	false			false
+	1663	682	836	false			false
+	1662	1263	191	false			false
+	1664	551	178	true			false
+	1666	551	177	true			false
+	1665	1417	1385	false			false
+	1667	1263	94	false			false
+	1668	1263	141	true			false
+	1669	1417	648	false			false
+	1671	551	782	false			false
+	1672	1417	854	false			false
+	1670	1263	1645	false			false
+	1673	1263	132	false			false
+	1675	551	26	false			false
+	1676	1263	682	false			false
+	1677	551	1512	false			false
+	1674	551	1466	true			false
+	1678	551	20	false			false
+	1679	1263	32	false			false
+	1680	551	1594	false			false
+	1681	1263	1080	false			false
+	1683	682	1402	false			false
+	1682	682	8	false			false
+	1685	551	790	false			false
+	1684	1263	1502	false			false
+	1686	1263	1397	false			false
+	1687	1263	1579	false			false
+	1688	551	82	false			false
+	1688	682	269	false			false
+	1691	830	1080	true			false
+	1690	1263	132	false			false
+	1693	1263	64	true			false
+	1692	1263	1113	false			false
+	1694	1263	154	false			false
+	1695	1417	32	false			false
+	1696	551	1363	false			false
+	1697	1263	1617	false			false
+	1698	551	1478	false			false
+	1699	551	551	false			false
+	1700	427	58	true			false
+	1701	1417	782	false			false
+	1702	1263	1579	false			false
+	1703	1417	70	false			false
+	1704	427	152	false			false
+	1705	551	1579	false			false
+	1706	551	84	false			false
+	1707	551	86	false			false
+	1708	1417	87	false			false
+	1709	682	1645	false			false
+	1710	1417	196	true			false
+	1711	1417	782	false			false
+	1712	682	1109	false			false
+	1713	1263	1533	false			false
+	1714	1263	850	false			false
+	1716	1263	198	false			false
+	1715	1417	1691	false			false
+	1717	1417	1478	true			false
+	1718	1417	438	false			false
+	1719	551	1466	false			false
+	1720	1263	1594	false			false
+	1721	1263	1710	false			false
+	1722	1263	54	false			false
+	1723	551	1511	false			false
+	1724	1263	751	false			false
+	1725	1263	411	false			false
+	1727	551	633	false			false
+	1726	830	66	false			false
+	1728	1263	101	false			false
+	1729	551	790	false			false
+	1730	551	1583	false			false
+	1731	830	1526	false			false
+	1732	551	29	false			false
+	1733	1417	82	false			false
+	1734	1263	648	true			false
+	1735	551	1225	false			false
+	1736	551	38	false			false
+	1737	1263	1428	true			false
+	1738	830	1668	false			false
+	1739	1417	1633	false			false
+	1740	1417	1061	false			false
+	1742	1263	1251	false			false
+	1741	551	1693	false			false
+	1744	551	393	false			false
+	1743	1417	181	false			false
+	1745	1417	141	false			false
+	1746	1263	77	false			false
+	1747	682	13	false			false
+	1748	551	160	false			false
+	1749	1263	1636	false			false
+	1750	551	1710	true			false
+	1751	551	1533	false			false
+	1752	1263	1666	true			false
+	1754	682	152	false			false
+	1753	1263	59	false			false
+	1756	1417	32	false			false
+	1755	1263	648	false			false
+	1757	1263	183	true			false
+	1757	1417	437	false			false
+	1759	1417	1649	false			false
+	1760	551	1752	false			false
+	1761	1263	76	false			false
+	1763	1263	94	false			false
+	1762	1417	72	false			false
+	1764	682	1750	false			false
+	1766	551	132	false			false
+	1765	1263	1594	false			false
+	1767	551	1734	false			false
+	1768	551	850	false			false
+	1769	551	152	false			false
+	1770	551	1417	false			false
+	1771	551	91	false			false
+	1772	1263	751	false			false
+	1773	1263	170	false			false
+	1774	551	144	false			false
+	1775	1263	1700	false			false
+	1776	551	9	false			false
+	1777	551	3	false			false
+	1778	1263	7	false			false
+	1778	1263	843	false			false
+	1780	1263	1587	true			false
+	1782	1263	73	false			false
+	1781	1417	1645	false			false
+	1784	1417	1385	false			false
+	1783	1417	32	true			false
+	1786	1263	191	false			false
+	1785	682	52	false			false
+	1787	830	1526	true			false
+	1789	1263	1502	false			false
+	1788	682	1434	false			false
+	1790	1263	1061	false			false
+	1791	551	1674	false			false
+	1792	1263	96	false			false
+	1794	1263	192	false			false
+	1793	1263	3	false			false
+	1795	1417	880	false			false
+	1796	1263	1757	true			false
+	1797	1417	20	false			false
+	1799	551	1080	false			false
+	1798	1417	35	false			false
+	1800	1263	1700	false			false
+	1802	1263	187	false			false
+	1801	682	777	false			false
+	1803	551	1787	false			false
+	1805	682	411	false			false
+	1804	682	49	false			false
+	1806	1263	437	false			false
+	1808	551	684	false			false
+	1807	1263	1549	false			false
+	1809	1417	81	true			false
+	1811	1417	1038	false			false
+	1810	682	609	false			false
+	1812	1263	184	false			false
+	1813	1417	1674	false			false
+	1814	1263	648	false			false
+	1815	1263	86	false			false
+	1817	1417	76	false			false
+	1816	551	1225	false			false
+	1818	551	42	false			false
+	1819	1263	1649	false			false
+	1821	1263	1529	false			false
+	1820	1417	516	false			false
+	1822	1417	188	false			false
+	1823	551	1633	false			false
+	1824	1263	19	false			false
+	1826	551	782	true			false
+	1825	682	101	false			false
+	1827	1417	1038	false			false
+	1828	1263	411	false			false
+	1829	682	132	false			false
+	1829	1263	1633	false			false
+	1831	1263	52	false			false
+	1832	1417	80	false			false
+	1834	682	1636	false			false
+	1833	682	20	false			false
+	1835	427	50	false			false
+	1836	1263	786	false			false
+	1837	830	80	false			false
+	1838	1263	1757	false			false
+	1839	551	169	false			false
+	1840	551	166	false			false
+	1842	551	1617	false			false
+	1841	551	1826	false			false
+	1844	551	1645	false			false
+	1843	1263	97	false			false
+	1846	551	26	false			false
+	1845	1263	1434	false			false
+	1847	551	830	false			false
+	1848	1417	1467	false			false
+	1849	1263	119	false			false
+	1851	682	964	false			false
+	1850	1263	786	false			false
+	1852	1263	1826	false			false
+	1853	551	109	false			false
+	1854	551	830	false			false
+	1855	1417	166	false			false
+	1856	1263	1809	true			false
+	1857	682	438	false			false
+	1859	1263	139	false			false
+	1858	1417	141	false			false
+	1860	551	79	false			false
+	1861	1417	82	false			false
+	1862	551	782	false			false
+	1863	1417	945	false			false
+	1865	551	1397	true			false
+	1864	551	1053	true			false
+	1866	551	964	false			false
+	1867	1263	13	false			false
+	1868	682	108	false			false
+	1869	551	1737	false			false
+	1870	551	682	false			false
+	1871	1263	648	false			false
+	1873	551	57	false			false
+	1872	551	1757	false			false
+	1874	551	141	false			false
+	1875	1263	132	false			false
+	1876	1263	1583	false			false
+	1877	1263	82	false			false
+	1878	682	269	false			false
+	1880	1417	1737	false			false
+	1879	427	1691	false			false
+	1881	1263	140	false			false
+	1882	551	1617	false			false
+	1883	551	823	false			false
+	1884	1417	152	false			false
+	1885	1417	175	false			false
+	1886	1263	1434	false			false
+	1887	1263	1865	false			false
+	1888	682	3	false			false
+	1889	682	311	false			false
+	1890	1263	964	false			false
+	1892	1263	1700	false			false
+	1891	1263	94	false			false
+	1894	1263	178	false			false
+	1893	1263	77	false			false
+	1895	830	437	false			false
+	1896	1263	109	false			false
+	1897	1263	168	false			false
+	1898	1263	66	false			false
+	1900	551	854	false			false
+	1899	551	1717	false			false
+	1901	1263	154	false			false
+	1902	1263	843	false			false
+	1903	1417	860	false			false
+	1904	1263	1466	false			false
+	1905	1263	1417	false			false
+	1906	1263	192	false			false
+	1907	1263	1693	false			false
+	1909	551	53	false			false
+	1908	551	81	false			false
+	1910	1417	782	true			false
+	1911	551	180	false			false
+	1912	1263	84	false			false
+	1913	1263	52	false			false
+	1914	551	8	false			false
+	1916	1417	190	false			false
+	1915	1263	515	false			false
+	1917	1263	1434	false			false
+	1918	1263	1691	false			false
+	1919	830	1796	false			false
+	1920	1417	880	false			false
+	1921	1263	77	false			false
+	1922	551	184	false			false
+	1923	1417	180	false			false
+	1924	1263	1349	true			false
+	1925	1263	823	true			false
+	1926	682	1737	false			false
+	1928	1263	1865	false			false
+	1927	1263	66	false			false
+	1930	1263	1710	false			false
+	1929	682	175	false			false
+	1932	551	843	false			false
+	1931	830	1038	false			false
+	1933	1417	1864	false			false
+	1934	551	1080	false			false
+	1935	1417	1529	false			false
+	1936	1263	188	true			false
+	1937	1417	633	false			false
+	1939	682	1261	false			false
+	1938	1417	178	false			false
+	1940	551	393	false			false
+	1941	682	1263	false			false
+	1942	551	174	false			false
+	1943	551	1417	false			false
+	1944	1263	20	false			false
+	1945	1417	854	false			false
+	1946	1263	1080	false			false
+	1947	551	1363	false			false
+	1949	551	190	false			false
+	1948	1417	3	true			false
+	1950	1263	70	false			false
+	1951	1263	1113	false			false
+	1952	1263	81	false			false
+	1953	1263	160	false			false
+	1954	551	23	false			false
+	1955	551	411	false			false
+	1957	1263	1190	true			false
+	1956	1263	147	false			false
+	1958	1263	1277	false			false
+	1959	1263	1467	false			false
+	1960	551	1617	false			false
+	1961	682	104	false			false
+	1962	1417	406	false			false
+	1963	1263	1910	false			false
+	1964	1263	830	false			false
+	1965	1417	32	false			false
+	1966	830	1277	false			false
+	1967	1417	1925	false			false
+	1968	551	1691	false			false
+	1970	1263	964	false			false
+	1969	1263	60	false			false
+	1971	1417	58	false			false
+	1973	551	192	false			false
+	1972	551	191	false			false
+	1975	551	144	false			false
+	1974	1417	58	false			false
+	1977	551	1826	false			false
+	1976	1263	140	false			false
+	1978	1263	71	false			false
+	1980	1263	438	false			false
+	1979	830	174	false			false
+	1981	1263	1061	false			false
+	1982	1263	12	true			false
+	1983	1263	854	false			false
+	1984	1417	198	false			false
+	1985	1263	843	false			false
+	1987	1417	116	false			false
+	1986	1263	191	true			false
+	1988	551	101	false			false
+	1989	551	1113	true			false
+	1990	682	1277	false			false
+	1991	1263	393	false			false
+	1993	1263	42	false			false
+	1992	1263	1385	true			false
+	1994	551	101	false			false
+	1995	551	1649	false			false
+	1996	1417	515	false			false
+	1997	551	51	true			false
+	1998	1417	13	false			false
+	1999	1417	1856	false			false
+	2000	1417	786	false			false
+	2002	830	1261	false			false
+	2003	1263	1109	false			false
+	2001	551	782	false			false
+	2004	1263	1080	false			false
+	2005	1263	183	true			false
+	2006	1263	1752	false			false
+	2008	551	156	true			false
+	2007	682	1986	false			false
+	2009	1263	438	false			false
+	2010	551	311	false			false
+	2011	1263	438	false			false
+	2013	1263	320	false			false
+	2014	1263	790	true			false
+	2012	1263	100	false			false
+	2015	551	925	false			false
+	2015	1417	13	false			false
+	2017	2014	87	false			false
+	2018	2014	1507	false			false
+	2020	1417	2014	false			false
+	2019	830	1710	false			false
+	2021	2014	26	false			false
+	2022	2014	515	false			false
+	2023	551	823	false			false
+	2025	551	823	false			false
+	2024	2014	1826	false			false
+	2026	2014	1549	false			false
+	2027	2014	8	false			false
+	2028	830	156	false			false
+	2029	2014	186	false			false
+	2030	1417	1549	false			false
+	2031	2014	1417	false			false
+	2032	2014	1109	false			false
+	2033	682	1700	true			false
+	2034	2014	515	false			false
+	2035	1417	1261	false			false
+	2036	2014	1691	true			false
+	2037	551	1700	false			false
+	2038	1417	186	false			false
+	2040	551	1583	false			false
+	2039	2014	18	false			false
+	2041	551	427	true			false
+	2042	2014	35	false			false
+	2043	1417	427	false			false
+	2044	682	1225	false			false
+	2045	2014	1579	false			false
+	2046	551	33	false			false
+	2047	682	1668	true			false
+	2048	1417	1349	false			false
+	2049	2014	84	false			false
+	2050	2014	141	false			false
+	2051	551	35	false			false
+	2052	682	1717	false			false
+	2053	830	82	false			false
+	2054	2014	1277	true			false
+	2055	2014	1936	false			false
+	2057	551	183	false			false
+	2056	830	1109	false			false
+	2058	1417	3	false			false
+	2059	551	843	true			false
+	2060	830	786	false			false
+	2061	551	1549	false			false
+	2062	551	2036	false			false
+	2063	1417	925	false			false
+	2064	2014	3	false			false
+	2065	830	515	false			false
+	2066	2014	1467	false			false
+	2067	2014	1466	false			false
+	2068	830	964	false			false
+	2068	2014	136	false			false
+	2070	2014	1826	true			false
+	2071	551	20	false			false
+	2072	2014	830	false			false
+	2073	2014	1617	false			false
+	2074	551	154	false			false
+	2076	1417	24	false			false
+	2075	2014	682	false			false
+	2077	2014	860	false			false
+	2078	2014	12	false			false
+	2080	682	32	false			false
+	2079	551	50	false			false
+	2081	2014	1924	false			false
+	2082	551	925	false			false
+	2083	1417	609	false			false
+	2084	551	1757	true			false
+	2085	1417	166	false			false
+	2086	551	2033	false			false
+	2087	551	1617	false			false
+	2089	551	854	false			false
+	2088	2014	2014	false			false
+	2090	1417	2014	false			false
+	2091	682	1549	false			false
+	2092	2014	50	false			false
+	2093	682	1787	false			false
+	2094	2014	1397	false			false
+	2096	2014	196	false			false
+	2095	1417	180	false			false
+	2097	551	70	false			false
+	2098	682	823	false			false
+	2099	551	141	false			false
+	2100	1417	1925	false			false
+	2101	682	183	false			false
+	2102	682	1989	false			false
+	2103	551	168	false			false
+	2104	2014	2014	false			false
+	2105	2014	1261	false			false
+	2106	551	102	false			false
+	2107	682	1856	false			false
+	2108	427	51	false			false
+	2109	551	1997	false			false
+	2110	2014	178	false			false
+	2111	551	109	false			false
+	2113	2014	8	false			false
+	2112	551	8	true			false
+	2114	551	2070	false			false
+	2115	2014	1826	false			false
+	2116	2014	53	true			false
+	2117	2014	2112	true			false
+	2118	1417	81	false			false
+	2119	2014	139	false			false
+	2120	2014	1826	false			false
+	2121	551	64	false			false
+	2122	682	515	false			false
+	2123	830	105	true			false
+	2124	551	1549	false			false
+	2125	551	1752	false			false
+	2126	682	1251	false			false
+	2127	1417	50	false			false
+	2128	1417	860	false			false
+	2129	2014	24	false			false
+	2130	2014	2059	false			false
+	2131	682	2054	false			false
+	2132	1417	1049	false			false
+	2133	1417	1924	false			false
+	2134	551	1645	false			false
+	2135	551	1997	false			false
+	2136	2014	786	false			false
+	2138	2014	1049	true			false
+	2137	551	136	false			false
+	2140	1417	830	false			false
+	2139	427	438	false			false
+	2142	2014	925	false			false
+	2141	2014	178	false			false
+	2143	2014	66	false			false
+	2144	551	42	false			false
+	2145	551	1989	false			false
+	2146	551	190	false			false
+	2147	2014	1750	false			false
+	2148	551	150	false			false
+	2149	2014	20	false			false
+	2151	682	1507	true			false
+	2150	682	964	false			false
+	2152	551	650	false			false
+	2153	1417	101	true			false
+	2154	2014	2008	false			false
+	2155	2014	427	false			false
+	2156	551	1636	false			false
+	2157	2014	198	false			false
+	2158	551	79	false			false
+	2160	2014	1636	false			false
+	2159	682	1225	false			false
+	2161	1417	84	false			false
+	2162	551	1363	false			false
+	2163	551	1225	false			false
+	2164	1417	516	false			false
+	2165	2014	160	false			false
+	2166	2014	648	false			false
+	2167	1363	186	false			false
+	2169	2014	393	false			false
+	2168	2014	1636	false			false
+	2170	551	175	false			false
+	2171	1417	35	false			false
+	2172	551	2014	false			false
+	2173	2014	516	false			false
+	2174	2014	58	false			false
+	2175	2014	269	false			false
+	2175	2014	648	false			false
+	2178	2014	1717	false			false
+	2177	2014	91	true			false
+	2179	1417	1594	false			false
+	2179	551	1986	false			false
+	2181	427	1109	false			false
+	2182	1417	1649	true			false
+	2183	2014	135	false			false
+	2184	2014	156	false			false
+	2185	682	925	false			false
+	2187	2014	2182	false			false
+	2186	2014	160	false			false
+	2189	551	2182	false			false
+	2188	2014	154	false			false
+	2191	2014	1277	false			false
+	2190	2014	2033	false			false
+	2192	2014	751	false			false
+	2193	551	1757	false			false
+	2194	2014	1251	false			false
+	2195	1417	8	false			false
+	2196	2014	320	false			false
+	2197	2014	3	false			false
+	2198	2014	142	false			false
+	2199	2014	178	false			false
+	2200	682	94	false			false
+	2201	2014	156	false			false
+	2202	830	185	true			false
+	2204	1417	144	true			false
+	2203	551	10	true			false
+	2205	2014	551	false			false
+	2207	682	2117	false			false
+	2206	682	1583	false			false
+	2208	2014	1507	false			false
+	2209	682	1636	false			false
+	2210	551	1363	false			false
+	2211	2014	8	false			false
+	2212	551	269	false			false
+	2213	551	66	false			false
+	2214	2014	18	false			false
+	2216	2014	142	false			false
+	2215	2014	682	false			false
+	2217	2014	1080	false			false
+	2218	2014	751	false			false
+	2219	551	192	false			false
+	2220	2014	106	false			false
+	2221	2014	91	false			false
+	2222	2014	175	false			false
+	2224	2014	1540	false			false
+	2223	2014	196	false			false
+	2226	2014	1925	false			false
+	2225	2014	187	false			false
+	2227	551	1617	false			false
+	2228	682	196	false			false
+	2229	682	1190	false			false
+	2230	682	154	false			false
+	2231	551	2033	false			false
+	2232	1417	78	false			false
+	2233	1417	2084	false			false
+	2234	551	515	false			false
+	2235	2014	945	false			false
+	2236	2014	12	false			false
+	2237	2014	32	false			false
+	2238	551	1583	false			false
+	2239	1417	81	false			false
+	2240	2014	125	false			false
+	2241	2202	174	false			false
+	2242	551	786	false			false
+	2243	682	1924	false			false
+	2244	2014	57	true			false
+	2245	682	101	false			false
+	2246	551	2070	false			false
+	2247	2014	437	false			false
+	2249	2014	823	false			false
+	2248	2014	823	false			false
+	2250	1417	2054	true			false
+	2251	551	925	false			false
+	2252	551	66	false			false
+	2254	1417	2204	false			false
+	2253	1417	786	false			false
+	2255	2014	1529	false			false
+	2256	2014	515	true			false
+	2257	2014	823	false			false
+	2259	2014	551	false			false
+	2258	551	53	false			false
+	2260	2014	1113	true			false
+	2261	2014	1649	false			false
+	2262	551	1467	false			false
+	2263	1417	1752	false			false
+	2264	682	188	false			false
+	2265	551	786	false			false
+	2266	682	144	false			false
+	2268	1417	964	false			false
+	2267	2014	142	false			false
+	2270	2014	171	false			false
+	2269	1417	782	false			false
+	2271	2014	2070	false			false
+	2272	551	1363	false			false
+	2273	551	1783	true			false
+	2274	2014	1540	false			false
+	2275	682	1080	false			false
+	2276	2014	140	false			false
+	2278	1417	98	false			false
+	2277	2014	108	false			false
+	2279	682	26	false			false
+	2280	1417	1363	false			false
+	2281	2014	96	true			false
+	2283	2202	1645	false			false
+	2282	2014	1402	false			false
+	2284	1417	1750	false			false
+	2285	1417	1190	false			false
+	2286	2014	21	false			false
+	2288	551	393	false			false
+	2287	551	1417	true			false
+	2289	682	128	false			false
+	2290	551	128	false			false
+	2291	2014	51	true			false
+	2292	551	1636	false			false
+	2294	830	311	false			false
+	2295	682	104	false			false
+	2293	2014	49	false			false
+	2296	2014	1583	true			false
+	2298	551	2033	false			false
+	2297	551	2260	false			false
+	2299	2014	427	false			false
+	2300	682	2260	false			false
+	2301	2014	1787	false			false
+	2303	2014	2244	true			false
+	2304	1417	1856	false			false
+	2302	2014	2059	false			false
+	2306	2014	682	false			false
+	2305	2202	33	true			false
+	2308	682	1402	true			false
+	2309	551	1787	true			false
+	2307	2014	1910	false			false
+	2310	551	2309	false			false
+	2311	830	2256	false			false
+	2312	1417	180	false			false
+	2313	551	1540	false			false
+	2314	2014	925	false			false
+	2315	551	393	false			false
+	2316	551	320	false			false
+	2317	2014	166	false			false
+	2318	682	1989	false			false
+	2320	551	1982	false			false
+	2319	2014	2260	false			false
+	2321	2014	190	false			false
+	2322	1417	29	false			false
+	2323	682	945	false			false
+	2324	1417	41	false			false
+	2325	551	854	true			false
+	2326	1417	160	false			false
+	2328	2014	1750	false			false
+	2327	551	2296	false			false
+	2329	682	86	true			false
+	2330	2014	76	false			false
+	2331	1417	2281	false			false
+	2333	551	2281	false			false
+	2332	1417	1617	false			false
+	2334	551	183	false			false
+	2335	2014	1737	false			false
+	2336	1417	196	false			false
+	2337	2014	751	false			false
+	2338	551	2325	false			false
+	2340	1417	2303	false			false
+	2339	2202	84	false			false
+	2341	551	830	false			false
+	2343	1417	1700	false			false
+	2342	551	2305	false			false
+	2344	2014	192	false			false
+	2345	1417	141	false			false
+	2346	551	154	false			false
+	2347	1417	161	false			false
+	2348	2014	1467	false			false
+	2350	551	2204	false			false
+	2349	682	1277	false			false
+	2351	1417	1466	false			false
+	2352	2014	2204	false			false
+	2353	1417	2177	false			false
+	2355	682	830	false			false
+	2354	2014	2250	true			false
+	2356	551	2260	false			false
+	2357	2014	66	false			false
+	2358	551	51	false			false
+	2359	682	116	true			false
+	2360	2014	2244	false			false
+	2362	1417	27	false			false
+	2361	551	1402	false			false
+	2363	551	438	false			false
+	2364	2014	120	false			false
+	2365	2014	185	false			false
+	2366	682	2117	false			false
+	2367	2014	790	false			false
+	2368	551	2303	false			false
+	2369	2014	393	false			false
+	2371	2014	830	false			false
+	2370	2014	1540	false			false
+	2372	2202	187	true			false
+	2374	2014	2354	false			false
+	2373	551	51	true			false
+	2376	682	1466	false			false
+	2375	2014	183	false			false
+	2377	551	132	false			false
+	2378	682	1737	false			false
+	2379	2014	177	false			false
+	2380	1417	178	false			false
+	2382	2014	166	false			false
+	2381	2014	192	false			false
+	2383	2014	1251	false			false
+	2384	682	2033	false			false
+	2386	2014	682	false			false
+	2385	2014	188	false			false
+	2388	2014	438	false			false
+	2387	2014	156	false			false
+	2389	2014	150	false			false
+	2390	551	142	true			false
+	2391	2014	161	false			false
+	2392	551	2296	false			false
+	2393	682	823	false			false
+	2394	2014	196	false			false
+	2395	2014	393	false			false
+	2396	551	38	false			false
+	2397	2014	84	false			false
+	2398	2014	42	false			false
+	2399	1417	1936	false			false
+	2401	551	1251	true			false
+	2400	551	25	false			false
+	2402	1417	1982	false			false
+	2403	551	964	false			false
+	2404	682	185	false			false
+	2405	551	26	false			false
+	2406	2014	2138	false			false
+	2407	2014	3	false			false
+	2408	551	2372	false			false
+	2409	2014	2281	false			false
+	2410	2014	1467	false			false
+	2411	2372	2203	false			false
+	2412	2014	1417	false			false
+	2413	551	1549	false			false
+	2414	551	516	false			false
+	2416	1417	196	false			false
+	2415	2014	2291	false			false
+	2418	551	27	false			false
+	2419	1417	1579	false			false
+	2417	2014	2281	true			false
+	2421	830	25	false			false
+	2420	682	1997	true			false
+	2423	2014	2070	false			false
+	2422	551	178	false			false
+	2424	1417	166	false			false
+	2425	551	786	false			false
+	2426	2014	174	false			false
+	2427	2372	2203	false			false
+	2428	1417	136	false			false
+	2429	551	786	false			false
+	2430	2014	1402	false			false
+	2431	1417	854	false			false
+	2433	2014	181	false			false
+	2432	551	516	false			false
+	2434	2014	1936	false			false
+	2434	682	84	false			false
+	2437	2014	136	false			false
+	2436	1417	140	false			false
+	2439	2014	2287	false			false
+	2438	2372	1402	true			false
+	2440	2014	790	true			false
+	2441	682	1924	false			false
+	2442	1417	551	false			false
+	2443	2372	8	false			false
+	2444	2372	2014	false			false
+	2445	551	2153	false			false
+	2446	2014	7	false			false
+	2447	2014	1363	false			false
+	2448	1417	2256	false			false
+	2449	1417	1636	false			false
+	2450	2014	2203	false			false
+	2451	2014	2303	false			false
+	2452	2014	66	false			false
+	2453	682	650	false			false
+	2454	1417	2372	false			false
+	2455	551	32	false			false
+	2456	682	77	false			false
+	2457	2014	2296	false			false
+	2458	551	1787	false			false
+	2459	2014	1989	false			false
+	2460	551	115	false			false
+	2461	2014	3	false			false
+	2462	2014	786	false			false
+	2464	682	2303	false			false
+	2463	1417	116	true			false
+	2465	2014	311	false			false
+	2466	2014	101	false			false
+	2467	551	2117	false			false
+	2468	2014	160	false			false
+	2469	2014	169	false			false
+	2470	682	311	true			false
+	2471	551	1982	false			false
+	2472	2014	97	false			false
+	2473	2014	2291	false			false
+	2475	2014	2005	false			false
+	2474	551	2153	false			false
+	2476	2014	13	false			false
+	2477	682	190	false			false
+	2478	551	166	false			false
+	2479	2014	1982	false			false
+	2480	2014	1080	true			false
+	2481	682	786	false			false
+	2482	1417	830	false			false
+	2484	682	790	false			false
+	2483	2014	7	false			false
+	2486	551	66	false			false
+	2485	551	1717	false			false
+	2487	551	2047	false			false
+	2487	2014	2325	false			false
+	2489	551	1982	false			false
+	2490	2014	97	false			false
+	2492	2014	2047	false			false
+	2491	551	843	false			false
+	2493	551	1397	false			false
+	2494	682	76	false			false
+	2496	1417	178	false			false
+	2495	2014	682	false			false
+	2497	551	1910	false			false
+	2498	2014	183	false			false
+	2500	551	2308	false			false
+	2499	1417	1225	false			false
+	2501	1417	2084	false			false
+	2502	682	86	false			false
+	2503	1417	19	false			false
+	2504	2014	1924	true			false
+	2505	551	102	false			false
+	2506	551	843	false			false
+	2507	551	178	false			false
+	2508	682	854	false			false
+	2509	551	782	false			false
+	2510	1417	2281	false			false
+	2511	2014	2153	true			false
+	2512	2014	49	false			false
+	2514	551	438	false			false
+	2513	1417	1225	false			false
+	2515	551	2117	false			false
+	2516	1417	682	false			false
+	2517	1417	2084	false			false
+	2518	551	20	true			false
+	2519	682	682	false			false
+	2520	1417	178	false			false
+	2520	2014	140	false			false
+	2522	2014	790	true			false
+	2523	2014	169	true			false
+	2524	551	2084	false			false
+	2525	2014	1737	true			false
+	2526	551	26	false			false
+	2527	1417	964	false			false
+	2528	551	120	false			false
+	2529	551	516	false			false
+	2530	2014	1467	false			false
+	2531	2014	2117	true			false
+	2532	2014	3	false			false
+	2533	1417	82	false			false
+	2534	551	132	false			false
+	2535	551	2511	false			false
+	2536	551	1540	true			false
+	2537	2014	2256	false			false
+	2538	1417	1467	false			false
+	2539	2014	2438	false			false
+	2540	682	2059	false			false
+	2541	2014	2525	false			false
+	2542	1417	269	false			false
+	2543	551	141	false			false
+	2544	551	2438	false			false
+	2545	551	2305	true			false
+	2546	551	2305	false			false
+	2547	2014	98	false			false
+	2548	1417	2047	false			false
+	2549	1417	2260	false			false
+	2550	551	2480	false			false
+	2551	551	2401	false			false
+	2552	2014	269	false			false
+	2553	551	1752	true			false
+	2554	2372	1363	false			false
+	2555	1417	2417	false			false
+	2556	551	33	false			false
+	2557	551	198	false			false
+	2558	2014	1752	true			false
+	2559	2014	58	false			false
+	2560	2014	87	false			false
+	2561	2372	854	false			false
+	2562	2014	1936	false			false
+	2564	551	71	true			false
+	2563	2372	197	true			false
+	2566	2014	2296	false			false
+	2565	551	51	false			false
+	2567	2014	427	false			false
+	2568	551	2033	false			false
+	2569	1417	2153	false			false
+	2571	682	97	false			false
+	2570	2014	2325	true			false
+	2573	682	2545	false			false
+	2572	2014	2059	false			false
+	2574	2014	751	false			false
+	2575	1417	751	false			false
+	2576	2563	1540	false			false
+	2577	551	925	false			false
+	2578	551	178	false			false
+	2580	2014	1957	false			false
+	2579	2014	1717	false			false
+	2581	2563	2563	false			false
+	2583	682	2014	false			false
+	2582	2014	125	true			false
+	2584	1417	1617	false			false
+	2585	551	2420	true			false
+	2586	2014	393	false			false
+	2587	1417	1649	false			false
+	2588	2014	2256	false			false
+	2589	1417	1579	false			false
+	2590	1417	2033	false			false
+	2591	2014	2287	false			false
+	2592	2014	823	false			false
+	2594	2585	154	false			false
+	2593	2585	94	false			false
+	2595	2014	188	false			false
+	2596	1417	427	false			false
+	2597	2585	2033	true			false
+	2599	2585	2504	false			false
+	2598	2014	196	false			false
+	2601	2014	166	false			false
+	2600	2014	1757	false			false
+	2602	1417	161	false			false
+	2603	2014	1467	true			false
+	2604	2014	2553	false			false
+	2606	2014	2153	false			false
+	2605	1417	2287	false			false
+	2607	2014	2545	false			false
+	2608	2014	13	false			false
+	2609	2014	178	false			false
+	2610	2585	2256	false			false
+	2611	2585	2281	false			false
+	2612	2585	2603	false			false
+	2614	682	854	false			false
+	2613	2585	964	false			false
+	2616	2014	437	false			false
+	2615	830	58	false			false
+	2617	2014	2585	false			false
+	2618	682	2153	false			false
+	2620	2014	2401	false			false
+	2619	2014	152	true			false
+	2622	2014	406	false			false
+	2621	2014	58	false			false
+	2623	682	2470	false			false
+	2624	1417	35	false			false
+	2625	1417	438	false			false
+	2626	2585	1636	false			false
+	2627	1417	1617	false			false
+	2628	2014	13	false			false
+	2629	2585	1363	false			false
+	2630	2585	2511	false			false
+	2632	682	98	false			false
+	2631	1417	132	false			false
+	2633	2585	2564	false			false
+	2634	2014	751	false			false
+	2635	1417	64	false			false
+	2636	2585	2281	true			false
+	2638	2585	187	false			false
+	2637	1417	13	false			false
+	2639	682	187	false			false
+	2641	2585	50	false			false
+	2642	2014	2525	true			false
+	2640	1417	2281	false			false
+	2643	682	2308	false			false
+	2644	2014	823	false			false
+	2646	1417	964	true			false
+	2644	2014	2303	false			false
+	2647	2585	2570	false			false
+	2648	2585	2203	false			false
+	2649	2585	2047	false			false
+	2650	2014	2047	false			false
+	2652	2585	1540	false			false
+	2650	2563	166	true			false
+	2653	2585	2303	false			false
+	2655	2014	427	false			false
+	2654	2585	2059	false			false
+	2656	1417	854	false			false
+	2658	1417	2518	false			false
+	2659	2014	198	false			false
+	2660	2014	60	false			false
+	2661	1417	196	false			false
+	2657	2585	98	false			false
+	2662	2014	2582	false			false
+	2664	2585	406	true			false
+	2663	2014	2256	false			false
+	2665	2014	96	false			false
+	2666	1417	175	false			false
+	2667	682	2582	false			false
+	2669	1417	438	false			false
+	2668	1417	2303	false			false
+	2670	682	1636	false			false
+	2672	1417	59	false			false
+	2673	2585	49	false			false
+	2671	2014	152	true			false
+	2674	2563	2373	true			false
+	2676	2014	135	false			false
+	2677	2014	2674	false			false
+	2675	2014	1417	false			false
+	2678	2014	2671	false			false
+	2680	2585	82	false			false
+	2681	2014	2470	false			false
+	2679	2585	2256	false			false
+	2682	2585	2522	false			false
+	2684	2014	925	false			false
+	2683	2585	109	false			false
+	2685	2674	12	false			false
+	2687	1417	26	false			false
+	2686	2014	2420	false			false
+	2688	2585	2070	false			false
+	2690	1417	108	false			false
+	2689	2585	2014	false			false
+	2691	1417	2440	false			false
+	2693	2014	152	false			false
+	2692	2014	2287	true			false
+	2694	1417	135	false			false
+	2695	2585	2692	false			false
+	2696	682	120	false			false
+	2697	2014	2619	false			false
+	2698	2014	196	false			false
+	2700	2014	2047	false			false
+	2699	2014	190	false			false
+	2701	2585	187	false			false
+	2702	2014	32	true			false
+	2703	2014	2287	false			false
+	2705	2674	2553	false			false
+	2704	2585	1700	false			false
+	2706	2585	2440	false			false
+	2708	682	2440	false			false
+	2707	2014	830	false			false
+	2709	2014	854	false			false
+	2710	2585	2582	false			false
+	2711	2014	2440	false			false
+	2713	2014	77	false			false
+	2712	830	8	false			false
+	2714	2014	2671	false			false
+	2715	682	174	false			false
+	2716	2585	2033	false			false
+	2718	1417	2518	false			false
+	2717	2014	2305	false			false
+	2719	2014	1636	false			false
+	2721	2585	2545	true			false
+	2720	2585	174	false			false
+	2722	2014	26	false			false
+	2723	2014	830	false			false
+	2724	1417	2287	false			false
+	2726	1417	1757	false			false
+	2725	1417	2014	false			false
+	2727	2585	12	false			false
+	2729	1417	82	false			false
+	2728	2585	1936	false			false
+	2730	2014	42	false			false
+	2731	2585	790	false			false
+	2732	2014	192	false			false
+	2734	2674	2153	false			false
+	2735	2014	2603	true			false
+	2733	2585	2480	false			false
+	2737	2014	54	false			false
+	2736	1417	178	false			false
+	2738	2014	2597	false			false
+	2739	2014	2117	false			false
+	2740	2585	854	false			false
+	2741	2585	751	false			false
+	2742	2585	160	false			false
+	2743	2585	1717	false			false
+	2744	1417	86	true			false
+	2745	2014	2619	false			false
+	2747	2014	790	false			false
+	2746	2014	751	false			false
+	2748	2674	790	false			false
+	2749	1417	2585	false			false
+	2750	2014	132	false			false
+	2751	2585	192	true			false
+	2752	2014	2744	false			false
+	2753	2721	2522	false			false
+	2754	2014	117	false			false
+	2755	1417	2597	false			false
+	2756	2585	1617	false			false
+	2757	2585	2585	false			false
+	2758	2014	2256	true			false
+	2759	2014	516	false			false
+	2760	2585	166	false			false
+	2762	2014	1717	false			false
+	2761	2014	2671	false			false
+	2763	2014	101	false			false
+	2764	1417	35	false			false
+	2766	2014	119	false			false
+	2765	2014	180	false			false
+	2768	1417	104	false			false
+	2767	2014	76	false			false
+	2769	1417	1986	false			false
+	2770	1417	2692	false			false
+	2771	2014	53	false			false
+	2772	2585	2582	false			false
+	2773	2014	823	false			false
+	2775	2014	59	false			false
+	2776	2585	2650	true			false
+	2774	2014	190	false			false
+	2777	2014	1467	false			false
+	2779	2014	66	false			false
+	2778	2721	25	false			false
+	2780	2585	1936	false			false
+	2781	2014	183	false			false
+	2782	2585	782	false			false
+	2783	1417	1986	false			false
+	2784	2014	269	false			false
+	2785	2014	1417	false			false
+	2786	2585	150	false			false
+	2787	1417	2084	false			false
+	2788	2014	77	false			false
+	2789	1417	2420	false			false
+	2791	1417	1936	false			false
+	2790	2585	171	false			false
+	2792	2674	2204	false			false
+	2793	1417	2721	false			false
+	2794	1417	160	false			false
+	2795	2014	2522	false			false
+	2797	2014	1982	false			false
+	2796	2585	13	false			false
+	2798	2585	2390	false			false
+	2799	1417	2440	false			false
+	2800	830	169	false			false
+	2802	2014	2642	false			false
+	2801	1417	13	false			false
+	2803	2585	91	true			false
+	2805	2585	2059	false			false
+	2804	2585	71	false			false
+	2807	2585	2480	false			false
+	2806	2014	2735	true			false
+	2808	2014	2619	false			false
+	2808	2585	2153	false			false
+	2810	2585	154	false			false
+	2812	2585	64	false			false
+	2811	1417	2296	false			false
+	2813	2014	2281	false			false
+	2814	2014	2744	true			false
+	2815	1417	2401	false			false
+	2816	2014	964	false			false
+	2817	2674	144	true			false
+	2818	2014	2721	false			false
+	2818	1417	183	false			false
+	2820	2721	198	false			false
+	2821	2585	66	false			false
+	2822	2721	150	false			false
+	2823	2585	782	false			false
+	2824	2014	1466	false			false
+	2825	2014	2273	false			false
+	2827	1417	2642	false			false
+	2826	2585	190	false			false
+	2829	2014	1467	false			false
+	2828	1417	2084	false			false
+	2830	2014	94	false			false
+	2831	2014	1190	false			false
+	2832	2014	8	false			false
+	2833	2721	1982	false			false
+	2835	1417	198	false			false
+	2834	2585	1717	false			false
+	2837	1417	94	false			false
+	2836	2014	2273	false			false
+	2838	427	2480	false			false
+	2839	2585	2273	false			false
+	2840	1417	2817	false			false
+	2841	2014	186	false			false
+	2842	2014	2545	false			false
+	2842	2014	437	true			false
+	2845	2014	1936	false			false
+	2844	2014	94	false			false
+	2846	2014	120	false			false
+	2847	2014	830	false			false
+	2848	2585	21	false			false
+	2849	2014	2373	false			false
+	2850	1417	2303	false			false
+	2851	2721	58	true			false
+	2852	2721	1924	true			false
+	2853	2585	152	false			false
+	2854	2585	71	false			false
+	2855	1417	160	false			false
+	2856	2014	139	false			false
+	2857	2585	2401	false			false
+	2858	2585	80	true			false
+	2859	2014	132	false			false
+	2860	2585	105	false			false
+	2861	2721	2305	false			false
+	2862	2014	98	true			false
+	2863	2014	2558	true			false
+	2865	2014	2852	false			false
+	2864	2014	2721	false			false
+	2867	2585	117	false			false
+	2866	2585	2842	true			false
+	2868	2585	2636	true			false
+	2869	2014	2463	false			false
+	2870	1417	20	false			false
+	2871	2585	2642	false			false
+	2872	2014	854	false			false
+	2873	2585	2153	true			false
+	2874	2014	1936	true			false
+	2875	2585	2084	false			false
+	2876	2014	2817	false			false
+	2877	1417	154	false			false
+	2878	2014	2803	false			false
+	2879	1417	25	false			false
+	2880	2014	2417	false			false
+	2881	2721	2511	false			false
+	2882	1417	2751	false			false
+	2884	2014	1417	false			false
+	2883	2674	175	false			false
+	2885	2014	1594	false			false
+	2886	2721	2858	false			false
+	2888	2014	13	false			false
+	2887	1417	2751	false			false
+	2890	2585	1982	false			false
+	2891	2014	183	false			false
+	2889	1417	192	false			false
+	2892	2014	2806	false			false
+	2894	2721	2814	false			false
+	2893	1417	1594	false			false
+	2895	2585	2059	false			false
+	2897	2014	196	false			false
+	2896	2585	73	false			false
+	2898	2585	2273	false			false
+	2900	2014	2287	false			false
+	2899	2674	2373	false			false
+	2901	2014	2702	false			false
+	2903	2014	2636	false			false
+	2904	2721	100	false			false
+	2905	1417	12	false			false
+	2906	1417	2287	false			false
+	2902	1417	53	false			false
+	2907	1417	1579	false			false
+	2909	2585	2296	false			false
+	2908	2674	197	false			false
+	2910	2014	2803	false			false
+	2912	2014	2014	false			false
+	2913	2721	169	true			false
+	2911	2585	2803	false			false
+	2914	2014	2273	false			false
+	2916	2014	25	false			false
+	2915	2014	2151	false			false
+	2917	2721	2204	false			false
+	2918	2014	25	false			false
+	2919	2014	79	false			false
+	2921	1417	2873	false			false
+	2920	2014	2463	false			false
+	2922	2014	2751	false			false
+	2924	2014	269	false			false
+	2923	2014	427	false			false
+	2925	2585	1594	false			false
+	2926	2585	1363	false			false
+	2928	1417	135	false			false
+	2926	2014	751	false			false
+	2929	2585	427	false			false
+	2930	1417	2873	false			false
+	2931	1417	185	false			false
+	2933	2674	1936	false			false
+	2932	2674	2913	false			false
+	2934	2014	35	false			false
+	2936	2014	2642	false			false
+	2935	2014	2059	false			false
+	2937	1417	109	false			false
+	2939	1417	51	true			false
+	2938	2674	823	true			false
+	2940	2014	782	false			false
+	2941	2585	2523	true			false
+	2941	2721	854	false			false
+	2943	2014	2117	false			false
+	2944	2585	2291	true			false
+	2946	2585	2059	false			false
+	2945	1417	2244	false			false
+	2947	2674	1363	true			false
+	2948	2585	2597	false			false
+	2949	2585	2874	false			false
+	2950	2014	2806	false			false
+	2951	1417	152	false			false
+	2952	2585	170	false			false
+	2953	2721	1936	false			false
+	2955	1417	2582	false			false
+	2954	2585	183	false			false
+	2956	2721	2944	false			false
+	2957	2585	2511	false			false
+	2958	2585	2585	false			false
+	2959	1417	2585	false			false
+	2960	1417	115	false			false
+	2962	2014	2874	false			false
+	2961	1417	66	false			false
+	2963	2585	51	false			false
+	2965	2585	42	false			false
+	2964	2585	2944	false			false
+	2966	2014	77	false			false
+	2967	2014	8	false			false
+	2968	2585	1363	false			false
+	2970	2014	190	false			false
+	2969	2585	35	false			false
+	2971	2585	58	true			false
+	2972	1417	1540	false			false
+	2973	2014	2204	true			false
+	2974	2585	115	false			false
+	2975	2014	1467	true			false
+	2976	2721	2296	false			false
+	2977	2585	2151	false			false
+	2979	2721	2674	false			false
+	2980	2975	2047	false			false
+	2978	2975	66	false			false
+	2981	2585	1649	false			false
+	2982	2975	2806	false			false
+	2983	1417	77	false			false
+	2985	2975	2373	false			false
+	2984	2975	6	false			false
+	2986	1417	1467	false			false
+	2988	2585	2553	false			false
+	2987	2585	168	false			false
+	2989	2585	190	false			false
+	2991	1417	2971	false			false
+	2990	1417	1363	false			false
+	2992	2585	77	false			false
+	2993	2721	269	false			false
+	2994	1417	2971	false			false
+	2996	2975	160	false			false
+	2997	2975	2597	false			false
+	2995	1417	790	false			false
+	2998	2975	139	false			false
+	3000	427	161	false			false
+	2999	2721	132	false			false
+	3002	2585	185	true			false
+	3001	2585	33	true			false
+	3004	1417	2256	false			false
+	3003	1417	2059	false			false
+	3005	2585	2646	false			false
+	3007	2585	13	true			false
+	3006	1417	2420	false			false
+	3008	2674	2420	false			false
+	3010	2975	2664	false			false
+	3009	2585	1936	false			false
+	3011	2975	8	false			false
+	3012	1417	2518	false			false
+	3013	2975	2480	false			false
+	3014	2975	2281	false			false
+	3015	2721	190	false			false
+	3017	2975	2518	false			false
+	3016	2975	96	false			false
+	3018	2975	2518	false			false
+	3020	2674	2938	false			false
+	3019	2585	1986	false			false
+	3021	2585	2138	false			false
+	3022	2585	125	false			false
+	3023	1417	2941	true			false
+	3024	2975	41	false			false
+	3025	2975	2806	false			false
+	3027	2975	2814	false			false
+	3026	2975	2874	false			false
+	3028	1417	125	false			false
+	3030	1417	2851	false			false
+	3029	2585	29	false			false
+	3031	1417	160	false			false
+	3032	2975	2636	false			false
+	3033	2585	854	false			false
+	3035	1417	2518	false			false
+	3034	2721	2975	false			false
+	3036	2585	42	false			false
+	3037	2975	964	false			false
+	3038	2721	1757	true			false
+	3039	2975	1417	false			false
+	3040	1417	406	false			false
+	3042	2585	2862	false			false
+	3041	2975	144	false			false
+	3043	1417	2296	false			false
+	3044	1417	2721	false			false
+	3045	2585	174	false			false
+	3046	2721	66	false			false
+	3047	2585	160	false			false
+	3049	2585	144	false			false
+	3048	2585	1467	false			false
+	3050	2721	2463	false			false
+	3051	2585	2511	false			false
+	3052	2585	161	false			false
+	3054	2975	2744	false			false
+	3053	2975	192	true			false
+	3055	2674	32	true			false
+	3056	2585	1467	false			false
+	3057	1417	2597	false			false
+	3058	2975	132	true			false
+	3059	2975	109	false			false
+	3061	830	2947	false			false
+	3060	2585	2138	false			false
+	3062	1417	59	false			false
+	3064	2585	86	false			false
+	3063	2975	3	false			false
+	3065	2975	2971	false			false
+	3066	2975	53	false			false
+	3067	2585	3058	false			false
+	3068	1417	1717	false			false
+	3069	2975	2281	false			false
+	3071	2975	140	false			false
+	3070	2585	86	false			false
+	3072	2975	53	true			false
+	3073	2674	1594	true			false
+	3074	2674	2806	false			false
+	3075	2975	438	false			false
+	3077	2585	192	false			false
+	3076	2975	2420	false			false
+	3078	2585	2138	true			false
+	3079	2975	2803	false			false
+	3080	2975	183	false			false
+	3080	2585	3038	false			false
+	3082	2975	830	false			false
+	3084	2975	2702	false			false
+	3083	2585	174	false			false
+	3085	2975	2545	true			false
+	3086	2585	2744	false			false
+	3087	2975	50	false			false
+	3088	2585	2138	false			false
+	3090	2975	170	false			false
+	3089	2721	3	false			false
+	3091	1417	1190	false			false
+	3091	1417	2642	false			false
+	3093	2585	196	false			false
+	3093	2674	3	false			false
+	3096	2585	2814	true			false
+	3095	2975	2873	false			false
+	3098	2975	140	false			false
+	3097	2975	53	false			false
+	3100	2585	2692	true			false
+	3099	2674	782	false			false
+	3101	2975	2033	false			false
+	3102	1417	2059	false			false
+	3103	1417	3085	false			false
+	3104	2975	1717	false			false
+	3105	2585	2941	false			false
+	3106	427	1417	false			false
+	3107	2585	2863	false			false
+	3108	2585	135	false			false
+	3109	2674	2973	false			false
+	3110	830	2944	false			false
+	3111	2975	1757	false			false
+	3112	2975	2938	false			false
+	3113	2585	2721	false			false
+	3115	1417	3002	false			false
+	3114	2975	136	false			false
+	3116	2975	1649	false			false
+	3117	2721	2947	false			false
+	3118	2975	187	false			false
+	3119	1417	3053	false			false
+	3120	2585	2664	true			false
+	3121	2975	751	false			false
+	3122	2585	1417	false			false
+	3123	2975	2005	false			false
+	3124	1417	8	false			false
+	3125	1417	77	false			false
+	3127	2975	2291	false			false
+	3126	2975	2303	false			false
+	3128	2975	3001	false			false
+	3129	2585	1957	false			false
+	3130	2975	1717	false			false
+	3131	2585	136	false			false
+	3133	1417	2511	false			false
+	3132	2585	2597	false			false
+	3134	2721	174	true			false
+	3136	2585	2522	false			false
+	3135	2585	854	true			false
+	3138	2585	2260	false			false
+	3137	1417	2862	false			false
+	3139	2585	2702	false			false
+	3140	2585	3038	false			false
+	3141	2975	3120	false			false
+	3143	1417	144	false			false
+	3142	2975	152	false			false
+	3144	2975	2702	false			false
+	3145	2585	2305	false			false
+	3147	2674	854	false			false
+	3146	1417	2522	false			false
+	3149	1417	823	false			false
+	3148	2975	2463	false			false
+	3150	2975	3038	false			false
+	3151	2975	2646	false			false
+	3152	2975	925	false			false
+	3153	2585	3053	false			false
+	3154	2721	91	false			false
+	3155	2975	1190	false			false
+	3156	2585	2851	false			false
+	3157	2585	105	false			false
+	3158	2721	3055	false			false
+	3159	2975	3053	false			false
+	3160	2585	108	false			false
+	3161	2975	196	false			false
+	3163	1417	2033	false			false
+	3162	2585	2702	false			false
+	3165	2975	3120	false			false
+	3164	2975	2973	false			false
+	3167	2975	140	false			false
+	3166	2585	136	false			false
+	3168	2585	2522	false			false
+	3169	2674	3096	false			false
+	3171	2585	2151	false			false
+	3170	2721	1982	true			false
+	3172	2975	2047	false			false
+	3173	2585	108	false			false
+	3174	2585	106	false			false
+	3174	2585	3100	false			false
+	3177	1417	8	false			false
+	3176	1417	173	false			false
+	3178	2585	2420	false			false
+	3179	2975	3038	false			false
+	3180	2585	18	false			false
+	3181	2585	438	false			false
+	3183	2975	2260	false			false
+	3182	2975	136	false			false
+	3184	2585	2504	false			false
+	3185	2975	2084	true			false
+	3186	2585	51	false			false
+	3187	2585	2480	false			false
+	3188	2975	192	false			false
+	3189	2975	2303	true			false
+	3190	2585	2373	false			false
+	3191	2585	1757	true			false
+	3192	2975	2059	false			false
+	3193	2585	2671	true			false
+	3194	2975	142	false			false
+	3195	2975	190	false			false
+	3196	1417	1936	false			false
+	3198	1417	2373	true			false
+	3197	2585	2751	false			false
+	3199	1417	830	false			false
+	3200	2585	117	false			false
+	3201	2975	2260	false			false
+	3202	2975	119	false			false
+	3203	2975	2944	false			false
+	3204	2975	2642	false			false
+	3205	2585	2582	false			false
+	3206	427	175	false			false
+	3207	1417	3120	false			false
+	3208	2975	3198	false			false
+	3209	1417	2939	false			false
+	3210	2585	2005	false			false
+	3211	1417	3120	false			false
+	3212	2585	1594	false			false
+	3213	2975	3053	false			false
+	3214	2585	73	false			false
+	3215	2975	964	true			false
+	3217	2585	51	false			false
+	3216	2585	105	true			false
+	3218	1417	116	false			false
+	3219	2975	3191	false			false
+	3220	1417	3189	false			false
+	3222	2975	2947	false			false
+	3221	2975	3198	false			false
+	3224	2975	174	false			false
+	3223	2975	170	false			false
+	3226	2585	2858	false			false
+	3225	2585	843	true			false
+	3227	2585	1363	true			false
+	3228	2975	42	false			false
+	3229	2975	3193	false			false
+	3230	1417	1594	false			false
+	3231	2975	1594	false			false
+	3233	830	32	true			false
+	3234	2585	2973	true			false
+	3232	2585	35	false			false
+	3235	2585	2664	false			false
+	3236	1417	2751	true			false
+	3237	2585	2059	false			false
+	3238	2975	823	false			false
+	3239	1417	2721	false			false
+	3240	2975	181	true			false
+	3241	2585	1417	false			false
+	3243	2585	64	false			false
+	3242	2975	25	false			false
+	3244	1417	2944	false			false
+	3245	2975	2059	false			false
+	3246	2975	87	true			false
+	3247	2975	1957	false			false
+	3248	1417	2260	false			false
+	3249	2975	2291	true			false
+	3250	2975	3134	false			false
+	3251	2721	2504	false			false
+	3253	2585	3078	false			false
+	3252	3249	2480	false			false
+	3254	1417	782	true			false
+	3255	3249	2702	false			false
+	3256	3249	3198	false			false
+	3257	2585	2420	false			false
+	3258	3249	72	false			false
+	3259	2721	2033	false			false
+	3260	3249	1636	false			false
+	3262	3249	2582	false			false
+	3261	2721	2814	false			false
+	3264	830	2296	false			false
+	3263	2585	1417	false			false
+	3265	3249	2420	false			false
+	3266	1417	180	false			false
+	3267	2585	2585	false			false
+	3269	2585	20	false			false
+	3268	2585	2273	false			false
+	3270	3249	2504	false			false
+	3271	3249	161	false			false
+	3272	2585	1636	false			false
+	3273	2674	3240	true			false
+	3274	3249	2863	false			false
+	3275	2585	3249	false			false
+	3276	2585	2420	false			false
+	3277	3249	2296	false			false
+	3278	1417	21	false			false
+	3279	2585	171	false			false
+	3280	3249	2814	false			false
+	3281	3249	3227	false			false
+	3282	3249	2256	false			false
+	3283	3249	2585	false			false
+	3283	1417	2511	true			false
+	3285	2585	427	false			false
+	3286	1417	3198	false			false
+	3288	3249	3233	false			false
+	3287	1417	3002	false			false
+	3290	3249	136	false			false
+	3289	2585	190	false			false
+	3291	3249	24	false			false
+	3292	3249	3273	false			false
+	3294	2585	3193	false			false
+	3293	2585	3216	true			false
+	3295	3249	3053	false			false
+	3296	3249	1417	false			false
+	3297	2585	51	false			false
+	3299	1417	136	false			false
+	3298	1417	2939	false			false
+	3300	2585	1466	false			false
+	3301	1417	2806	false			false
+	3302	2585	3216	false			false
+	3303	1417	76	false			false
+	3304	830	3215	false			false
+	3305	3249	3134	false			false
+	3306	1417	3227	false			false
+	3307	3249	82	false			false
+	3308	2585	196	false			false
+	3310	3249	2721	false			false
+	3309	1417	2721	false			false
+	3311	3249	2806	false			false
+	3312	3249	1717	true			false
+	3313	3249	161	false			false
+	3314	3249	2273	false			false
+	3315	3249	3096	false			false
+	3316	3249	3001	false			false
+	3317	2585	13	false			false
+	3318	1417	2803	false			false
+	3319	1417	91	false			false
+	3320	1417	2463	false			false
+	3321	3249	3078	false			false
+	3322	3249	823	false			false
+	3323	1417	2329	false			false
+	3325	1417	3134	false			false
+	3324	2585	94	false			false
+	3327	3249	3233	false			false
+	3326	2585	53	true			false
+	3328	3249	3053	false			false
+	3329	2585	132	false			false
+	3330	3249	3240	false			false
+	3331	3249	32	false			false
+	3333	2585	3326	false			false
+	3332	3249	175	false			false
+	3334	3249	2664	false			false
+	3335	2585	3198	false			false
+	3336	2721	438	false			false
+	3337	1417	3254	false			false
+	3338	2585	2281	false			false
+	3339	3249	1986	false			false
+	3340	3249	3023	false			false
+	3341	1417	3191	false			false
+	3342	3249	2646	false			false
+	3343	3249	2138	false			false
+	3344	1417	3246	false			false
+	3345	1417	10	false			false
+	3346	3249	3227	false			false
+	3347	3249	3293	false			false
+	3349	1417	1936	false			false
+	3348	2585	33	false			false
+	3350	2585	2702	true			false
+	3351	3249	35	false			false
+	3352	3249	2273	false			false
+	3353	3249	152	false			false
+	3354	1417	2814	false			false
+	3355	1417	91	false			false
+	3356	1417	1190	true			false
+	3357	2585	181	true			false
+	3358	1417	2047	false			false
+	3360	3249	2033	false			false
+	3359	3273	100	true			false
+	3361	2585	2814	false			false
+	3362	1417	3240	false			false
+	3364	2721	2938	false			false
+	3363	2585	2721	false			false
+	3365	830	3293	true			false
+	3366	2585	135	false			false
+	3367	3273	843	true			false
+	3368	2585	135	false			false
+	3369	3249	24	false			false
+	3370	2585	3198	false			false
+	3371	3249	2803	false			false
+	3372	3249	3058	false			false
+	3373	2721	60	false			false
+	3374	2721	2862	false			false
+	3374	2585	2947	false			false
+	3377	3249	59	false			false
+	3376	3249	2636	true			false
+	3378	2721	1594	false			false
+	3379	3249	3350	true			false
+	3380	2585	823	false			false
+	3381	1417	2721	false			false
+	3382	3249	66	false			false
+	3383	1417	2281	false			false
+	3384	3249	3078	false			false
+	3385	3249	2814	false			false
+	3386	3273	2504	false			false
+	3388	2585	3227	false			false
+	3387	1417	116	false			false
+	3390	2585	1636	false			false
+	3389	2585	3233	false			false
+	3391	1417	1190	false			false
+	3392	2585	2033	false			false
+	3393	3249	3215	false			false
+	3394	3249	854	true			false
+	3395	1417	8	false			false
+	3396	3249	3350	false			false
+	3398	2721	136	false			false
+	3397	3249	2851	false			false
+	3400	3249	34	false			false
+	3399	2585	3085	false			false
+	3402	1417	843	false			false
+	3401	3249	3227	false			false
+	3403	1417	35	false			false
+	3404	3273	181	true			false
+	3405	3249	187	true			false
+	3406	1417	3078	false			false
+	3407	1417	2329	false			false
+	3408	2721	2047	false			false
+	3409	830	1986	false			false
+	3411	2585	3096	false			false
+	3410	2585	12	false			false
+	3412	2585	10	false			false
+	3413	2585	64	false			false
+	3414	1417	1737	false			false
+	3415	2721	3216	false			false
+	3416	2721	3236	false			false
+	3418	1417	2296	false			false
+	3417	3249	2751	false			false
+	3419	3249	2862	false			false
+	3420	3249	2296	false			false
+	3421	2585	3120	false			false
+	3422	3249	3273	false			false
+	3423	2585	3170	true			false
+	3424	3249	2806	false			false
+	3425	2585	29	false			false
+	3427	2585	3227	false			false
+	3426	3273	71	false			false
+	3428	3249	3189	false			false
+	3429	3249	82	false			false
+	3430	3273	3246	false			false
+	3431	2585	184	false			false
+	3432	2585	3249	false			false
+	3434	3249	190	false			false
+	3433	3249	2273	false			false
+	3435	3249	2619	false			false
+	3437	3273	117	false			false
+	3436	1417	2947	false			false
+	3438	3249	3312	false			false
+	3440	1417	2585	false			false
+	3439	3249	3058	false			false
+	3441	2585	3085	false			false
+	3442	2585	3227	false			false
+	3443	3249	2939	true			false
+	3445	3249	2642	false			false
+	3444	3249	2664	true			false
+	3446	2721	135	false			false
+	3447	1417	152	false			false
+	3448	2585	3443	false			false
+	3450	1417	2256	false			false
+	3449	3273	2047	false			false
+	3451	3249	20	false			false
+	3452	1417	161	false			false
+	3453	2585	3185	true			false
+	3455	3249	2817	false			false
+	3454	1417	2938	false			false
+	3456	2585	3293	false			false
+	3458	1417	925	false			false
+	3457	3249	181	true			false
+	3459	2585	3189	false			false
+	3460	3249	3078	false			false
+	3461	1417	2642	true			false
+	3462	3249	3023	false			false
+	3463	3249	3357	false			false
+	3464	3249	3453	false			false
+	3466	3249	823	false			false
+	3465	1417	86	false			false
+	3467	3249	3293	false			false
+	3469	3249	187	false			false
+	3468	2585	3350	false			false
+	3470	3249	438	false			false
+	3471	2721	1737	false			false
+	3472	2585	3404	false			false
+	3473	3249	427	false			false
+	3474	3249	2256	false			false
+	3475	1417	1737	false			false
+	3476	3249	3453	false			false
+	3477	2721	3444	false			false
+	3478	3249	53	false			false
+	3479	1417	91	false			false
+	3480	2721	3215	false			false
+	3481	3249	32	false			false
+	3482	3249	3444	false			false
+	3484	2585	3461	false			false
+	3483	2585	132	false			false
+	3485	2585	2636	false			false
+	3486	2721	2947	false			false
+	3487	2585	3457	true			false
+	3489	2585	161	false			false
+	3488	3249	196	false			false
+	3490	1417	2518	false			false
+	3491	1417	187	false			false
+	3492	1417	3254	false			false
+	3493	3273	3444	false			false
+	3494	2585	3379	false			false
+	3495	2721	3487	true			false
+	3496	3249	3443	false			false
+	3497	1417	3350	false			false
+	3498	3249	2151	false			false
+	3499	1417	2420	false			false
+	3500	1417	161	false			false
+	3501	3249	2440	false			false
+	3502	3249	3055	false			false
+	3503	2585	96	false			false
+	3504	3249	3058	false			false
+	3505	3249	87	false			false
+	3506	3249	2619	false			false
+	3507	2585	2511	false			false
+	3508	2721	136	true			false
+	3510	2585	3078	false			false
+	3509	3249	27	false			false
+	3511	2585	3273	false			false
+	3513	2585	2504	false			false
+	3512	3249	2814	true			false
+	3514	3249	104	false			false
+	3515	3249	20	false			false
+	3516	1417	184	false			false
+	3518	3249	2440	false			false
+	3519	2585	2151	false			false
+	3517	2585	32	false			false
+	3520	2585	119	false			false
+	3521	3249	52	false			false
+	3522	2585	427	false			false
+	3523	3273	3365	false			false
+	3524	1417	3100	false			false
+	3525	3249	2480	true			false
+	3526	3249	3198	false			false
+	3528	1417	2636	false			false
+	3527	2585	3058	false			false
+	3529	2721	80	false			false
+	3531	3249	3394	false			false
+	3530	3249	3423	false			false
+	3532	1417	3191	false			false
+	3533	3249	105	false			false
+	3534	2585	166	true			false
+	3535	2585	3191	false			false
+	3536	2585	32	false			false
+	3537	2585	3072	false			false
+	3538	3249	94	false			false
+	3540	3249	3312	false			false
+	3539	1417	3254	false			false
+	3541	3249	51	false			false
+	3542	3249	3096	false			false
+	3544	1417	2244	false			false
+	3543	1417	2619	false			false
+	3546	3249	50	true			false
+	3545	3249	3038	false			false
+	3547	2585	2721	false			false
+	3548	3249	2420	false			false
+	3549	3249	2463	false			false
+	3550	2585	830	false			false
+	3551	2721	1936	false			false
+	3552	2585	2401	false			false
+	3553	3273	2636	false			false
+	3554	3249	3495	true			false
+	3555	1417	100	false			false
+	3555	3249	3058	false			false
+	3557	3249	3134	false			false
+	3558	3273	3404	false			false
+	3559	2721	1936	false			false
+	3560	1417	427	false			false
+	3561	1417	2814	false			false
+	3562	1417	180	false			false
+	3563	3249	132	false			false
+	3564	2721	2751	true			false
+	3565	3249	64	false			false
+	3566	2585	2273	false			false
+	3567	3249	2947	false			false
+	3568	2585	1466	false			false
+	3569	3249	2440	false			false
+	3571	1417	82	false			false
+	3570	3249	751	false			false
+	3573	2585	152	false			false
+	3572	830	3525	false			false
+	3574	3249	1936	false			false
+	3574	3249	925	false			false
+	3577	3249	3072	false			false
+	3576	3249	105	true			false
+	3578	1417	3554	false			false
+	3579	1417	2814	false			false
+	3580	1417	3534	false			false
+	3581	1417	2585	false			false
+	3583	2585	77	false			false
+	3582	1417	2401	false			false
+	3584	2585	2814	false			false
+	3584	2585	120	true			false
+	3586	3273	2511	false			false
+	3587	3249	2260	false			false
+	3588	1417	1737	false			false
+	3589	3249	38	true			false
+	3590	1417	3096	false			false
+	3592	2585	438	false			false
+	3591	3273	8	false			false
+	3593	3249	190	false			false
+	3594	2721	3554	false			false
+	3595	1417	427	false			false
+	3596	3249	830	false			false
+	3597	3249	3589	false			false
+	3598	3249	87	false			false
+	3600	3249	71	false			false
+	3599	2721	71	false			false
+	3601	2585	2814	false			false
+	3602	2585	26	false			false
+	3604	3249	2305	false			false
+	3603	2585	3508	true			false
+	3606	1417	843	false			false
+	3605	3249	2305	false			false
+	3607	2585	42	false			false
+	3608	3249	3249	false			false
+	3609	1417	3379	false			false
+	3610	3249	91	false			false
+	3611	1417	3293	false			false
+	3612	2585	3002	false			false
+	3613	3249	2947	false			false
+	3614	3249	115	false			false
+	3615	2585	2585	false			false
+	3616	2585	3508	false			false
+	3617	2585	854	false			false
+	3618	2585	196	false			false
+	3620	2721	3293	false			false
+	3619	3249	1417	false			false
+	3621	1417	115	false			false
+	3622	1417	3193	false			false
+	3623	1417	3002	false			false
+	3624	2585	3576	false			false
+	3626	3249	1190	false			false
+	3625	3249	187	false			false
+	3628	1417	3312	false			false
+	3627	3249	3273	false			false
+	3629	3273	51	false			false
+	3630	1417	3589	false			false
+	3632	2585	3055	false			false
+	3631	3249	2619	false			false
+	3633	2585	2646	false			false
+	3634	2721	2971	false			false
+	3635	2721	925	false			false
+	3636	3249	2305	false			false
+	3637	2585	18	false			false
+	3639	2721	2463	false			false
+	3638	1417	66	false			false
+	3640	3249	1466	false			false
+	3641	3249	2296	false			false
+	3642	2585	53	false			false
+	3643	3249	2646	true			false
+	3644	3249	3236	false			false
+	3645	1417	106	false			false
+	3646	3249	2646	false			false
+	3647	3249	173	false			false
+	3648	830	3189	false			false
+	3649	3249	32	true			false
+	3650	3249	2256	false			false
+	3651	3249	3444	true			false
+	3652	1417	2636	false			false
+	3653	1417	2806	false			false
+	3654	3249	1986	false			false
+	3655	3273	2151	false			false
+	3656	2585	2636	false			false
+	3657	3249	3546	true			false
+	3659	2585	160	false			false
+	3658	2721	1417	false			false
+	3660	2585	3359	false			false
+	3661	2585	142	false			false
+	3663	2585	2047	false			false
+	3662	3249	3233	false			false
+	3664	3249	3350	false			false
+	3665	3249	3312	false			false
+	3666	2585	51	false			false
+	3667	1417	59	false			false
+	3668	2585	1986	false			false
+	3669	1417	3359	false			false
+	3670	3249	3379	false			false
+	3671	3249	3461	false			false
+	3672	2585	3233	false			false
+	3673	3249	438	false			false
+	3674	3249	2440	false			false
+	3675	3249	437	false			false
+	3676	3273	86	false			false
+	3677	3249	2636	false			false
+	3678	3249	2463	false			false
+	3679	3249	142	false			false
+	3680	3249	8	false			false
+	3681	2721	1737	false			false
+	3682	2585	925	false			false
+	3684	3273	925	false			false
+	3683	3249	115	false			false
+	3685	2585	3134	false			false
+	3686	1417	2751	false			false
+	3687	3249	2244	false			false
+	3688	3249	32	false			false
+	3690	1417	2151	false			false
+	3689	1417	3254	false			false
+	3691	3249	2463	false			false
+	3692	3249	128	false			false
+	3694	2585	66	false			false
+	3693	3249	147	false			false
+	3696	2585	97	false			false
+	3695	2585	192	false			false
+	3697	1417	3273	false			false
+	3698	3249	150	false			false
+	3699	830	2511	false			false
+	3700	1417	830	false			false
+	3701	2585	3350	true			false
+	3702	1417	191	false			false
+	3703	3249	3216	false			false
+	3704	1417	2281	false			false
+	3706	3249	10	false			false
+	3705	2585	190	false			false
+	3707	2721	136	false			false
+	3708	2585	2585	false			false
+	3709	2721	185	false			false
+	3710	1417	3461	false			false
+	3711	1417	147	false			false
+	3712	2585	2420	false			false
+	3713	1417	174	false			false
+	3714	3249	2463	true			false
+	3715	3249	1636	false			false
+	3716	2585	71	false			false
+	3717	3249	142	false			false
+	3718	1417	3058	false			false
+	3719	1417	2480	false			false
+	3720	2585	438	false			false
+	3721	3249	3657	false			false
+	3722	1417	2863	false			false
+	3723	1417	3443	false			false
+	3724	3249	3350	false			false
+	3725	2585	2511	false			false
+	3726	3249	115	false			false
+	3727	1417	109	false			false
+	3729	2585	2005	false			false
+	3728	2585	3002	false			false
+	3730	1417	3055	false			false
+	3732	1417	33	false			false
+	3731	3273	1936	false			false
+	3733	2585	81	true			false
+	3734	3249	136	false			false
+	3736	3249	21	false			false
+	3735	2585	150	false			false
+	3737	2585	3249	false			false
+	3738	2585	925	false			false
+	3739	3249	2511	true			false
+	3740	2585	3534	true			false
+	3741	3273	12	false			false
+	3742	3249	94	false			false
+	3743	3273	35	true			false
+	3744	2585	3193	false			false
+	3745	3249	2296	false			false
+	3746	3249	18	true			false
+	3747	2721	3198	false			false
+	3748	2585	3	false			false
+	3749	3249	3394	false			false
+	3750	3249	2803	false			false
+	3751	2585	2751	false			false
+	3752	2721	2636	false			false
+	3753	2721	3055	false			false
+	3755	2585	3120	false			false
+	3754	2585	2721	false			false
+	3756	3249	197	false			false
+	3757	3249	150	false			false
+	3758	2585	26	false			false
+	3759	2585	2033	false			false
+	3760	3249	3189	false			false
+	3761	1417	3	false			false
+	3762	1417	2033	false			false
+	3763	2721	26	false			false
+	3765	2721	66	false			false
+	3764	2585	3072	false			false
+	3766	2585	2440	false			false
+	3767	3249	1636	false			false
+	3768	2585	64	false			false
+	3770	1417	3198	false			false
+	3769	3249	82	false			false
+	3771	3249	1636	false			false
+	3771	3249	2420	true			false
+	3773	3249	183	false			false
+	3774	3249	2273	false			false
+	3775	3249	26	false			false
+	3776	1417	6	false			false
+	3777	2585	1636	false			false
+	3778	2585	150	false			false
+	3779	3249	3072	false			false
+	3779	1417	77	false			false
+	3782	2721	2619	false			false
+	3781	1417	3	false			false
+	3783	3249	2480	false			false
+	3784	2585	94	false			false
+	3786	3249	3733	true			false
+	3785	3249	3714	false			false
+	3787	2585	2281	false			false
+	3788	3249	2862	false			false
+	3789	2585	2814	false			false
+	3790	3249	3198	false			false
+	3791	2585	2504	false			false
+	3792	3249	3038	false			false
+	3793	3249	3423	false			false
+	3795	3273	3404	false			false
+	3794	3249	12	false			false
+	3796	3249	53	false			false
+	3797	3249	3233	false			false
+	3798	3249	2296	false			false
+	3799	3273	2751	false			false
+	3800	1417	42	true			false
+	3801	3249	52	false			false
+	3802	2585	115	false			false
+	3802	3249	12	false			false
+	3804	2585	925	false			false
+	3804	3249	144	false			false
+	3807	3249	3714	false			false
+	3806	1417	3649	false			false
+	3808	2721	2420	false			false
+	3809	1417	42	false			false
+	3810	1417	58	false			false
+	3811	1417	3233	false			false
+	3812	3249	2971	false			false
+	3814	2585	97	false			false
+	3812	2585	51	false			false
+	3815	2585	3525	false			false
+	3816	3249	3743	false			false
+	3817	2585	144	false			false
+	3818	1417	3508	false			false
+	3819	1417	3423	false			false
+	3820	3249	152	false			false
+	3821	2585	38	false			false
+	3822	3249	35	false			false
+	3823	2585	3394	false			false
+	3824	830	2721	false			false
+	3825	3249	104	false			false
+	3826	1417	76	false			false
+	3827	2721	32	true			false
+	3828	1417	1986	false			false
+	3829	3249	140	false			false
+	3830	1417	3603	false			false
+	3831	1417	1466	false			false
+	3832	2585	2420	false			false
+	3833	1417	3216	false			false
+	3835	3249	2305	false			false
+	3834	2721	105	false			false
+	3836	2585	150	true			false
+	3837	3249	132	false			false
+	3838	2585	3508	false			false
+	3839	2585	2420	false			false
+	3840	3249	3249	false			false
+	3841	3249	1417	false			false
+	3842	2585	3404	false			false
+	3843	1417	192	false			false
+	3844	3249	42	false			false
+	3845	2585	3001	false			false
+	3846	1417	60	false			false
+	3847	2585	1636	false			false
+	3848	1417	3236	false			false
+	3850	2585	3423	false			false
+	3849	2585	166	false			false
+	3851	2585	3603	false			false
+	3852	3249	3423	false			false
+	3853	3249	2721	false			false
+	3855	2721	18	false			false
+	3854	3249	3058	false			false
+	3856	3249	3827	false			false
+	3857	3249	3215	false			false
+	3858	2585	94	false			false
+	3859	2585	3786	false			false
+	3860	2585	3589	false			false
+	3861	3249	27	false			false
+	3863	3249	3534	false			false
+	3862	2585	3423	false			false
+	3864	2585	106	false			false
+	3865	1417	3827	false			false
+	3867	2585	73	false			false
+	3866	1417	66	false			false
+	3868	1417	8	true			false
+	3869	3249	3096	false			false
+	3870	3249	3589	false			false
+	3871	3249	3198	false			false
+	3872	2585	925	false			false
+	3873	2721	3508	false			false
+	3874	3249	66	false			false
+	3875	2585	2971	false			false
+	3876	2585	3643	false			false
+	3877	3249	18	false			false
+	3878	1417	3273	false			false
+	3879	3249	2863	false			false
+	3880	1417	180	false			false
+	3881	1417	751	false			false
+	3882	1417	7	false			false
+	3884	3249	58	false			false
+	3883	3249	2863	false			false
+	3885	1417	3800	false			false
+	3886	3249	3643	false			false
+	3887	2585	196	false			false
+	3889	2721	3312	false			false
+	3888	3273	64	false			false
+	3890	2721	2305	false			false
+	3891	3249	3058	false			false
+	3892	3273	2440	false			false
+	3893	3273	3273	false			false
+	3894	3249	1636	false			false
+	3895	3249	2636	true			false
+	3896	2721	3	false			false
+	3897	3249	3189	false			false
+	3898	3273	3236	false			false
+	3899	3249	3895	false			false
+	3900	2585	3651	false			false
+	3902	2721	26	false			false
+	3901	3249	168	false			false
+	3903	3249	751	false			false
+	3904	3249	3246	false			false
+	3905	2585	3771	false			false
+	3906	3249	3379	true			false
+	3907	830	925	false			false
+	3909	2585	3134	false			false
+	3908	2585	3254	false			false
+	3910	1417	3350	false			false
+	3911	2585	2296	false			false
+	3912	2585	2440	false			false
+	3913	2585	2971	false			false
+	3914	1417	2585	false			false
+	3915	830	87	false			false
+	3917	2585	71	false			false
+	3915	2585	925	false			false
+	3918	2585	94	false			false
+	3920	1417	20	false			false
+	3919	1417	2863	false			false
+	3921	2585	3836	false			false
+	3923	3249	830	false			false
+	3922	2585	3733	false			false
+	3924	2585	2256	false			false
+	3926	2585	3836	false			false
+	3927	3249	51	true			false
+	3925	1417	3868	false			false
+	3928	1417	64	true			false
+	3930	2585	3927	false			false
+	3929	2585	171	false			false
+	3931	2721	2440	true			false
+	3933	3249	2047	false			false
+	3932	2585	2806	false			false
+	3934	2585	854	false			false
+	3936	3249	3739	false			false
+	3935	3249	3312	true			false
+	3937	3249	3058	false			false
+	3939	2585	3786	true			false
+	3938	3249	3023	false			false
+	3940	3249	1636	false			false
+	3942	3273	27	false			false
+	3941	3249	3649	false			false
+	3943	3249	3746	true			false
+	3945	3249	132	false			false
+	3944	1417	2440	false			false
+	3946	2585	3198	false			false
+	3947	3249	3771	false			false
+	3948	3249	86	false			false
+	3950	2721	3603	false			false
+	3949	2721	142	false			false
+	3951	2585	3740	false			false
+	3952	1417	3236	false			false
+	3953	2721	3001	false			false
+	3955	3249	3746	false			false
+	3954	2721	3189	false			false
+	3956	1417	3072	false			false
+	3958	3249	170	false			false
+	3957	3249	53	false			false
+	3959	1417	108	false			false
+	3961	3249	50	false			false
+	3960	2585	180	false			false
+	3962	2585	2463	false			false
+	3964	3249	136	true			false
+	3963	1417	3394	false			false
+	3965	3249	96	false			false
+	3967	2585	2260	false			false
+	3966	2585	170	false			false
+	3968	3273	109	false			false
+	3969	3249	2721	false			false
+	3970	1417	94	false			false
+	3972	1417	3651	false			false
+	3971	3273	119	false			false
+	3973	2721	3939	false			false
+	3975	3249	76	false			false
+	3974	2585	3939	false			false
+	3976	2585	53	false			false
+	3977	1417	3525	false			false
+	3978	2585	2281	false			false
+	3979	2585	1986	false			false
+	3980	2721	34	false			false
+	3981	3249	3312	false			false
+	3982	2585	3649	false			false
+	3984	3249	3189	false			false
+	3985	3249	3943	false			false
+	3983	3249	2646	false			false
+	3986	1417	66	false			false
+	3988	2585	3800	false			false
+	3987	3249	12	false			false
+	3989	2585	3534	false			false
+	3990	2585	3643	false			false
+	3991	1417	6	false			false
+	3993	2585	66	false			false
+	3992	3249	13	false			false
+	3994	2585	77	false			false
+	3996	3249	187	false			false
+	3997	1417	3356	true			false
+	3995	3249	3512	false			false
+	3998	3249	3394	false			false
+	4000	2585	100	false			false
+	3999	1417	2033	false			false
+	4001	3249	198	false			false
+	4003	1417	3359	false			false
+	4002	3249	150	false			false
+	4004	1417	3254	false			false
+	4006	1417	3740	false			false
+	4005	1417	3651	false			false
+	4007	2585	2851	false			false
+	4009	3249	2033	false			false
+	4010	3249	192	false			false
+	4008	2721	144	true			false
+	4011	2721	3800	false			false
+	4013	2585	3359	true			false
+	4012	2585	3350	false			false
+	4014	2585	3423	false			false
+	4016	3249	3038	false			false
+	4015	1417	3038	false			false
+	4017	3249	830	false			false
+	4019	3249	2806	false			false
+	4018	2585	3939	true			false
+	4020	2585	29	false			false
+	4021	2721	1636	false			false
+	4022	2585	2585	false			false
+	4024	2585	3350	false			false
+	4023	2585	34	false			false
+	4025	2721	3733	true			false
+	4027	1417	100	false			false
+	4026	1417	102	false			false
+	4028	1417	3120	false			false
+	4029	1417	160	false			false
+	4030	3249	190	false			false
+	4032	2585	3312	false			false
+	4031	3249	186	false			false
+	4033	3249	181	false			false
+	4035	3249	925	false			false
+	4036	3249	26	false			false
+	4034	2585	1636	true			false
+	4037	3249	4018	false			false
+	4038	3249	32	false			false
+	4039	3249	854	false			false
+	4041	2585	136	false			false
+	4040	2585	1957	false			false
+	4042	2585	180	false			false
+	4043	3249	2585	false			false
+	4044	3249	3771	false			false
+	4046	2721	183	false			false
+	4045	2585	51	false			false
+	4047	2585	3743	false			false
+	4048	3249	2947	false			false
+	4049	3249	132	true			false
+	4050	2585	3404	false			false
+	4051	2585	2851	false			false
+	4052	3249	3589	false			false
+	4053	2721	854	false			false
+	4054	2585	2646	false			false
+	4055	1417	136	false			false
+	4057	2585	1957	false			false
+	4056	2721	3739	false			false
+	4059	3249	2863	false			false
+	4058	2585	4025	false			false
+	4061	3249	3312	false			false
+	4060	2585	3312	false			false
+	4063	3249	4018	false			false
+	4062	2585	3198	false			false
+	4064	3249	33	false			false
+	4065	1417	57	false			false
+	4067	3249	174	false			false
+	4066	3249	26	false			false
+	4068	2585	7	false			false
+	4070	3964	2585	false			false
+	4069	2585	136	false			false
+	4071	1417	50	false			false
+	4072	1417	4034	false			false
+	4073	1417	3733	false			false
+	4074	1417	4013	false			false
+	4075	1417	3649	true			false
+	4076	1417	152	true			false
+	4077	3249	4075	false			false
+	4078	3249	142	false			false
+	4079	1417	3249	false			false
+	4081	2585	854	false			false
+	4080	1417	4008	false			false
+	4082	3249	149	false			false
+	4083	2721	3356	true			false
+	4084	2585	66	true			false
+	4085	2585	3189	false			false
+	4086	3249	2047	false			false
+	4087	2585	171	false			false
+	4088	2585	1636	false			false
+	4090	2585	42	false			false
+	4089	3249	41	false			false
+	4091	1417	140	false			false
+	4092	1417	3443	false			false
+	4093	3249	24	false			false
+	4094	2721	3997	false			false
+	4095	3249	2806	false			false
+	4096	3249	3120	false			false
+	4097	2585	2585	false			false
+	4098	2585	2480	false			false
+	4099	3249	2646	false			false
+	4100	3249	3589	false			false
+	4101	3249	3404	false			false
+	4102	3249	3895	false			false
+	4103	1417	2463	false			false
+	4105	3249	86	false			false
+	4104	3249	2420	false			false
+	4106	2585	2440	true			false
+	4107	3249	2296	false			false
+	4109	3249	1636	false			false
+	4108	1417	3928	false			false
+	4111	2585	3906	false			false
+	4110	2585	830	false			false
+	4112	3249	3246	false			false
+	4113	1417	4008	false			false
+	4114	3273	3404	false			false
+	4116	2585	3443	false			false
+	4115	1417	60	false			false
+	4117	3249	3189	false			false
+	4118	2721	29	true			false
+	4119	2585	1636	true			false
+	4120	1417	77	false			false
+	4121	2585	186	false			false
+	4123	1417	2971	false			false
+	4122	1417	2151	false			false
+	4124	3249	1986	false			false
+	4125	2721	3394	false			false
+	4126	1417	830	false			false
+	4127	3249	3827	false			false
+	4128	1417	94	false			false
+	4129	3249	3643	false			false
+	4129	2585	71	false			false
+	4131	2585	2401	false			false
+	4132	3249	3512	false			false
+	4133	3249	4013	false			false
+	4134	3249	3964	false			false
+	4135	1417	2806	false			false
+	4136	2585	3394	false			false
+	4137	3249	4025	false			false
+	4138	2721	109	false			false
+	4139	1417	2440	false			false
+	4140	1417	140	false			false
+	4142	3249	830	false			false
+	4141	830	830	false			false
+	4143	2585	105	false			false
+	4144	2721	3589	false			false
+	4145	3249	53	false			false
+	4146	3249	4119	false			false
+	4147	3249	3356	false			false
+	4148	2585	2480	false			false
+	4149	3273	94	false			false
+	4150	3249	42	false			false
+	4151	3249	3246	false			false
+	4152	2585	1417	false			false
+	4153	3249	42	true			false
+	4154	1417	41	false			false
+	4155	1417	3249	false			false
+	4156	2585	190	false			false
+	4157	2585	3906	true			false
+	4158	3273	190	false			false
+	4159	2585	183	false			false
+	4160	2585	196	true			false
+	4162	1417	82	false			false
+	4163	1417	2401	false			false
+	4161	2585	3246	false			false
+	4164	3249	8	false			false
+	4166	1417	2440	false			false
+	4165	3273	2480	false			false
+	4167	3249	117	false			false
+	4168	1417	854	true			false
+	4169	3249	4076	false			false
+	4171	3249	4076	false			false
+	4170	2585	2806	false			false
+	4172	3249	2033	false			false
+	4174	3249	2420	false			false
+	4173	2585	2511	false			false
+	4175	3249	32	false			false
+	4177	3249	181	false			false
+	4178	3249	4084	false			false
+	4176	2585	2401	false			false
+	4179	2721	190	false			false
+	4181	1417	196	false			false
+	4182	3273	190	false			false
+	4180	3249	192	false			false
+	4183	3249	2047	false			false
+	4185	3249	82	false			false
+	4184	1417	3534	false			false
+	4186	3249	4049	false			false
+	4188	925	3740	true			false
+	4187	1417	3895	false			false
+	4189	2721	139	false			false
+	4191	2585	3931	false			false
+	4192	3273	3273	false			false
+	4193	3249	1417	false			false
+	4190	3249	132	false			false
+	4194	2585	3964	false			false
+	4195	1417	3525	false			false
+	4196	2585	437	false			false
+	4197	2585	3233	false			false
+	4198	2721	3404	true			false
+	4200	3273	4157	false			false
+	4199	3249	20	false			false
+	4201	1417	77	false			false
+	4203	2585	2273	false			false
+	4202	2585	82	false			false
+	4204	3249	66	false			false
+	4205	3273	4076	false			false
+	4206	3249	3394	false			false
+	4207	3249	4025	false			false
+	4208	3249	4025	false			false
+	4210	3273	136	false			false
+	4209	2721	3002	false			false
+	4211	3249	2504	false			false
+	4212	1417	160	false			false
+	4213	3249	830	false			false
+	4215	2585	4118	true			false
+	4214	2585	3603	true			false
+	4216	2721	115	false			false
+	4217	3249	3739	false			false
+	4218	2585	3350	false			false
+	4220	2721	108	false			false
+	4219	3249	190	false			false
+	4221	2585	3002	false			false
+	4222	2585	3827	false			false
+	4223	1417	3931	false			false
+	4224	3249	3198	false			false
+	4225	2721	66	true			false
+	4226	2585	3740	false			false
+	4227	2585	96	false			false
+	4228	3249	187	false			false
+	4229	3249	175	false			false
+	4231	2721	4083	false			false
+	4230	2585	2971	false			false
+	4232	2585	830	false			false
+	4233	2585	161	false			false
+	4234	3249	830	false			false
+	4235	2721	3423	false			false
+	4236	2585	2440	false			false
+	4238	3249	108	false			false
+	4237	2585	4084	false			false
+	4239	2585	4119	false			false
+	4240	2585	4160	false			false
+	4241	2585	2806	false			false
+	4242	3249	4157	false			false
+	4243	2585	3072	false			false
+	4245	3249	4119	false			false
+	4244	3249	925	false			false
+	4246	2585	4153	false			false
+	4247	3249	108	false			false
+	4249	1417	64	false			false
+	4248	2585	2329	false			false
+	4250	1417	2296	false			false
+	4251	3249	154	false			false
+	4252	1417	64	false			false
+	4253	3249	3935	false			false
+	4254	3249	3512	false			false
+	4255	1417	187	false			false
+	4256	2585	119	false			false
+	4257	3249	2806	false			false
+	4258	3249	4215	true			false
+	4259	3249	190	true			false
+	4261	3249	4160	false			false
+	4260	2585	3215	false			false
+	4262	1417	160	false			false
+	4263	1417	115	false			false
+	4264	3249	1417	false			false
+	4265	3964	3827	false			false
+	4266	3249	3771	false			false
+	4267	1417	106	false			false
+	4268	2585	3964	false			false
+	4269	2585	3254	true			false
+	4270	1417	161	false			false
+	4272	2585	3423	false			false
+	4271	3249	3356	false			false
+	4273	2585	3058	false			false
+	4274	3273	3733	false			false
+	4275	2585	3023	false			false
+	4276	3249	125	false			false
+	4277	2585	4157	false			false
+	4278	2585	2721	false			false
+	4279	830	3058	false			false
+	4281	2585	3512	true			false
+	4280	3249	3120	false			false
+	4283	3249	94	false			false
+	4282	1417	3931	true			false
+	4284	2585	4119	false			false
+	4285	1417	3964	false			false
+	4286	2585	1986	false			false
+	4287	1417	180	false			false
+	4288	3249	41	false			false
+	4289	3249	4083	false			false
+	4290	3249	2151	false			false
+	4291	1417	147	false			false
+	4292	1417	3733	false			false
+	4293	2721	2862	false			false
+	4294	3249	4225	true			false
+	4295	2585	52	false			false
+	4296	1417	35	false			false
+	4297	2585	3072	false			false
+	4298	3249	132	false			false
+	4300	2585	4084	false			false
+	4299	1417	3771	false			false
+	4302	3249	3002	false			false
+	4301	1417	3002	false			false
+	4303	2585	3443	true			false
+	4304	3249	64	false			false
+	4305	3249	4188	false			false
+	4306	1417	2260	false			false
+	4307	1417	3495	false			false
+	4309	1417	3534	false			false
+	4308	3249	192	false			false
+	4310	4303	3964	false			false
+	4312	3249	3534	false			false
+	4311	3249	1957	false			false
+	4314	4303	184	false			false
+	4313	4303	3189	false			false
+	4315	3249	52	false			false
+	4316	3249	4258	false			false
+	4317	4303	3058	false			false
+	4318	3249	4157	false			false
+	4319	3249	4282	false			false
+	4320	4303	3404	false			false
+	4322	1417	4282	false			false
+	4321	4303	4294	false			false
+	4323	4303	3461	false			false
+	4324	1417	2047	false			false
+	4325	1417	3198	true			false
+	4326	4303	3997	false			false
+	4327	3249	4119	false			false
+	4328	3249	3249	false			false
+	4328	3249	20	false			false
+	4330	1417	3964	false			false
+	4331	1417	3233	false			false
+	4332	3249	25	false			false
+	4333	2721	187	false			false
+	4334	2721	2260	true			false
+	4335	4303	3423	false			false
+	4336	3249	2941	false			false
+	4337	3249	4258	false			false
+	4338	4303	4076	false			false
+	4339	3249	2814	false			false
+	4340	3273	4198	false			false
+	4341	3273	174	false			false
+	4342	4303	4188	false			false
+	4342	4303	2256	false			false
+	4344	4303	52	false			false
+	4345	4303	830	false			false
+	4347	3249	3827	false			false
+	4346	4303	830	false			false
+	4348	1417	3312	false			false
+	4349	1417	142	false			false
+	4351	1417	73	false			false
+	4350	3273	2005	false			false
+	4352	3249	2619	false			false
+	4353	4303	183	false			false
+	4355	3249	2256	false			false
+	4354	3249	3233	false			false
+	4356	4303	21	true			false
+	4357	1417	4025	false			false
+	4358	3249	3	false			false
+	4359	4303	188	false			false
+	4360	3249	64	false			false
+	4361	3249	4153	false			false
+	4362	1417	4258	true			false
+	4363	4303	2463	false			false
+	4364	3249	2047	false			false
+	4366	2721	152	false			false
+	4367	2721	4049	false			false
+	4365	4303	2511	false			false
+	4368	3249	3746	false			false
+	4370	3249	2463	false			false
+	4369	2721	57	false			false
+	4371	1417	3771	false			false
+	4373	3249	2420	false			false
+	4372	4303	4160	false			false
+	4374	3249	4075	false			false
+	4376	3249	2005	true			false
+	4375	3249	2806	false			false
+	4377	1417	3868	false			false
+	4379	4303	3643	false			false
+	4378	3964	66	false			false
+	4380	3249	183	false			false
+	4382	2721	3443	false			false
+	4381	1417	3495	false			false
+	4383	3249	4269	false			false
+	4385	1417	50	false			false
+	4384	3273	3072	false			false
+	4386	3249	3023	false			false
+	4388	1417	161	false			false
+	4389	3249	3935	false			false
+	4387	3249	2646	false			false
+	4390	4303	1417	false			false
+	4391	3249	1417	false			false
+	4392	4303	4294	false			false
+	4393	4303	4214	false			false
+	4394	3249	34	false			false
+	4395	1417	4281	false			false
+	4396	4303	3394	false			false
+	4398	1417	25	false			false
+	4397	3249	184	false			false
+	4399	1417	4356	false			false
+-----------------------------------------------------------
+Overall genetic history
+	total number of trial genetic pool entries:    8400
+	percentage of unsuccessful genetic operations: 0.0%
+	percentage of accepted pool entries:           6.3%
+-----------------------------------------------------------
+#-----------------------------------------------------------
+#
+# Individuals in final pool coming, fitness units unknown.
+#
+# pool position        individual id                 fitness
+     0         3249       -0.0744645509
+     1         4303       -0.0742897884
+     2         1417       -0.0742594670
+     3         2721       -0.0741991613
+     4         3273       -0.0741533741
+     5          830       -0.0741083745
+     6         3964       -0.0740602747
+     7          925       -0.0740206594
+     8         3525       -0.0739555658
+     9         4362       -0.0739330209
+    10         2504       -0.0738800801
+    11         4076       -0.0738530457
+    12         3423       -0.0738302684
+    13         3198       -0.0738069177
+    14         3350       -0.0737800335
+    15         3733       -0.0737561889
+    16         4075       -0.0737240348
+    17         4334       -0.0736861094
+    18         3495       -0.0736638558
+    19         4106       -0.0736395734
+    20         3312       -0.0735956522
+    21         2947       -0.0735725164
+    22         3827       -0.0735414212
+    23         4119       -0.0735071215
+    24         4281       -0.0734838722
+    25         4294       -0.0734607257
+    26         4157       -0.0734307947
+    27         3443       -0.0734037813
+    28         3746       -0.0733817351
+    29         4025       -0.0733593115
+    30         4259       -0.0733250299
+    31         3461       -0.0732815368
+    32         3643       -0.0732527479
+    33         3740       -0.0732265348
+    34         3534       -0.0731938828
+    35         3927       -0.0731671656
+    36         2047       -0.0731341650
+    37         2863       -0.0731121862
+    38         4282       -0.0730884796
+    39         3651       -0.0730578212
+    40         4258       -0.0730325114
+    41         3943       -0.0730030052
+    42         2806       -0.0729703543
+    43         2511       -0.0729302684
+    44         3233       -0.0729039870
+    45         2296       -0.0728729127
+    46         2440       -0.0728498546
+    47         4188       -0.0728217574
+    48         4325       -0.0727867680
+    49         3935       -0.0727380867
+    50         4376       -0.0727083303
+    51         2814       -0.0726650997
+    52         4214       -0.0726407186
+    53         4356       -0.0726181232
+    54         4083       -0.0725830450
+    55         4153       -0.0725490933
+    56         3589       -0.0725222114
+    57         3771       -0.0724967163
+    58         3189       -0.0724519302
+    59         2256       -0.0724262653
+    60         4168       -0.0723966589
+    61         3058       -0.0723731725
+    62         2401       -0.0723357433
+    63         3895       -0.0723110765
+    64         3216       -0.0722887923
+    65         4084       -0.0722628393
+    66         4160       -0.0722354054
+    67         2420       -0.0722028107
+    68           94       -0.0721813789
+    69          190       -0.0721757574
+    70           66       -0.0721653908
+    71           71       -0.0721579571
+    72         3394       -0.0721320926
+    73           77       -0.0721134715
+    74            3       -0.0720981831
+    75          196       -0.0720939980
+    76          187       -0.0720860002
+    77         4198       -0.0720638352
+    78         3404       -0.0720313769
+    79         3038       -0.0719979001
+    80           42       -0.0719738638
+    81          152       -0.0719583635
+    82          188       -0.0719566407
+    83          751       -0.0719345414
+    84         4269       -0.0719128558
+    85         3023       -0.0718870796
+    86         4049       -0.0718613599
+    87         2463       -0.0718226933
+    88         2646       -0.0717981236
+    89         3997       -0.0717717234
+    90           20       -0.0717580382
+    91           12       -0.0717484328
+    92         4008       -0.0717173160
+    93          140       -0.0717106717
+    94          160       -0.0717060882
+    95          161       -0.0717029298
+    96         2005       -0.0716809213
+    97         2851       -0.0716544928
+    98         3191       -0.0716096701
+    99         2619       -0.0715872324
+   100           51       -0.0715756855
+   101         1986       -0.0715396849
+   102          132       -0.0715166916
+   103         3356       -0.0714932771
+   104         2971       -0.0714637800
+   105         3868       -0.0714333773
+   106           58       -0.0714226771
+   107          135       -0.0714033703
+   108           32       -0.0713976204
+   109           64       -0.0713860787
+   110         2151       -0.0713597168
+   111         3359       -0.0713242913
+   112           26       -0.0713126289
+   113          154       -0.0713123826
+   114          174       -0.0713116557
+   115          166       -0.0712990081
+   116          183       -0.0712948111
+   117         3215       -0.0712692720
+   118           13       -0.0712647971
+   119            8       -0.0712638888
+   120         2862       -0.0712397254
+   121          105       -0.0712316270
+   122          136       -0.0712264242
+   123          437       -0.0711860547
+   124          843       -0.0711521197
+   125         2244       -0.0711257562
+   126         3002       -0.0710961725
+   127           81       -0.0710675107
+   128          144       -0.0710563919
+   129          108       -0.0710543432
+   130         3072       -0.0710323598
+   131           53       -0.0710230586
+   132           76       -0.0710180325
+   133          184       -0.0710139391
+   134           25       -0.0710092182
+   135           82       -0.0709865702
+   136          100       -0.0709837053
+   137           18       -0.0709707723
+   138         2941       -0.0709428901
+   139         1957       -0.0709011308
+   140          192       -0.0708903557
+   141           29       -0.0708826049
+   142         1190       -0.0708533340
+   143           96       -0.0708526472
+   144           91       -0.0708466710
+   145           78       -0.0708256622
+   146          150       -0.0708186839
+   147          115       -0.0708119816
+   148          142       -0.0708051807
+   149           86       -0.0707952585
+   150           50       -0.0707905513
+   151          109       -0.0707636706
+   152          120       -0.0707436314
+   153          171       -0.0707358779
+   154           33       -0.0707299550
+   155          181       -0.0707253722
+   156           10       -0.0707221647
+   157          139       -0.0707069322
+   158           52       -0.0706962707
+   159          185       -0.0706799245
+   160         2329       -0.0706395410
+   161          116       -0.0706198647
+   162          175       -0.0706026779
+   163           35       -0.0705597784
+   164           59       -0.0705423779
+   165          180       -0.0705288102
+   166           21       -0.0705045564
+   167           38       -0.0704968845
+   168          198       -0.0704950902
+   169          173       -0.0704892328
+   170          119       -0.0704882059
+   171          104       -0.0704758849
+   172           41       -0.0704753421
+   173            6       -0.0704593928
+   174           73       -0.0704169065
+   175           72       -0.0703885567
+   176          102       -0.0703876089
+   177          149       -0.0703740453
+   178          186       -0.0703719119
+   179           57       -0.0703610979
+   180           34       -0.0703430299
+   181           97       -0.0703364621
+   182           87       -0.0703324145
+   183           27       -0.0703285839
+   184          191       -0.0703262344
+   185          147       -0.0703104749
+   186          170       -0.0702913667
+   187            7       -0.0702682321
+   188          117       -0.0702223847
+   189          197       -0.0701916504
+   190           80       -0.0701697205
+   191           24       -0.0701645958
+   192           79       -0.0701643990
+   193          125       -0.0700859883
+   194           19       -0.0700234841
+   195          168       -0.0699793771
+   196          128       -0.0699392781
+   197           60       -0.0699174321
+   198          106       -0.0699055804
+   199           54       -0.0698902913
+#
+#-----------------------------------------------------------

@@ -1,0 +1,23 @@
+Working on lj42
+Oct 02, 2016 4:26:12 PM org.ogolem.core.GlobOptAlgoFactory translateToGlobOpt
+INFO: Trying to parse: cluster{xover(sweden:cutstyle=2)mutation(montecarlo:mode=some)} as global optimization for cluster.
+Oct 02, 2016 4:26:12 PM org.ogolem.core.GlobOptAlgoFactory specializedXOver
+INFO: working on crossover string sweden:cutstyle=2
+Oct 02, 2016 4:26:12 PM org.ogolem.generic.GenericGlobalOptimizationFactory getXOver
+INFO: No special crossover found, trying generic ones.
+Oct 02, 2016 4:26:12 PM org.ogolem.core.GlobOptAlgoFactory specializedMutation
+INFO: Working on mutation string montecarlo:mode=some
+THREADING CLIENT ACCOUNTING INFORMATION:
+# init chunks worked on: 3
+# globopt chunks worked on: 42
+Time for setup: 0s.
+Time for job: 18s.
+   * time for initial fetching: 0s
+   * time for initial work: 2s
+   * time for optimization fetching: 2s
+              - waited: 0s
+   * time for optimization work: 12s
+Total time: 18s.
+Thank you for running OGOLEM. We hope it was successfull!
+
+So long and thanks for all the fish. [DA]

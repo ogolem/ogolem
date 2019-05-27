@@ -1,0 +1,5 @@
+#! /bin/bash
+mkdir client1
+cd client1
+cp ../lj42.ogo .
+java -Djava.rmi.server.codebase=file:../ogolem-snapshot.jar -Djava.security.policy=client.policy -jar ../ogolem-snapshot.jar --rmithreader --jobtype geom --inputfile lj42.ogo --threads 2 --server localhost --sleeptime 1 --serverregistryport 1099 --maxchunk 100 &> client1.errout &
