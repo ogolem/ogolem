@@ -37,8 +37,8 @@
     debug="true"
     deprecation="true"
     optimize="true"
-    source="1.7"
-    target="1.7" >
+    source="11"
+    target="11" >
     <classpath refid="classpath" />
 </javac>
 </target>
