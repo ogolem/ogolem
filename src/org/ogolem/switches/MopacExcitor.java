@@ -155,7 +155,7 @@ final class MopacExcitor implements Excitor{
                     sMOPACBasis + System.getProperty("file.separator") + sMOPACOutput);
         } catch(Exception e){
             System.err.println("WARNING: Problem in reading the output of mopac for exciting.");
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return  FixedValues.UNEXCITABLEENERGY;
         }
 

@@ -100,8 +100,7 @@ public class MainFamilyTree {
         boolean firstAfterFound = true;
         long maxNoChildren = 0;
         long minIDInHistory = Long.MAX_VALUE;
-        for(int i = 0; i < outData.length; i++){
-            final String outLine = outData[i];
+        for (final String outLine : outData) {
             if(outLine.trim().startsWith("The following genetic history was created during the run.")){
                 startFound = true;
             } else if(startFound){
@@ -202,9 +201,9 @@ public class MainFamilyTree {
             }
             
             // remove all
-            for(final GeneticRecord rec : toDelete){
+            toDelete.forEach((rec) -> {
                 allRecords.remove(rec);
-            }        
+            });        
         } else {
             // weed out all the entries which were null and/or were not accepted
             int countAccepted = 0;
@@ -226,9 +225,9 @@ public class MainFamilyTree {
             }
             
             // remove all
-            for(final GeneticRecord rec : toDelete){
+            toDelete.forEach((rec) -> {
                 allRecords.remove(rec);
-            }
+            });
         }
             
         // setup the dot file

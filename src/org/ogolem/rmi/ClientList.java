@@ -76,7 +76,7 @@ final class ClientList<T>{
         this.list = new ConcurrentHashMap<>(32,0.75f,2);
                 //Collections.synchronizedMap(new HashMap<Integer,Tupel<Task<T>,Long>>());
         this.recentlyUpdated = new ConcurrentHashMap<>(32,0.75f,2);
-        this.finishedClients = Collections.synchronizedList(new ArrayList<Integer>());
+        this.finishedClients = Collections.synchronizedList(new ArrayList<>());
     }
 
     synchronized int newClient(){

@@ -347,14 +347,14 @@ final class AdaptiveMorseTerm implements AdaptiveInteractionTerm {
             // loop through all reference geometries and figure a list of non-redundant atom tyes out
             final LinkedList<String> llAtoms = new LinkedList<>();
 
-            for (CartesianCoordinates cartes : cartesians) {
+            for (final CartesianCoordinates cartes : cartesians) {
 
                 final String[] saAtoms = cartes.getAllAtomTypes();
 
-                for (int i = 0; i < saAtoms.length; i++) {
-                    if (!llAtoms.contains(saAtoms[i])) {
+                for (final String saAtom : saAtoms) {
+                    if (!llAtoms.contains(saAtom)) {
                         // add it to the list
-                        llAtoms.add(saAtoms[i]);
+                        llAtoms.add(saAtom);
                     }
                 }
             }

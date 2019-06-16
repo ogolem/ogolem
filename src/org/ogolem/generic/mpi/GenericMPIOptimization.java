@@ -149,10 +149,11 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
         // try to receive the initial broadcast
         final char[] initMessage = new char[35];
         MPI.COMM_WORLD.Bcast(initMessage, 0, 35, MPI.CHAR, KICKOFF);
+        final String sInit = new String(initMessage).trim();
         
-        if(!initMessage.toString().trim().equalsIgnoreCase("Hello from MPI master, all is well!")){
+        if(!sInit.equalsIgnoreCase("Hello from MPI master, all is well!")){
             throw new RuntimeException("Initial message from master was not what " + myRank + "expected. Exiting. Received message: "
-                + initMessage);
+                + sInit);
         }
                 
         // do stuff as long as time permits
@@ -178,11 +179,11 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
             log.debug("There is a new task!");
             taskCounter++;
 
-            final Task<Y> task = (Task<Y>) InputPrimitives.readBinInput(message.toString().trim());
+            final Task<Y> task = (Task<Y>) InputPrimitives.readBinInput(new String(message).trim());
             final Result<Y> result = task.executeTask(myRank);
             
             // delete task
-            ManipulationPrimitives.remove(message.toString().trim());
+            ManipulationPrimitives.remove(new String(message).trim());
 
             final String outputFile = "result" + taskCounter + ".bin";
             OutputPrimitives.writeObjToBinFile(outputFile, result);

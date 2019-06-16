@@ -58,9 +58,9 @@ class ChainedNicheComp implements NicheComputer<Molecule,Geometry> {
     
     private ChainedNicheComp(final ChainedNicheComp orig){
         this.nicheComps = new ArrayList<>();
-        for(final NicheComputer<Molecule,Geometry> nicher : orig.nicheComps){
+        orig.nicheComps.forEach((nicher) -> {
             nicheComps.add(nicher.clone());
-        }
+        });
     }
     
     @Override

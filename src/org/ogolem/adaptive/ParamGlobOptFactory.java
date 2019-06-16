@@ -36,18 +36,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.adaptive;
 
-import java.util.List;
 import org.ogolem.generic.BoundedGenericMutation;
 import org.ogolem.generic.GenericCrossover;
 import org.ogolem.generic.GenericFitnessFunction;
-import org.ogolem.generic.GenericGermanyCrossover;
 import org.ogolem.generic.GenericGlobalOptimization;
 import org.ogolem.generic.GenericGlobalOptimizationFactory;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.generic.GenericPortugalCrossover;
 import org.ogolem.generic.GenericSanityCheck;
 import org.ogolem.generic.IndividualWriter;
-import org.ogolem.helpers.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

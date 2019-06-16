@@ -48,7 +48,7 @@ class ExternalLocOpt implements Newton{
     // the ID
     private static final long serialVersionUID = (long) 20101108;
 	
-    private FFEngineWrapper ffeng;
+    private final FFEngineWrapper ffeng;
 
     ExternalLocOpt(GlobalConfig globConf, int ffID, double cutE) {
         ffeng = new FFEngineWrapper(globConf, ffID, cutE);

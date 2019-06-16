@@ -764,7 +764,7 @@ public class GlobalConfig implements Configuration<Molecule,Geometry> {
         
         if(doNiching){
             config.setAddsToStats(this.addsToNicheStats);
-            config.setNicher(new SimpleNicher<Molecule,Geometry>(this.noOfIndividualsPerNicheAtMax));
+            config.setNicher(new SimpleNicher<>(this.noOfIndividualsPerNicheAtMax));
         }
         
         ParentSelector<Molecule,Geometry> selec;

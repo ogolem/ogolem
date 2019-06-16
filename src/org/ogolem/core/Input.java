@@ -1704,15 +1704,14 @@ public final class Input {
         }
 
         // parse data and manipulate bonds
-        for(int line = 0; line < data.length; line++){
-
-            if(data[line].trim().isEmpty()) continue;
-
-            final String[] sa = data[line].trim().split("\\s+");
+        for (final String data1 : data) {
+            if (data1.trim().isEmpty()) {
+                continue;
+            }
+            final String[] sa = data1.trim().split("\\s+");
             final int i = Integer.parseInt(sa[0]);
             final int j = Integer.parseInt(sa[1]);
             final short b = Short.parseShort(sa[2]);
-
             // change the bonding matrix for those two
             bonds.setBond(i, j, b);
         }
@@ -1736,9 +1735,8 @@ public final class Input {
             faCharges[i] = new float[atsPerMol[i]];
         }
 
-        for (int i = 0; i < chargeBlock.length; i++) {
-            final String[] saTemp = chargeBlock[i].trim().split("\\;", 3);
-
+        for (final String chargeBlock1 : chargeBlock) {
+            final String[] saTemp = chargeBlock1.trim().split("\\;", 3);
             // get info which molecule, atom, charge is wanted
             int whichMol = 0;
             int whichAtom = 0;
@@ -1751,7 +1749,6 @@ public final class Input {
                 System.err.println("Failure in casting String to int in charges.");
                 throw new CastException(e);
             }
-
             // set the charge in the appropriate place(s)
             boolean found = false;
             for(int x = 0; x < molIDMapping.length; x++){
@@ -1784,9 +1781,8 @@ public final class Input {
             spins[i] = new short[atsPerMol[i]];
         }
 
-        for (int i = 0; i < spinBlock.length; i++) {
-            final String[] saTemp = spinBlock[i].trim().split("\\;", 3);
-
+        for (final String spinBlock1 : spinBlock) {
+            final String[] saTemp = spinBlock1.trim().split("\\;", 3);
             // get info which molecule, atom, spin is wanted
             int whichMol = 0;
             int whichAtom = 0;
@@ -1799,7 +1795,6 @@ public final class Input {
                 System.err.println("Failure in casting String to int in spins.");
                 throw new CastException(e);
             }
-
             // set the spin in the appropriate place(s)
             boolean found = false;
             for(int x = 0; x < molIDMapping.length; x++){
@@ -2011,7 +2006,7 @@ public final class Input {
         String sTemp = saData[iEnergyLine].trim();
 
         double dEnergy = FixedValues.NONCONVERGEDENERGY;
-        if(sTemp.indexOf(" ") == -1){
+        if(!sTemp.contains(" ")){
             try{
                 dEnergy = Double.parseDouble(sTemp);
             }catch(Exception e){
@@ -2205,10 +2200,10 @@ public final class Input {
             throw new InitIOException(e);
         }
 
-        for(int i = 0; i < saListFiles.length; i++){
-            try{
-                ManipulationPrimitives.remove(saListFiles[i]);
-            } catch(Exception e){
+        for (final String saListFile : saListFiles) {
+            try {
+                ManipulationPrimitives.remove(saListFile);
+            }catch(Exception e){
                 throw new InitIOException(e);
             }
         }
@@ -2219,14 +2214,14 @@ public final class Input {
         sOrcaBasis += ".";
         try{
             saListFiles = InquiryPrimitives.fileListWithPrefix(sOrcaBasis);
-        }catch(Exception e){
+        } catch(Exception e){
             throw new InitIOException(e);
         }
 
-        for(int i = 0; i < saListFiles.length; i++){
-            try{
-                ManipulationPrimitives.remove(saListFiles[i]);
-            } catch(Exception e){
+        for (final String saListFile : saListFiles) {
+            try {
+                ManipulationPrimitives.remove(saListFile);
+            }catch(Exception e){
                 throw new InitIOException(e);
             }
         }
@@ -2237,13 +2232,13 @@ public final class Input {
         sTinkerBasis += ".";
         try{
             saListFiles = InquiryPrimitives.fileListWithPrefix(sTinkerBasis);
-        }catch(Exception e){
+        } catch(Exception e){
             throw new InitIOException(e);
         }
 
-        for(int i = 0; i < saListFiles.length; i++){
-            try{
-                ManipulationPrimitives.remove(saListFiles[i]);
+        for (final String saListFile : saListFiles) {
+            try {
+                ManipulationPrimitives.remove(saListFile);
             } catch(Exception e){
                 throw new InitIOException(e);
             }

@@ -61,13 +61,13 @@ public class ManipulationPrimitives {
         
         // handle the directory case
         final File[] files = f.listFiles();
-        for (int j = 0; j < files.length; j++) {
-            if (files[j].isDirectory()) {
+        for (final File file : files) {
+            if (file.isDirectory()) {
                 // recursive call... :-)
-                remove(files[j].getAbsolutePath());
+                remove(file.getAbsolutePath());
             } else {
-                if (!files[j].delete()) {
-                    System.err.println("ERROR: File couldn't be deleted. " + files[j]);
+                if (!file.delete()) {
+                    System.err.println("ERROR: File couldn't be deleted. " + file);
                 }
             }
         }

@@ -147,8 +147,8 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
         // the folder configuration
         final String[] confData = InputPrimitives.readFileIn(FOLDERINFO);
         String fStr = null;
-        for(int i = 0; i < confData.length; i++){
-            fStr = confData[i].trim();
+        for (final String confData1 : confData) {
+            fStr = confData1.trim();
             if(!(fStr.startsWith("#") || fStr.startsWith("//"))){
                 break;
             }

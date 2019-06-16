@@ -76,9 +76,9 @@ public class MultipleXOverWrapper<E,T extends Optimizable<E>> implements Generic
     public MultipleXOverWrapper(final MultipleXOverWrapper<E,T> orig){
         this.probabilities = orig.probabilities.clone();
         this.xovers = new ArrayList<>(orig.xovers.size());
-        for(final GenericCrossover<E,T> mut : orig.xovers){
+        orig.xovers.forEach((mut) -> {
             this.xovers.add(mut.clone());
-        }
+        });
     }
     
     @Override

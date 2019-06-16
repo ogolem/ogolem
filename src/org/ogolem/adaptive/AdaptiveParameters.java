@@ -528,7 +528,7 @@ public class AdaptiveParameters extends ContinuousProblem<Double> {
         final List<String> corrKeys = new ArrayList<>();
 
         final Set<String> allKeys = hashPosition.keySet();
-        for(String key : allKeys){
+        for(final String key : allKeys){
             if(key.startsWith(start)){
                 corrKeys.add(key);
             }

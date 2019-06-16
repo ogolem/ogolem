@@ -40,10 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
-import org.ogolem.core.Constants;
 import org.ogolem.core.Input;
-import org.ogolem.core.SimpleBondInfo;
-import org.ogolem.io.InputPrimitives;
 import org.ogolem.io.OutputPrimitives;
 
 /**

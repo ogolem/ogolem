@@ -89,8 +89,7 @@ public abstract class AbstractAdaptiveBackend implements AdaptiveBackend {
         
         final List<Property> allProps = new ArrayList<>();
         
-        for(final GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>> refPoint : referencePoints){
-            
+        referencePoints.forEach((refPoint) -> {
             // figure type of property out
             final Property p = refPoint.getReferenceProperty();
             if(p instanceof Energy){
@@ -167,7 +166,7 @@ public abstract class AbstractAdaptiveBackend implements AdaptiveBackend {
                 // error
                 throw new RuntimeException("Unknown property type " + p.printableProperty() + ".");
             }
-        }
+        });
         
         return allProps;
     }

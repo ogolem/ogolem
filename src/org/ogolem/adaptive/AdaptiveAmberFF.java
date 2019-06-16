@@ -164,9 +164,9 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
         else{
             this.params = null;
             this.topoCache = new ArrayList<>();
-            for(final Topology topo : orig.topoCache){
+            orig.topoCache.forEach((topo) -> {
                 this.topoCache.add(new Topology(topo));
-            }
+            });
         }
         // 1-3 and 1-4 contributions, not allowed to be null
         this.contr13 = new ArrayList<>(orig.contr13);
@@ -200,8 +200,8 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
         // now compute all contributions
         final ArrayList<Gradient> gradContrib = new ArrayList<>();
         double energy = 0.0;
-        for(int i = 0; i < terms.length; i++){
-            final Gradient grad = terms[i].partialCartesianGradient(topology, params);
+        for (final AdaptiveInteractionTerm term : terms) {
+            final Gradient grad = term.partialCartesianGradient(topology, params);
             energy += grad.getTotalEnergy();
             gradContrib.add(grad);
         }
@@ -238,8 +238,8 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
 
         // now all interaction terms
         double energy = 0.0;
-        for(int i = 0; i < terms.length; i++){
-            energy += terms[i].partialInteraction(topology, params);
+        for (final AdaptiveInteractionTerm term : terms) {
+            energy += term.partialInteraction(topology, params);
         }
 
         return energy;
@@ -262,8 +262,8 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
 
         // now all interaction terms
         double energy = 0.0;
-        for(int i = 0; i < terms.length; i++){
-            final double e = terms[i].partialInteraction(topology, params);
+        for (final AdaptiveInteractionTerm term : terms) {
+            final double e = term.partialInteraction(topology, params);
             energy += e;
         }
 
@@ -288,8 +288,8 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
 
         // now all interaction terms
         double e = 0.0;
-        for(int i = 0; i < terms.length; i++){
-            e += terms[i].partialParamGradient(topology, params, grad);
+        for (final AdaptiveInteractionTerm term : terms) {
+            e += term.partialParamGradient(topology, params, grad);
         }
 
         if(DEBUG){

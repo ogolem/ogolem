@@ -369,7 +369,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                         }
                         final List<T> merged = serverComm.synchronizePool(myPool, myID, maxStructsExchange,currIDStart);
                         if(merged.size() > maxStructsExchange){throw new Exception("ERROR: Getting more individuals back than I thought!");}
-                        for(final T t : merged){
+                        merged.forEach((t) -> {
                             // augment pool... we however will need to check if the IDs are the same!
                             // (i.e., the main pool may give something back that actually originated from us
                             // but then, we also want to get "older" IDs that originated from other proxies
@@ -389,17 +389,17 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                                     pool.addIndividualForced(t, t.getFitness());
                                 }
                             }
-                        }
+                        });
                         if(DEBUG){System.out.println("DEBUG: Initial pool merging with max struct exchange done.");}            
                     } else {
                         final List<T> myPool = new ArrayList<>();
-                        for(final GenericPoolEntry<E,T> entry : pool.getAllIndividuals()){
+                        pool.getAllIndividuals().forEach((entry) -> {
                             myPool.add(entry.getIndividual());
-                        }
+                        });
                         final List<T> merged = serverComm.synchronizePool(myPool, myID, pool.getPoolSize(),currIDStart);
                         if(merged.size() > pool.getPoolSize()){throw new Exception("WARNING: Getting more individuals back than I thought!");}
                         pool.emptyPool();
-                        for(final T t : merged){
+                        merged.forEach((t) -> {
                             // replace pool...
                             if(doNiching){
                                 final Niche niche = nicheComp.computeNiche(t);
@@ -407,7 +407,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                             } else {
                                 pool.addIndividualForced(t, t.getFitness());
                             }
-                        }
+                        });
                         if(DEBUG){System.out.println("DEBUG: Initial full pool merging done.");}            
                     }                                        
                     // and get a chunk of global optimization!
@@ -495,7 +495,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                         }
                         final List<T> merged = serverComm.synchronizePool(myPool, myID, maxStructsExchange,currIDStart);
                         if(merged.size() > maxStructsExchange){throw new Exception("Getting more individuals back than I thought!");}
-                        for(final T t : merged){
+                        merged.forEach((t) -> {
                             // augment pool...
                             if(doNiching){
                                 final Niche niche = nicheComp.computeNiche(t);
@@ -503,16 +503,16 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                             } else {
                                 pool.addIndividualForced(t, t.getFitness());
                             }
-                        }
+                        });
                         if(DEBUG){System.out.println("DEBUG: Pool merging with max struct exchange done.");}            
                     } else {
                         final List<T> myPool = new ArrayList<>();
-                        for(final GenericPoolEntry<E,T> entry : pool.getAllIndividuals()){
+                        pool.getAllIndividuals().forEach((entry) -> {
                             myPool.add(entry.getIndividual());
-                        }
+                        });
                         final List<T> merged = serverComm.synchronizePool(myPool, myID, pool.getPoolSize(),currIDStart);
                         pool.emptyPool();
-                        for(final T t : merged){
+                        merged.forEach((t) -> {
                             // replace pool...
                             if(doNiching){
                                 final Niche niche = nicheComp.computeNiche(t);
@@ -520,7 +520,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                             } else {
                                 pool.addIndividualForced(t, t.getFitness());
                             }
-                        }
+                        });
                         if(DEBUG){System.out.println("DEBUG: Full pool merging done.");}
                     }
                     

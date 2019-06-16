@@ -138,7 +138,7 @@ public class MainLJRefs {
                         params = new org.ogolem.adaptive.AdaptiveParameters(saParamData, -1);
                     } catch(Exception e){
                         System.err.println("ERROR: Can't read parameters in!");
-                        e.printStackTrace();
+                        e.printStackTrace(System.err);
                     }
                 }
 

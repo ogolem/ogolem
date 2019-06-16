@@ -377,10 +377,10 @@ final class CP2KCaller extends AbstractLocOpt{
         llInput.add("&END COORD");
 
         // now the bloody basis sets and potentials
-        for (int i = 0; i < saBasisAndPots.length; i++) {
-            llInput.add("&KIND " + saBasisAndPots[i][0]);
-            llInput.add("BASIS_SET " + saBasisAndPots[i][1]);
-            llInput.add("POTENTIAL " + saBasisAndPots[i][2]);
+        for (final String[] saBasisAndPot : saBasisAndPots) {
+            llInput.add("&KIND " + saBasisAndPot[0]);
+            llInput.add("BASIS_SET " + saBasisAndPot[1]);
+            llInput.add("POTENTIAL " + saBasisAndPot[2]);
             llInput.add("&END KIND");
         }
 

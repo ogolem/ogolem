@@ -86,8 +86,8 @@ class VisualizationConfig implements Serializable {
      */
     VisualizationConfig(final String[] inp) throws Exception{
         
-        for(int i = 0; i < inp.length; i++){
-            final String s = inp[i].trim();
+        for (final String inp1 : inp) {
+            final String s = inp1.trim();
             if(s.startsWith("#") || s.startsWith("//")){
                 continue;
             } else if(s.startsWith("VertexShape=")){

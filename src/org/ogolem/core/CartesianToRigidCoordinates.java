@@ -470,9 +470,9 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         // only use this functionality for numerical gradients and for unit tests
         // which are anyways both slow: leave it in!
         final List<CartesianCoordinates> cartCopy = new ArrayList<>();
-        for(final CartesianCoordinates cartes : cartesians){
+        cartesians.forEach((cartes) -> {
             cartCopy.add(cartes.clone());
-        }
+        });
         
         return cartCopy;
     }
@@ -483,9 +483,9 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         // only use this functionality for numerical gradients and for unit tests
         // which are anyways both slow: leave it in!
         final List<CartesianCoordinates> cartCopy = new ArrayList<>();
-        for(final CartesianCoordinates cartes : cartesBackup){
+        cartesBackup.forEach((cartes) -> {
             cartCopy.add(cartes.clone());
-        }
+        });
         
         return cartCopy;
     }

@@ -87,9 +87,9 @@ class AdaptiveCustomSpillage extends AbstractAdaptivable {
         this.noContr = orig.noContr.clone();
         if(orig.auxData != null){
             this.auxData = new ArrayList<>();
-            for(final String s : orig.auxData){
+            orig.auxData.forEach((s) -> {
                 this.auxData.add(s);
-            }
+            });
         } else {this.auxData = null;}
     }
     

@@ -172,20 +172,12 @@ final class SwitchGlobOptJob implements Job<Switch>{
 
     @Override
     public boolean jobWaiting(){
-        if((initialTasksSubmitted && !initialTasksComplete) || (!allTasksSubmitted && !allTasksComplete)){
-            return true;
-        } else{
-            return false;
-        }
+        return (initialTasksSubmitted && !initialTasksComplete) || (!allTasksSubmitted && !allTasksComplete);
     }
 
     @Override
     public boolean jobFinished(){
-        if(initialTasksComplete && allTasksComplete){
-            return true;
-        } else{
-            return false;
-        }
+        return (initialTasksComplete && allTasksComplete);
     }
 
     private void writeInterData(){
@@ -276,9 +268,9 @@ final class SwitchGlobOptJob implements Job<Switch>{
         
         if(!initialTasksComplete){
             
-            for(final Switch t : clientPool){
+            clientPool.forEach((t) -> {
                 pool.addIndividualForced(t, t.getFitness());
-            }
+            });
             countInitialReturns += noOfAssocResults;
             if(countInitialReturns == poolSize){
                 initialTasksComplete = true;
@@ -286,11 +278,12 @@ final class SwitchGlobOptJob implements Job<Switch>{
             }
         } else {
             
-            for(final Switch t : clientPool){
+            clientPool.forEach((t) -> {
                 final long id = t.getID();
-                if(id < lastStart){continue;}
-                pool.addIndividual(t, t.getFitness());
-            }
+                if (!(id < lastStart)) {
+                    pool.addIndividual(t, t.getFitness());
+                }
+            });
             countGlobOptReturns += noOfAssocResults;
             if(countGlobOptReturns == globOptIter){
                 allTasksComplete = true;

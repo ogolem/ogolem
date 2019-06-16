@@ -36,8 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.properties;
 
-import java.util.List;
-
 /**
  * A spectrum as a property.
  * @author Johannes Dieterich

@@ -43,9 +43,9 @@ package org.ogolem.switches;
  */
 public final class Tupel<E,T,V> {
 
-    private E object1;
-    private T object2;
-    private V object3;
+    private final E object1;
+    private final T object2;
+    private final V object3;
 
     Tupel(E ob1, T ob2, V ob3) {
         object1 = ob1;

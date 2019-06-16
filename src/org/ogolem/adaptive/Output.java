@@ -296,10 +296,10 @@ public class Output{
 
             // now the parameter file
             int iCounter = 0;
-            for(int i = 0; i < saParamAtoms.length; i++){
-                if(saParamAtoms[i].equalsIgnoreCase("H")){
+            for (final String saParamAtom : saParamAtoms) {
+                if (saParamAtom.equalsIgnoreCase("H")) {
                     // no params ;-)
-                } else if(saParamAtoms[i].equalsIgnoreCase("C")){
+                } else if (saParamAtom.equalsIgnoreCase("C")) {
                     llParamInp.add("USS\t C\t" + daParams[iCounter]);
                     iCounter++;
                     llParamInp.add("UPP\t C\t" + daParams[iCounter]);
@@ -328,7 +328,7 @@ public class Output{
                     iCounter++;
                     llParamInp.add("HSP\t C\t" + daParams[iCounter]);
                     iCounter++;
-                } else if(saParamAtoms[i].equalsIgnoreCase("N")){
+                } else if (saParamAtom.equalsIgnoreCase("N")) {
                     llParamInp.add("USS\t N\t" + daParams[iCounter]);
                     iCounter++;
                     llParamInp.add("UPP\t N\t" + daParams[iCounter]);
@@ -451,80 +451,80 @@ public class Output{
 
             // parameters
             int iCounter = 0;
-            for(int i = 0; i < saParamAtoms.length; i++){
-                if(saParamAtoms[i].equalsIgnoreCase("H")){
+            for (final String saParamAtom : saParamAtoms) {
+                if (saParamAtom.equalsIgnoreCase("H")) {
                     // hydrogen is special (less parameters)
-                    llParamInp.add("USS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("USS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("BETAS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("BETAS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("ZS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("ZS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("ALP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("ALP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("GSS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("GSS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN11\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN11\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN12\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN12\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN13\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN13\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN21\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN21\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN22\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN22\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN23\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN23\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN31\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN31\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN32\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN32\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN33\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN33\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
                 } else {
                     // all others are the same
-                    llParamInp.add("USS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("USS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("UPP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("UPP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("BETAS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("BETAS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("BETAP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("BETAP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("GSS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("GSS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("GSP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("GSP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("GPP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("GPP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("GP2\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("GP2\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("HSP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("HSP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("ZS\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("ZS\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("ZP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("ZP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("ALP\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("ALP\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN11\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN11\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN12\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN12\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN13\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN13\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN21\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN21\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN22\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN22\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN23\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN23\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN31\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN31\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN32\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN32\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
-                    llParamInp.add("FN33\t" + saParamAtoms[i] + "\t" + daParams[iCounter]);
+                    llParamInp.add("FN33\t" + saParamAtom + "\t" + daParams[iCounter]);
                     iCounter++;
                 }
             }

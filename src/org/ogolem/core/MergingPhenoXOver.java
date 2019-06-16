@@ -404,10 +404,10 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
 
         // and again we need to figure out the molecular types above
         final int[] mumAboveCounter2 = new int[highestType + 1];
-        for (final int motherAbove1 : motherAbove) {
+        motherAbove.forEach((motherAbove1) -> {
             //mother has p.d. the same overall molecular types as the father
             mumAboveCounter2[molTypesDad[motherAbove1]]++;
-        }
+        });
 
         // check whether the exchange worked
         for(int i = 0; i < mumAboveCounter2.length; i++){

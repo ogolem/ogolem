@@ -88,9 +88,9 @@ public final class GeometryConfig implements Serializable, Cloneable {
         gc.env = (this.env == null) ? null : this.env.clone();
         gc.geomMCs = new ArrayList<>();
         assert(geomMCs.size() == this.noOfParticles);
-        for(final MoleculeConfig mc : this.geomMCs){
+        this.geomMCs.forEach((mc) -> {
             gc.geomMCs.add(mc.clone());
-        }
+        });
         assert(this.bonds != null);
         gc.bonds = this.bonds.clone();
         

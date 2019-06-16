@@ -123,7 +123,7 @@ final class OrcaExcitor implements Excitor {
             return FixedValues.UNEXCITABLEENERGY;
         } catch(Error err){
             System.err.println("WARNING: Orca has a problem (local optimization)." + err.toString());
-            err.printStackTrace();
+            err.printStackTrace(System.err);
             return FixedValues.UNEXCITABLEENERGY;
         }
 

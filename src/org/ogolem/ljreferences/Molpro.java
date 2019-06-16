@@ -59,7 +59,7 @@ final class Molpro {
         try{
             saCont = LittleHelpers.readFileIn(sOutputFile);
         } catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return FixedValues.NONCONVERGEDENERGY;
         }
 
@@ -81,7 +81,7 @@ final class Molpro {
                 double dEnergy = Double.parseDouble(sEnergy);
                 return dEnergy;
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 return FixedValues.NONCONVERGEDENERGY;
             }
         }
@@ -99,7 +99,7 @@ final class Molpro {
         try{
             saCont = LittleHelpers.readFileIn(sOutputFile);
         } catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return FixedValues.NONCONVERGEDENERGY;
         }
 
@@ -121,7 +121,7 @@ final class Molpro {
                 double dEnergy = Double.parseDouble(sEnergy);
                 return dEnergy;
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 return FixedValues.NONCONVERGEDENERGY;
             }
         }
@@ -139,7 +139,7 @@ final class Molpro {
             try{
                 saCont = LittleHelpers.readFileIn(sAt + ".out");
             } catch(Exception e){
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 continue;
             }
 
@@ -160,7 +160,7 @@ final class Molpro {
                     double dEnergy = Double.parseDouble(sEnergy);
                     daRefs[iAtom] = dEnergy;
                 } catch(Exception e){
-                    e.printStackTrace();
+                    e.printStackTrace(System.err);
                 }
             }
         }

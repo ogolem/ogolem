@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.ogolem.core.AtomicProperties;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
@@ -73,12 +74,10 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
         if(!isInAdaptive){
             // translate different parameter definitions
             final String[] atoms = params.getAllKeysCopy();
-            final int[] atomNos = new int[atoms.length];
             int max = 0;
-            for(int i = 0; i < atoms.length; i++){
-                final int no = AtomicProperties.giveAtomicNumber(atoms[i]);
+            for (final String atom : atoms) {
+                final int no = AtomicProperties.giveAtomicNumber(atom);
                 max = Math.max(no, max);
-                atomNos[i] = no;
             }
             p = runot.createParameterStub(max);
             // copy data in
@@ -276,7 +275,7 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
             final String sMethod){
         
         // figure out which atoms we are dealing with
-        final ArrayList<String> allAtoms = new ArrayList<>();
+        final List<String> allAtoms = new ArrayList<>();
         for(final CartesianCoordinates cartes : refCartes){
             final String[] atoms = cartes.getAllAtomTypes();
             for(final String atom : atoms){

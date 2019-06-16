@@ -40,7 +40,6 @@ package org.ogolem.core;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
 import java.util.Random;
 import org.ogolem.generic.ContinuousProblem;
 import org.ogolem.helpers.RandomUtils;

@@ -116,7 +116,7 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         ref = reference;
         
         // the genetic pool
-        geneticPool = Collections.synchronizedList(new ArrayList<GenericPoolEntry<E,T>>(poolSize));    
+        geneticPool = Collections.synchronizedList(new ArrayList<>(poolSize));    
     }
     
     

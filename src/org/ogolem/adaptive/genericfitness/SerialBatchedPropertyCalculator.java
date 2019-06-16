@@ -84,11 +84,11 @@ public class SerialBatchedPropertyCalculator implements BatchedPropertyCalculato
         // do all the needed calculations
         calculatedProperties.clear();
         
-        for(final PropertyBatch batch : batches){
+        batches.forEach((batch) -> {
             final List<? extends Property> props = adaptivable.runAllPropertyCalcs(params, batch.getBatch());
             final int batchID = batch.getBatchID();
             calculatedProperties.add(batchID, props);
-        }
+        });
     }
     
     @SuppressWarnings("unchecked")

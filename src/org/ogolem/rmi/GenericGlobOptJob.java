@@ -407,17 +407,18 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T>{
             
             poolLock.writeLock().lock();
             
-            for(final T t : clientPool){
+            clientPool.forEach((t) -> {
                 final long id = t.getID();
                 // should be even easier: if ID is below our previous offset -> discard
-                if(id < lastStart){continue;}
-                if(doNiching){
-                    final Niche niche = nicheComp.computeNiche(t);
-                    pool.addIndividualForcedUnsync(t, niche, t.getFitness());
-                } else {
-                    pool.addIndividualForcedUnsync(t, null, t.getFitness());
+                if (!(id < lastStart)) {
+                    if(doNiching){
+                        final Niche niche = nicheComp.computeNiche(t);
+                        pool.addIndividualForcedUnsync(t, niche, t.getFitness());
+                    } else {
+                        pool.addIndividualForcedUnsync(t, null, t.getFitness());
+                    }
                 }
-            }
+            });
             
             int c = 0;
             for (final GenericPoolEntry<E, T> entry : pool) {
@@ -447,17 +448,18 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T>{
             rl.unlock();
             poolLock.writeLock().lock();
             
-            for(final T t : clientPool){
+            clientPool.forEach((t) -> {
                 final long id = t.getID();
                 // should be even easier: if ID is below our previous offset -> discard
-                if(id < lastStart){continue;}
-                if(doNiching){
-                    final Niche niche = nicheComp.computeNiche(t);
-                    pool.addIndividualUnsync(t, niche, t.getFitness());
-                } else {
-                    pool.addIndividualUnsync(t, null, t.getFitness());
+                if (!(id < lastStart)) {
+                    if(doNiching){
+                        final Niche niche = nicheComp.computeNiche(t);
+                        pool.addIndividualUnsync(t, niche, t.getFitness());
+                    } else {
+                        pool.addIndividualUnsync(t, null, t.getFitness());
+                    }
                 }
-            }
+            });
             
             int c = 0;
             for (final GenericPoolEntry<E, T> entry : pool) {
@@ -566,9 +568,9 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T>{
         initFitnesses.add("# pool position        individual id                 fitness");
         
         final List<String> poolCont = pool.getFormattedPool();
-        for(final String s : poolCont){
+        poolCont.forEach((s) -> {
             initFitnesses.add(s);
-        }
+        });
         
         initFitnesses.add("#");
         initFitnesses.add("#-----------------------------------------------------------");
@@ -607,9 +609,9 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T>{
         finalFitnesses.add("# pool position        individual id                 fitness");
         
         final List<String> poolCont2 = pool.getFormattedPool();
-        for(final String s : poolCont2){
+        poolCont2.forEach((s) -> {
             finalFitnesses.add(s);
-        }
+        });
         
         finalFitnesses.add("#");
         finalFitnesses.add("#-----------------------------------------------------------");

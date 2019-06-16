@@ -63,9 +63,9 @@ public class GenericChainedXOver<E,T extends Optimizable<E>> implements GenericC
     
     public GenericChainedXOver(final GenericChainedXOver<E,T> orig){
         this.xovers = new ArrayList<>(orig.xovers.size());
-        for(final GenericCrossover<E,T> xover : orig.xovers){
+        orig.xovers.forEach((xover) -> {
             xovers.add(xover.clone());
-        }
+        });
         this.probs = new ArrayList<>(orig.probs.size());
         for(final double d : orig.probs){
             assert(d >= 0.0 && d <= 1.0);

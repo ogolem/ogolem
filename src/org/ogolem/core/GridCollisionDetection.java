@@ -624,7 +624,6 @@ class GridCollisionDetection implements CollisionDetectionEngine{
         // ok, if we reached here we either found no collision, or, we didn't exit on the first one
         info.setPairWiseDistances(daDistances,true);
         System.out.println("DEBUG: DONE WITH GRID COLLDETECT!");
-        return;
     }
 
     @Override

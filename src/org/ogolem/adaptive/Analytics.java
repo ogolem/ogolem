@@ -136,9 +136,9 @@ class Analytics {
         }
 
         // normalize it
-        for(int i = 0; i < daCovarianceMatrix.length; i++){
-            for(int j = 0; j < daCovarianceMatrix[0].length; j++){
-                daCovarianceMatrix[i][j] = daCovarianceMatrix[i][j] / iSizeOfPop;
+        for (final double[] daCovarianceMatrix1 : daCovarianceMatrix) {
+            for (int j = 0; j < daCovarianceMatrix[0].length; j++) {
+                daCovarianceMatrix1[j] = daCovarianceMatrix1[j] / iSizeOfPop;
             }
         }
 

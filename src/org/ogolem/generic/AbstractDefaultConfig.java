@@ -108,9 +108,9 @@ public abstract class AbstractDefaultConfig<E,T extends Optimizable<E>> implemen
         output.add("");
         output.add("GENERIC POOL CONFIGURATION:");
         final List<String> poolC = poolConfig.getMyConfig();
-        for(final String s: poolC){
+        poolC.forEach((s) -> {
             output.add(s);
-        }
+        });
         output.add("");
         output.add("GENERIC HISTORY CONFIGURATION:");
         output.add(hisConf.getMyConfig());

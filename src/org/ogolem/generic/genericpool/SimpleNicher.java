@@ -87,9 +87,9 @@ public class SimpleNicher<E,T extends Optimizable<E>>  extends AbstractNicher<E,
                         System.err.println(" Pool entry " + x + " " + en.getNiche().getID());
                     }
                     System.err.println("");
-                    for(final Tuple<Niche,Integer> tup : nichePopulation){
+                    nichePopulation.forEach((tup) -> {
                         System.err.println(" Niche pop: " + tup.getObject1().getID() + " " + tup.getObject2());
-                    }
+                    });
                     System.err.println(" Serializing pool for post-mortem analysis...");
                     pool.serializeMe();
                     System.err.println("");

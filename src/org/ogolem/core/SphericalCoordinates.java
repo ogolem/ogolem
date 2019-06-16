@@ -54,7 +54,7 @@ class SphericalCoordinates implements Serializable{
 
 	private final int[] iaAtomsPerMolecule;
 
-	private double[][] daCoordinates;
+	private final double[][] daCoordinates;
 
 	private String [] saAtoms;
 

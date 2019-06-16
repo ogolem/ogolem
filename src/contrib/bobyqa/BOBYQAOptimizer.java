@@ -70,7 +70,7 @@ public class BOBYQAOptimizer implements Serializable {
      * Lower and upper boundaries of the objective variables. boundaries == null
      * means no boundaries.
      */
-    private double[][] boundaries;
+    private final double[][] boundaries;
     /** Number of objective variables/problem dimension */
     private int dimension;
     /** goal (minimize or maximize) */
@@ -423,17 +423,17 @@ public class BOBYQAOptimizer implements Serializable {
         int i__, j, k, ih, jj, nh, ip, jp;
         double dx;
         int np;
-        double den = 0, one = 0, ten = 0, rho = 0, sum = 0, two = 0, diff = 0, half = 0, beta = 0, gisq = 0;
+        double den, rho = 0, sum = 0, diff = 0, beta = 0, gisq = 0;
         int knew = 0;
         double temp, suma, sumb, bsum, fopt;
         int nptm;
-        double zero, curv;
+        double curv;
         int ksav;
         double gqsq = 0, dist = 0, sumw = 0, sumz = 0, diffa = 0, diffb = 0, diffc = 0, hdiag = 0;
         int kbase;
         double delta = 0, adelt = 0, denom = 0, fsave = 0, bdtol = 0, delsq = 0;
         int nresc, nfsav;
-        double ratio = 0, dnorm = 0, vquad = 0, pqold = 0, tenth = 0;
+        double ratio = 0, dnorm = 0, vquad = 0, pqold = 0;
         int itest;
         double sumpq, scaden;
         double errbig, fracsq, biglsq, densav;
@@ -450,12 +450,12 @@ public class BOBYQAOptimizer implements Serializable {
         bmat_dim1 = ndim;
  
         // Function Body
-        half = .5;
-        one = 1.;
-        ten = 10.;
-        tenth = .1;
-        two = 2.;
-        zero = 0.;
+        final double half = .5;
+        final double one = 1.;
+        final double ten = 10.;
+        final double tenth = .1;
+        final double two = 2.;
+        final double zero = 0.;
         np = n + 1;
         nptm = npt - np;
         nh = n * np / 2;
@@ -1469,15 +1469,15 @@ public class BOBYQAOptimizer implements Serializable {
 
         // Local variables
         int i__, j, k;
-        double ha, gw, one, diff, half;
+        double ha, gw, diff;
         int ilbd, isbd;
         double slbd;
         int iubd;
         double vlag, subd, temp;
         int ksav = 0;
-        double step = 0, zero = 0, curv = 0;
+        double step = 0, curv = 0;
         int iflag;
-        double scale = 0, csave = 0, tempa = 0, tempb = 0, tempd = 0, const__ = 0, sumin = 0, 
+        double scale = 0, csave = 0, tempa = 0, tempb = 0, tempd = 0, sumin = 0, 
         ggfree = 0;
         int ibdsav = 0;
         double dderiv = 0, bigstp = 0, predsq = 0, presav = 0, distsq = 0, stpsav = 0, wfixsq = 0, wsqsav = 0;
@@ -1488,10 +1488,10 @@ public class BOBYQAOptimizer implements Serializable {
         bmat_dim1 = ndim;
 
         // Function Body
-        half = .5;
-        one = 1.;
-        zero = 0.;
-        const__ = one + Math.sqrt(2.);
+        final double half = .5;
+        final double one = 1.;
+        final double zero = 0.;
+        final double const__ = one + Math.sqrt(2.);
         i__1 = npt;
         for (k = 1; k <= i__1; k++) {
             hcol.set(k, zero);
@@ -1888,9 +1888,8 @@ public class BOBYQAOptimizer implements Serializable {
         // Local variables
         double f;
         int i__, j, k, ih, np, nfm;
-        double one;
         int nfx = 0, ipt = 0, jpt = 0;
-        double two = 0, fbeg = 0, diff = 0, half = 0, temp = 0, zero = 0, recip = 0, stepa = 0, stepb = 0;
+        double fbeg = 0, diff = 0, temp = 0, recip = 0, stepa = 0, stepb = 0;
         int itemp;
         double rhosq;
 
@@ -1901,10 +1900,10 @@ public class BOBYQAOptimizer implements Serializable {
         bmat_dim1 = ndim;
 
         // Function Body
-        half = .5;
-        one = 1.;
-        two = 2.;
-        zero = 0.;
+        final double half = .5;
+        final double one = 1.;
+        final double two = 2.;
+        final double zero = 0.;
         rhosq = rhobeg * rhobeg;
         recip = one / rhosq;
         np = n + 1;
@@ -2172,15 +2171,14 @@ public class BOBYQAOptimizer implements Serializable {
         int i__, j, k, ih, jp, ip, iq, np;
         double xp = 0, xq = 0, den = 0;
         int ihp = 0;
-        double one;
         int jpn, kpt;
-        double sum = 0, diff = 0, half = 0, beta = 0;
+        double sum = 0, diff = 0, beta = 0;
         int kold;
         double winc;
         int nrem, knew;
         double temp, bsum;
         int nptm;
-        double zero = 0, hdiag = 0, fbase = 0, sfrac = 0, denom = 0, vquad = 0, sumpq = 0;
+        double hdiag = 0, fbase = 0, sfrac = 0, denom = 0, vquad = 0, sumpq = 0;
         double dsqmin, distsq, vlmxsq;
 
         // Set some constants.
@@ -2189,9 +2187,9 @@ public class BOBYQAOptimizer implements Serializable {
         bmat_dim1 = ndim;
 
         // Function Body
-        half = .5;
-        one = 1.;
-        zero = 0.;
+        final double half = .5;
+        final double one = 1.;
+        final double zero = 0.;
         np = n + 1;
         sfrac = half / (double) np;
         nptm = npt - np;
@@ -2759,14 +2757,14 @@ public class BOBYQAOptimizer implements Serializable {
         int i__, j, k, ih;
         double ds;
         int iu;
-        double dhd, dhs, cth, one, shs, sth, ssq, half, beta=0, sdec, blen;
+        double dhd, dhs, cth, shs, sth, ssq, beta=0, sdec, blen;
         int iact = 0, nact = 0;
         double angt = 0, qred;
         int isav;
-        double temp = 0, zero = 0, xsav = 0, xsum = 0, angbd = 0, dredg = 0, sredg = 0;
+        double temp = 0, xsav = 0, xsum = 0, angbd = 0, dredg = 0, sredg = 0;
         int iterc;
         double resid = 0, delsq = 0, ggsav = 0, tempa = 0, tempb = 0,
-        redmax = 0, dredsq = 0, redsav = 0, onemin = 0, gredsq = 0, rednew = 0;
+        redmax = 0, dredsq = 0, redsav = 0, gredsq = 0, rednew = 0;
         int itcsav = 0;
         double rdprev = 0, rdnext = 0, stplen = 0, stepsq = 0;
         int itermax = 0;
@@ -2775,10 +2773,10 @@ public class BOBYQAOptimizer implements Serializable {
         xpt_dim1 = npt;
 
         // Function Body
-        half = .5;
-        one = 1.;
-        onemin = -1.;
-        zero = 0.;
+        final double half = .5;
+        final double one = 1.;
+        final double onemin = -1.;
+        final double zero = 0.;
 
         // The sign of GOPT(I) gives the sign of the change to the I-th variable
         // that will reduce Q from its value at XOPT. Thus xbdi.get((I) shows whether
@@ -3445,11 +3443,11 @@ public class BOBYQAOptimizer implements Serializable {
         /**
          * array storing elements.
          */
-        private double[] w;
+        private final double[] w;
         /**
          * base index for access.
          */
-        private int base;
+        private final int base;
 
         /**
          * @param w array storing elements.

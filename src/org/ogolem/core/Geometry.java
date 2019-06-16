@@ -346,9 +346,9 @@ public class Geometry extends ContinuousProblem<Molecule> {
         
         int count = 0;
         while (true) {
-            for (final Molecule mol : molecules) {
+            molecules.forEach((mol) -> {
                 mol.setRandomCOM(cellSize);
-            }
+            });
 
             final CartesianCoordinates cartes = getCartesians();
             final CollisionDetection collDetect = new CollisionDetection(whichCollisionDetection);
@@ -382,9 +382,9 @@ public class Geometry extends ContinuousProblem<Molecule> {
      */
     void setRandomOrientationOfMolecules() {
         
-        for (final Molecule mol : molecules) {
+        molecules.forEach((mol) -> {
             mol.setRandomOrient();
-        }
+        });
     }
 
     /**
@@ -404,9 +404,9 @@ public class Geometry extends ContinuousProblem<Molecule> {
         while (repeat) {
 
 
-            for(final Molecule mol : molecules){
+            molecules.forEach((mol) -> {
                 mol.setRandomOrient();
-            }
+            });
             
             // check sanity
             final CartesianCoordinates cartes = getCartesians();
@@ -461,7 +461,9 @@ public class Geometry extends ContinuousProblem<Molecule> {
         final ArrayList<Molecule> alBackupMoles = new ArrayList<>(noOfIndieParticles);
 
         // initialize it
-        for(final Molecule mol : molecules) {alBackupMoles.add(new Molecule(mol));}
+        molecules.forEach((mol) -> {
+            alBackupMoles.add(new Molecule(mol));
+        });
 
         boolean repeat = true;
         while (repeat) {
@@ -480,9 +482,11 @@ public class Geometry extends ContinuousProblem<Molecule> {
                     final BondInfo tempBonds = CoordTranslation.checkForBonds(molecule.getCartesians(), blowCollDetect);
 
                     int iHowManyDoFs = 0;
-                    for (int k = 0; k < baDoFs.length; k++) {
+                    for (final boolean[] baDoF : baDoFs) {
                         for (int j = 0; j < baDoFs[0].length; j++) {
-                            if (baDoFs[k][j]) {iHowManyDoFs++;}
+                            if (baDoF[j]) {
+                                iHowManyDoFs++;
+                            }
                         }
                     }
 
@@ -565,7 +569,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
 
                                 if(beAggressive){
                                     if (iWhichKind == 0) {zmat.setABondLength(iWhichValue, 2.5 * dFactor);}
-                                    else if (iWhichKind == 0) {zmat.setABondAngle(iWhichValue, Math.PI * dFactor);}
+                                    else if (iWhichKind == 1) {zmat.setABondAngle(iWhichValue, Math.PI * dFactor);}
                                     else if (iWhichKind == 2){
                                         final boolean b = random.nextBoolean();
                                         if(b) {zmat.setADihedral(iWhichValue, Math.PI*dFactor);}
@@ -869,7 +873,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
      */
     public boolean[] getAllConstraints(final boolean withEnv) {
 
-        final boolean b = (containsEnvironment() && withEnv) ? true : false;
+        final boolean b = (containsEnvironment() && withEnv);
         
         boolean[] baConstraints = new boolean[noOfIndieParticles + ((b)?1:0)];
         for (int i = 0; i < noOfIndieParticles; i++) {

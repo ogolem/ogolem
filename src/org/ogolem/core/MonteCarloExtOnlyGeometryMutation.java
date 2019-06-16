@@ -114,8 +114,7 @@ public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecu
         
         final Geometry work = new Geometry(orig);
         final double[] comMove = new double[3];
-        for(final int moveMol : moveables){
-            
+        moveables.forEach((moveMol) -> {
             final double comM = maxMoveCOM*r.nextDouble();
             RandomUtils.randomVector(comMove, comM);
             
@@ -129,7 +128,7 @@ public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecu
             origCOM[2] += sign1*comMove[2];
     
             RandomUtils.randomEulerIncrements(m.getOrientation(), eulerM);
-        }
+        });
         
         return work;
     }

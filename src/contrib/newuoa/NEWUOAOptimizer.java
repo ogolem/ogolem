@@ -1947,11 +1947,11 @@ public class NEWUOAOptimizer implements Serializable {
         /**
          * array storing elements.
          */
-        private double[] w;
+        private final double[] w;
         /**
          * base index for access.
          */
-        private int base;
+        private final int base;
 
         /**
          * @param w array storing elements.

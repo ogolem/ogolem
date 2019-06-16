@@ -205,9 +205,9 @@ public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
         initFitnesses.add("# pool position        individual id                 fitness");
         
         final List<String> poolCont = pool.getFormattedPool();
-        for(final String s : poolCont){
+        poolCont.forEach((s) -> {
             initFitnesses.add(s);
-        }
+        });
         
         initFitnesses.add("#");
         initFitnesses.add("#-----------------------------------------------------------");
@@ -258,9 +258,9 @@ public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
         finalFitnesses.add("# pool position        individual id                 fitness");
         
         final List<String> poolCont2 = pool.getFormattedPool();
-        for(final String s : poolCont2){
+        poolCont2.forEach((s) -> {
             finalFitnesses.add(s);
-        }
+        });
         
         finalFitnesses.add("#");
         finalFitnesses.add("#-----------------------------------------------------------");

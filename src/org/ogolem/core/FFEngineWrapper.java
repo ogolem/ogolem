@@ -112,10 +112,8 @@ class FFEngineWrapper implements CartesianFullBackend, Newton {
         double energy = FixedValues.NONCONVERGEDENERGY;
         try{
             energy = CalculateGeomEnergy(lID, iIteration, ffID, atomNos, daXYZ1D, iNoOfAtoms, energyparts, atsPerMol);
-        } catch(Exception e){
+        } catch(Exception | Error e){
             e.printStackTrace(System.err);
-        } catch (Error err){
-            err.printStackTrace(System.err);
         }
         
         if(Double.isNaN(energy) || Double.isInfinite(energy) || energy >= FixedValues.NONCONVERGEDENERGY || energy < cutE) return FixedValues.NONCONVERGEDENERGY;
@@ -141,10 +139,8 @@ class FFEngineWrapper implements CartesianFullBackend, Newton {
         double dEnergy =  FixedValues.NONCONVERGEDENERGY;
         try{
             dEnergy = CalculateGeomGradient(lID, iIteration, ffID, atomNos, daXYZ1D, grad1D, iNoOfAtoms, energyparts, atsPerMol);
-        } catch(Exception e){
+        } catch(Exception | Error e){
             e.printStackTrace(System.err);
-        } catch (Error err){
-            err.printStackTrace(System.err);
         }
         
         if(Double.isNaN(dEnergy) || Double.isInfinite(dEnergy)){

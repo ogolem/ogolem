@@ -146,9 +146,9 @@ public class GenericDetailStatistics {
         out.add("Number of gradient evaluations:        " + backend.getTotalGradientEvals());
         
         final Set<Entry<String,Long>> customs = backend.getAllUnknownCounters().entrySet();
-        for(final Entry<String,Long> entry : customs){
+        customs.forEach((entry) -> {
             out.add("Number of " + entry.getKey() + ": " + entry.getValue());
-        }
+        });
         
         out.add("");
         out.add("#######################################");

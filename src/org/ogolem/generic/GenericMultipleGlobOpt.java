@@ -74,9 +74,9 @@ public class GenericMultipleGlobOpt<E,T extends Optimizable<E>> implements Gener
     public GenericMultipleGlobOpt(final GenericMultipleGlobOpt<E,T> orig){
         this.probabilities = orig.probabilities.clone();
         this.globopts = new ArrayList<>(orig.globopts.size());
-        for(final GenericGlobalOptimization<E,T> opt : orig.globopts){
+        orig.globopts.forEach((opt) -> {
             this.globopts.add(opt.clone());
-        }
+        });
     }
     
     @Override

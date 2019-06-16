@@ -96,20 +96,16 @@ final class SphereSpace implements AllowedSpace{
 
 
         // move with respect to middle of sphere
-        double[][] daTemp = new double[3][1];
+        final double[][] daTemp = new double[3][1];
         for(int i = 0; i < 3; i++){
             daTemp[i][0] = point[i] - daMiddle[i];
         }
 
         // translate to spherical coords
-        double[][] daSpherical = CoordTranslation.cartesianToSphericalCoord(daTemp);
+        final double[][] daSpherical = CoordTranslation.cartesianToSphericalCoord(daTemp);
 
         // check
-        if(daSpherical[0][0] > dRadius){
-            return false;
-        } else{
-            return true;
-        }
+        return (daSpherical[0][0] <= dRadius);
     }
 
 }

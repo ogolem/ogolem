@@ -216,11 +216,9 @@ final class CPMDCaller extends AbstractLocOpt {
         OutputPrimitives.createAFolder(sCPMDFolder);
 
         // copy the .psp files
-        for(int i = 0; i < saAuxInfos.length; i++){
-
-            final String sPSPFile = saAuxInfos[i][1];
+        for (final String[] saAuxInfo : saAuxInfos) {
+            final String sPSPFile = saAuxInfo[1];
             final String sNewPSP = sCPMDFolder + System.getProperty("file.separator") + sPSPFile;
-
             // potentially throws an exception
             OutputPrimitives.createLink(sPSPFile, sNewPSP);
         }
@@ -493,22 +491,18 @@ final class CPMDCaller extends AbstractLocOpt {
             // specify the system
             llInput.add("&ATOMS");
 
-            for (int i = 0; i < saAux.length; i++) {
-                llInput.add("*" + saAux[i][1]);
-                llInput.add("LMAX=" + saAux[i][2]);
-
+            for (final String[] saAux1 : saAux) {
+                llInput.add("*" + saAux1[1]);
+                llInput.add("LMAX=" + saAux1[2]);
                 // now the atoms
                 final List<Integer> llCurrentAtoms = new LinkedList<>();
-
                 for (int j = 0; j < saAtoms.length; j++) {
                     final String sAtom = saAtoms[j];
-                    if (sAtom.equalsIgnoreCase(saAux[i][0])) {
+                    if (sAtom.equalsIgnoreCase(saAux1[0])) {
                         llCurrentAtoms.add(j);
                     }
                 }
-
                 llInput.add("" + llCurrentAtoms.size());
-
                 // finally the coordinates
                 for (int j = 0; j < llCurrentAtoms.size(); j++) {
                     llInput.add("  " + (daXYZ[0][llCurrentAtoms.get(j)]) + "  "
@@ -521,22 +515,18 @@ final class CPMDCaller extends AbstractLocOpt {
         } else{
             // custom input
             llInput.add(customBlocks[0]);
-            for (int i = 0; i < saAux.length; i++) {
-                llInput.add("*" + saAux[i][1]);
-                llInput.add("LMAX=" + saAux[i][2]);
-
+            for (final String[] saAux1 : saAux) {
+                llInput.add("*" + saAux1[1]);
+                llInput.add("LMAX=" + saAux1[2]);
                 // now the atoms
                 final List<Integer> llCurrentAtoms = new LinkedList<>();
-
                 for (int j = 0; j < saAtoms.length; j++) {
                     final String sAtom = saAtoms[j];
-                    if (sAtom.equalsIgnoreCase(saAux[i][0])) {
+                    if (sAtom.equalsIgnoreCase(saAux1[0])) {
                         llCurrentAtoms.add(j);
                     }
                 }
-
                 llInput.add("" + llCurrentAtoms.size());
-
                 // finally the coordinates
                 for (int j = 0; j < llCurrentAtoms.size(); j++) {
                     llInput.add("  " + (daXYZ[0][llCurrentAtoms.get(j)]) + "  "

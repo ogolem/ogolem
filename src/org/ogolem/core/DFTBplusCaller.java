@@ -331,8 +331,8 @@ public class DFTBplusCaller extends AbstractLocOpt {
         output.add(auxInp[0]);
         output.add("Geometry = {");
         String typeNameString = "TypeNames = {";
-        for (int i = 0; i < typeNames.length; i++) {
-            typeNameString += "\"" + typeNames[i] + "\" ";
+        for (final String typeName : typeNames) {
+            typeNameString += "\"" + typeName + "\" ";
         }
         typeNameString += "}";
         output.add(typeNameString);
@@ -378,8 +378,8 @@ public class DFTBplusCaller extends AbstractLocOpt {
         final String[] output = new String[noOfAtoms + 22 + typeNames.length + noOfConstr];
         output[0] = "Geometry = {";
         output[1] = "TypeNames = {";
-        for (int i = 0; i < typeNames.length; i++) {
-            output[1] += "\"" + typeNames[i] + "\" ";
+        for (final String typeName : typeNames) {
+            output[1] += "\"" + typeName + "\" ";
         }
         output[1] += "}";
 

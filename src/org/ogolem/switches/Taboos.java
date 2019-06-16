@@ -60,7 +60,7 @@ public final class Taboos implements Serializable{
      * Constructs the taboo list with big enough of a list.
      */
     private Taboos(){
-        this.knownColors = Collections.synchronizedList(new ArrayList<String>(2*SwitchesConfig.iNoOfGlobIters
+        this.knownColors = Collections.synchronizedList(new ArrayList<>(2*SwitchesConfig.iNoOfGlobIters
                 + SwitchesConfig.iPoolSize));
     }
 

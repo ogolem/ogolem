@@ -321,16 +321,14 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
         // loop through all reference geometries and figure a list of non-redundant atom tyes out
         final List<String> llAtoms = new LinkedList<>();
 
-        for(final CartesianCoordinates cartesTemp : refCartes){
-            final String[] saAtoms = cartesTemp.getAllAtomTypes();
-
-            for (int i = 0; i < saAtoms.length; i++) {
-                if (!llAtoms.contains(saAtoms[i])) {
+        refCartes.stream().map((cartesTemp) -> cartesTemp.getAllAtomTypes()).forEachOrdered((saAtoms) -> {
+            for (final String saAtom : saAtoms) {
+                if (!llAtoms.contains(saAtom)) {
                     // add it to the list
-                    llAtoms.add(saAtoms[i]);
+                    llAtoms.add(saAtom);
                 }
             }
-        }
+        });
 
         int iParamSum = 0;
 
@@ -395,10 +393,10 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
         int iCounter = 0;
 
         if(azoBenzene){
-            for(int i = 0; i < saAtoms.length; i++){
-                if (saAtoms[i].equalsIgnoreCase("H")) {
+            for (final String saAtom : saAtoms) {
+                if (saAtom.equalsIgnoreCase("H")) {
                     // nothing, since we do NOT reoptimize hydrogen parameters p.d.
-                } else if(saAtoms[i].equalsIgnoreCase("C")){
+                } else if (saAtom.equalsIgnoreCase("C")) {
                     // 1: USS
                     daBorders[0][iCounter] = -163.32;
                     daBorders[1][iCounter] = -9.11;
@@ -468,8 +466,7 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
                     daBorders[0][iCounter] = 0.00;
                     daBorders[1][iCounter] = 5.80;
                     iCounter++;
-                } else if(saAtoms[i].equalsIgnoreCase("N")){
-
+                } else if (saAtom.equalsIgnoreCase("N")) {
                     // 1: USS
                     daBorders[0][iCounter] = -163.32;
                     daBorders[1][iCounter] = -9.11;
@@ -537,8 +534,8 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
                         iCounter++;
                     }
                 } else {
-                    System.err.println("WARNING: No informations on borders for " + saAtoms[i] + " found. Using big ones.");
-                    for (int j = 0; j < params.getAmountOfParametersForKey(saAtoms[i]); j++) {
+                    System.err.println("WARNING: No informations on borders for " + saAtom + " found. Using big ones.");
+                    for (int j = 0; j < params.getAmountOfParametersForKey(saAtom); j++) {
                         daBorders[0][iCounter] = -500;
                         daBorders[1][iCounter] = 100;
                         iCounter++;
@@ -547,8 +544,8 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
             }
         } else{
 
-            for (int i = 0; i < saAtoms.length; i++) {
-                if (saAtoms[i].equalsIgnoreCase("H")) {
+            for (final String saAtom : saAtoms) {
+                if (saAtom.equalsIgnoreCase("H")) {
                     // 1. USS
                     daBorders[0][iCounter] = -13.00;
                     daBorders[1][iCounter] = -9.00;

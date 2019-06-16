@@ -218,19 +218,23 @@ public class PeriodicCoordinates implements StructuralData {
         return fractionalCoords;
     }
     
+    @Override
     public short[] getAllSpins(){
         return this.spins;
     }
     
+    @Override
     public float[] getAllCharges(){
         return this.charges;
     }
     
+    @Override
     public void setAllCharges(final float[] newCharges){
         assert(newCharges != null);
         assert(newCharges.length == noAtoms);
     }
     
+    @Override
     public void setAllSpins(final short[] newSpins){
         assert(newSpins != null);
         assert(newSpins.length == noAtoms);

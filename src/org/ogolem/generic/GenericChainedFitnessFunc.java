@@ -60,9 +60,9 @@ public class GenericChainedFitnessFunc<E,T extends Optimizable<E>> implements Ge
     public GenericChainedFitnessFunc(final GenericChainedFitnessFunc<E,T> orig){
         if(orig.functions.isEmpty()){throw new RuntimeException("Wrong input for chained fitness function.");}
         this.functions = new ArrayList<>();
-        for (final GenericFitnessFunction<E, T> function : orig.functions) {
+        orig.functions.forEach((function) -> {
             this.functions.add(function.clone());
-        }
+        });
         this.cutoff = orig.cutoff;
     }
     

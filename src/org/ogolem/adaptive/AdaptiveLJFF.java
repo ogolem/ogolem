@@ -460,9 +460,6 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                     }
                 }
             }
-
-            // ok, we return the analytical gradient anyways
-            return;
         }
     }
 
@@ -775,10 +772,10 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             final CartesianCoordinates cartesTemp = itRefGeoms.next();
             final String[] saAtoms = cartesTemp.getAllAtomTypes();
 
-            for (int i = 0; i < saAtoms.length; i++) {
-                if (!llAtoms.contains(saAtoms[i])) {
+            for (final String saAtom : saAtoms) {
+                if (!llAtoms.contains(saAtom)) {
                     // add it to the list
-                    llAtoms.add(saAtoms[i]);
+                    llAtoms.add(saAtom);
                 }
             }
         }

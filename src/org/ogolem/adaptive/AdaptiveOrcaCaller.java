@@ -393,10 +393,10 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
             final CartesianCoordinates cartesTemp = itRefGeoms.next();
             final String[] saAtoms = cartesTemp.getAllAtomTypes();
 
-            for (int i = 0; i < saAtoms.length; i++) {
-                if (!llAtoms.contains(saAtoms[i])) {
+            for (final String saAtom : saAtoms) {
+                if (!llAtoms.contains(saAtom)) {
                     // add it to the list
-                    llAtoms.add(saAtoms[i]);
+                    llAtoms.add(saAtom);
                 }
             }
         }
@@ -429,8 +429,8 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
 
         int iCounter = 0;
 
-        for(int i = 0; i < saAtoms.length; i++){
-            if(saAtoms[i].equalsIgnoreCase("H")){
+        for (final String saAtom : saAtoms) {
+            if (saAtom.equalsIgnoreCase("H")) {
                 daBorders[0][iCounter] = -100;
                 daBorders[1][iCounter] = +100;
                 iCounter++;
@@ -439,14 +439,13 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
                 daBorders[1][iCounter] = +100;
                 iCounter++;
             } else {
-                System.err.println("WARNING: No informations on borders for "
-                        + saAtoms[i] + " found. Using big ones.");
-                for(int j = 0; j < params.getAmountOfParametersForKey(saAtoms[i]); j++){
+                System.err.println("WARNING: No informations on borders for " + saAtom + " found. Using big ones.");
+                for (int j = 0; j < params.getAmountOfParametersForKey(saAtom); j++) {
                     daBorders[0][iCounter] = Double.MIN_VALUE;
                     daBorders[0][iCounter] = Double.MAX_VALUE;
                     iCounter++;
                 }
-                       //TODO atom specific
+                //TODO atom specific
             }
         }
 

@@ -69,9 +69,6 @@ public class AtomicProperties {
     
     private static final String[] atomSymbolArray = new String[MAXATOMNO];
 
-    // it's a singleton ;-)
-    private static AtomicProperties props = new AtomicProperties();
-
     /**
      * A constructor populating both the HashMap containing radii and the one
      * containing weights. Private since we have a singleton design pattern.

@@ -81,28 +81,24 @@ final class ThreadingInits {
             final int i, final SwitchesConfig switchesConfig,
             final GenericPool<Color,Switch> pool, final Taboos taboos){
 
-        return new Runnable(){
-
-            @Override
-            public void run(){
-                final Switch sSwitch = new Switch(refSwitch);
-
-                // we need to set random colors
-                sSwitch.changeToRandomColors();
-
-                sSwitch.setID(i);
-
-                // we need to figure the fitness out
-                final FitnessFunction fitness = new FitnessFunction(switchesConfig);
-                final Tupel<Double, Double, Double> energies = fitness.fitnessOfSwitch(sSwitch);
-                sSwitch.setFitness(energies.getObject1());
-                sSwitch.setS0S1EnergyCis(energies.getObject2());
-                sSwitch.setS0S1EnergyTrans(energies.getObject3());
-
-                // now add the done switch to the pool and the taboo list
-                pool.addIndividualForced(sSwitch, sSwitch.getFitness());
-                taboos.addTaboo(sSwitch);
-            }
+        return () -> {
+            final Switch sSwitch = new Switch(refSwitch);
+            
+            // we need to set random colors
+            sSwitch.changeToRandomColors();
+            
+            sSwitch.setID(i);
+            
+            // we need to figure the fitness out
+            final FitnessFunction fitness = new FitnessFunction(switchesConfig);
+            final Tupel<Double, Double, Double> energies = fitness.fitnessOfSwitch(sSwitch);
+            sSwitch.setFitness(energies.getObject1());
+            sSwitch.setS0S1EnergyCis(energies.getObject2());
+            sSwitch.setS0S1EnergyTrans(energies.getObject3());
+            
+            // now add the done switch to the pool and the taboo list
+            pool.addIndividualForced(sSwitch, sSwitch.getFitness());
+            taboos.addTaboo(sSwitch);
         };
     }
 }

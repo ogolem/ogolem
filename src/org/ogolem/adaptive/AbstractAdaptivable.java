@@ -83,6 +83,8 @@ public abstract class AbstractAdaptivable implements Adaptivable {
     @Override
     public <T extends Property, V extends ReferenceInputData<T>> PropertyCalculator<T,V> getCalculatorForProperty(final T property, final V data) {
         
+        assert (property != null);
+        
         System.out.println("INFO: Default implementation of getCalculatorForProperty from abstract super class AbstractAdaptivable called.");
         
         // energy is our precious little snowflake still
@@ -102,10 +104,12 @@ public abstract class AbstractAdaptivable implements Adaptivable {
         
         final List<Property> allProps = new ArrayList<>();
         
-        for(final GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>> refPoint : referencePoints){
-            
+        referencePoints.forEach((refPoint) -> {
             // figure type of property out
             final Property p = refPoint.getReferenceProperty();
+            
+            assert(p != null);
+            
             if(p instanceof Energy){
                 
                 final Energy typedP = (Energy) p;
@@ -194,7 +198,7 @@ public abstract class AbstractAdaptivable implements Adaptivable {
                 // error
                 throw new RuntimeException("Unknown property type " + p.printableProperty() + ".");
             }
-        }
+        });
         
         return allProps;
     }

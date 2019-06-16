@@ -92,30 +92,25 @@ final class ThreadingGlobOpt {
     private static Runnable createGlobOptTask(final GenericPool<Color,Switch> pool, final int position,
             final SwitchesConfig config, final Taboos taboos) {
         
-        return new Runnable() {
-
-            @Override
-            public void run() {
-
-                final List<Switch> vParents = pool.getParents();
-                final SwitchesGlobOpt globopt = new SwitchesGlobOpt(config);
-                final Switch sChild = globopt.doTheGlobOpt(position,
-                        vParents.get(0), vParents.get(1));
-
-                /*
-                 * currently not used, remains here for the eventual creation
-                 * of a history object
-                 */
-                boolean accepted;
-
-                if (sChild != null){
-                    // non-null'd switch returned, fine that is
-                    
-                    // switches do not support niching
-                    accepted = pool.addIndividual(sChild, sChild.getFitness());
-
-                    taboos.addTaboo(sChild);
-                }
+        return () -> {
+            final List<Switch> vParents = pool.getParents();
+            final SwitchesGlobOpt globopt = new SwitchesGlobOpt(config);
+            final Switch sChild = globopt.doTheGlobOpt(position,
+                    vParents.get(0), vParents.get(1));
+            
+            /*
+            * currently not used, remains here for the eventual creation
+            * of a history object
+            */
+            boolean accepted;
+            
+            if (sChild != null){
+                // non-null'd switch returned, fine that is
+                
+                // switches do not support niching
+                accepted = pool.addIndividual(sChild, sChild.getFitness());
+                
+                taboos.addTaboo(sChild);
             }
         };
     }

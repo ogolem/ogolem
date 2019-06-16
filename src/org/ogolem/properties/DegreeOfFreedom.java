@@ -45,7 +45,7 @@ package org.ogolem.properties;
 public class DegreeOfFreedom implements Property {
     
     private static final long serialVersionUID = (long) 20130104;
-    private int[] refPoints;
+    private final int[] refPoints;
     private double value;
     
     public DegreeOfFreedom(final double value, final int[] points){

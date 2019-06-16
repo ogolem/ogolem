@@ -62,9 +62,9 @@ public class GenericChainedMutation<E, T extends Optimizable<E>> implements Gene
     
     public GenericChainedMutation(final GenericChainedMutation<E,T> orig){
         this.mutations = new ArrayList<>(orig.mutations.size());
-        for(final GenericMutation<E,T> mut : orig.mutations){
+        orig.mutations.forEach((mut) -> {
             mutations.add(mut.clone());
-        }
+        });
         this.probs = new ArrayList<>(orig.probs.size());
         for(final double d : orig.probs){
             assert(d >= 0.0 && d <= 1.0);

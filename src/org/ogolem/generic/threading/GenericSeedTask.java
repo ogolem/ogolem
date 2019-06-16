@@ -67,7 +67,7 @@ public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<
     private static Iterator<String> seedIterator = null;
     
     public GenericSeedTask(final String seedPath) throws Exception {
-        seedData = Collections.synchronizedList(new ArrayList<String>());
+        seedData = Collections.synchronizedList(new ArrayList<>());
         final File f = new File(seedPath);
         if (!f.exists() || !f.isDirectory()) {
             throw new RuntimeException("Seeding path must be a directory!");

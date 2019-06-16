@@ -344,7 +344,7 @@ public class FMProfessPseudoPotential implements Adaptivable {
                 c+=3;
             }
         }
-
+        
         return paramStub;
     }
 
@@ -1279,9 +1279,9 @@ public class FMProfessPseudoPotential implements Adaptivable {
             
             if(DEBUG){
                 System.out.println("DEBUG: returning energy order: ");
-                for(final Tuple<String,Double> et : energies){
+                energies.forEach((et) -> {
                     System.out.println("DEBUG: " + et.getObject1() + " with " + et.getObject2());
-                }
+                });
             }
             
             return order;

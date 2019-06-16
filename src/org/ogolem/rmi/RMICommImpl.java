@@ -198,7 +198,7 @@ public class RMICommImpl<T> implements RMICommunication<T>{
             return merged;
         } else {
             System.err.println("WARNING: Proxy " + whichID + " was not allowed to merge pool.");
-            return queue.mergePools(0, new ArrayList<T>(0), maxStructsBack, lastStart);
+            return queue.mergePools(0, new ArrayList<>(0), maxStructsBack, lastStart);
         }
     }
     
@@ -211,7 +211,7 @@ public class RMICommImpl<T> implements RMICommunication<T>{
         }
         
         final List<Task<T>> tasks = queue.nextInitTasks(maxTasks, noProxies);
-        list.idGotMultipleJobs(tasks.size(), new DummyTask<T>(), id);
+        list.idGotMultipleJobs(tasks.size(), new DummyTask<>(), id);
         
         return tasks;
     }
@@ -235,7 +235,7 @@ public class RMICommImpl<T> implements RMICommunication<T>{
         
         final int numTasks = tup.getObject3();
         if(numTasks > 0){
-            list.idGotMultipleJobs(tup.getObject3(), new DummyTask<T>(), id);
+            list.idGotMultipleJobs(tup.getObject3(), new DummyTask<>(), id);
         }
         
         if(!tup.getObject1()){

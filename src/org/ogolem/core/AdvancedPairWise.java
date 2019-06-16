@@ -153,8 +153,6 @@ class AdvancedPairWise implements CollisionDetectionEngine {
 
         // set the pairwise distances to our collision info object
         info.setPairWiseDistances(dists, distCompl);
-        
-        return;
     }
 
     @Override

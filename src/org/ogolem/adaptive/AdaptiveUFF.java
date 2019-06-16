@@ -291,15 +291,12 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
 
         int iParamCounter = 0;
         
-        for(int iForAtom = 0; iForAtom < saForAtoms.length; iForAtom++){
-
-            final String sCurrentAtom = saForAtoms[iForAtom];
-
+        for (final String sCurrentAtom : saForAtoms) {
             /*
-             * first parameter: axilrod teller, this should be fairly easy
-             * we need to keep in mind that we JUST want to have those three-bodies
-             * where there is AT LEAST one atom of the kind we are looking at ATM
-             */
+            * first parameter: axilrod teller, this should be fairly easy
+            * we need to keep in mind that we JUST want to have those three-bodies
+            * where there is AT LEAST one atom of the kind we are looking at ATM
+            */
             double dAxilrodTellerGrad = 0.0;
 
             for (int i = 0; i < iNoOfAtoms; i++) {
@@ -358,9 +355,9 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
             iParamCounter++;
 
             /*
-             * then the lennard-jones epsilon and sigma: again, consider the atom types
-             * 2 parameters
-             */
+            * then the lennard-jones epsilon and sigma: again, consider the atom types
+            * 2 parameters
+            */
             double dLJEpsilonGrad = 0.0;
             double dLJSigmaGrad = 0.0;
             for(int i = 0; i < iNoOfAtoms -1; i++){
@@ -422,9 +419,9 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
             iParamCounter++;
 
             /*
-             * now the deviation of our shifting constant: 1.0
-             * times the number of atoms
-             */
+            * now the deviation of our shifting constant: 1.0
+            * times the number of atoms
+            */
             int iNoOfCorrectAtoms = 0;
             for(int i = 0; i < iNoOfAtoms; i++){
                 if(saAtoms[i].equalsIgnoreCase(sCurrentAtom)){
@@ -475,10 +472,10 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
             final CartesianCoordinates cartesTemp = itRefGeoms.next();
             final String[] saAtoms = cartesTemp.getAllAtomTypes();
 
-            for (int i = 0; i < saAtoms.length; i++) {
-                if (!llAtoms.contains(saAtoms[i])) {
+            for (final String saAtom : saAtoms) {
+                if (!llAtoms.contains(saAtom)) {
                     // add it to the list
-                    llAtoms.add(saAtoms[i]);
+                    llAtoms.add(saAtom);
                 }
             }
         }
@@ -522,7 +519,7 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
 
         int iCounter = 0;
 
-        for (int i = 0; i < saAtoms.length; i++) {
+        for (final String saAtom : saAtoms) {
             // Axilrod-Teller C: uber-speculative (TM)
             daBorders[0][iCounter] = 0.00;
             daBorders[1][iCounter] = 100.00;

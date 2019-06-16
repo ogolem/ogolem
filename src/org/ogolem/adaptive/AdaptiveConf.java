@@ -463,7 +463,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                 
                 final double maxAllowedDiff = (Math.abs(dRefEnergy) <= 1E-5) ? 1E-6 : Math.abs(percentageForDiff * 0.01 * dRefEnergy); // first: cutoff
                 final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point = referenceEnergies.get(i);
-                final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> newPoint = new ReferencePoint<Energy,ReferenceGeomData<Energy,?>>(point.getReferenceProperty(),
+                final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> newPoint = new ReferencePoint<>(point.getReferenceProperty(),
                         point.getReferenceInputData(),point.getReferenceID(),point.getRefWeight(),maxAllowedDiff);
                 // replace old with new
                 referenceEnergies.set(i, newPoint);
@@ -1326,7 +1326,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         
         if(doNiching){
             config.setAddsToStats(this.addsToNicheStats);
-            config.setNicher(new SimpleNicher<Double,AdaptiveParameters>(noOfIndividualsPerNicheMax));
+            config.setNicher(new SimpleNicher<>(noOfIndividualsPerNicheMax));
         }
         
         ParentSelector<Double,AdaptiveParameters> selec;
@@ -1440,7 +1440,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                     final String atom = crystStruct.substring(0, indexBra).trim();
                     final short atomNo = AtomicProperties.giveAtomicNumber(atom);
                     final String sym = crystStruct.substring(indexBra+1,crystStruct.length()-1).trim();
-                    ReferenceGeomData<CellVolume,CartesianCoordinates> geom = new ReferenceGeomData<>(currentCartes, bonds, id);;
+                    ReferenceGeomData<CellVolume,CartesianCoordinates> geom = new ReferenceGeomData<>(currentCartes, bonds, id);
                     cellVolumeData = new RefCellVolumeData<>(id,sym,atomNo,geom);
                     try {
                         final double cellVol = Double.parseDouble(line[1].trim());
@@ -1736,21 +1736,21 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                 throw new RuntimeException("Energy reference specified but no reference input data for either cartesians or bonds!");
             }
             final ReferenceGeomData<Energy,CartesianCoordinates> geomD = new ReferenceGeomData<>(currentCartes, bonds, id);
-            final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point = new ReferencePoint<Energy,ReferenceGeomData<Energy,?>>(energy,geomD,id,dRefWeight,dRefMaxDiff);
+            final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point = new ReferencePoint<>(energy,geomD,id,dRefWeight,dRefMaxDiff);
             referenceEnergies.add(point);
         }
         
         /* for the forces property */
         if(forces != null){
             forcesData = new ReferenceForcesData(id, new ReferenceGeomData<>(currentCartes, bonds, id));
-            final GenericReferencePoint<Forces,ReferenceForcesData<?>> point = new ReferencePoint<Forces,ReferenceForcesData<?>>(forces,forcesData,id,dRefWeight,dRefMaxDiff);
+            final GenericReferencePoint<Forces,ReferenceForcesData<?>> point = new ReferencePoint<>(forces,forcesData,id,dRefWeight,dRefMaxDiff);
             referenceForces.add(point);
         }
         
         /* for the density property */
         if(density != null){
             densityData = new ReferenceDensityData(id, tag, new ReferenceGeomData<>(currentCartes, bonds, id));
-            final GenericReferencePoint<Density,ReferenceDensityData<?>> point = new ReferencePoint<Density,ReferenceDensityData<?>>(density,densityData,id,dRefWeight,dRefMaxDiff);
+            final GenericReferencePoint<Density,ReferenceDensityData<?>> point = new ReferencePoint<>(density,densityData,id,dRefWeight,dRefMaxDiff);
             referenceDensity.add(point);
         }
         
@@ -1759,7 +1759,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(bulkModData == null){
                 throw new RuntimeException("Bulk modulus reference specified but no reference input data!");
             }
-            final GenericReferencePoint<BulkModulus,RefBulkModulusData<?>> point = new ReferencePoint<BulkModulus,RefBulkModulusData<?>>(modulus,bulkModData,id,dRefWeight,dRefMaxDiff);
+            final GenericReferencePoint<BulkModulus,RefBulkModulusData<?>> point = new ReferencePoint<>(modulus,bulkModData,id,dRefWeight,dRefMaxDiff);
             referenceBulkMod.add(point);
         }
         
@@ -1768,7 +1768,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(cellVolumeData == null){
                 throw new RuntimeException("Cell volume reference specified but no reference input data!");
             }
-            final GenericReferencePoint<CellVolume,RefCellVolumeData<?>> point = new ReferencePoint<CellVolume,RefCellVolumeData<?>>(cellVolume,cellVolumeData,id,dRefWeight,dRefMaxDiff);
+            final GenericReferencePoint<CellVolume,RefCellVolumeData<?>> point = new ReferencePoint<>(cellVolume,cellVolumeData,id,dRefWeight,dRefMaxDiff);
             referenceCellVolume.add(point);
         }
         
@@ -1777,7 +1777,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(energyOrderData == null){
                 throw new RuntimeException("Energy order reference specified but no reference input data!");
             }
-            final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>> point = new ReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>>(energyOrder,energyOrderData,id,dRefWeight,dRefMaxDiff);
+            final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>> point = new ReferencePoint<>(energyOrder,energyOrderData,id,dRefWeight,dRefMaxDiff);
             referenceEnergyOrder.add(point);
         }
         
@@ -1786,8 +1786,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(deltaGaugeData == null){
                 throw new RuntimeException("Delta gauge reference specified but no reference input data!");
             }
-            deltaGaugeData.setGeomData(new ReferenceGeomData<DeltaGauge,CartesianCoordinates>(currentCartes, bonds, id));
-            final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>> point = new ReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>>(deltaGauge,deltaGaugeData,id,dRefWeight,dRefMaxDiff);
+            deltaGaugeData.setGeomData(new ReferenceGeomData<>(currentCartes, bonds, id));
+            final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>> point = new ReferencePoint<>(deltaGauge,deltaGaugeData,id,dRefWeight,dRefMaxDiff);
             referenceDeltaGauge.add(point);
         }
     }
@@ -1829,19 +1829,19 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         
         if(!referenceForces.isEmpty()){
             final Forces forces = new Forces(new double[0][0]);
-            final ReferenceForcesData<CartesianCoordinates> dummy = new ReferenceForcesData<>(-1,new ReferenceGeomData<Forces,CartesianCoordinates>(null,null,-1));
+            final ReferenceForcesData<CartesianCoordinates> dummy = new ReferenceForcesData<>(-1,new ReferenceGeomData<>(null,null,-1));
             final PropertyCalculator<Forces,ReferenceForcesData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<Forces,ReferenceForcesData<CartesianCoordinates>>getCalculatorForProperty(forces, dummy);
             if(propCalc == null){
                 throw new RuntimeException("No property calculator available for forces and reference forces data, although term was requested!");
             }
-            final PseudoPropertyCalculator<Forces,ReferenceForcesData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<Forces,ReferenceForcesData<CartesianCoordinates>>(propCalc,batcher,forces);
+            final PseudoPropertyCalculator<Forces,ReferenceForcesData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,forces);
             
             List<GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>> referenceFs = new ArrayList<>();
-            for(final GenericReferencePoint<Forces,ReferenceForcesData<?>> p : referenceForces){
+            referenceForces.forEach((p) -> {
                 // let's just cast this around...
                 // XXX god is this ugly
                 referenceFs.add((GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>) (Object)p);
-            }
+            });
             
             FitnessTermConfig<Forces> conf;
             try{
@@ -2001,19 +2001,19 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             final GenericReferencePoint<Density,ReferenceDensityData<?>> zeroth = referenceDensity.get(0);
             
             final Density density = new Density(null);
-            final ReferenceDensityData<CartesianCoordinates> dummy = new ReferenceDensityData<>(-1,"dummy",new ReferenceGeomData<Density,CartesianCoordinates>(null,null,-1));
+            final ReferenceDensityData<CartesianCoordinates> dummy = new ReferenceDensityData<>(-1,"dummy",new ReferenceGeomData<>(null,null,-1));
             final PropertyCalculator<Density,ReferenceDensityData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<Density,ReferenceDensityData<CartesianCoordinates>>getCalculatorForProperty(density, dummy);
             if(propCalc == null){
                 throw new RuntimeException("No property calculator available for forces and reference forces data, although term was requested!");
             }
-            final PseudoPropertyCalculator<Density,ReferenceDensityData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<Density,ReferenceDensityData<CartesianCoordinates>>(propCalc,batcher,density);
+            final PseudoPropertyCalculator<Density,ReferenceDensityData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,density);
             
             List<GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>> referenceDs = new ArrayList<>();
-            for(final GenericReferencePoint<Density,ReferenceDensityData<?>> p : referenceDensity){
+            referenceDensity.forEach((p) -> {
                 // let's just cast this around...
                 // XXX god is this ugly
                 referenceDs.add((GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>) (Object)p);
-            }
+            });
             
             FitnessTermConfig<Density> conf;
             try{
@@ -2376,7 +2376,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         return outputFolder + System.getProperty("file.separator") + "IntermediateParameterPool.bin";
     }
 
-    private static StructureDataType type = StructureDataType.Cartesian;
+    private static final StructureDataType type = StructureDataType.Cartesian;
     
     public StructureDataType structuralDataType(){
         return type;

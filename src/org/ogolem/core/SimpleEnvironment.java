@@ -67,13 +67,13 @@ public final class SimpleEnvironment implements Environment{
 
     private final Atom[] referencePoints;
 
-    private CartesianCoordinates cartEnv;
+    private final CartesianCoordinates cartEnv;
 
     private double[] distanceCOMs;
 
-    private double[] eulersToCluster;
+    private final double[] eulersToCluster;
 
-    private AllowedSpace space;
+    private final AllowedSpace space;
     
     /**
      * The constructor for the initial creation.

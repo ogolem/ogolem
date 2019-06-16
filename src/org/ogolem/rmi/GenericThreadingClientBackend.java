@@ -39,10 +39,8 @@ package org.ogolem.rmi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.ogolem.generic.Configuration;
 import org.ogolem.generic.GenericGlobalOptimization;
@@ -255,7 +253,7 @@ class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
             if (merged.size() > indsToMerge) {
                 throw new Exception("Getting more individuals back than I thought!");
             }
-            for (final T t : merged) {
+            merged.forEach((t) -> {
                 // augment pool... we however will need to check if the IDs are the same!
                 // (i.e., the main pool may give something back that actually originated from us
                 // but then, we also want to get "older" IDs that originated from other proxies
@@ -275,7 +273,7 @@ class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
                         pool.addIndividualForced(t, t.getFitness());
                     }
                 }
-            }
+            });
         } else {            
             final List<T> myPool = new ArrayList<>();
             for (final GenericPoolEntry<E, T> entry : pool) {

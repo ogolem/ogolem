@@ -85,10 +85,6 @@ final class LittleHelpers {
             dDihedral = dDihedral - Math.PI*2.0;
         }
 
-        if(Math.abs(dDihedral - dOptimalValue) <= dAllowDiff){
-            return true;
-        } else {
-            return false;
-        }
+        return (Math.abs(dDihedral - dOptimalValue) <= dAllowDiff);
     }
 }

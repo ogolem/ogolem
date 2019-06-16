@@ -72,7 +72,7 @@ public final class Gradient extends AbstractGradient {
         this.local3DGradient = new double[dims[0]][dims[1]];
         this.functionValue = 0.0;
 
-        for(final Gradient gradient : gradients){
+        gradients.forEach((gradient) -> {
             final double[][] tempGrad = gradient.local3DGradient;
             for(int i = 0; i < dims[0]; i++){
                 for(int j = 0; j < dims[1]; j++){
@@ -81,7 +81,7 @@ public final class Gradient extends AbstractGradient {
             }
 
             functionValue += gradient.functionValue;
-        }
+        });
     }
 
     /*

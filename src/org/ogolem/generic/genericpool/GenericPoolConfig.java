@@ -123,7 +123,7 @@ public class GenericPoolConfig<E,T extends Optimizable<E>> implements Serializab
         return acceptableFitness;
     }
 
-    public void setAcceptableFitness(double acceptableFitness) {
+    public final void setAcceptableFitness(double acceptableFitness) {
         if(acceptableFitness != acceptableFitness) throw new IllegalArgumentException("Please specify a reasonable fitness");
         this.acceptableFitness = acceptableFitness;
     }
@@ -143,7 +143,7 @@ public class GenericPoolConfig<E,T extends Optimizable<E>> implements Serializab
         return addsToStats;
     }
 
-    public void setAddsToStats(final int addsToStats) {
+    public final void setAddsToStats(final int addsToStats) {
         if(addsToSerial <= 0){
             throw new IllegalArgumentException("AddsToStats must be positive!");
         }
@@ -186,7 +186,7 @@ public class GenericPoolConfig<E,T extends Optimizable<E>> implements Serializab
         return poolSize;
     }
 
-    public void setPoolSize(int poolSize) {
+    public final void setPoolSize(int poolSize) {
         this.poolSize = poolSize;
     }
 
@@ -230,7 +230,7 @@ public class GenericPoolConfig<E,T extends Optimizable<E>> implements Serializab
         this.selector = selector;
     }
     
-    public void beSilent(){
+    public final void beSilent(){
         this.beSilent = true;
     }
     

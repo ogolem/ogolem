@@ -80,11 +80,9 @@ public class MainAtom2Ogo {
         final int noAtoms = Integer.parseInt(atomData[0].trim());
         final CartesianCoordinates cartes = new CartesianCoordinates(noAtoms,1,new int[]{noAtoms});
         final BondInfo info = new SimpleBondInfo(noAtoms);
-        final String[] atoms = cartes.getAllAtomTypes();
         final double[][] xyz = cartes.getAllXYZCoord();
         for(int i = 0; i < noAtoms; i++){
             final String[] line = atomData[i+1].trim().split("\\s+");
-            atoms[i] = line[0];
             xyz[0][i] = Double.parseDouble(line[1])*Constants.ANGTOBOHR;
             xyz[1][i] = Double.parseDouble(line[2])*Constants.ANGTOBOHR;
             xyz[2][i] = Double.parseDouble(line[3])*Constants.ANGTOBOHR;
@@ -113,8 +111,8 @@ public class MainAtom2Ogo {
         
         // plot the bonds to output stream
         final List<String> bondInfo = info.translateToInput();
-        for(final String s : bondInfo){
+        bondInfo.forEach((s) -> {
             System.out.println(s);
-        }
+        });
     }
 }

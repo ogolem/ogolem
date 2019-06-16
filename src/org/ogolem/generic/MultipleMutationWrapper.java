@@ -74,9 +74,9 @@ public class MultipleMutationWrapper<E,T extends Optimizable<E>> implements Gene
     public MultipleMutationWrapper(final MultipleMutationWrapper<E,T> orig){
         this.probabilities = orig.probabilities.clone();
         this.mutations = new ArrayList<>(orig.mutations.size());
-        for(final GenericMutation<E,T> mut : orig.mutations){
+        orig.mutations.forEach((mut) -> {
             this.mutations.add(mut.clone());
-        }
+        });
     }
     
     @Override

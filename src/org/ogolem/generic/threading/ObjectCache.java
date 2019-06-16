@@ -55,7 +55,7 @@ public class ObjectCache<T extends Cloneable> {
     private final List<Tuple<Boolean,T>> cacheContent;
     
     public ObjectCache(final int noOfThreads, final T ref) throws Exception {
-        this.cacheContent = Collections.synchronizedList(new ArrayList<Tuple<Boolean,T>>(noOfThreads));//new ArrayList<Tuple<Boolean,T>>(noOfThreads);//Collections.synchronizedList(new ArrayList<Tuple<Boolean,T>>(noOfThreads));
+        this.cacheContent = Collections.synchronizedList(new ArrayList<>(noOfThreads));//new ArrayList<Tuple<Boolean,T>>(noOfThreads);//Collections.synchronizedList(new ArrayList<Tuple<Boolean,T>>(noOfThreads));
         this.ref = ref;
         for(int i = 0; i < 2*noOfThreads; i++){ // a little bit extra does not hurt. :-)
             cacheContent.add(new Tuple<>(false, dirtyClone(ref)));

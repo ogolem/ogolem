@@ -94,9 +94,9 @@ abstract class AbstractNicher<E,T extends Optimizable<E>>  implements Nicher<E,T
         // apparently unknown so far, which shouldn't happen
         System.err.println("ERROR: Trying to delete a niche unknown to the nicher. This is a bug, notify the author(s).");
         System.err.println("Niche: " + deleted.getID());
-        for(final Tuple<Niche,Integer> tup : nichePopulation){
+        nichePopulation.forEach((tup) -> {
             System.err.println(" Niche pop: " + tup.getObject1().getID() + " " + tup.getObject2());
-        }
+        });
         System.exit(84);
     }
         
@@ -150,9 +150,9 @@ abstract class AbstractNicher<E,T extends Optimizable<E>>  implements Nicher<E,T
                         final int freshPop = alPops.get(i);
                         if(pop != freshPop){
                             System.err.println("ERROR: Something wrong in niche housekeeping. For niche " + n.getID() + " fresh number " + freshPop + " vs. " + pop + ".");
-                            for(final Tuple<Niche,Integer> tup2 : nichePopulation){
+                            nichePopulation.forEach((tup2) -> {
                                 System.err.println(" Niche pop: " + tup2.getObject1().getID() + " " + tup2.getObject2());
-                            }
+                            });
                             System.exit(126);
                         }
                         continue TupLoop;

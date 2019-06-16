@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 public class Grid<T> implements Serializable, Iterable<double[]> {
     
     private static final long serialVersionUID = (long) 20130507;
-    private static final Logger log = LoggerFactory.getLogger(Grid.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Grid.class);
     private final List<double[]> gridPoints;
     private final List<T> auxDataInGrid;
     private final List<Integer> unvisited;
@@ -95,14 +95,14 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
             unvisited.add(i);
         }
         
-        if(log.isDebugEnabled()){
-            log.debug("Grid setup complete. Total number of gridpoints " + gridPoints.size());
+        if(LOG.isDebugEnabled()){
+            LOG.debug("Grid setup complete. Total number of gridpoints " + gridPoints.size());
         }
         
         this.auxDataInGrid = new ArrayList<>(gridPoints.size());
-        for(int i = 0; i < gridPoints.size(); i++){
+        gridPoints.forEach((_item) -> {
             auxDataInGrid.add(null);
-        }
+        });
         
         assert(gridPoints.size() == unvisited.size());
         this.r = new Random();
@@ -141,14 +141,14 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      * @return A grid point or null if all points have been visited.
      */
     public double[] getRandomGridPoint(){
-        log.debug("Returning a random grid point. Are there any? " + (!unvisited.isEmpty()));
+        LOG.debug("Returning a random grid point. Are there any? " + (!unvisited.isEmpty()));
         if(unvisited.isEmpty()) {return null;}
         
         final int unv = r.nextInt(unvisited.size());
         final Integer whi = unvisited.get(unv);
         unvisited.remove(whi);
         
-        log.debug("Returning grid point " + Arrays.toString(gridPoints.get(whi)));
+        LOG.debug("Returning grid point " + Arrays.toString(gridPoints.get(whi)));
         return gridPoints.get(whi);
     }
     
@@ -157,7 +157,7 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      * @return A list of all grid points.
      */
     public List<double[]> getAllGridPoints(){
-        log.debug("Returning all grid points. Number: " + gridPoints.size());
+        LOG.debug("Returning all grid points. Number: " + gridPoints.size());
         return gridPoints;
     }
     
@@ -166,7 +166,7 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      * @return A list of integer IDs (these are internal and correspond to the list of grid points)
      */
     public List<Integer> getAllUnvisted(){
-        log.debug("Returning all unvisted. Currently: " + unvisited.size());
+        LOG.debug("Returning all unvisted. Currently: " + unvisited.size());
         return unvisited;
     }
     
@@ -175,7 +175,7 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      * again in a random fashion.
      */
     public void resetUnvisited(){
-        log.debug("Resetting unvisited grid points.");
+        LOG.debug("Resetting unvisited grid points.");
         // clear out and add all points again
         unvisited.clear();
         for(int i = 0; i < gridPoints.size(); i++){
@@ -190,7 +190,7 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      */
     @Override
     public Iterator<double[]> iterator(){
-        log.debug("Returning fresh iterator and clearing unvisted.");
+        LOG.debug("Returning fresh iterator and clearing unvisted.");
         // empty the unvisited list since we are about to exhaust it anyways
         unvisited.clear();
         
@@ -232,16 +232,16 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      */
     private void gridder(final int which, final double[] p, final double[] starts, final double[] ends, final double[] incrs){
         
-        if(log.isDebugEnabled()){
+        if(LOG.isDebugEnabled()){
             String s = "";
             for(final double d : p){
                 s += "  " + d;
             }
-            log.debug("Working on " + which + " at point " + s);
+            LOG.debug("Working on " + which + " at point " + s);
         }
         
         if(p[which] > ends[which]){
-            log.debug("Resetting " + which);
+            LOG.debug("Resetting " + which);
             System.arraycopy(starts, which, p, which, starts.length - which);
             return;
         } // we are at the end of this variable, reset
@@ -252,12 +252,12 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
             p[which] = starts[which];
             while(p[which] <= ends[which]){
                 gridPoints.add(p.clone());
-                if(log.isDebugEnabled()){
+                if(LOG.isDebugEnabled()){
                     String s = "";
                     for(final double d : p){
                         s += "\t" + d;
                     }
-                    log.debug("Adding " + s + " to grid.");
+                    LOG.debug("Adding " + s + " to grid.");
                 }
                 p[which] += incrs[which];
             }
@@ -285,13 +285,13 @@ public class Grid<T> implements Serializable, Iterable<double[]> {
      */
     public String[] mapToPseudoXYZ(){
         
-        if(!log.isDebugEnabled()){
-            log.error("TRYING TO MAP GRID TO XYZ IN NON-DEMOMODE. STOPPING.");
+        if(!LOG.isDebugEnabled()){
+            LOG.error("TRYING TO MAP GRID TO XYZ IN NON-DEMOMODE. STOPPING.");
             System.exit(443434);
         }
         
         if(dim != 3){
-            log.error("Mapping to pseudo xyz only works for a 3D grid. This grid is of dimension " + dim);
+            LOG.error("Mapping to pseudo xyz only works for a 3D grid. This grid is of dimension " + dim);
             return null;
         }
         

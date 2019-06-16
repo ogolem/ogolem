@@ -418,7 +418,7 @@ public final class SwitchesInput{
 
 
                 // check whether we even have any connects
-                if(llConnectsCis.size() == 0 || llConnectsTrans.size() == 0){
+                if(llConnectsCis.isEmpty() || llConnectsTrans.isEmpty()){
                     throw new CastException(" WE DO NOT HAVE ANY CONNECTS!");
                 }
 

@@ -61,9 +61,9 @@ public class GenericChainedLocalOpt<E,T extends ContinuousProblem<E>> implements
     public GenericChainedLocalOpt(final GenericChainedLocalOpt<E,T> orig){
         if(orig.functions.isEmpty()){throw new RuntimeException("Wrong input for chained fitness function.");}
         this.functions = new ArrayList<>();
-        for (final GenericLocOpt<E, T> function : orig.functions) {
+        orig.functions.forEach((function) -> {
             this.functions.add(function.clone());
-        }
+        });
         this.cutoff = orig.cutoff;
     }
     

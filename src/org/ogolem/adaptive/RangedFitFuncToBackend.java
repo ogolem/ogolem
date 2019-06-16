@@ -81,9 +81,9 @@ class RangedFitFuncToBackend  implements GenericBackend<Double,AdaptiveParameter
     RangedFitFuncToBackend(final RangedFitFuncToBackend orig){
         this.fitfunc = orig.fitfunc.clone();
         this.ranges = new ArrayList<>();
-        for(final Range r : orig.ranges){
+        orig.ranges.forEach((r) -> {
             ranges.add(r.clone());
-        }
+        });
         this.fullLowerParamBound = orig.fullLowerParamBound.clone();
         this.fullUpperParamBound = orig.fullUpperParamBound.clone();
         this.normParams = orig.normParams;
@@ -104,9 +104,7 @@ class RangedFitFuncToBackend  implements GenericBackend<Double,AdaptiveParameter
         
         // loop over ranges and add up
         int noParams = 0;
-        for(final Range r : ranges){
-            noParams += (r.up - r.low + 1);
-        }
+        noParams = ranges.stream().map((r) -> (r.up - r.low + 1)).reduce(noParams, Integer::sum);
         
         return noParams;
     }

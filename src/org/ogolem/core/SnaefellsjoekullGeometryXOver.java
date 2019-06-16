@@ -304,18 +304,18 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
             System.out.println("DEBUG: Mother with outside ones marked as dummy coming.");
             final CartesianCoordinates cM = gChild2.getCartesians();
             final String[] atomsM = cM.getAllAtomTypes();
-            for(final int i : motherOutside){
+            motherOutside.forEach((i) -> {
                 atomsM[i] = "XX";
-            }
+            });
             final String[] cMP = cM.createPrintableCartesians();
             for(final String s : cMP){System.out.println(s);}
             
             System.out.println("DEBUG: Father with outside ones marked as dummy coming.");
             final CartesianCoordinates cF = gChild1.getCartesians();
             final String[] atomsF = cF.getAllAtomTypes();
-            for(final int i : fatherOutside){
+            fatherOutside.forEach((i) -> {
                 atomsF[i] = "XX";
-            }
+            });
             final String[] cFP = cF.createPrintableCartesians();
             for(final String s : cFP){System.out.println(s);}
         }

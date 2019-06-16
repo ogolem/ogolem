@@ -75,7 +75,7 @@ public class GenericPoolEntry<E,T extends Optimizable<E>> implements Serializabl
     
     @Override
     public GenericPoolEntry<E,T> clone(){
-        return new GenericPoolEntry<E,T>(this);
+        return new GenericPoolEntry<>(this);
     }
     
     public void setFitness(final double fit){

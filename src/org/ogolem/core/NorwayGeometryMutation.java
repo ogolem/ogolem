@@ -231,9 +231,9 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
             if(DEBUG){
                 final List<String> bondInfo = mutated.getBondInfo().translateToInput();
                 System.out.println("BondInfo coming");
-                for(final String s : bondInfo){
+                bondInfo.forEach((s) -> {
                     System.out.println(s);
-                }
+                });
             }
             
             final double[][] rotResult = new double[3][atsThisMol];
@@ -319,9 +319,9 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
                     if(DEBUG){
                         System.out.println("DEBUG: At least one collision detected.");
                         final List<CollisionInfo.Collision> colls = collInfo.getCollisions();
-                        for(final CollisionInfo.Collision coll : colls){
+                        colls.forEach((coll) -> {
                             System.out.println("DEBUG: Collision detected between " + coll.getAtomOne() + " and " + coll.getAtomTwo());
-                        }
+                        });
                     }
                 }
 
