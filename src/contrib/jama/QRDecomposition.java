@@ -3,7 +3,7 @@ import contrib.jama.util.*;
 
 /** QR Decomposition.
 <P>
-   For an m-by-n matrix A with m >= n, the QR decomposition is an m-by-n
+   For an m-by-n matrix A with m &ge; n, the QR decomposition is an m-by-n
    orthogonal matrix Q and an n-by-n upper triangular matrix R so that
    A = Q*R.
 <P>
