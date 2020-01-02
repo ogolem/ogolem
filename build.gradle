@@ -25,6 +25,7 @@ dependencies {
   implementation name: 'scaTTM3F'
   implementation name: 'skalevala'
   implementation 'org.apache.commons:commons-math3:3.6.1'
+  implementation 'com.github.fommil.netlib:native_ref-java:1.1'
   implementation 'org.jgrapht:jgrapht-jdk1.5:0.7.3'
   implementation 'org.scala-lang:scala-library:2.12.9'
   implementation 'org.slf4j:slf4j-api:1.7.26'
@@ -32,7 +33,7 @@ dependencies {
     'junit:junit:4.12',
     'org.junit.jupiter:junit-jupiter-api:5.4.2'
   )
-  testRuntime (
+  testRuntimeOnly (
     'org.junit.jupiter:junit-jupiter-engine:5.4.2',
     'org.junit.vintage:junit-vintage-engine:5.4.2'
   )
@@ -60,6 +61,10 @@ compileJava {
 
 test {
   useJUnitPlatform()
+  // branches != production lack implementation of NUMAL algorithms
+  exclude 'org/ogolem/locopt/FleminLocOptTest*'
+  exclude 'org/ogolem/locopt/PraxisLocOptTest*'
+  exclude 'org/ogolem/locopt/RNK1MinLocOptTest*'
 }
 
 shadowJar {

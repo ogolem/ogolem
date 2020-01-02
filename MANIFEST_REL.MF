@@ -1,3 +1,0 @@
-Main-Class: org.ogolem.general.MainOgolem
-Class-Path: lib
-
