@@ -24,7 +24,7 @@ import java.io.Serializable;
   * (LBFGS) algorithm for large-scale multidimensional unconstrained minimization problems.
   * This file is a translation of Fortran code written by Jorge Nocedal.
   * The only modification to the algorithm is the addition of a cache to 
-  * store the result of the most recent line search. See <tt>solution_cache</tt> below.
+  * store the result of the most recent line search. See <var>solution_cache</var> below.
   *
   * LBFGS is distributed as part of the RISO project. Following is a message from Jorge Nocedal:
   * <pre>
@@ -76,8 +76,8 @@ import java.io.Serializable;
   * Also trying to make the output to console less confusing.
   * (April 2013)
   * @author Johannes Dieterich: marking the inner class static and fixing some
-  * errors that must have been oversights by the original author (stpmin -> stepmin)
-  * and are caused be having everything in class variables.
+  * errors that must have been oversights by the original author (stpmin to  stepmin)
+  * and are caused by having everything in class variables.
   * (January 2014)
   */
 
@@ -127,12 +127,12 @@ public class LBFGS implements Serializable {
     public final double stpmax = 1e20;
     /** The solution vector as it was at the end of the most recently
      * completed line search. This will usually be different from the
-     * return value of the parameter <tt>x</tt> of <tt>lbfgs</tt>, which
+     * return value of the parameter <var>x</var> of <var>lbfgs</var>, which
      * is modified by line-search steps. A caller which wants to stop the
-     * optimization iterations before <tt>LBFGS.lbfgs</tt> automatically stops
+     * optimization iterations before <var>LBFGS.lbfgs</var> automatically stops
      * (by reaching a very small gradient) should copy this vector instead
-     * of using <tt>x</tt>. When <tt>LBFGS.lbfgs</tt> automatically stops,
-     * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
+     * of using <var>x</var>. When <var>LBFGS.lbfgs</var> automatically stops,
+     * then <var>x</var> and <var>solution_cache</var> are the same.
      */
     public double[] solution_cache = null;
     private double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;

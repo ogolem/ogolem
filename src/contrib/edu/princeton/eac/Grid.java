@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * whilst you also want a StatelessGrid that provides always only the next point for the iterator
  * or a random point w/o state, keeping the array content(!) hashsum to see if it is known.
  * this is also the caveat, as I cannot come up with a smart way, how to not keep more state and
- * still efficiently exhaust all possible points (again, for a >10D grid not that big a deal) but
+ * still efficiently exhaust all possible points (again, for a &gt; 10D grid not that big a deal) but
  * only somehwere around 50-75% (ballpark!).
  * @author Johannes Dieterich
  * @version 2014-03-07
