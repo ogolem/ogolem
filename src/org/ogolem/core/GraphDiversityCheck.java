@@ -37,16 +37,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import org.jgrapht.EdgeFactory;
-import org.jgrapht.WeightedGraph;
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.WeightedPseudograph;
+import java.util.function.Supplier;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.util.SupplierUtil;
 
 /**
  * Checks the diversity of two geometries by means of graph based operations.
  * @author Johannes Dieterich
- * @version 2012-06-24
+ * @version 2019-08-27
  */
 final class GraphDiversityCheck {
 
@@ -62,8 +61,8 @@ final class GraphDiversityCheck {
     boolean checkDiversity(final Geometry geom1, final Geometry geom2){
 
         // first assign graphs to both geometries
-        final WeightedGraph<String,MyWeightedEdge> graph1 = constructGraph(geom1);
-        final WeightedGraph<String,MyWeightedEdge> graph2 = constructGraph(geom2);
+        final SimpleWeightedGraph<String,DefaultWeightedEdge> graph1 = constructGraph(geom1);
+        final SimpleWeightedGraph<String,DefaultWeightedEdge> graph2 = constructGraph(geom2);
 
         // compare them
 
@@ -71,12 +70,11 @@ final class GraphDiversityCheck {
         return true;
     }
 
-    WeightedGraph<String,MyWeightedEdge> constructGraph(final Geometry geom){
+    SimpleWeightedGraph<String,DefaultWeightedEdge> constructGraph(final Geometry geom){
 
-        final EdgeFactory<String,MyWeightedEdge> edgeFac =
-                new ClassBasedEdgeFactory<>(MyWeightedEdge.class);
-        final WeightedGraph<String,MyWeightedEdge> graph =
-                new WeightedPseudograph<>(edgeFac);
+        final SimpleWeightedGraph<String,DefaultWeightedEdge> graph =
+                new SimpleWeightedGraph<String,DefaultWeightedEdge>(DefaultWeightedEdge.class);
+        //final Supplier<MyWeightedEdge> edgeFac = graph.getEdgeSupplier();
 
         final CartesianCoordinates cartes = geom.getCartesians();
         final int[] iaAtsPerMol = cartes.getAllAtomsPerMol();
@@ -132,14 +130,13 @@ final class GraphDiversityCheck {
 
                 if(dAtomicDist < (dBlowDissoc*dAddedRadii)){
                     // we have an edge
-                    final MyWeightedEdge edge = edgeFac.createEdge(sFirstVertex, sSecondVertex);
-                    edge.setWeight(dAtomicDist);
-
-                    final boolean bAdded = graph.addEdge(sFirstVertex, sSecondVertex, edge);
-
-                    assert bAdded;
-                    // TODO probably, we have a problem with the redundancy of the edges
-                    
+		    if(graph.containsEdge(sFirstVertex, sSecondVertex)){
+		        // TODO probably, we have a problem with the redundancyy of the edges
+			System.err.println("ERROR: Graph already contains an edge between " + sFirstVertex + " and " + sSecondVertex);
+			continue;
+		    }
+		    final DefaultWeightedEdge edge = graph.addEdge(sFirstVertex, sSecondVertex);
+		    graph.setEdgeWeight(edge, dAtomicDist);
                 }
             }
         }
@@ -155,19 +152,4 @@ final class GraphDiversityCheck {
      * type them with String CHOCArHeNe whatever ;-)
      * next version should then allow for subgraphs (inside the molecule)
      */
-
-     private class MyWeightedEdge extends DefaultEdge{
-
-         private static final long serialVersionUID = (long) 2010727;
-
-         protected double weight = WeightedGraph.DEFAULT_EDGE_WEIGHT;
-
-         void setWeight(double weight){
-             this.weight = weight;
-         }
-
-         double getWeight(){
-             return weight;
-         }
-     }
 }
