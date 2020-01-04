@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,21 +40,19 @@ package org.ogolem.properties;
 /**
  * A bulk modulus property.
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2017-12-15
  */
-public class BulkModulus implements Property {
+public class BulkModulus extends ScalarProperty {
     
-    private static final long serialVersionUID = (long) 20150727;
+    private static final long serialVersionUID = (long) 20171215;
     public static final long DEFAULTBULKMODULUS = 0;
     
-    private double bulkMod;
-    
     public BulkModulus(final double bulkModulus){
-        this.bulkMod = bulkModulus;
+        super(bulkModulus);
     }
     
     private BulkModulus(final BulkModulus orig){
-        this.bulkMod = orig.bulkMod;
+        super(orig.getValue());
     }
 
     @Override
@@ -62,27 +61,10 @@ public class BulkModulus implements Property {
     }
 
     @Override
-    public double getValue() {
-        return bulkMod;
-    }
-
-    @Override
-    public double signedDifference(final Property p) {
-        if(!(p instanceof BulkModulus)) {throw new IllegalArgumentException("Property should be an instance of BulkModulus!");}
-        return (bulkMod - p.getValue());
-    }
-
-    @Override
-    public double absoluteDifference(final Property p) {
-        if(!(p instanceof BulkModulus)) {throw new IllegalArgumentException("Property should be an instance of BulkModulus!");}
-        return Math.abs(bulkMod - p.getValue());
-    }
-
-    @Override
     public boolean makeSensible() {
         
-        if(Double.isInfinite(bulkMod) || Double.isNaN(bulkMod) || bulkMod < DEFAULTBULKMODULUS){
-            bulkMod = DEFAULTBULKMODULUS;
+        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < DEFAULTBULKMODULUS){
+            this.scalar = DEFAULTBULKMODULUS;
             return true;
         }
         
@@ -91,11 +73,16 @@ public class BulkModulus implements Property {
 
     @Override
     public String printableProperty() {
-        return "" + bulkMod;
+        return "" + this.scalar;
     }
 
     @Override
     public String name() {
         return "BULK MODULUS";
+    }
+
+    @Override
+    protected boolean ensureCorrectProperty(Property p) {
+        return (p instanceof BulkModulus);
     }
 }

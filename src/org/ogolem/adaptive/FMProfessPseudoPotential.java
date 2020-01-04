@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015-2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
 import org.apache.commons.math3.util.FastMath;
 import org.ogolem.adaptive.genericfitness.EnergyCalculator;
 import org.ogolem.adaptive.genericfitness.GenericReferencePoint;
@@ -60,6 +64,7 @@ import org.ogolem.adaptive.genericfitness.ReferenceEnergyOrderData;
 import org.ogolem.adaptive.genericfitness.ReferenceForcesData;
 import org.ogolem.adaptive.genericfitness.ReferenceGeomData;
 import org.ogolem.adaptive.genericfitness.ReferenceInputData;
+import org.ogolem.adaptive.genericfitness.ReferenceStressTensorData;
 import org.ogolem.core.AtomicProperties;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
@@ -78,11 +83,12 @@ import org.ogolem.properties.Energy;
 import org.ogolem.properties.EnergyOrder;
 import org.ogolem.properties.Forces;
 import org.ogolem.properties.Property;
+import org.ogolem.properties.StressTensor;
 
 /**
  * An interface to re-optimize pseudo-potentials using Beatriz Gonzalez Del Rio's force matching approach.
  * @author Johannes Dieterich
- * @version 2017-09-25
+ * @version 2018-03-22
  */
 public class FMProfessPseudoPotential implements Adaptivable {
     
@@ -114,8 +120,18 @@ public class FMProfessPseudoPotential implements Adaptivable {
     private final HashMap<Short,Short> pseudized;
     private final List<Short> nonOptAtoms;
     
+    private final boolean deOscillate;
+    private final double wignerRadius;
+    
     public FMProfessPseudoPotential(final int noGaussians, final double potCutoff, final String origPPFile,
-            final boolean doMirrorGauss, final boolean doOverallGauss, final double overAllBeta, final List<Short> nonOptAtoms) throws Exception {
+            final boolean doMirrorGauss, final boolean doOverallGauss, final double overAllBeta, final List<Short> nonOptAtoms,
+            final boolean deOscillate, final double wignerRadius) throws Exception {
+        
+        assert(!deOscillate || wignerRadius > 0.0);
+        
+        if(deOscillate){
+            throw new RuntimeException("ERROR: Deoscillation of goLPS on the fly currently not supported.");
+        }
         
         this.noGaussians = noGaussians;
         this.potentialCutoff = potCutoff;
@@ -150,6 +166,8 @@ public class FMProfessPseudoPotential implements Adaptivable {
         }
         
         this.nonOptAtoms = nonOptAtoms;
+        this.deOscillate = deOscillate;
+        this.wignerRadius = wignerRadius;
     }
     
     private FMProfessPseudoPotential(final FMProfessPseudoPotential orig){
@@ -162,6 +180,8 @@ public class FMProfessPseudoPotential implements Adaptivable {
         this.overAllBeta = orig.overAllBeta;
         this.pseudized = orig.pseudized; // no copy needed
         this.nonOptAtoms = orig.nonOptAtoms; // no copy needed
+        this.deOscillate = orig.deOscillate;
+        this.wignerRadius = orig.wignerRadius;
     }
 
     @Override
@@ -384,6 +404,11 @@ public class FMProfessPseudoPotential implements Adaptivable {
                 final Density de = (Density) property;
                 return (PropertyCalculator<T,V>) this.new DensityProfessCalculator();
             }
+        } else if(property instanceof StressTensor){
+            if(data instanceof ReferenceStressTensorData){
+                final StressTensor st = (StressTensor) property;
+                return (PropertyCalculator<T,V>) this.new StressTensorProfessCalculator();
+            }
         }
         
         System.err.println("No calculator for property " + property.name() + " with data " + data.getClass().getName() + " in FMProfessPseudoPotential.");
@@ -393,6 +418,11 @@ public class FMProfessPseudoPotential implements Adaptivable {
     
     public void printModifiedPPOut(final AdaptiveParameters p, final String toFile,
             final short atomNo, final short pseudizedE, final boolean withCoulomb) throws Exception{
+        
+        if(deOscillate){
+            printModifiedDeoscillatedPPOut(p, toFile, atomNo, pseudizedE, withCoulomb);
+            return;
+        }
         
         final NumberFormat formatter = new DecimalFormat("0.#########E0");
         
@@ -455,6 +485,151 @@ public class FMProfessPseudoPotential implements Adaptivable {
         } catch (IOException e) {
             throw e;
         }
+        
+        if(withCoulomb){
+            
+            // also print out the Columb free LPS
+            try(final BufferedWriter buffwriter = new BufferedWriter(new FileWriter(toFile + "-nocoulomb", false))) {
+                for (int i = 0; i < origPseudoPotential.length; i++) {
+
+                    final double dist = origPseudoPotential[i][0];
+
+                    // add the gaussian contribution
+                    final double gaussContr = gaussContr(params, dist);
+                    
+                    double overAllGauss = 1.0;
+                    if (doOverallGauss) {
+                        overAllGauss *= FastMath.exp(-overAllBeta * dist * dist);
+                    }
+
+                    final double ppVal = (origPseudoPotential[i][1] + overAllGauss * gaussContr);
+
+                    // always three pseudopotential values in one line. no distance. cause potatoe.
+                    final String outp = formatter.format(dist) + "    " + formatter.format(ppVal) + "\n";
+                    buffwriter.write(outp);
+                }
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+    }
+    
+    public void printModifiedDeoscillatedPPOut(final AdaptiveParameters p, final String toFile,
+            final short atomNo, final short pseudizedE, final boolean withCoulomb) throws Exception{
+        
+        final double[] params = p.getAllParamters();
+        
+        /*
+         * BIG NOTE HERE: WE ARE ASSUMING THAT THE PSEUDOPOTENTIAL IS EQUIDISTANTLY
+         * SPACED. OTHERWISE THE FFTs WILL JUST BE GARBAGE IN, GARBAGE OUT!
+         */
+        
+        // it also turns out that apache commons wants the input to be a power of two.
+        // hence, round up and pad
+        final int next = (int) Math.pow(2, Math.ceil(Math.log(origPseudoPotential.length)/Math.log(2)));
+        
+        // we are in reciprocal space but all values are assumed to be real
+        final Complex[] reci = new Complex[next];
+        for(int i = 0; i < origPseudoPotential.length; i++){
+            
+            // apply the Gaussian contribution
+            final double dist = origPseudoPotential[i][0];
+                
+            // add the gaussian contribution
+            final double gaussContr = gaussContr(params,dist);
+            
+            double overAllGauss  = 1.0;
+            if(doOverallGauss){
+                overAllGauss *= FastMath.exp(-overAllBeta*dist*dist);
+            }
+            
+            final double ppVal = origPseudoPotential[i][1] + overAllGauss*gaussContr;
+            reci[i] = new Complex(ppVal,0.0);
+        }
+        for(int i = origPseudoPotential.length; i < next; i++){
+            reci[i] = new Complex(0.0,0.0);
+        }
+        
+        // now get it into real space
+        final FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+        final Complex[] real = fft.transform(reci, TransformType.INVERSE);
+        
+        assert(real.length == origPseudoPotential.length);
+        
+        // filter the oscillations beyond the Wigner-Seitz radius out
+        for(int i = 0; i < origPseudoPotential.length; i++){
+                
+            final double dist = origPseudoPotential[i][0];
+            final double ri = wignerRadius - 1.0;
+            if(dist <= ri){
+                // nothing, we keep the current
+            } else if(dist > ri && dist <= wignerRadius){
+                real[i] = new Complex(real[i].getReal()*(0.5+0.5*Math.cos((dist-ri)*Math.PI)));
+            } else {
+                // outside the sphere
+                real[i] = new Complex(0.0,0.0);
+            }
+        }
+        
+        // get back into reciprocal space
+        final Complex[] reciDone = fft.transform(real, TransformType.FORWARD);
+        
+        assert(reciDone.length == origPseudoPotential.length);
+        
+        // apply Coulomb, if applicable, and print it out
+        
+        final NumberFormat formatter = new DecimalFormat("0.#########E0");
+        
+        final String sep = System.lineSeparator();
+        try(final BufferedWriter buffwriter = new BufferedWriter(new FileWriter(toFile, false))) {
+            
+            // oh the beauty of file formats in our domain. this one proudly brought to you by CASTEP, it seems.
+            
+            // some header (comment block)
+            buffwriter.write("START COMMENT" + sep);
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            final Date date = new Date();
+            buffwriter.write("BLPS: generated by OGOLEM on " + dateFormat.format(date) + ", developed by Beatriz" + sep);
+            buffwriter.write("NONE" + sep);
+            buffwriter.write("END COMMENT" + sep);
+            // versioning number, of course OFDFT ignores it
+            buffwriter.write("3     5" + sep);
+            // cutoff for the potential
+            buffwriter.write(formatter.format(potentialCutoff*Constants.ANGTOBOHR) + sep);
+            
+            // for each stored point
+            int countVals = 0;
+            for(int i = 0; i < origPseudoPotential.length; i++){
+                
+                final double dist = origPseudoPotential[i][0];
+                
+                // add the electrostatic contribution
+                double coulContr = 0.0;
+                double convFac = 1.0;
+                if(withCoulomb){
+                    // assuming atomNo to be the valence electron number
+                    coulContr = (i == 0) ? 0.0 : -4*Math.PI*(atomNo-pseudizedE)/(dist*dist);
+                    convFac = MEV_ANG3;
+                }
+                
+                final double ppVal = (reciDone[i].getReal() + coulContr)*convFac;
+                
+                // always three pseudopotential values in one line. no distance. cause potatoe.                
+                final String outp = formatter.format(ppVal) + "  ";
+                buffwriter.write(outp);
+                
+                countVals++;
+                if(countVals == 3 || i == origPseudoPotential.length-1){
+                    buffwriter.write(sep);
+                    countVals = 0;
+                }
+            }
+            
+            // and some footer (the magic number is 1000)
+            buffwriter.write("1000" + sep);
+        } catch (IOException e) {
+            throw e;
+        }
     }
     
     private double gaussContr(final double[] params, final double point){
@@ -487,6 +662,7 @@ public class FMProfessPseudoPotential implements Adaptivable {
         int eoTerm = -1;
         int dgTerm = -1;
         int deTerm = -1;
+        int stTerm = -1;
 
         int c = 0;
         for(final GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>> refPoint : referencePoints){
@@ -505,6 +681,8 @@ public class FMProfessPseudoPotential implements Adaptivable {
                 dgTerm = c;
             } else if(p instanceof Density){
                 deTerm = c;
+            } else if(p instanceof StressTensor){
+                stTerm = c;
             } else {
                 // error
                 throw new RuntimeException("Unknown property type " + p.printableProperty() + ".");
@@ -560,6 +738,15 @@ public class FMProfessPseudoPotential implements Adaptivable {
             
             final Density density = densityCalc.calculateProperty(params, dat);
             allProps.add(density);
+        }
+        
+        if(stTerm >= 0){
+            final StressTensor ref = (StressTensor) referencePoints.get(stTerm).getReferenceProperty();
+            final ReferenceStressTensorData<CartesianCoordinates> dat = (ReferenceStressTensorData<CartesianCoordinates>) referencePoints.get(stTerm).getReferenceInputData();
+            final PropertyCalculator<StressTensor,ReferenceStressTensorData<CartesianCoordinates>> stressCalc = getCalculatorForProperty(ref, dat);
+            
+            final StressTensor stress = stressCalc.calculateProperty(params, dat);
+            allProps.add(stress);
         }
         
         if(buTerm >= 0 || ceTerm >= 0){
@@ -1571,6 +1758,151 @@ public class FMProfessPseudoPotential implements Adaptivable {
 
         @Override
         public Density calculatePropertyGradient(final AdaptiveParameters p, final ReferenceDensityData<CartesianCoordinates> data,
+                final double[] grad) {
+            return NumericalGradients.numericalPropertyGradient(this, p, data, grad);
+        }
+    }
+    
+    class StressTensorProfessCalculator implements PropertyCalculator<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>{
+
+        private static final long serialVersionUID = (long) 20180123;
+        
+        public static final String RESULTFILE = "stresstensor.out";
+        public static final String DEFAULTDENSITYSCRIPT = "profess_stresstensor_calc.sh";
+        
+        private final String magicStressTensorScript;
+        
+        StressTensorProfessCalculator(){
+            // default: profess_density_calc.sh
+            final String tmp = System.getenv("OGO_PROFESSDENSITYSCRIPT");
+            if(tmp == null){
+                magicStressTensorScript = DEFAULTDENSITYSCRIPT;
+            } else {
+                magicStressTensorScript = tmp;
+            }
+        }
+        
+        private StressTensorProfessCalculator(final StressTensorProfessCalculator orig){
+            this.magicStressTensorScript = orig.magicStressTensorScript;
+        }
+        
+        @Override
+        public StressTensorProfessCalculator clone() {
+            return new StressTensorProfessCalculator(this);
+        }
+
+        @Override
+        public StressTensor calculateProperty(final AdaptiveParameters p, final ReferenceStressTensorData<CartesianCoordinates> data) {
+            
+            final long paramID = p.getID();
+            final String folderName = "professstresstensorcalc_" + paramID + "_" + System.currentTimeMillis();
+            
+            // create folder, copy script and place pseudopotential as well as the set of cartesian coordinates
+            final int noAtoms = data.getGeomData().c.getNoOfAtoms();
+            try{
+                final List<Short> nos = new ArrayList<>();
+                OutputPrimitives.createAFolder(folderName);
+                OutputPrimitives.copyFile(magicStressTensorScript, folderName + File.separator + magicStressTensorScript);
+                ManipulationPrimitives.markExecutable(folderName + File.separator + magicStressTensorScript);
+                final String[] formXYZ = data.getGeomData().c.getCartesianCoordinates().createPrintableCartesians();
+                final String xyzFile = folderName + File.separator + "atompos.xyz";
+                OutputPrimitives.writeOut(xyzFile, formXYZ, false);
+                final short[] allAtomNos = data.getGeomData().c.getAllAtomNumbers();
+                for(int x = 0; x < allAtomNos.length; x++){
+                    if(!nos.contains(allAtomNos[x])){
+                        nos.add(allAtomNos[x]);
+                    }
+                }
+                
+                for(final short no : nos){
+                    if(nonOptAtoms.contains(no)){
+                        final String atom = AtomicProperties.giveAtomSymbol(no);
+                        final String ppFile = folderName + File.separator + "pseudopot_" + atom + ".recpot";
+                        final String oldFile = "pseudopot_" + atom + ".recpot";
+                        OutputPrimitives.createLink(oldFile, ppFile);
+                    } else {
+                        final String ppFile = folderName + File.separator + "pseudopot_" + AtomicProperties.giveAtomSymbol(no) + ".recpot";
+                        printModifiedPPOut(p,ppFile,no, pseudized.get(no), true);
+                    }
+                }
+            } catch(Exception e){
+                System.err.println("ERROR: Could not create folder " + folderName + " or copy script " + magicStressTensorScript + " into it.");
+                e.printStackTrace(System.err);
+                return new StressTensor(null);
+            }
+            
+            // execute the script
+            Process proc;
+            try{
+                final Runtime rt = Runtime.getRuntime();
+                final String[] cmd = new String[]{"./" + magicStressTensorScript};
+                final File dir = new File(folderName);
+                proc = rt.exec(cmd,null,dir);
+
+                // any error message?
+                final StreamGobbler errorGobbler = new
+                    StreamGobbler(proc.getErrorStream(), "ERROR");
+
+                // any output?
+                final StreamGobbler outputGobbler = new
+                    StreamGobbler(proc.getInputStream(), "OUTPUT");
+
+                // kick them off
+                errorGobbler.start();
+                outputGobbler.start();
+
+                // any error???
+                if(proc.waitFor() != 0){
+                    return new StressTensor(null);
+                }
+
+            } catch (Exception e) {
+                System.err.println("PROFESS has a problem (stress tensor calculation). ");
+                e.printStackTrace(System.err);
+                try{
+                    ManipulationPrimitives.remove(folderName);
+                } catch(Exception e1){
+                    System.err.println("WARNING: Failed to clean up PROFESS stress tensor files. ");
+                    e1.printStackTrace(System.err);
+                }
+                
+                return new StressTensor(null);
+            }
+            
+            // gather the results
+            StressTensor stress;
+            try{
+                final String resFile = folderName + File.separator + RESULTFILE;
+                final String[] dat = InputPrimitives.readFileIn(resFile);
+                
+                final double[][] stressVals = new double[3][3];
+                for(int i = 0; i < 3; i++){
+                    final String[] line = dat[i].trim().split("\\s+");
+                    for(int j = 0; j < 3; j++){
+                        stressVals[i][j] = Double.parseDouble(line[j]);
+                    }
+                }
+                
+                stress = new StressTensor(stressVals);
+            } catch(Exception e){
+                System.err.println("Failure to read the stress tensor for " + folderName);
+                e.printStackTrace(System.err);
+                
+                return new StressTensor(null);
+            }
+            
+            // delete the folder
+            try{
+                ManipulationPrimitives.remove(folderName);
+            } catch(Exception e){
+                System.err.println("WARNING: Couldn't remove " + folderName + ". Continuing...");
+            }
+            
+            return stress;
+        }
+
+        @Override
+        public StressTensor calculatePropertyGradient(final AdaptiveParameters p, final ReferenceStressTensorData<CartesianCoordinates> data,
                 final double[] grad) {
             return NumericalGradients.numericalPropertyGradient(this, p, data, grad);
         }

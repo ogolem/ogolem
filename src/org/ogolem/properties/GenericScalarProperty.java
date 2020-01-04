@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2017-2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,44 +37,56 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.properties;
 
 /**
- * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
+ * A generic scalar property, i.e., a bare bones implementation.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2018-01-02
  */
-public class DeltaGauge extends ScalarProperty {
-    
+public class GenericScalarProperty extends ScalarProperty {
+
     private static final long serialVersionUID = (long) 20171215;
     
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
+    private final long id;
+    
+    public GenericScalarProperty(final double data, final long id){
+        super(data);
+        this.id = id;
+    }
+    
+    public GenericScalarProperty(final GenericScalarProperty orig){
+        super(orig.scalar);
+        this.id = orig.id;
     }
     
     @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
+    public GenericScalarProperty clone() {
+        return new GenericScalarProperty(this);
     }
-    
+
     @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
+    protected boolean ensureCorrectProperty(Property p) {
+        if(!(p instanceof GenericScalarProperty)) {return false;}
+        
+        final GenericScalarProperty gp = (GenericScalarProperty) p;
+        return (gp.id == id);
+    }
+
+    @Override
+    public boolean makeSensible() {
+        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue())){
             this.scalar = 0.0;
             return true;
         }
         return false;
     }
-    
+
     @Override
-    public String printableProperty(){
+    public String printableProperty() {
         return "" + this.getValue();
     }
 
     @Override
     public String name() {
-        return "DELTA GAUGE";
+        return "GENERICSCALAR" + id;
     }
-
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
-    }
+    
 }

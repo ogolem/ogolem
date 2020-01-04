@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2017, J. M. Dieterich and B. Hartke
+              2015-2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import org.ogolem.adaptive.genericfitness.BatchedPropertyCalculator;
 import org.ogolem.adaptive.genericfitness.EnergyCalculator;
 import org.ogolem.adaptive.genericfitness.FitnessTermConfig;
@@ -58,8 +59,13 @@ import org.ogolem.adaptive.genericfitness.ReferenceDeltaGaugeData;
 import org.ogolem.adaptive.genericfitness.ReferenceDensityData;
 import org.ogolem.adaptive.genericfitness.ReferenceEnergyOrderData;
 import org.ogolem.adaptive.genericfitness.ReferenceForcesData;
+import org.ogolem.adaptive.genericfitness.ReferenceGenericMatrixData;
+import org.ogolem.adaptive.genericfitness.ReferenceGenericScalarData;
+import org.ogolem.adaptive.genericfitness.ReferenceGenericTensorData;
+import org.ogolem.adaptive.genericfitness.ReferenceGenericVectorData;
 import org.ogolem.adaptive.genericfitness.ReferenceInputData;
 import org.ogolem.adaptive.genericfitness.ReferencePoint;
+import org.ogolem.adaptive.genericfitness.ReferenceStressTensorData;
 import org.ogolem.adaptive.genericfitness.SerialBatchedPropertyCalculator;
 import org.ogolem.adaptive.genericfitness.SerialGenericFitnessTerm;
 import org.ogolem.properties.Energy;
@@ -83,12 +89,17 @@ import org.ogolem.properties.DeltaGauge;
 import org.ogolem.properties.Density;
 import org.ogolem.properties.EnergyOrder;
 import org.ogolem.properties.Forces;
+import org.ogolem.properties.GenericMatrixProperty;
+import org.ogolem.properties.GenericScalarProperty;
+import org.ogolem.properties.GenericTensorProperty;
+import org.ogolem.properties.GenericVectorProperty;
 import org.ogolem.properties.Property;
+import org.ogolem.properties.StressTensor;
 
 /**
  * A configuration object for the adaptive package.
  * @author Johannes Dieterich
- * @version 2017-11-16
+ * @version 2018-07-07
  */
 public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     
@@ -458,12 +469,13 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
          */
         if (bUsePercentageDiffs) {
             // use percentage scaled maximal allowed differences
+            final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
             for (int i = 0; i < referenceEnergies.size(); i++) {
                 final double dRefEnergy = referenceEnergies.get(i).getReferenceProperty().getValue();
                 
                 final double maxAllowedDiff = (Math.abs(dRefEnergy) <= 1E-5) ? 1E-6 : Math.abs(percentageForDiff * 0.01 * dRefEnergy); // first: cutoff
-                final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point = referenceEnergies.get(i);
-                final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> newPoint = new ReferencePoint<>(point.getReferenceProperty(),
+                final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> point = referenceEnergies.get(i);
+                final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> newPoint = new ReferencePoint<>(point.getReferenceProperty(),
                         point.getReferenceInputData(),point.getReferenceID(),point.getRefWeight(),maxAllowedDiff);
                 // replace old with new
                 referenceEnergies.set(i, newPoint);
@@ -691,42 +703,10 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     double crossPossibility = 1.0;
 
     /**
-     * for the energy property
+     * The library of reference points.
      */
-    List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>>> referenceEnergies = new ArrayList<>();
+    ReferencePointLibrary refPoints = new ReferencePointLibrary();
     
-    /**
-     * for the bulk modulus property
-     */
-    List<GenericReferencePoint<BulkModulus,RefBulkModulusData<?>>> referenceBulkMod = new ArrayList<>();
-    
-    /**
-     * for the forces property
-     */
-    List<GenericReferencePoint<Forces,ReferenceForcesData<?>>> referenceForces = new ArrayList<>();
-    
-    /**
-     * for the cell volume property
-     */
-    List<GenericReferencePoint<CellVolume,RefCellVolumeData<?>>> referenceCellVolume = new ArrayList<>();
-    
-    /**
-     * for the energy order property
-     */
-    List<GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>>> referenceEnergyOrder = new ArrayList<>();
-    
-    /**
-     * for the delta gauge property
-     */
-    List<GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>>> referenceDeltaGauge = new ArrayList<>();
-    
-    /**
-     * for the density property
-     */
-    List<GenericReferencePoint<Density,ReferenceDensityData<?>>> referenceDensity = new ArrayList<>();
-    
-    //XXX PUT PROPERTIES HERE
-
     /**
      * Whether all reference geometries shall have the same charges and spins,
      * defined by the first reference.
@@ -1259,10 +1239,12 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             boolean doOverallGauss = true;
             boolean doMirrorGauss = true;
+            boolean deOscillate = false;
             
             int noGaussians = 3;
             double potCutoff = -1;
             double overallBeta = -1;
+            double wignerRadius = 0.0;
             String origPPFile = "non-fm-pp.pot";
             final List<Short> nonOptAtoms = new ArrayList<>();
             for(final String token : sa){
@@ -1282,6 +1264,9 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                         final short no = AtomicProperties.giveAtomicNumber(atom.trim());
                         nonOptAtoms.add(no);
                     }
+                } else if(token.startsWith("wignerradius=")){
+                    wignerRadius = Double.parseDouble(token.substring("wignerradius=".length()).trim());
+                    deOscillate = true;
                 } else{
                     throw new RuntimeException("Illegal option " + token + " for forcematchingprofess.");
                 }
@@ -1291,8 +1276,18 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(overallBeta <= 0.0){throw new RuntimeException("Overall beta must be larger than 0.0.");}
             if(noGaussians <= 0){throw new RuntimeException("Must optimize at least one Gaussian.");}
             
-            adapt = new FMProfessPseudoPotential(noGaussians, potCutoff, origPPFile, doMirrorGauss, doOverallGauss, overallBeta, nonOptAtoms);
+            adapt = new FMProfessPseudoPotential(noGaussians, potCutoff, origPPFile, doMirrorGauss, doOverallGauss, overallBeta, nonOptAtoms, deOscillate, wignerRadius);
             sWhichMethod = "forcematchingprofess";
+        } else if(s.startsWith("genericcaller:")){
+            final String s2 = s.substring("genericcaller:".length());
+            final int noParams = Integer.parseInt(s2);
+            adapt = new GenericCaller(noParams);
+            sWhichMethod = "generic caller";
+        } else if(s.startsWith("genericnativecaller:")){
+            final String s2 = s.substring("generinativeccaller:".length());
+            final int noParams = Integer.parseInt(s2);
+            adapt = new GenericNativeCaller(noParams);
+            sWhichMethod = "generic native caller";
         } else {
             throw new RuntimeException("ERROR: No valid adaptivable choice found.");
         }
@@ -1358,12 +1353,22 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         EnergyOrder energyOrder = null;
         DeltaGauge deltaGauge = null;
         Density density = null;
+        StressTensor stress = null;
+        GenericScalarProperty scalar = null;
+        GenericVectorProperty vector = null;
+        GenericMatrixProperty matrix = null;
+        GenericTensorProperty tensor = null;
         RefBulkModulusData<CartesianCoordinates> bulkModData = null;
         ReferenceForcesData<CartesianCoordinates> forcesData = null;
         RefCellVolumeData<CartesianCoordinates> cellVolumeData = null;
         ReferenceEnergyOrderData<CartesianCoordinates> energyOrderData = null;
         ReferenceDeltaGaugeData<CartesianCoordinates> deltaGaugeData = null;
         ReferenceDensityData<CartesianCoordinates> densityData = null;
+        ReferenceStressTensorData<CartesianCoordinates> stressTensorData = null;
+        ReferenceGenericScalarData scalarDat = null;
+        ReferenceGenericVectorData vectorDat = null;
+        ReferenceGenericMatrixData matrixDat = null;
+        ReferenceGenericTensorData tensorDat = null;
         String tag = "N/A";
 
         reference:
@@ -1609,6 +1614,178 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                     i += 2;
                     continue reference;
                 }
+            } else if (data[i].equalsIgnoreCase("<STRESSTENSOR>")){
+                if (!data[i + 2].equalsIgnoreCase("</STRESSTENSOR>")) {
+                    throw new RuntimeException("ERROR: No closing </STRESSTENSOR> tag found.");
+                } else {
+                    final String forceLine = data[i + 1].trim();
+                    if(forceLine.startsWith("StressTensorFile=")){
+                        final String file = forceLine.substring("StressTensorFile=".length()).trim();
+                        final String[] fileData = InputPrimitives.readFileIn(file);
+                        final double[][] stressVals = new double[3][3];
+                        for(int x = 0; x < 3; x++){
+                            final String[] line = fileData[x].trim().split("\\s+");
+                            stressVals[x][0] = Double.parseDouble(line[0]);
+                            stressVals[x][1] = Double.parseDouble(line[1]);
+                            stressVals[x][2] = Double.parseDouble(line[2]);
+                        }
+                        
+                        stress = new StressTensor(stressVals);
+                    } else {
+                        throw new RuntimeException("<STRESSTENSOR> tag must contain StressTensorFile= followed by the path to the file containing the reference stress tensor.");
+                    }
+                    
+                    i += 2;
+                    continue reference;
+                }
+            } else if(data[i].equalsIgnoreCase("<GENERICSCALAR>")) {
+                if (!data[i + 4].startsWith("</GENERICSCALAR>")) {
+                    throw new RuntimeException("ERROR: No closing </GENERICSCALAR> tag found.");
+                } else {
+                    
+                    int pointID = Integer.MAX_VALUE, typeID = Integer.MAX_VALUE;
+                    double dat = Double.NaN;
+                    for(int j = i+1; j < i+4; j++){
+                        if(data[j].trim().startsWith("TypeID=")){
+                            typeID = Integer.parseInt(data[j].trim().substring("TypeID=".length()).trim());
+                        } else if(data[j].trim().startsWith("PointID=")){
+                            pointID = Integer.parseInt(data[j].trim().substring("PointID=".length()).trim());
+                        } else if(data[j].trim().startsWith("Data=")){
+                            dat = Double.parseDouble(data[j].trim().substring("Data=".length()).trim());
+                        } else {
+                            throw new RuntimeException("Illegal option " + data[j] + " for generic scalar.");
+                        }
+                    }
+                    
+                    if(pointID == Integer.MAX_VALUE || typeID == Integer.MAX_VALUE || dat == Double.NaN){
+                        throw new RuntimeException("Illegal point / type ID or data for generic scalar reference point.");
+                    }
+                    
+                    scalarDat = new ReferenceGenericScalarData(id, pointID, typeID);
+                    scalar = new GenericScalarProperty(dat, typeID);
+                        
+                    i += 4;
+                    continue reference;
+                }
+            } else if(data[i].equalsIgnoreCase("<GENERICVECTOR>")) {
+                if (!data[i + 4].startsWith("</GENERICVECTOR>")) {
+                    throw new RuntimeException("ERROR: No closing </GENERICVECTOR> tag found.");
+                } else {
+                    
+                    int pointID = Integer.MAX_VALUE, typeID = Integer.MAX_VALUE;
+                    double[] dat = null;
+                    for(int j = i+1; j < i+4; j++){
+                        if(data[j].trim().startsWith("TypeID=")){
+                            typeID = Integer.parseInt(data[j].trim().substring("TypeID=".length()).trim());
+                        } else if(data[j].trim().startsWith("PointID=")){
+                            pointID = Integer.parseInt(data[j].trim().substring("PointID=".length()).trim());
+                        } else if(data[j].trim().startsWith("Data=")){
+                            final String path = data[j].trim().substring("Data=".length()).trim();
+                            final String[] out = InputPrimitives.readFileIn(path);
+                            dat = new double[out.length];
+                            for(int x = 0; x < dat.length; x++){
+                                dat[x] = Double.parseDouble(out[x].trim());
+                            }
+                        } else {
+                            throw new RuntimeException("Illegal option " + data[j] + " for generic vector.");
+                        }
+                    }
+                    
+                    if(pointID == Integer.MAX_VALUE || typeID == Integer.MAX_VALUE || dat == null){
+                        throw new RuntimeException("Illegal point / type ID or data for generic vector reference point.");
+                    }
+                    
+                    vectorDat = new ReferenceGenericVectorData(id, pointID, typeID);
+                    vector = new GenericVectorProperty(dat, true, typeID);
+                        
+                    i += 4;
+                    continue reference;
+                }
+            } else if(data[i].equalsIgnoreCase("<GENERICMATRIX>")) {
+                if (!data[i + 4].startsWith("</GENERICMATRIX>")) {
+                    throw new RuntimeException("ERROR: No closing </GENERICMATRIX> tag found.");
+                } else {
+                    
+                    int pointID = Integer.MAX_VALUE, typeID = Integer.MAX_VALUE;
+                    double[][] dat = null;
+                    for(int j = i+1; j < i+4; j++){
+                        if(data[j].trim().startsWith("TypeID=")){
+                            typeID = Integer.parseInt(data[j].trim().substring("TypeID=".length()).trim());
+                        } else if(data[j].trim().startsWith("PointID=")){
+                            pointID = Integer.parseInt(data[j].trim().substring("PointID=".length()).trim());
+                        } else if(data[j].trim().startsWith("Data=")){
+                            final String path = data[j].trim().substring("Data=".length()).trim();
+                            final String[] out = InputPrimitives.readFileIn(path);
+                            dat = new double[out.length][];
+                            for(int x = 0; x < out.length; i++){
+                                final String[] line = out[x].trim().split("\\s+");
+                                dat[x] = new double[line.length];
+                                for(int y = 0; y < out.length; y++){
+                                    dat[x][y] = Double.parseDouble(line[y]);
+                                }
+                            }
+                        } else {
+                            throw new RuntimeException("Illegal option " + data[j] + " for generic matrix.");
+                        }
+                    }
+                    
+                    if(pointID == Integer.MAX_VALUE || typeID == Integer.MAX_VALUE || dat == null){
+                        throw new RuntimeException("Illegal point / type ID or data for generic matrix reference point.");
+                    }
+                    
+                    matrixDat = new ReferenceGenericMatrixData(id, pointID, typeID);
+                    matrix = new GenericMatrixProperty(dat, true, typeID);
+                        
+                    i += 4;
+                    continue reference;
+                }
+            } else if(data[i].equalsIgnoreCase("<GENERICTENSOR>")) {
+                if (!data[i + 4].startsWith("</GENERICTENSOR>")) {
+                    throw new RuntimeException("ERROR: No closing </GENERICTENSOR> tag found.");
+                } else {
+                    
+                    int pointID = Integer.MAX_VALUE, typeID = Integer.MAX_VALUE;
+                    double[][][] dat = null;
+                    for(int j = i+1; j < i+4; j++){
+                        if(data[j].trim().startsWith("TypeID=")){
+                            typeID = Integer.parseInt(data[j].trim().substring("TypeID=".length()).trim());
+                        } else if(data[j].trim().startsWith("PointID=")){
+                            pointID = Integer.parseInt(data[j].trim().substring("PointID=".length()).trim());
+                        } else if(data[j].trim().startsWith("Data=")){
+                            final String path = data[j].trim().substring("Data=".length()).trim();
+                            final String[] out = InputPrimitives.readFileIn(path);
+                            final String[] line = out[0].trim().split("\\s+");
+                
+                            final int xDim = Integer.parseInt(line[0]);
+                            final int yDim = Integer.parseInt(line[1]);
+                            final int zDim = Integer.parseInt(line[2]);
+                
+                            dat = new double[xDim][yDim][zDim];
+                
+                            int count = 1;
+                            for (int x = 0; x < xDim; x++) {
+                                for (int y = 0; y < yDim; y++) {
+                                    for (int z = 0; z < zDim; z++) {
+                                        dat[x][y][z] = Double.parseDouble(out[count]);
+                                        count++;
+                                    }
+                                }
+                            }
+                        } else {
+                            throw new RuntimeException("Illegal option " + data[j] + " for generic tensor.");
+                        }
+                    }
+                    
+                    if(pointID == Integer.MAX_VALUE || typeID == Integer.MAX_VALUE || dat == null){
+                        throw new RuntimeException("Illegal point / type ID or data for generic tensor reference point.");
+                    }
+                    
+                    tensorDat = new ReferenceGenericTensorData(id, pointID, typeID);
+                    tensor = new GenericTensorProperty(dat, true, typeID);
+                        
+                    i += 4;
+                    continue reference;
+                }
             } else if (data[i].equalsIgnoreCase("<REFCHARGES>")) {
                 // try to find out where the charges end
                 int endChargeBlock = -1;
@@ -1736,22 +1913,22 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                 throw new RuntimeException("Energy reference specified but no reference input data for either cartesians or bonds!");
             }
             final ReferenceGeomData<Energy,CartesianCoordinates> geomD = new ReferenceGeomData<>(currentCartes, bonds, id);
-            final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point = new ReferencePoint<>(energy,geomD,id,dRefWeight,dRefMaxDiff);
-            referenceEnergies.add(point);
+            final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> point = new ReferencePoint<>(energy,geomD,id,dRefWeight,dRefMaxDiff);
+            refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>addReferencePoint(point, "ENERGY");
         }
         
         /* for the forces property */
         if(forces != null){
-            forcesData = new ReferenceForcesData(id, new ReferenceGeomData<>(currentCartes, bonds, id));
-            final GenericReferencePoint<Forces,ReferenceForcesData<?>> point = new ReferencePoint<>(forces,forcesData,id,dRefWeight,dRefMaxDiff);
-            referenceForces.add(point);
+            forcesData = new ReferenceForcesData<>(id, new ReferenceGeomData<>(currentCartes, bonds, id));
+            final GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>> point = new ReferencePoint<>(forces,forcesData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<Forces,ReferenceForcesData<CartesianCoordinates>>addReferencePoint(point, "FORCES");
         }
         
         /* for the density property */
         if(density != null){
-            densityData = new ReferenceDensityData(id, tag, new ReferenceGeomData<>(currentCartes, bonds, id));
-            final GenericReferencePoint<Density,ReferenceDensityData<?>> point = new ReferencePoint<>(density,densityData,id,dRefWeight,dRefMaxDiff);
-            referenceDensity.add(point);
+            densityData = new ReferenceDensityData<>(id, tag, new ReferenceGeomData<>(currentCartes, bonds, id));
+            final GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>> point = new ReferencePoint<>(density,densityData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<Density,ReferenceDensityData<CartesianCoordinates>>addReferencePoint(point, "ELECTRON DENSITY");
         }
         
         /* for the bulk modulus property */
@@ -1759,8 +1936,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(bulkModData == null){
                 throw new RuntimeException("Bulk modulus reference specified but no reference input data!");
             }
-            final GenericReferencePoint<BulkModulus,RefBulkModulusData<?>> point = new ReferencePoint<>(modulus,bulkModData,id,dRefWeight,dRefMaxDiff);
-            referenceBulkMod.add(point);
+            final GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>> point = new ReferencePoint<>(modulus,bulkModData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<BulkModulus,RefBulkModulusData<CartesianCoordinates>>addReferencePoint(point, "BULK MODULUS");
         }
         
         /* for the equillibrium cell volume */
@@ -1768,8 +1945,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(cellVolumeData == null){
                 throw new RuntimeException("Cell volume reference specified but no reference input data!");
             }
-            final GenericReferencePoint<CellVolume,RefCellVolumeData<?>> point = new ReferencePoint<>(cellVolume,cellVolumeData,id,dRefWeight,dRefMaxDiff);
-            referenceCellVolume.add(point);
+            final GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>> point = new ReferencePoint<>(cellVolume,cellVolumeData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<CellVolume,RefCellVolumeData<CartesianCoordinates>>addReferencePoint(point, "CELL VOLUME");
         }
         
         /* for the energy order */
@@ -1777,8 +1954,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(energyOrderData == null){
                 throw new RuntimeException("Energy order reference specified but no reference input data!");
             }
-            final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>> point = new ReferencePoint<>(energyOrder,energyOrderData,id,dRefWeight,dRefMaxDiff);
-            referenceEnergyOrder.add(point);
+            final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>> point = new ReferencePoint<>(energyOrder,energyOrderData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>addReferencePoint(point, "ENERGY ORDER");
         }
         
         /* for the delta gauge property */
@@ -1787,8 +1964,36 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                 throw new RuntimeException("Delta gauge reference specified but no reference input data!");
             }
             deltaGaugeData.setGeomData(new ReferenceGeomData<>(currentCartes, bonds, id));
-            final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>> point = new ReferencePoint<>(deltaGauge,deltaGaugeData,id,dRefWeight,dRefMaxDiff);
-            referenceDeltaGauge.add(point);
+            final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>> point = new ReferencePoint<>(deltaGauge,deltaGaugeData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>addReferencePoint(point, "DELTA GAUGE");
+        }
+        
+        /* for the stress tensor property */
+        if(stress != null){
+            stressTensorData = new ReferenceStressTensorData<>(id, new ReferenceGeomData<>(currentCartes, bonds, id));
+            final GenericReferencePoint<StressTensor,ReferenceStressTensorData<CartesianCoordinates>> point = new ReferencePoint<>(stress,stressTensorData,id,dRefWeight,dRefMaxDiff);
+            refPoints.<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>addReferencePoint(point, "STRESS TENSOR");
+        }
+        
+        /* generic properties for scalar, vector, matrix, tensor */
+        if(scalar != null){
+            final GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData> point = new ReferencePoint<>(scalar,scalarDat,id,dRefWeight,dRefMaxDiff);
+            refPoints.<GenericScalarProperty,ReferenceGenericScalarData>addReferencePoint(point, "GENERICSCALAR");
+        }
+        
+        if(vector != null){
+            final GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData> point = new ReferencePoint<>(vector,vectorDat,id,dRefWeight,dRefMaxDiff);
+            refPoints.<GenericVectorProperty,ReferenceGenericVectorData>addReferencePoint(point, "GENERICVECTOR");
+        }
+        
+        if(matrix != null){
+            final GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData> point = new ReferencePoint<>(matrix,matrixDat,id,dRefWeight,dRefMaxDiff);
+            refPoints.<GenericMatrixProperty,ReferenceGenericMatrixData>addReferencePoint(point, "GENERICMATRIX");
+        }
+        
+        if(tensor != null){
+            final GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData> point = new ReferencePoint<>(tensor,tensorDat,id,dRefWeight,dRefMaxDiff);
+            refPoints.<GenericTensorProperty,ReferenceGenericTensorData>addReferencePoint(point, "GENERICTENSOR");
         }
     }
     
@@ -1800,8 +2005,16 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         final List<SerialBatchedPropertyCalculator.PropertyBatch> batches = createBatches();
         final BatchedPropertyCalculator batcher = new SerialBatchedPropertyCalculator(refAdaptivable.clone(),batches);
         
-        if(!referenceEnergies.isEmpty()){
+        final Set<String> allKeys = refPoints.getAllKeysAdded();
+        final List<String> workKeys = new ArrayList<>();
+        for(final String s : allKeys){
+            workKeys.add(s);
+        }
+        
+        if(workKeys.contains("ENERGY")){
             // XXX: ideally deprecate eventually!
+            final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");        
+            assert(!referenceEnergies.isEmpty());
             final EnergyCalculator enerCalc = new EnergyCalculator(refAdaptivable.clone());
             final PseudoPropertyCalculator<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(enerCalc,batcher,new Energy(-42));
                         
@@ -1814,10 +2027,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             }
             
             List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEs = new ArrayList<>();
-            for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> p : referenceEnergies){
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceEs.add((GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>) (Object)p);
+            for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> p : referenceEnergies){
+                referenceEs.add(p);
             }
             
             final GenericFitnessTerm<Energy> energyTerm = new SerialGenericFitnessTerm<>(referenceEs,
@@ -1825,9 +2036,12 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         
             terms.add(energyTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("ENERGY");
         }
         
-        if(!referenceForces.isEmpty()){
+        if(workKeys.contains("FORCES")){
+            final List<GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>> referenceForces = refPoints.<Forces,ReferenceForcesData<CartesianCoordinates>>retrieveReferencePointsForName("FORCES");
+            assert(!referenceForces.isEmpty());
             final Forces forces = new Forces(new double[0][0]);
             final ReferenceForcesData<CartesianCoordinates> dummy = new ReferenceForcesData<>(-1,new ReferenceGeomData<>(null,null,-1));
             final PropertyCalculator<Forces,ReferenceForcesData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<Forces,ReferenceForcesData<CartesianCoordinates>>getCalculatorForProperty(forces, dummy);
@@ -1837,11 +2051,9 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             final PseudoPropertyCalculator<Forces,ReferenceForcesData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,forces);
             
             List<GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>> referenceFs = new ArrayList<>();
-            referenceForces.forEach((p) -> {
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceFs.add((GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>) (Object)p);
-            });
+            for(final GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>> p : referenceForces){
+                referenceFs.add(p);
+            }
             
             FitnessTermConfig<Forces> conf;
             try{
@@ -1856,9 +2068,12 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             terms.add(forcesTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("FORCES");
         }
         
-        if(!referenceBulkMod.isEmpty()){
+        if(workKeys.contains("BULK MODULUS")){
+            final List<GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>>> referenceBulkMod = refPoints.<BulkModulus,RefBulkModulusData<CartesianCoordinates>>retrieveReferencePointsForName("BULK MODULUS");
+            assert(!referenceBulkMod.isEmpty());
             final BulkModulus modulus = new BulkModulus(42.0);
             final RefBulkModulusData<CartesianCoordinates> dummy = new RefBulkModulusData<>(-1,"somesymmetry", (short)0, null);
             final PropertyCalculator<BulkModulus,RefBulkModulusData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<BulkModulus,RefBulkModulusData<CartesianCoordinates>>getCalculatorForProperty(modulus,dummy);
@@ -1868,10 +2083,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             final PseudoPropertyCalculator<BulkModulus,RefBulkModulusData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,modulus);
             
             List<GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>>> referenceBs = new ArrayList<>();
-            for(final GenericReferencePoint<BulkModulus,RefBulkModulusData<?>> p : referenceBulkMod){
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceBs.add((GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>>) (Object)p);
+            for(final GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>> p : referenceBulkMod){
+                referenceBs.add(p);
             }
             
             FitnessTermConfig<BulkModulus> conf;
@@ -1887,9 +2100,12 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             terms.add(modulusTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("BULK MODULUS");
         }
         
-        if(!referenceCellVolume.isEmpty()){
+        if(workKeys.contains("CELL VOLUME")){
+            final List<GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>>> referenceCellVolume = refPoints.<CellVolume,RefCellVolumeData<CartesianCoordinates>>retrieveReferencePointsForName("CELL VOLUME");
+            assert(!referenceCellVolume.isEmpty());
             final CellVolume volume = new CellVolume(42.0);
             final RefCellVolumeData<CartesianCoordinates> dummy = new RefCellVolumeData<>(-1,"somesymmetry", (short)0, null);
             final PropertyCalculator<CellVolume,RefCellVolumeData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<CellVolume,RefCellVolumeData<CartesianCoordinates>>getCalculatorForProperty(volume,dummy);
@@ -1899,10 +2115,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             final PseudoPropertyCalculator<CellVolume,RefCellVolumeData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,volume);
             
             List<GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>>> referenceVs = new ArrayList<>();
-            for(final GenericReferencePoint<CellVolume,RefCellVolumeData<?>> p : referenceCellVolume){
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceVs.add((GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>>) (Object)p);
+            for(final GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>> p : referenceCellVolume){
+                referenceVs.add(p);
             }
             
             FitnessTermConfig<CellVolume> conf;
@@ -1918,9 +2132,12 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             terms.add(cellVolumeTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("CELL VOLUME");
         }
         
-        if(!referenceEnergyOrder.isEmpty()){
+        if(workKeys.contains("ENERGY ORDER")){
+            final List<GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>> referenceEnergyOrder = refPoints.<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>retrieveReferencePointsForName("ENERGY ORDER");
+            assert(!referenceEnergyOrder.isEmpty());
             final Tuple<String,Double> t1 = new Tuple<>("bcc",21.0);
             final Tuple<String,Double> t2 = new Tuple<>("fcc",42.0);
             final Tuple<String,Double> t3 = new Tuple<>("hcp",84.0);
@@ -1944,10 +2161,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             final PseudoPropertyCalculator<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,order);
             
             List<GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>> referenceEOs = new ArrayList<>();
-            for(final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>> p : referenceEnergyOrder){
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceEOs.add((GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>) (Object)p);
+            for(final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>> p : referenceEnergyOrder){
+                referenceEOs.add(p);
             }
             
             FitnessTermConfig<EnergyOrder> conf;
@@ -1963,9 +2178,12 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             terms.add(energyOrderTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("ENERGY ORDER");
         }
         
-        if(!referenceDeltaGauge.isEmpty()){
+        if(workKeys.contains("DELTA GAUGE")){
+            final List<GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>> referenceDeltaGauge = refPoints.<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>retrieveReferencePointsForName("DELTA GAUGE");
+            assert(!referenceDeltaGauge.isEmpty());
             final DeltaGauge deltaGauge = new DeltaGauge(42.0);
             final ReferenceDeltaGaugeData<CartesianCoordinates> dummy = new ReferenceDeltaGaugeData<>(-1,"somesymmetry", (short)0, null);
             final PropertyCalculator<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>getCalculatorForProperty(deltaGauge,dummy);
@@ -1975,10 +2193,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             final PseudoPropertyCalculator<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,deltaGauge);
             
             List<GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>> referenceDGs = new ArrayList<>();
-            for(final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>> p : referenceDeltaGauge){
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceDGs.add((GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>) (Object)p);
+            for(final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>> p : referenceDeltaGauge){
+                referenceDGs.add(p);
             }
             
             FitnessTermConfig<DeltaGauge> conf;
@@ -1994,11 +2210,13 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             terms.add(modulusTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("DELTA GAUGE");
         }
         
-        if(!referenceDensity.isEmpty()){
-            
-            final GenericReferencePoint<Density,ReferenceDensityData<?>> zeroth = referenceDensity.get(0);
+        if(workKeys.contains("ELECTRON DENSITY")){
+            final List<GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>> referenceDensity = refPoints.<Density,ReferenceDensityData<CartesianCoordinates>>retrieveReferencePointsForName("ELECTRON DENSITY");
+            assert(!referenceDensity.isEmpty());
+            final GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>> zeroth = referenceDensity.get(0);
             
             final Density density = new Density(null);
             final ReferenceDensityData<CartesianCoordinates> dummy = new ReferenceDensityData<>(-1,"dummy",new ReferenceGeomData<>(null,null,-1));
@@ -2010,9 +2228,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             List<GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>> referenceDs = new ArrayList<>();
             referenceDensity.forEach((p) -> {
-                // let's just cast this around...
-                // XXX god is this ugly
-                referenceDs.add((GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>) (Object)p);
+                referenceDs.add(p);
             });
             
             FitnessTermConfig<Density> conf;
@@ -2028,7 +2244,182 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             
             terms.add(densityTerm);
             weights.add(conf.getTermWeight());
+            workKeys.remove("ELECTRON DENSITY");
         }
+        
+        if(workKeys.contains("STRESS TENSOR")){
+            final List<GenericReferencePoint<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>> referenceStressTensor = refPoints.<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>retrieveReferencePointsForName("STRESS TENSOR");
+            assert(!referenceStressTensor.isEmpty());
+            final StressTensor stress = new StressTensor(new double[3][3]);
+            final ReferenceStressTensorData<CartesianCoordinates> dummy = new ReferenceStressTensorData<>(-1,new ReferenceGeomData<>(null,null,-1));
+            final PropertyCalculator<StressTensor,ReferenceStressTensorData<CartesianCoordinates>> propCalc = refAdaptivable.clone().<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>getCalculatorForProperty(stress, dummy);
+            if(propCalc == null){
+                throw new RuntimeException("No property calculator available for stress tensor and reference stress tensor data, although term was requested!");
+            }
+            final PseudoPropertyCalculator<StressTensor,ReferenceStressTensorData<CartesianCoordinates>> wrapped = new PseudoPropertyCalculator<>(propCalc,batcher,stress);
+            
+            List<GenericReferencePoint<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>> referenceSs = new ArrayList<>();
+            for(final GenericReferencePoint<StressTensor,ReferenceStressTensorData<CartesianCoordinates>> p : referenceStressTensor){
+                referenceSs.add(p);
+            }
+            
+            FitnessTermConfig<StressTensor> conf;
+            try{
+                final String[] block = FitnessTermConfig.findBlockFor(allTermConfigs, "STRESSTENSORTERM");
+                conf = new FitnessTermConfig<>(block);
+            } catch(Exception e){
+                throw new RuntimeException("Couldn't create config for stress tensor term.",e);
+            }
+            
+            final GenericFitnessTerm<StressTensor> stressTerm = new SerialGenericFitnessTerm<>(referenceSs,
+                wrapped, conf, printContributions);
+            
+            terms.add(stressTerm);
+            weights.add(conf.getTermWeight());
+            workKeys.remove("STRESS TENSOR");
+        }
+        
+        // done with all the special properties. onto the generic ones.
+        for(final String s : workKeys){
+            
+            if(s.startsWith("GENERICSCALAR")){
+                final List<GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData>> references = refPoints.<GenericScalarProperty,ReferenceGenericScalarData>retrieveReferencePointsForName(s);
+                assert(!references.isEmpty());            
+                
+                final GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData> zeroth = references.get(0);
+                
+                final int termID = zeroth.getReferenceInputData().getTypeID();
+                
+                final GenericScalarProperty prop = new GenericScalarProperty(0.0, termID);
+                final ReferenceGenericScalarData dummy = new ReferenceGenericScalarData(-1,0,0);
+                final PropertyCalculator<GenericScalarProperty, ReferenceGenericScalarData> propCalc = refAdaptivable.clone().<GenericScalarProperty, ReferenceGenericScalarData>getCalculatorForProperty(prop, dummy);
+                if (propCalc == null) {
+                    throw new RuntimeException("No property calculator available for " + s + " data, although term was requested!");
+                }
+                final PseudoPropertyCalculator<GenericScalarProperty, ReferenceGenericScalarData> wrapped = new PseudoPropertyCalculator<>(propCalc, batcher, prop);
+
+                List<GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData>> referenceData = new ArrayList<>();
+                for (final GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData> p : references) {
+                    referenceData.add(p);
+                }
+
+                FitnessTermConfig<GenericScalarProperty> conf;
+                try {
+                    final String[] block = FitnessTermConfig.findBlockFor(allTermConfigs, s + "TERM");
+                    conf = new FitnessTermConfig<>(block);
+                } catch (Exception e) {
+                    throw new RuntimeException("Couldn't create config for " + s + " term.", e);
+                }
+
+                final GenericFitnessTerm<GenericScalarProperty> term = new SerialGenericFitnessTerm<>(referenceData, wrapped, conf, printContributions);
+
+                terms.add(term);
+                weights.add(conf.getTermWeight());
+                
+            } else if(s.startsWith("GENERICVECTOR")){
+                final List<GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData>> references = refPoints.<GenericVectorProperty,ReferenceGenericVectorData>retrieveReferencePointsForName(s);
+                assert(!references.isEmpty());
+                
+                final GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData> zeroth = references.get(0);
+                
+                final int termID = zeroth.getReferenceInputData().getTypeID();
+                
+                final GenericVectorProperty prop = new GenericVectorProperty(new double[0], true, termID);
+                final ReferenceGenericVectorData dummy = new ReferenceGenericVectorData(-1,0,0);
+                final PropertyCalculator<GenericVectorProperty, ReferenceGenericVectorData> propCalc = refAdaptivable.clone().<GenericVectorProperty, ReferenceGenericVectorData>getCalculatorForProperty(prop, dummy);
+                if (propCalc == null) {
+                    throw new RuntimeException("No property calculator available for " + s + " data, although term was requested!");
+                }
+                final PseudoPropertyCalculator<GenericVectorProperty, ReferenceGenericVectorData> wrapped = new PseudoPropertyCalculator<>(propCalc, batcher, prop);
+
+                List<GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData>> referenceData = new ArrayList<>();
+                for (final GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData> p : references) {
+                    referenceData.add(p);
+                }
+
+                FitnessTermConfig<GenericVectorProperty> conf;
+                try {
+                    final String[] block = FitnessTermConfig.findBlockFor(allTermConfigs, s + "TERM");
+                    conf = new FitnessTermConfig<>(block);
+                } catch (Exception e) {
+                    throw new RuntimeException("Couldn't create config for " + s + " term.", e);
+                }
+
+                final GenericFitnessTerm<GenericVectorProperty> term = new SerialGenericFitnessTerm<>(referenceData, wrapped, conf, printContributions);
+
+                terms.add(term);
+                weights.add(conf.getTermWeight());
+            } else if(s.startsWith("GENERICMATRIX")){
+                final List<GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData>> references = refPoints.<GenericMatrixProperty,ReferenceGenericMatrixData>retrieveReferencePointsForName(s);
+                assert(!references.isEmpty());
+                
+                final GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData> zeroth = references.get(0);
+                
+                final int termID = zeroth.getReferenceInputData().getTypeID();
+                
+                final GenericMatrixProperty prop = new GenericMatrixProperty(new double[0][0], true, termID);
+                final ReferenceGenericMatrixData dummy = new ReferenceGenericMatrixData(-1,0,0);
+                final PropertyCalculator<GenericMatrixProperty, ReferenceGenericMatrixData> propCalc = refAdaptivable.clone().<GenericMatrixProperty, ReferenceGenericMatrixData>getCalculatorForProperty(prop, dummy);
+                if (propCalc == null) {
+                    throw new RuntimeException("No property calculator available for " + s + " data, although term was requested!");
+                }
+                final PseudoPropertyCalculator<GenericMatrixProperty, ReferenceGenericMatrixData> wrapped = new PseudoPropertyCalculator<>(propCalc, batcher, prop);
+
+                List<GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData>> referenceData = new ArrayList<>();
+                for (final GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData> p : references) {
+                    referenceData.add(p);
+                }
+
+                FitnessTermConfig<GenericMatrixProperty> conf;
+                try {
+                    final String[] block = FitnessTermConfig.findBlockFor(allTermConfigs, s + "TERM");
+                    conf = new FitnessTermConfig<>(block);
+                } catch (Exception e) {
+                    throw new RuntimeException("Couldn't create config for " + s + " term.", e);
+                }
+
+                final GenericFitnessTerm<GenericMatrixProperty> term = new SerialGenericFitnessTerm<>(referenceData, wrapped, conf, printContributions);
+
+                terms.add(term);
+                weights.add(conf.getTermWeight());
+            } else if(s.startsWith("GENERICTENSOR")){
+                final List<GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData>> references = refPoints.<GenericTensorProperty,ReferenceGenericTensorData>retrieveReferencePointsForName(s);
+                assert(!references.isEmpty());
+                
+                final GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData> zeroth = references.get(0);
+                
+                final int termID = zeroth.getReferenceInputData().getTypeID();
+                
+                final GenericTensorProperty prop = new GenericTensorProperty(new double[0][0][0], true, termID);
+                final ReferenceGenericTensorData dummy = new ReferenceGenericTensorData(-1,0,0);
+                final PropertyCalculator<GenericTensorProperty, ReferenceGenericTensorData> propCalc = refAdaptivable.clone().<GenericTensorProperty, ReferenceGenericTensorData>getCalculatorForProperty(prop, dummy);
+                if (propCalc == null) {
+                    throw new RuntimeException("No property calculator available for " + s + " data, although term was requested!");
+                }
+                final PseudoPropertyCalculator<GenericTensorProperty, ReferenceGenericTensorData> wrapped = new PseudoPropertyCalculator<>(propCalc, batcher, prop);
+
+                List<GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData>> referenceData = new ArrayList<>();
+                for (final GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData> p : references) {
+                    referenceData.add(p);
+                }
+
+                FitnessTermConfig<GenericTensorProperty> conf;
+                try {
+                    final String[] block = FitnessTermConfig.findBlockFor(allTermConfigs, s + "TERM");
+                    conf = new FitnessTermConfig<>(block);
+                } catch (Exception e) {
+                    throw new RuntimeException("Couldn't create config for " + s + " term.", e);
+                }
+
+                final GenericFitnessTerm<GenericTensorProperty> term = new SerialGenericFitnessTerm<>(referenceData, wrapped, conf, printContributions);
+
+                terms.add(term);
+                weights.add(conf.getTermWeight());
+            } else {
+                throw new RuntimeException("Unknown remaining property key " + s);
+            }
+        }
+        
         
         if(terms.isEmpty()){
             throw new RuntimeException("No reference terms to optimize for!");
@@ -2042,44 +2433,79 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     private List<SerialBatchedPropertyCalculator.PropertyBatch> createBatches(){
         
         int maxRefID = -1;
+        final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
         if(!referenceEnergies.isEmpty()){
-            for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point : referenceEnergies){
+            for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> point : referenceEnergies){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
         
+        final List<GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>> referenceForces = refPoints.<Forces,ReferenceForcesData<CartesianCoordinates>>retrieveReferencePointsForName("FORCES");
         if(!referenceForces.isEmpty()){
-            for(final GenericReferencePoint<Forces,ReferenceForcesData<?>> point : referenceForces){
+            for(final GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>> point : referenceForces){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
         
+        final List<GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>>> referenceBulkMod = refPoints.<BulkModulus,RefBulkModulusData<CartesianCoordinates>>retrieveReferencePointsForName("BULK MODULUS");                
         if(!referenceBulkMod.isEmpty()){
-            for(final GenericReferencePoint<BulkModulus,RefBulkModulusData<?>> point : referenceBulkMod){
+            for(final GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>> point : referenceBulkMod){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
         
+        final List<GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>>> referenceCellVolume = refPoints.<CellVolume,RefCellVolumeData<CartesianCoordinates>>retrieveReferencePointsForName("CELL VOLUME");
         if(!referenceCellVolume.isEmpty()){
-            for(final GenericReferencePoint<CellVolume,RefCellVolumeData<?>> point : referenceCellVolume){
+            for(final GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>> point : referenceCellVolume){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
         
+        final List<GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>> referenceEnergyOrder = refPoints.<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>retrieveReferencePointsForName("ENERGY ORDER");
         if(!referenceEnergyOrder.isEmpty()){
-            for(final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<?>> point : referenceEnergyOrder){
+            for(final GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>> point : referenceEnergyOrder){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
         
+        final List<GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>> referenceDeltaGauge = refPoints.<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>retrieveReferencePointsForName("DELTA GAUGE");        
         if(!referenceDeltaGauge.isEmpty()){
-            for(final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<?>> point : referenceDeltaGauge){
+            for(final GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>> point : referenceDeltaGauge){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
         
+        final List<GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>> referenceDensity = refPoints.<Density,ReferenceDensityData<CartesianCoordinates>>retrieveReferencePointsForName("ELECTRON DENSITY");        
         if(!referenceDensity.isEmpty()){
-            for(final GenericReferencePoint<Density,ReferenceDensityData<?>> point : referenceDensity){
+            for(final GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>> point : referenceDensity){
+                maxRefID = Math.max(maxRefID, point.getReferenceID());
+            }
+        }
+        
+        final List<GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData>> referenceScalar = refPoints.<GenericScalarProperty,ReferenceGenericScalarData>retrieveReferencePointsForName("GENERICSCALAR");
+        if(!referenceScalar.isEmpty()){
+            for(final GenericReferencePoint<GenericScalarProperty,ReferenceGenericScalarData> point : referenceScalar){
+                maxRefID = Math.max(maxRefID, point.getReferenceID());
+            }
+        }
+        
+        final List<GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData>> referenceVector = refPoints.<GenericVectorProperty,ReferenceGenericVectorData>retrieveReferencePointsForName("GENERICVECTOR");
+        if(!referenceVector.isEmpty()){
+            for(final GenericReferencePoint<GenericVectorProperty,ReferenceGenericVectorData> point : referenceVector){
+                maxRefID = Math.max(maxRefID, point.getReferenceID());
+            }
+        }
+        
+        final List<GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData>> referenceMatrix = refPoints.<GenericMatrixProperty,ReferenceGenericMatrixData>retrieveReferencePointsForName("GENERICMATRIX");
+        if(!referenceMatrix.isEmpty()){
+            for(final GenericReferencePoint<GenericMatrixProperty,ReferenceGenericMatrixData> point : referenceMatrix){
+                maxRefID = Math.max(maxRefID, point.getReferenceID());
+            }
+        }
+        
+        final List<GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData>> referenceTensor = refPoints.<GenericTensorProperty,ReferenceGenericTensorData>retrieveReferencePointsForName("GENERICTENSOR");
+        if(!referenceTensor.isEmpty()){
+            for(final GenericReferencePoint<GenericTensorProperty,ReferenceGenericTensorData> point : referenceTensor){
                 maxRefID = Math.max(maxRefID, point.getReferenceID());
             }
         }
@@ -2091,6 +2517,11 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         int indCe = 0;
         int indDG = 0;
         int indDe = 0;
+        
+        int indSca = 0;
+        int indVec = 0;
+        int indMat = 0;
+        int indTen = 0;
         
         final List<SerialBatchedPropertyCalculator.PropertyBatch> batches = new ArrayList<>();
         for(int id = 0; id <= maxRefID; id++){
@@ -2168,16 +2599,59 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                     }
                 }
             }
+            if(!referenceScalar.isEmpty()){
+                for(int i = indSca; i < referenceScalar.size(); i++){
+                    if(referenceScalar.get(i).getReferenceID() == id){
+                        // found
+                        points.add(referenceScalar.get(i));
+                        indSca = i+1;
+                        break;
+                    }
+                }
+            }
+            if(!referenceVector.isEmpty()){
+                for(int i = indVec; i < referenceVector.size(); i++){
+                    if(referenceVector.get(i).getReferenceID() == id){
+                        // found
+                        points.add(referenceVector.get(i));
+                        indVec = i+1;
+                        break;
+                    }
+                }
+            }
+            if(!referenceMatrix.isEmpty()){
+                for(int i = indMat; i < referenceMatrix.size(); i++){
+                    if(referenceMatrix.get(i).getReferenceID() == id){
+                        // found
+                        points.add(referenceMatrix.get(i));
+                        indMat = i+1;
+                        break;
+                    }
+                }
+            }
+            if(!referenceTensor.isEmpty()){
+                for(int i = indTen; i < referenceTensor.size(); i++){
+                    if(referenceTensor.get(i).getReferenceID() == id){
+                        // found
+                        points.add(referenceTensor.get(i));
+                        indTen = i+1;
+                        break;
+                    }
+                }
+            }
             
             final SerialBatchedPropertyCalculator.PropertyBatch batch = new SerialBatchedPropertyCalculator.PropertyBatch(points,id);
             batches.add(batch);
         }
+        
+        assert(!batches.isEmpty());
         
         return batches;
     }
     
     ArrayList<CartesianCoordinates> getAllReferenceGeoms(){
         
+        final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
         final ArrayList<CartesianCoordinates> all = new ArrayList<>(referenceEnergies.size());
         
         // energy ones
@@ -2186,38 +2660,49 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
         }
         
         // forces ones
+        final List<GenericReferencePoint<Forces,ReferenceForcesData<CartesianCoordinates>>> referenceForces = refPoints.<Forces,ReferenceForcesData<CartesianCoordinates>>retrieveReferencePointsForName("FORCES");        
         for(int i = 0; i < referenceForces.size(); i++){
             all.add(referenceForces.get(i).getReferenceInputData().getGeomData().c.getCartesianCoordinates());
         }
         
         // bulk modulus ones
+        final List<GenericReferencePoint<BulkModulus,RefBulkModulusData<CartesianCoordinates>>> referenceBulkMod = refPoints.<BulkModulus,RefBulkModulusData<CartesianCoordinates>>retrieveReferencePointsForName("BULK MODULUS");                
         for(int i = 0; i < referenceBulkMod.size(); i++){
             all.add(referenceBulkMod.get(i).getReferenceInputData().getGeomData().c.getCartesianCoordinates());
         }
         
         // cell volume ones
+        final List<GenericReferencePoint<CellVolume,RefCellVolumeData<CartesianCoordinates>>> referenceCellVolume = refPoints.<CellVolume,RefCellVolumeData<CartesianCoordinates>>retrieveReferencePointsForName("CELL VOLUME");
         for(int i = 0; i < referenceCellVolume.size(); i++){
             all.add(referenceCellVolume.get(i).getReferenceInputData().getGeomData().c.getCartesianCoordinates());
         }
         
         // energy order ones
+        final List<GenericReferencePoint<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>> referenceEnergyOrder = refPoints.<EnergyOrder,ReferenceEnergyOrderData<CartesianCoordinates>>retrieveReferencePointsForName("ENERGY ORDER");
         for(int i = 0; i < referenceEnergyOrder.size(); i++){
             
-            // *cough* *cough* XXX fugly
-            final List<Tuple<String,ReferenceGeomData<EnergyOrder,? extends StructuralData>>> data = (List<Tuple<String,ReferenceGeomData<EnergyOrder,? extends StructuralData>>>) (Object) referenceEnergyOrder.get(i).getReferenceInputData().getAllGeomData();
-            for(final Tuple<String,ReferenceGeomData<EnergyOrder,? extends StructuralData>> p : data){
+            final List<Tuple<String,ReferenceGeomData<EnergyOrder,CartesianCoordinates>>> data = referenceEnergyOrder.get(i).getReferenceInputData().getAllGeomData();
+            for(final Tuple<String,ReferenceGeomData<EnergyOrder,CartesianCoordinates>> p : data){
                 all.add(p.getObject2().c.getCartesianCoordinates());
             }
         }
         
         // delta gauge ones
+        final List<GenericReferencePoint<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>> referenceDeltaGauge = refPoints.<DeltaGauge,ReferenceDeltaGaugeData<CartesianCoordinates>>retrieveReferencePointsForName("DELTA GAUGE");
         for(int i = 0; i < referenceDeltaGauge.size(); i++){
             all.add(referenceDeltaGauge.get(i).getReferenceInputData().getGeomData().c.getCartesianCoordinates());
         }
         
         // density ones
-        for(int i = 0; i < referenceForces.size(); i++){
+        final List<GenericReferencePoint<Density,ReferenceDensityData<CartesianCoordinates>>> referenceDensity = refPoints.<Density,ReferenceDensityData<CartesianCoordinates>>retrieveReferencePointsForName("ELECTRON DENSITY");
+        for(int i = 0; i < referenceDensity.size(); i++){
             all.add(referenceDensity.get(i).getReferenceInputData().getGeomData().c.getCartesianCoordinates());
+        }
+        
+        // stress tensor ones
+        final List<GenericReferencePoint<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>> referenceStress = refPoints.<StressTensor,ReferenceStressTensorData<CartesianCoordinates>>retrieveReferencePointsForName("STRESS TENSOR");
+        for(int i = 0; i < referenceStress.size(); i++){
+            all.add(referenceStress.get(i).getReferenceInputData().getGeomData().c.getCartesianCoordinates());
         }
         
         return all;
@@ -2260,7 +2745,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // great, we have been initialized, return that! :-)
             return refNewton;
         }
-                
+        
         // slightly more involved: wrap a locopt around it
         final ParamLocOptFactory fac = new ParamLocOptFactory(threshLocOptParam,maxIterLocOpt,
                 normParams,lowerParameterBorder, upperParameterBorder, backendDict, this);
@@ -2334,8 +2819,10 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     List<ReferenceGeomData<Energy,V>> getReferenceGeomDataForEnergy(){
         
         final List<ReferenceGeomData<Energy,V>> allReferenceData = new ArrayList<>();
-        for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point : referenceEnergies){
+        final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
+        for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> point : referenceEnergies){
             final ReferenceGeomData<Energy,?> geom = point.getReferenceInputData();
+            // XXX this is dangerous!
             allReferenceData.add((ReferenceGeomData<Energy,V>) (Object)geom);
         }
         
@@ -2345,7 +2832,8 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     public List<Energy> getReferenceEnergies(){
         
         final List<Energy> allEnergies = new ArrayList<>();
-        for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,?>> point : referenceEnergies){
+        final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
+        for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>> point : referenceEnergies){
             final Energy e = point.getReferenceProperty();
             allEnergies.add(e);
         }

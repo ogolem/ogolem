@@ -130,10 +130,11 @@ public class MainOgoAdaptive {
 
         // check whether all of our references should have the same spins and charges
         if(adapConf.allRefsSameChargesAndSpins){
+            final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = adapConf.refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
             System.err.println("WARNING: allRefsSameChargesAndSpins: This currently only works in cases where we optimize all properties with the same set of reference geom data. Bug the author(s). :-)");
-            final short[] spins = adapConf.referenceEnergies.get(0).getReferenceInputData().c.getAllSpins().clone();
-            final float[] charges = adapConf.referenceEnergies.get(0).getReferenceInputData().c.getAllCharges().clone();
-            for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy, ?>> point : adapConf.referenceEnergies){
+            final short[] spins = referenceEnergies.get(0).getReferenceInputData().c.getAllSpins().clone();
+            final float[] charges = referenceEnergies.get(0).getReferenceInputData().c.getAllCharges().clone();
+            for(final GenericReferencePoint<Energy,ReferenceGeomData<Energy, CartesianCoordinates>> point : referenceEnergies){
                 point.getReferenceInputData().c.setAllSpins(spins);
                 point.getReferenceInputData().c.setAllCharges(charges);
             }
@@ -387,14 +388,15 @@ public class MainOgoAdaptive {
                 + " with fitness " + best.getFitness());
         System.out.println("#No\t Ref energy\t Eq ref \t actual energy");
         final AdaptiveGateway adaptivable = new AdaptiveGateway(adapConf);
-        final double first = adapConf.referenceEnergies.get(0).getReferenceProperty().getValue();
+        final List<GenericReferencePoint<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>> referenceEnergies = adapConf.refPoints.<Energy,ReferenceGeomData<Energy,CartesianCoordinates>>retrieveReferencePointsForName("ENERGY");
+        final double first = referenceEnergies.get(0).getReferenceProperty().getValue();
         
         final List<ReferenceGeomData<Energy,CartesianCoordinates>> referenceData = adapConf.getReferenceGeomDataForEnergy();
-        for (int i = 0; i < adapConf.referenceEnergies.size(); i++) {
+        for (int i = 0; i < referenceEnergies.size(); i++) {
             final ReferenceGeomData<Energy,CartesianCoordinates> db = referenceData.get(i);
             final CartesianCoordinates cartes = db.c;
             final double energy = adaptivable.energyOfStructWithParams(cartes, best ,i, db.bonds);
-            final double ref = adapConf.referenceEnergies.get(i).getReferenceProperty().getValue();
+            final double ref = referenceEnergies.get(i).getReferenceProperty().getValue();
             System.out.println(" " + i + "    " + String.format(Locale.US, "%20.9f", ref) + "    " + String.format(Locale.US, "%20.9f",(ref - first)) + "    " + String.format(Locale.US, "%20.9f",energy));
         }
     }

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import org.ogolem.properties.Property;
 /**
  * A cache for batched property calculations.
  * @author Johannes Dieterich
- * @version 2015-10-29
+ * @version 2018-07-07
  */
 public class SerialBatchedPropertyCalculator implements BatchedPropertyCalculator {
     
@@ -59,6 +59,11 @@ public class SerialBatchedPropertyCalculator implements BatchedPropertyCalculato
     private long uniqueParamID;
     
     public SerialBatchedPropertyCalculator(final Adaptivable adaptivable, final List<PropertyBatch> refBatches){
+        
+        assert(adaptivable != null);
+        assert(refBatches != null);
+        assert(!refBatches.isEmpty());
+        
         this.uniqueParamID = 0;
         this.calculatedProperties = new ArrayList<>();
         this.batches = refBatches;
@@ -89,6 +94,8 @@ public class SerialBatchedPropertyCalculator implements BatchedPropertyCalculato
             final int batchID = batch.getBatchID();
             calculatedProperties.add(batchID, props);
         });
+        
+        assert(!calculatedProperties.isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -99,6 +106,10 @@ public class SerialBatchedPropertyCalculator implements BatchedPropertyCalculato
         if(myUniqueID != uniqueParamID){
             throw new RuntimeException("No recalculation of properties has taken place prior to asking for property " + propertyType.name()
             + " Have " + uniqueParamID + " should be " + myUniqueID + " for " + this.hashCode());
+        }
+        
+        if(calculatedProperties.isEmpty()){
+            recalcForNewParameters(params);
         }
         
         // simply get the proper entry in the list

@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,44 +43,25 @@ import static org.ogolem.core.FixedValues.NONCONVERGEDENERGY;
 /**
  * An energy property. Most simple property possible.
  * @author Johannes Dieterich
- * @version 2015-03-03
+ * @version 2017-12-15
  */
-public class Energy implements Property {
+public class Energy extends ScalarProperty {
     
-    private static final long serialVersionUID = (long) 20130104;
-    
-    private double energy;
+    private static final long serialVersionUID = (long) 20171215;
     
     public Energy(final double energy){
-        this.energy = energy;
+        super(energy);
     }
     
     @Override
     public Energy clone(){
-        return new Energy(energy);
+        return new Energy(this.getValue());
     }
-    
-    @Override
-    public double getValue(){
-        return energy;
-    }
-    
-    @Override
-    public double signedDifference(Property p){
-        if(!(p instanceof Energy)) {throw new IllegalArgumentException("Property should be an instance of Energy!");}
-        return (energy - p.getValue());
-    }
-    
-    @Override
-    public double absoluteDifference(Property p){
-        if(!(p instanceof Energy)) {throw new IllegalArgumentException("Property should be an instance of Energy!");}
-        return Math.abs(energy - p.getValue());
-    }
-    
+        
     @Override
     public boolean makeSensible(){
-        if(Double.isInfinite(energy) || Double.isNaN(energy) || energy > NONCONVERGEDENERGY){
-            energy = NONCONVERGEDENERGY;
+        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() > NONCONVERGEDENERGY){
+            this.scalar = NONCONVERGEDENERGY;
             return true;
         }
         return false;
@@ -87,11 +69,16 @@ public class Energy implements Property {
     
     @Override
     public String printableProperty(){
-        return "" + energy;
+        return "" + this.getValue();
     }
 
     @Override
     public String name() {
         return "ENERGY";
+    }
+
+    @Override
+    protected boolean ensureCorrectProperty(Property p) {
+        return (p instanceof Energy);
     }
 }

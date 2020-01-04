@@ -41,55 +41,25 @@ import org.ogolem.core.FixedValues;
 /**
  * A forces property.
  * @author Johannes Dieterich
- * @version 2017-10-13
+ * @version 2017-12-15
  */
-public class Forces implements Property {
+public class Forces extends MatrixProperty {
     
-    private static final long serialVersionUID = (long) 20150727;
+    private static final long serialVersionUID = (long) 20171215;
 
     public static final double DEFAULTFORCE = FixedValues.NONCONVERGEDGRADIENT;
     
-    private final double[][] forces;
-    
     public Forces(final double[][] forces){
-        this.forces = forces;
+        super(forces, true);
     }
     
     private Forces(final Forces orig){
-        
-        if(orig.forces != null){
-        
-            this.forces = new double[orig.forces.length][];
-            for(int i = 0; i < orig.forces.length; i++){
-                this.forces[i] = orig.forces[i].clone();
-            }
-        } else {
-            this.forces = null;
-        }
+        super(orig);
     }
     
     @Override
     public Forces clone() {
         return new Forces(this);
-    }
-
-    /**
-     * Will return the absolute sum of all the gradient components.
-     * @return absolute sum of all gradient components.
-     */
-    @Override
-    public double getValue() {
-        
-        if(forces == null){return FixedValues.NONCONVERGEDENERGY;}
-        
-        double sum = 0.0;
-        for(int i = 0; i < forces.length; i++){
-            for(int j = 0; j < forces[i].length; j++){
-                sum += Math.abs(forces[i][j]);
-            }
-        }
-        
-        return sum;
     }
 
     /**
@@ -103,41 +73,15 @@ public class Forces implements Property {
     }
 
     @Override
-    public double absoluteDifference(final Property p) {
-        if(!(p instanceof Forces)) {throw new IllegalArgumentException("Property should be an instance of Forces!");}
-        else{
-            final Forces other = (Forces) p;
-            
-            if(forces == null || other.forces == null){return FixedValues.NONCONVERGEDENERGY;}
-            
-            final double[][] oForces = other.forces;
-            if(oForces.length != forces.length){throw new IllegalArgumentException("First force dimension must be the same! Are " + forces.length + " vs " + oForces.length);}
-            double sumDiff = 0.0;
-            for(int i = 0; i < forces.length; i++){
-                if(oForces[i].length != forces[i].length){throw new IllegalArgumentException("Second force dimension " + i + " must be the same! Are " + forces[i].length + " vs " + oForces[i].length);}
-                for(int j = 0; j < forces[i].length; j++){
-                    final double diff = Math.abs(forces[i][j] - oForces[i][j]);
-                    sumDiff += diff;
-                }
-            }
-            
-            // "norm"
-            sumDiff /= forces.length;
-            
-            return sumDiff;
-        }
-    }
-
-    @Override
     public boolean makeSensible() {
         
-        if(forces == null){return false;}
+        if(data == null){return false;}
         
         boolean wasTouched = false;
-        for(int i = 0; i < forces.length; i++){
-            for(int j = 0; j < forces[i].length; j++){
-                if(Double.isInfinite(forces[i][j]) || Double.isNaN(forces[i][j]) || forces[i][j] > FixedValues.NONCONVERGEDGRADIENT){
-                    forces[i][j] = FixedValues.NONCONVERGEDGRADIENT;
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; j < data[i].length; j++){
+                if(Double.isInfinite(data[i][j]) || Double.isNaN(data[i][j]) || data[i][j] > FixedValues.NONCONVERGEDGRADIENT){
+                    data[i][j] = FixedValues.NONCONVERGEDGRADIENT;
                     wasTouched = true;
                 }
             }
@@ -149,13 +93,13 @@ public class Forces implements Property {
     @Override
     public String printableProperty() {
         
-        if(forces == null){return "NULL'D FORCES";}
+        if(data == null){return "NULL'D FORCES";}
         
         String s = "";
-        for(int i = 0; i < forces.length; i++){
+        for(int i = 0; i < data.length; i++){
             s += "Row " + i + ":";
-            for(int j = 0; j < forces[i].length; j++){
-                s += forces[i][j] + "\t";
+            for(int j = 0; j < data[i].length; j++){
+                s += data[i][j] + "\t";
             }
             
             s += "\n";
@@ -181,5 +125,10 @@ public class Forces implements Property {
         final Forces forces = new Forces(forceVals);
         
         return forces;
+    }
+    
+    @Override
+    protected boolean ensureCorrectProperty(final Property p){
+        return (p instanceof Forces);
     }
 }

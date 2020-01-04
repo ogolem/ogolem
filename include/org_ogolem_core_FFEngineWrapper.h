@@ -14,34 +14,34 @@ extern "C" {
 /*
  * Class:     org_ogolem_core_FFEngineWrapper
  * Method:    CalculateGeomEnergy
- * Signature: (JII[I[DI[D[I)D
+ * Signature: (JII[S[DI[D[I)D
  */
 JNIEXPORT jdouble JNICALL Java_org_ogolem_core_FFEngineWrapper_CalculateGeomEnergy
-  (JNIEnv *, jobject, jlong, jint, jint, jintArray, jdoubleArray, jint, jdoubleArray, jintArray);
+  (JNIEnv *, jobject, jlong, jint, jint, jshortArray, jdoubleArray, jint, jdoubleArray, jintArray);
 
 /*
  * Class:     org_ogolem_core_FFEngineWrapper
  * Method:    CalculateGeomGradient
- * Signature: (JII[I[D[DI[D[I)D
+ * Signature: (JII[S[D[DI[D[I)D
  */
 JNIEXPORT jdouble JNICALL Java_org_ogolem_core_FFEngineWrapper_CalculateGeomGradient
-  (JNIEnv *, jobject, jlong, jint, jint, jintArray, jdoubleArray, jdoubleArray, jint, jdoubleArray, jintArray);
+  (JNIEnv *, jobject, jlong, jint, jint, jshortArray, jdoubleArray, jdoubleArray, jint, jdoubleArray, jintArray);
 
 /*
  * Class:     org_ogolem_core_FFEngineWrapper
  * Method:    OptimiseGeomComplete
- * Signature: (I[I[D)[D
+ * Signature: (I[S[D)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_org_ogolem_core_FFEngineWrapper_OptimiseGeomComplete
-  (JNIEnv *, jobject, jint, jintArray, jdoubleArray);
+  (JNIEnv *, jobject, jint, jshortArray, jdoubleArray);
 
 /*
  * Class:     org_ogolem_core_FFEngineWrapper
  * Method:    OptimiseMolComplete
- * Signature: (I[I[D)[D
+ * Signature: (I[S[D)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_org_ogolem_core_FFEngineWrapper_OptimiseMolComplete
-  (JNIEnv *, jobject, jint, jintArray, jdoubleArray);
+  (JNIEnv *, jobject, jint, jshortArray, jdoubleArray);
 
 #ifdef __cplusplus
 }
