@@ -1,0 +1,132 @@
+#contentdiv.manualdiv {
+	margin: 0px;
+	padding: 0;
+	padding-right: 10px;
+	margin-top: 17px;
+}
+
+.manualdiv a:active,.manualdiv a:link,.manualdiv a:visited {
+	text-decoration: none;
+	color: #000;
+	margin: 0;
+	padding: 0;
+}
+
+.manualdiv a:hover {
+	text-decoration: none;
+	color: #C00;
+	margin: 0;
+	padding: 0;
+}
+
+.manualdiv img {
+	margin-right:5px;
+}
+
+.manualdiv h1,.manualdiv h2,.manualdiv h3,.manualdiv h4,.manualdiv h5 {
+	color: #C00;
+}
+
+.manualdiv .MATH {
+	font-family: "Century Schoolbook", serif;
+}
+
+.manualdiv .MATH I {
+	font-family: "Century Schoolbook", serif; font-style: italic;
+}
+
+.manualdiv .BOLDMATH {
+	font-family: "Century Schoolbook", serif; font-weight: bold;
+}
+
+.manualdiv SMALL.XTINY {
+	font-size: xx-small;
+}
+
+.manualdiv SMALL.TINY {
+	font-size: x-small;
+}
+
+.manualdiv SMALL.SCRIPTSIZE {
+	font-size: smaller;
+}
+
+.manualdiv SMALL.FOOTNOTESIZE {
+	font-size: small;
+}
+
+.manualdiv SMALL.SMALL {}
+
+.manualdiv BIG.LARGE {}
+
+.manualdiv BIG.XLARGE {
+	font-size: large;
+}
+
+.manualdiv BIG.XXLARGE {
+	font-size: x-large;
+}
+
+.manualdiv BIG.HUGE {
+	font-size: larger;
+}
+
+.manualdiv BIG.XHUGE {
+	font-size : xx-large;
+}
+
+.manualdiv DIV.displaymath {
+	background: white;
+}
+
+.manualdiv IMG {
+	background: white;
+}
+
+.manualdiv TD.eqno {}
+
+.manualdiv PRE.preform {}
+
+.manualdiv DIV.navigation {
+	background: white url('navi.png') no-repeat 50% 0;
+	margin-top: 20px;
+	padding-top: 75px;
+}
+
+.manualdiv TABLE.equation {}
+
+.manualdiv SPAN.sc {}
+
+.manualdiv SPAN.textbf {
+	font-weight: bold;
+}
+
+.manualdiv SPAN.eqn-number {}
+
+.manualdiv SPAN.arabic {}
+
+.manualdiv SPAN.textit {
+	font-style: italic;
+}
+
+.manualdiv PRE {
+	border: 1px solid #c00;
+	margin: 5px 10px;
+	padding: 10px;
+}
+
+.manualdiv UL {
+	list-style-image: url('ul1.png');
+}
+
+.manualdiv UL UL {
+	list-style-image: url('ul2.png');
+}
+
+.manualdiv UL UL UL {
+	list-style-image: url('ul3.png');
+}
+
+.manualdiv UL UL UL UL {
+	list-style-image: url('ul4.png');
+}
