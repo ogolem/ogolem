@@ -1,0 +1,3218 @@
+\documentclass[a4paper,10pt]{scrbook}
+\usepackage{amssymb,amsmath,array,cite,graphicx,a4wide,ae,subfig}
+
+\pagestyle{plain}
+\bibliographystyle{jcp}
+\setlength{\parindent}{0in}
+\addtolength{\parskip}{\baselineskip}
+
+\newcommand{\ogo}{\textsc{ogolem}}
+
+\author{Johannes M. Dieterich and Bernd Hartke}
+\title{The \textsc{ogolem}.org Manual}
+\date{v2016-NG}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+%TODO  2625.4995 to 2625.49962
+
+
+\chapter{General remarks}
+\section{This manual}
+Is alpha and might not include everything you would like to know. If this is
+true, contact \ogo{} via webpage and mail. If you happen to find any kind of
+error or uncertainty, please do also contact us.
+
+\section{Licensing}
+\ogo{} is distributed under the following license
+\begin{verbatim}
+Copyright (c) 2009-2017, J. M. Dieterich and B. Hartke
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+    * All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+
+      This product includes software of the ogolem.org project developed by
+      J. M. Dieterich and B. Hartke (Christian-Albrechts-University Kiel,
+      Germany) and contributors.
+
+    * Neither the name of the ogolem.org project, the University of Kiel
+      nor the names of its contributors may be used to endorse or promote
+      products derived from this software without specific prior written
+      permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+\end{verbatim}
+in the hope to help people crack problems and enable interesting science. We do 
+ask you to cite our papers
+introducing the framework and techniques you use in your
+publications\cite{ogolem_first,lj_reparam,ogo_switches, 
+kana_dimer,benchmark,water_pccp,gdm,water_small,cage1,cage2,earth}. Depending 
+on what is used in or through \ogo{} additional citations to papers describing 
+these methods may be required.
+
+We encourage all collaborations, external implementations, usages of \ogo{} as 
+a library for any purposes. We are open for discussions regarding uses of 
+\ogo{} under \texttt{developers@ogolem.org}.
+
+\section{External libraries and code contributions}
+\ogo{} is grateful for the following codes it uses or took inspiration from (in
+random oder):
+\begin{itemize}
+ \item Atomdroid by J. Feldt, R. A. Mata and J. M. Dieterich (proprietary
+license)
+ \item Lionbench by M. Kammler and J. M. Dieterich (4-clause BSD)
+ \item L-BFGS from RISO by J. Nocedal and R. Dodier (Apache/public domain)
+ \item BOBYQA from the Apache Software Foundation (Apache)
+ \item NEWUOA code by J. Feldt and J. M. Dieterich, original by M. J. D. Powell
+(public domain)
+ \item JAMA
+ \item Apache Commons Math
+ \item Scala
+ \item openJDK
+ \item Numal
+ \item Arpack/Netlib
+ \item SL4J
+ \item JGraphT
+ \item mpiJava
+ \item phenix v0-42
+ \item Tinker
+\end{itemize}    
+
+\section{Financial Acknowledgements}
+The authors would like to acknowledge the following affiliations:
+\begin{itemize}
+ \item J. M. Dieterich
+ \begin{itemize}
+   \item \textit{2008-2010:}\\Institute for Physical 
+Chemistry\\Christian-Albrechts-University Kiel\\Germany, Europe
+   \item \textit{2010-2012:}\\Institute for Physical 
+Chemistry\\Georg-August-University G\"ottingen\\Germany, Europe
+   \item \textit{2015-now}\\Department of Mechanical\&Aerospace 
+Engineering\\Princeton University\\USA
+ \end{itemize}
+ \item B. Hartke
+ \begin{itemize}
+   \item \textit{2008-now:}\\Institute for Physical 
+Chemistry\\Christian-Albrechts-University Kiel\\Germany, Europe
+ \end{itemize}
+\end{itemize}
+
+
+\section{The \ogo{}-jar}
+\ogo{} is distributed as a single jar file. By invoking
+\begin{verbatim}
+java -jar ogolem.jar
+\end{verbatim}
+followed by a single mandatory flag deciding which program part to use. These
+flags are
+\begin{verbatim}
+   --adaptive
+     for global parameter optimization
+   --beswitched
+     for extracting intermediate switch optimization results
+   --clusteroverlap
+     for checking if two cluster structures are identical
+   --core
+     for MPI parallelized cluster structure optimization
+   --corrfunc
+     to compute correlation functions from MD trajectories
+   --help
+     to display this overview
+   --md
+     for running simple molecular dynamics
+   --molecules
+     to optimize molecules with respect to a or multiple properties
+   --parameters
+     for extracting intermediate parametrization results
+   --rmiserver
+     for starting an OGOLEM RMI server
+   --rmiproxy
+     for starting an OGOLEM RMI proxy
+   --rmiclient
+     for starting an OGOLEM RMI client
+   --rmithreader
+     for starting an OGOLEM RMI threading client
+   --shmem
+     for thread-based cluster structure optimization
+   --switches
+     for thread-based molecular switch optimization
+   --tests
+     for testing and development purposes
+   --version
+     for the OGOLEM snapshot version
+\end{verbatim}
+Please note here that you should have installed a Java runtime environment (JRE)
+complying at least to the JAVA7 standard. Additionally, for above command to
+work, the java binary should be in your path, otherwise you will need to
+explicitly specify the path to it.
+
+If you have a choice, use the newest openJDK (currently openJDK9) in server mode
+(the latter is really important for general performance and seems to be the
+default for most JREs for most UNIX incarnations). Also, the author(s) want to
+note that they could not see any performance gain on standard hardware
+with proprietary JREs like JRockit or IBM JDK.
+
+\section{General notes}
+\subsection{Units}
+All units within \ogo{} are (if applicable) atomic units. As a secondary system,
+we provide SI units as a convinience. Therefore, input and output is (unless 
+explicitly
+stated otherwise) in atomic units. Obviously, this only applies for the case of 
+data
+having a physical meaning, otherwise input/output is system dependent and 
+typically
+unit-free.
+
+\section{Bugs and problems}
+Since \ogo{} is a relatively new program that is still changing rapidly, we
+unfortunately can only guarantee that you will probably hit bugs and problems.
+
+In case you hit a bug:
+\begin{itemize}
+  \item Relax.
+  \item Mail \texttt{developers@ogolem.org} describing the problem and how to 
+reproduce it. Please attach input and error messages (in particular: stack 
+traces).
+  \item Wait for the bugfix which will be rolled automatically in the next 
+autobuild.
+\end{itemize}
+
+
+
+\chapter{Global optimization of clusters}
+For the global optimization of cluster structures on a shared memory basis,
+invoke
+\begin{verbatim}
+java -jar ogolem.jar --shmem input.ogo 2
+\end{verbatim}
+where \texttt{input.ogo} is your input file, needing to have \texttt{.ogo} as a
+suffix, followed by the number of threads you want to use, 2 in this case.
+
+If you want to make use of the MPI frontend, please contact the authors for help
+since this is a non-trivial procedure due to the shortcomings of the MPI
+standard. In general, you are better off with shared memory parallelization.
+
+See Chapter.~\ref{rmi} for a JVM-based substitute for MPI with some more
+advanced distribution of computing tasks and stability. However, this feature
+requires some setup! Please contact the authors for help with this.
+
+\section{General input structure}
+Every input file needs to start with the line
+\begin{verbatim}
+###OGOLEM###
+\end{verbatim}
+for \ogo{} to recognize that this is supposed to be a valid input file. Now you
+can add some input keywords and the building block input. This includes the
+actual cluster building blocks (atoms or molecules) as well as (if applicable)
+spins and charges.
+
+In case of explicit degree of freedom searches or constraints, more input blocks
+are necessary.
+
+\section{Building block input}
+In general, any combination of any building blocks is possible in principle. The
+only thing you should have for the easiest case is the number of building blocks
+and xyz-files of all your units.
+
+The input starts with an opening tag followed by the number of building blocks
+in the next line, 5 in this example
+\begin{verbatim}
+<GEOMETRY>
+NumberOfParticles=5
+\end{verbatim}
+The building blocks (named molecules) are now put there in a similar form after
+each other, for example
+\begin{verbatim}
+<MOLECULE>
+MoleculePath=water.xyz
+</MOLECULE>
+<MOLECULE>
+MoleculePath=ethanol.xyz
+</MOLECULE>
+<MOLECULE>
+MoleculePath=citronacid.xyz
+</MOLECULE>
+<MOLECULE>
+MoleculePath=quinine.xyz
+</MOLECULE>
+<MOLECULE>
+MoleculePath=water.xyz
+</MOLECULE>
+\end{verbatim}
+The number of molecules and the \texttt{NumberOfParticles} needs to agree,
+otherwise an exception will be raised.
+
+If the molecule consists of a single atom, another input option might be easier
+\begin{verbatim}
+<MOLECULE>
+Na;0.0;0.0;0.0
+</MOLECULE>
+\end{verbatim}
+where the 0.0s are internal xyz values.
+
+In case of the molecule having internal degrees of freedom that should be
+explicitly optimized, the molecule path must point to a z-Matrix and the
+first line in the definition is the flexy keyword
+\begin{verbatim}
+<MOLECULE>
+flexy
+MoleculePath=methanol.zmat
+</MOLECULE>
+\end{verbatim}
+It should be noted that the zmat-format chosen is of form
+\begin{verbatim}
+6
+
+C
+O  1.4   1
+H  0.95  2  109.471 1
+H  1.089 1  109.471 2  120.0 3
+H  1.089 1  109.471 2  240.0 3
+H  1.089 1  109.471 2  0.0   3
+\end{verbatim}
+
+A bond matrix for the building block may be specified by the user through the
+\texttt{BondMatrix=} keyword. It must only be used following the
+\texttt{MoleculePath=} keyword in both flexible and non-flexible input. The
+path must point to a file containing the bond matrix definition, either as a
+complete matrix or as a bond list. This input option must be used if the molecule
+does not only contain single bonds or if the automatic bond detection (see output)
+fails to correctly assign bonds. Examples:
+
+\begin{verbatim}
+<MOLECULE>
+flexy
+MoleculePath=water.zmat
+BondMatrix=waterbonds.mat
+</MOLECULE>
+\end{verbatim}
+
+where \texttt{waterbonds.mat} (name must not end with \texttt{.list} and is
+otherwise not important) contains
+
+\begin{verbatim}
+1 1 1
+1 1 0
+1 0 1
+\end{verbatim}
+
+where 1 denotes a single bond, 0 denotes no bond. The bonds on the diagonal are 
+arbitrary. Allowed bonds are: 0 for no bond, 1 for a single, 2 for a double, and
+3 for a triple bond. We will add more bond types as backends make use of them.
+
+Another example usage:
+\begin{verbatim}
+<MOLECULE>
+MoleculePath=water.zmat
+BondMatrix=waterbonds.list
+</MOLECULE>
+\end{verbatim}
+
+where \texttt{waterbonds.list} (files containing bond lists must end in
+\texttt{.list}) contains
+
+\begin{verbatim}
+0 1 1
+0 2 1
+\end{verbatim}
+
+do denote a single bond between atoms 0 and 1 and 0 and 2 in the molecule.
+
+Obviously the list-based input is less verbose/redundant and should be used in
+general. Please note once more that the counting starts with zero! Both
+list-based and matrix-based input may be used in both the flexible and
+non-flexible context.
+
+The geometry definition is closed using a line with a 
+\begin{verbatim}
+</GEOMETRY>
+\end{verbatim}
+tag. Please note that the numbering of molecules for all subsequent inputs
+starts from 0.
+
+This is followed by, if applicable, input concerning spins and charges. Charges
+are defined as follows
+\begin{verbatim}
+<CHARGES>
+MOLECULENO;ATOMNO;CHARGE
+</CHARGES>
+\end{verbatim}
+for example
+\begin{verbatim}
+<CHARGES>
+0;0;1
+1;3;-2
+</CHARGES>
+\end{verbatim}
+Above example would put a single positive charge at the first atom of the first
+molecule and two negative ones at the fourth atom of the second molecule. It is
+important to note here that, since arrays in the Java language start with 0 and
+not 1 as in some prehistoric languages, our counting also starts at 0.
+
+A similar input structure exists for the spins in the system, namely
+\begin{verbatim}
+<SPINS>
+MOLECULENO;ATOMNO;SPIN
+</SPINS>
+\end{verbatim}
+for example
+\begin{verbatim}
+<SPINS>
+0;2;1
+1;3;-1
+</SPINS>
+\end{verbatim}
+where the above example would put a single spin up at atom 0 of molecule 2 and a
+spin down at atom 3 of molecule 1.
+
+Should there be no spins or charges in the studied system, no spins or charges
+block is necessary.
+
+Note for larger systems build from only a few building blocks: one can add
+inside the \texttt{<MOLECULE>} block the \texttt{MoleculeRepetitions=} keyword
+and set it to the number of species of this type. Please note two things: 1) the
+\texttt{NumberOfParticles=} setting must still match the total number of species
+and 2) the spins/charges/... are automatically reproduced for all species of one
+type. An example:
+
+\begin{verbatim}
+GEOMETRY>
+NumberOfParticles=24
+<MOLECULE>
+MoleculeRepetitions=23
+MoleculePath=water.xyz
+</MOLECULE>
+<MOLECULE>
+MoleculeRepetitions=1
+MoleculePath=water.xyz
+</MOLECULE>
+</GEOMETRY>
+<CHARGES>
+0;0;0
+1;0;-1
+</CHARGES>
+\end{verbatim}
+would put 23 neutral water molecules and 1 negatively charged one into the
+cluster. The first charge line is not needed.
+
+\section{Constraints and explicit degrees of freedom}
+Constraints can be specified based on Cartesian coordinates. Although \ogo{}
+internally allows for arbitrary constraints to be specified, the backend
+carrying out the local optimization might not like that. In this case, a
+warning should appear.
+
+In general, the constraints are specified similar to the spins and charges,
+through tags of form
+\begin{verbatim}
+<CONSTRAINTS>
+MOLECULENO;ATOMNO;COORDINATE
+</CONSTRAINTS>
+\end{verbatim}
+where the cartesian coordinate is chosen through an integer value (0 is x, 1 is
+y and 2 is z). Additionally, special input exists to constrain a whole
+molecule or all x, y or z coordinates of a molecule. Some example are
+\begin{verbatim}
+<CONSTRAINTS>
+0;all
+1;allx
+2;ally
+3;allz
+4;1;0
+4;2;1
+5;0;2
+</CONSTRAINTS>
+\end{verbatim}
+The first one constraining all cartesian coordinates of molecule 0, the second
+only the x coordinates of molecule 1, the third the y coordinates of molecule 2
+and the fourth the z coordinates of molecule 3. Then the x coordinate of atom 1
+in molecule 4 is constrained, followed by y coordinate of atom 2 in molecule 4
+and the z coordinate of atom 0 in molecule 5. Any logical combination of the
+above described input possibilities is allowed and supported by \ogo{}.
+
+Constraints are currently only supported in the following interfaces:
+\begin{itemize}
+  \item DFTB+\\
+	in this case the constraint is actually a restraint and the convergence
+threshold needs to be increased since the gradient along the restraint is
+included in the calculation
+  \item lotriff
+  \item MOPAC
+  \item Orca
+\end{itemize}
+Again, if your preferred level of theory does not support constraints in \ogo{}
+and you would like to use that feature, contact us (preferably with reference
+input for that particular program) or send us patches.
+
+Explicit degrees of freedom are a rather untested feature, therefore one
+unfortunaltely needs to expect some rough edges. Also it should be noted that
+you cannot put constraints and explicit degrees of freedom on the same molecule.
+
+As said before, you need to enable flexibility on the molecule with explicit
+degrees of freedom in the building block input and need to speify a z-Matrix
+instead of cartesian coordinates. When this has been ensured, the specification 
+of explicit
+degrees of freedom is relatively straightforward. Again, it includes
+definitions of type
+\begin{verbatim}
+<DOF>
+MOLECULENO;ATOMNO;COORDINATE
+</DOF>
+\end{verbatim}
+where the coordinate is a choice for the coordinate in the z-Matrix
+(i.e., distance, angle, dihedral). For example
+\begin{verbatim}
+<DOF>
+0;1;dihedral
+2;3;distance
+4;2;angle
+</DOF>
+\end{verbatim}
+where the first line would make the dihedral of atom 1 in
+molecule 1, the second would make the bond distance 
+of atom 3 in molecule 2 and the third would make the angle of
+atom 2 in molecule 4 an explicit DoF. Alternatively, one may use the syntax
+\begin{verbatim}
+<DOF>
+0;all
+\end{verbatim}
+to enable explicit degrees of freedom for all DoFs of molecule 0.
+
+Please let us know about any experiences with explicit DoFs, may they be good
+or bad.
+
+\section{Input keywords}
+There are a lot of possible tunables in the \ogo{} framework. Some of them are
+more important than others and should actually be adjusted to the studied
+system.
+
+\begin{itemize}
+  \item \texttt{DebugLevel=}
+	the debug level: controls additional output of some code parts. Please
+set to 1 or higher \textsc{first} if you ever have unexpected failures or problems.
+Defaults to 0.
+  \item \texttt{BlowBondDetect=}\\
+	a collision is detected if any of the non-bonded atoms in the structure
+are getting closer to each other than this blow factor times their added radii.
+Defaults to 1.2, which is a rather conservative choice.
+  \item \texttt{BlowFacDissoc=}\\
+	the blow factor for the dissociation detection. Defaults to 3.0 which
+should be decreased for LJ systems (e.g. 2.0 seems to be a reasonable
+choice). Notice that this setting has changed since the last version!
+  \item \texttt{BlowInitialBonds=}\\
+	the blow factor for the initial bond detection. Since these bonds are
+the basis for both the post sanity check and the CD, the factor normally should
+be equal to \texttt{BlowBondDetect=}. Also defaults to 1.2.
+  \item \texttt{CellSize=}\\
+	how big the initial cell should be for the initial structure
+generation. Defaults to a \texttt{9;9;9} bohrs which is too small for bigger
+systems.
+  \item \texttt{InitialFillAlgo=}\\
+	how the intial individuals should be generated. Defaults to 
+\texttt{packrandomly}, which is
+a randomized packing init w/o considering molecular size. If that should be
+yielding too densly packed (or spherical) structures,
+change to \texttt{randomwithoutdd}, which is a randomized init w/o dissociation 
+detection or \texttt{randomwithdd}, which
+is a randomized init w/ DD.
+  \item \texttt{MaxIterLocOpt=}\\
+	how many iterations the local optimization is allowed to carry out.
+Defaults to 2000.
+  \item \texttt{NumberOfGlobIterations=}\\
+	how many global optimization steps should be carried out. Defaults to
+1000 which is just sufficient for the most trivial cases. This value must be
+increased for production jobs!
+  \item \texttt{PoolSize=}\\
+	one of the most important keywords. Specifies how big the genetic pool
+is allowed to be. Defaults to 100 individuals.
+  \item \texttt{AcceptableFitness=}\\
+        \label{page1:acceptableFitness}
+	what fitness is acceptable and once reached makes the threading version
+	of \ogo{}
+finish. Set to negative infinity per default and should only be set for
+benchmarking purposes and only if you are know your way around the \ogo{}
+program code extremely well.
+  \item \texttt{CollisionDetection=}\\
+	which collision detection to use. Defaults to \texttt{simplepairwise}, 
+which is a pairwise
+collision detection engine. Keep.
+  \item \texttt{CrossoverPossibility=}\\
+	chances for crossover in the global optimization. Defaults to 1.0
+(100\%).
+  \item \texttt{DissociationDetection=}\\
+	which dissociation detection to use. Defaults to \texttt{dfs}, which is 
+a
+recursive quadratic scaling algorithm. Keep.
+  \item \texttt{DoGeometryNiching=}\\
+	if a niching algorithm should be used for this run. Defaults to false.
+  \item \texttt{GeneticRecordBufferSize=}\\
+        number of steps till a summary of the genetic records are flushed to
+the output file. Defaults to 1000.
+  \item \texttt{GeneticRecordsToSerial=}\\
+	number of steps till the genetic records are written to disk. Defaults
+to 1000.
+  \item \texttt{GeometriesToSerial=}\\
+	number of steps till the pool is written to disk. Defaults to
+99, which is too small for big systems with a lot of steps and causes an 1/O
+bottleneck and should be increased then.
+  \item \texttt{SerializeAfterNewBest=}\\
+	if the pool shall be serialized whenever a new best individual has been
+added. Defaults to true.
+  \item \texttt{GeometryChoice=}\\
+	how the parent individuals should be selected. Three options exist:
+	\begin{itemize}
+	 \item \texttt{random:} \\ both parent individuals are randomly
+           selected. With the additional option \texttt{stepat=X.X} (with
+           $0\leq $\texttt{X.X}$ \leq 1$) this is turned into a step-function
+           selector for the first X.X percent of the sorted pool. With
+           \texttt{stepat1=X.X,stepat2=Y.Y}, you can assign
+           different step functions to parent1 and parent2. When no steps
+           are given/desired, this corresponds to \texttt{X.X}=\texttt{Y.Y}=1
+	 \item \texttt{fitnessrankbased:} \\  one or both parents are selected
+	 based on a Gaussian over their ranked fitness. Valid, comma separated
+	 options:
+	 \texttt{bothfitness}: choose both parents fitness based (default: no),
+	 \texttt{gausswidth=X.X} sets the width of the Gaussian to X.X (default:
+	 0.5). 
+         If you want to select parent1 and parent2 with Gaussians of different
+         width, simply use \texttt{gausswidth1=X.X} and
+         \texttt{gausswidth2=Y.Y}. 
+         Our default selector with a Gaussian width of 0.05.\\
+	 \textbf{THIS SETTING WILL VERY LIKELY CHANGE IN THE VERY NEAR FUTURE!}
+	 \item \texttt{fitnessvaluebased:} \\  one or both parents are selected
+	 based on their fitness value. Valid, comma separated options:
+	 \texttt{bothfitness}: choose both parents fitness based (default: no),
+	 \texttt{usegausshape}: use a Gaussian shaped random number for the
+	 selection (default: linear), \texttt{tailprob=X.X} sets the tail 
+probability
+	 to X.X (default: 0.1). The tail probability is defined as the 
+probability
+	 for the last element in the pool to be chosen with the head probability
+	 (i.e., the probability for the fittest individual) being 1.0.
+	\end{itemize}
+
+  \item \texttt{GlobOptTries=}\\
+	how many tries the global optimization algorithm should carry out at
+any step that cause either collision and/or dissociation before proceding with
+the next parents. Defaults to 200 which is suitable for bigger systems with
+more degrees of freedom.
+  \item \texttt{GrowCell=}\\
+	whether the cell of the starting structure is allowed to grow. Defaults
+to \texttt{false}. If you are having problems with the randomized structure
+preparation, specify a bigger cell and/or set this to \texttt{true}.
+  \item \texttt{IntLocOptMaxStep=}\\
+	the maximum step length for the internal BFGS. Defaults to 1E0 which
+seems to be reasonable.
+  \item \texttt{IndividualsPerNicheAtMax=}\\
+	how many individuals are maximally allowed per niche, if niching is
+enabled. Defaults to 50.
+  \item \texttt{MaxBondStretch=}\\
+	how much a bond is allowed to be streched as a factor. Defaults to 1.3
+which seems to be reasonable.
+  \item \texttt{MolecularCDInInit=}\\
+	whether there should be a molecular collision detection in the geometry
+initialization. Defaults to true.
+  \item \texttt{MolecularCoordinateMutation=}\\
+	how the coordinates should be mutated. Defaults to \texttt{some}, which 
+always
+mutates a couple of them at the same time. \texttt{one} just mutates a single 
+one at any
+time.
+  \item \texttt{MutationPossibility=}\\
+	chances for mutation of an individual during the global optimization.
+Defaults to 0.05 (5\%).
+  \item \texttt{NichingAddsToStats=}\\
+	how many individuals shall be added to niches (if enabled) before
+statistics are printed to command line. Defaults to 50.
+  \item \texttt{PostSanityCD=}\\
+	if post-local optimization sanity checks are enabled, should the
+resulting structure be checked for collisions? Defaults to false.
+  \item \texttt{PostSanityDD=}\\
+	if post-local optimization sanity checks are enabled, should the
+resulting structure be checked for dissociation? Defaults to false.
+  \item \texttt{PostSanityCheck=}\\
+	whether the structure should be checked for sanity after the local
+optimization. Defaults to \texttt{true} which is reasonable for most cases.
+  \item \texttt{PrintGeomsBeforeLocOpt=}\\
+	whether the geometries should be printed to the command line after the
+global optimization operators, before the local optimization. Useful for setup
+purposes. Defaults to false.
+  \item \texttt{RatioExplDoFInit=}\\
+	what fraction of the explicit degrees of freedom should be randomized in
+the initialization. Applied per molecule with explicit DoFs. Defaults to 1.0,
+which might be too big for big molecules with a lot of explicit DoFs. If \ogo{}
+seems to be stalled in the init, this might be a reason.
+  \item \texttt{SeedingPath=}\\
+	if the initial pool should be seeded with some structures set this to
+the folder containing these structures in the xyz-file format. \ogo{} will try
+to read in all files in this folder so there must only be xyz files present.
+  \item \texttt{ThreshLocOptCoord=}\\
+	which threshold is acceptable for the coordinates in the local
+optimization. Defaults to 1E-8 which should be kept, if one is uncertain.
+  \item \texttt{ThreshLocOptGradient=}\\
+	which threshold is acceptable for the gradient in the local
+optimization. Defaults to 1E-8 which should be kept, if one is uncertain.
+\end{itemize}
+
+Some special keywords for restarts are
+\begin{itemize}
+  \item \texttt{restart=}\\
+      Whether this run is supposed to be restarted or not. Defaults to
+\texttt{false}. If set to \texttt{true}, some other keywords need to be set as
+well
+  \item \texttt{InitialFill=}\\
+      Defaults to \texttt{true} and defines whether we should make an initial
+fill. Will be automagically set by the restart keyword.
+  \item \texttt{InitialLocOpt=}\\
+      Defaults to \texttt{true} and defines whether the read in pool should be
+locally optimized in a first step.
+  \item \texttt{GlobalOptimization=}\\
+      Defaults to \texttt{true} and defines whether there should be any global
+optimization steps.
+  \item \texttt{NamingOffset=}\\
+      which ID to start from. Increase to the number of steps of your previous
+run.
+\end{itemize}
+However, we have found it superior to use (part of) the results of a previous
+run as seeds for a subsequent run. Hence, these options may vanish in the
+future.
+
+Within the block of keywords, one can comment lines using either \texttt{\#} or
+\texttt{//}.
+
+\section{Local optimization and external backends}
+\ogo{} supports a variety of program packages through interfaces. We hope that
+this satisfies most users. If there should be a (preferably free) program that
+you want to see supported and/or the methods listed here to do not satisfy you,
+feel free to write a mail to developers@ogolem.org .
+
+In general, most methods are easily called through input of form
+\begin{verbatim}
+LocOptAlgo=PACKAGE:METHOD
+\end{verbatim}
+
+
+In general, there are thoughts to change this input for something more flexible
+so future versions might behave different. Also it should be noted that of
+course \ogo{} might not support any revision of the programs mentioned if their
+input changes. If you should hit such a case and are not working with some
+ancient version (e.g. there is for sure no PM6 in MOPAC7), please contact us
+and wait for a fix.
+
+%TODO document InitialLocOptAlgo
+%TODO document tinker:ubercustom
+
+\subsection{Interface to ADFSuite}
+An experimental interface to the ADFSuite of programs exists. It is chosen by
+setting \texttt{LocOptAlgo=adf:JOBKEY}, where \texttt{JOBKEY} can either be a 
+build-in job identifier, such as \texttt{GO} or \texttt{DFTB-GO}, or the file
+name of an adf stub file, e.g., \texttt{mylocopt.adf}. In the later case, this 
+file name
+must end in \texttt{.adf} and be present in the working directory.
+
+A stub file can be created using, e.g., \texttt{adfjobs} and tuned to the 
+particular
+computational needs of the system under study.
+
+\textbf{IMPORTANT: } \ogo{} will \textbf{NOT} adjust anything except for the 
+geometry coordinates
+in the job stub file. Therefore, a charged system or a system with spin does 
+require creation
+of a fitting job stub file. Likewise, convergence thresholds will not be 
+propagated
+from within \ogo{} to ADF and must be set in the job stub file!
+
+Please note, you must have all the usual ADF/SCM environment variables properly 
+setup,
+e.g., \texttt{SCMLICENSE} and \texttt{ADFBIN}. This can be done by sourcing the
+correct setup file for your platform. Obviously, a valid license for the codes 
+to be run
+is required.
+
+\subsection{Interface to AMBER}
+The interface to AMBER is called through \texttt{LocOptAlgo=amber}, followed by
+the optional choice \texttt{:implicitwater}, if implicit solvation is wanted or
+needed.
+
+The \texttt{sander} executable needs to be in the path and named such.
+
+Additionally, there needs to be a fitting amber parameter file named
+\texttt{input.prmtop}, where \texttt{input} is the prefix of your
+\texttt{input.ogo} file.
+
+The AMBER interface in its current state is not suitable for molecule only
+optimizations. This does currently not have any effect on \ogo{}.
+
+\subsection{Interface to CP2K}
+The interface to CP2K is called through \texttt{LocOptAlgo=cp2k:}, followed
+by a sequence of keywords to specify the level of theory. Supported levels of
+theory at the moment are
+\begin{itemize}
+  \item \texttt{B3LYP}
+  \item \texttt{BLYP}
+  \item \texttt{BP}
+  \item \texttt{HCTH120}
+  \item \texttt{OLYP}
+  \item \texttt{PADE}
+  \item \texttt{PBE}
+  \item \texttt{PBE0}
+  \item \texttt{TPSS}
+\end{itemize}
+
+The \texttt{cp2k.sopt} executable needs to be in the path and named such.
+
+Additionally, an \texttt{input-cp2k.aux} file is required, where \texttt{input}
+is the prefix of your \texttt{ogo}-file. This auxiliary file needs to start
+with a line
+\begin{verbatim}
+###OGOLEMAUX###
+\end{verbatim}
+followed by a range of lines specifying in three whitespace-separated columns
+which atom should use which basis set and which potential. These potentials and
+basis sets need to be present in the directory.
+
+\subsection{Interface to CPMD}
+The interface to CPMD is called through \texttt{LocOptAlgo=cpmd:}, followed
+by a sequence of keywords to specify the level of theory. Supported levels of
+theory at the moment are
+\begin{itemize}
+  \item \texttt{SONLY}
+  \item \texttt{LDA}
+  \item \texttt{BONLY}
+  \item \texttt{BP}
+  \item \texttt{BLYP}
+  \item \texttt{XLYP}
+  \item \texttt{GGA}
+  \item \texttt{PBE}
+  \item \texttt{PBES}
+  \item \texttt{REVPBE}
+  \item \texttt{HCTH}
+  \item \texttt{OPTX}
+  \item \texttt{OLYP}
+  \item \texttt{TPSS}
+  \item \texttt{PBE0}
+  \item \texttt{B1LYP}
+  \item \texttt{B3LYP}
+  \item \texttt{X3LYP}
+  \item \texttt{CUSTOM}
+\end{itemize}
+
+The \texttt{cpmd.x} executable needs to be in the path and named such.
+
+Additionally, an \texttt{input-cpmd.aux} file is required, where \texttt{input}
+is the prefix of your \texttt{ogo}-file. This auxiliary file needs to start
+with
+\begin{verbatim}
+###OGOLEMAUX###
+70
+15;15;15
+\end{verbatim}
+Where the second line is the cutoff in Rydberg and the third line is the cell
+size to be used (if line is empty it will be estimated for each geometry, based
+on the assumption of a clustered system!). This is followed by a range of lines
+specifying in three whitespace-separated columns
+which atom should use which pseudopotential and which lmax. The pseudopotentials
+need to be present in the directory. Please note that no extra lines are
+allowed.
+
+%TODO describe custom input
+
+
+\subsection{Interface to DFTB+}
+The interface to DFTB+ is called through \texttt{LocOptAlgo=dftb+:}, followed
+by a sequence of keywords to specify some needed parameters for the local
+optimization employed by DFTB+
+\begin{itemize}
+  \item \texttt{steepest}\\
+	use a steepest descent algorithm
+  \item \texttt{conjugate}\\
+	use a conjugate gradient algorithm
+  \item \texttt{steepest,scc}\\
+	use a steepest descent algorithm with SCC approximation
+  \item \texttt{conjugate,scc}\\
+	use a conjugate gradient algorithm with SCC approximation
+\end{itemize}
+
+The DFTB+ executable needs to be in your path and named \texttt{dftb+}.
+
+Additionally, you need to make sure to have all Slater-Koster files for all
+interactions in your system in the directory your \texttt{ogo}-input file is.
+This is needed for \ogo{} using the SK-files for the DFTB+ input.
+
+\subsection{Interface to GROMACS}
+The interface to GROMACS is called through \texttt{LocOptAlgo=gromacs}. It is
+followed by an optional choice of the QM backend to be used. Choices are
+\begin{itemize}
+  \item empty/whitespace\\
+	no QM backend
+  \item \texttt{:mopac}\\
+	use MOPAC7 as a backend. Please note that MOPAC7 only provides AM1 and
+PM3.
+  \item \texttt{:orca}\\
+	use Orca as a backend.
+  \item \texttt{:gaussian}\\
+	use Gaussian as a backend.
+  \item \texttt{:gamess-uk}\\
+	use Gamess-UK as a backend.
+\end{itemize}
+In all cases, the GROMACS binaries need to be recompiled according to the
+GROMACS documentation depending on the chosen backend.
+
+The path to the \texttt{grompp} and \texttt{mdrun} excecutables needs to be
+exported through the environment variables \texttt{OGO\_GROMACSMPP} and
+\texttt{OGO\_GROMACSCMD}, e.g. in bash syntax
+\begin{verbatim}
+export OGO_GROMACSMPP=$HOME/software/gromacs/grompp
+export OGO_GROMACSCMD=$HOME/software/gromacs/mdrun
+\end{verbatim}
+
+Additionally, the files 
+\begin{itemize}
+\item \texttt{gromacs-topology.top},
+\item \texttt{gromacs-parameters.mdp} and
+\item \texttt{gromacs-index.ndx}
+\end{itemize}
+need to present and correct for the system under study. These files are also
+responsible for all GROMACS related configuration, e.g. constraints and QM/MM
+partitioning. The file
+\begin{verbatim}
+INPUTNAME-gromacs.aux
+\end{verbatim}
+needs to contain in the first line the identifier \texttt{\#\#\#OGOLEMAUX\#\#\#}
+followed by the first half of a \texttt{.g96} file of the system (residue and
+atom-IDs).
+
+If one uses Orca as a QM-backend for Gromacs, one also needs to export the path
+to the orca excecutables and the basename of the optimization job. This is e.g.
+in bash syntax accomplished through
+\begin{verbatim}
+export ORCA_PATH=$HOME/software/orca
+export BASENAME=topol
+\end{verbatim}
+where the \texttt{BASENAME} is always \texttt{topol}! Additionally, the file
+\texttt{gromacs-orca.aux} needs to contain the input keywords, as described in
+the GROMACS manual.
+
+\subsection{Interface to lotriff}
+Lotriff is an in-house development by Bernd Hartke. If you are in desperate need
+of this FF engine, contact him via mail. If you obtained the \texttt{lotriff}
+executable you can use \texttt{LocOptAlgo=lotriff}.
+
+The path to the lotriff executable needs to be exported in the
+\texttt{OGO\_LOTRIFFCMD} environment variable, e.g. in bash syntax
+\begin{verbatim}
+export OGO_LOTRIFFCMD=$HOME/software/lotriff/lotriff
+\end{verbatim}
+If this variable should be not set, \ogo{} will assume the binary to be in
+your path.
+
+Additionally, a correct \texttt{lotriff.in} file and a correct
+\texttt{hetero.def} file need to be present in your directory, the constrained
+building blocks are supposed to be specified first in the building block input.
+
+A mapping of atom types in an auxiliary file \texttt{input-lotriff.aux}, where
+input is the prefix of your input file name, needs to be present. First line of
+this file needs to be
+\begin{verbatim}
+###OGOLEMAUX###
+\end{verbatim}
+followed by a column of force field types as present in your lotriff input.
+
+The lotriff interface in its current state is not suitable for molecule only
+optimizations. This does currently not have any effect on \ogo{}.
+
+\subsection{Interface to MNDO}
+The interface to MNDO is called through \texttt{LocOptAlgo=mndo:}, followed by
+a sequence of keywords to specify the method. Builtin support exists at the
+moment for the following levels of theory
+\begin{itemize}
+  \item \texttt{mndod}
+  \item \texttt{om1}
+  \item \texttt{om2}
+  \item \texttt{om3}
+  \item \texttt{pm3}
+  \item \texttt{am1}
+  \item \texttt{mndoc}
+  \item \texttt{mndo}
+  \item \texttt{mindo3}
+  \item \texttt{cndo2}
+  \item \texttt{scc-dftb}
+  \item \texttt{scc-dftbj}\\
+	J\o{}rgensen DFTB
+\end{itemize}
+all of the above can make use of implicit solvation using COSMO when appending
+\texttt{:cosmo}.
+
+Since the MNDO program is rather unique when it comes to input and output, it
+was ultimately decided to call not MNDO directly but instead to always call a
+shell-script which just wraps that. This obviously just works on UNIX machines
+but MNDO is also just available for them to our knowledge.
+
+The shell script, named \texttt{mndo.sh}, needs to be in the path and include
+something alike to the following
+\begin{verbatim}
+#!/bin/sh
+$1 > mndo > $2
+\end{verbatim}
+
+\subsection{Interface to MOLPRO}
+The interface to MOLPRO is called through \texttt{LocOptAlgo=molpro:}, followed
+by a sequence of keywords to specify the method. Builtin support exists at the
+moment for the following levels of theory
+\begin{itemize}
+  \item \texttt{hf/vdz}
+  \item \texttt{b86/vdz}
+  \item \texttt{mp2/avtz}
+  \item \texttt{custom}\\
+Requiring you to provide an input stub \texttt{YOURINPUT-molpro.aux} containing
+all relevant input and instead of the geometry the key \texttt{OGOCOORDS}.
+  \item \texttt{custom,nolocopt}\\
+Just like above, an auxiliary file is required, with the \texttt{nolocopt} flag
+signaling that no local optimization takes place, interesting for
+chained local optimizations.
+\end{itemize}
+
+Additionally, the location of the MOLPRO executable needs to be exported in the
+environment variable \texttt{OGO\_MOLPROCMD}, e.g. in bash syntax
+\begin{verbatim}
+export OGO_MOLPROCMD=$HOME/software/molpro2010.1/bin/molpro
+\end{verbatim}
+If this variable should be not set, \ogo{} will assume the binary to be in
+your path.
+
+Since MOLPRO is a closed-source program it is only supported on the platforms
+the official MOLPRO release supports.
+
+\subsection{Interface to MOPAC}
+The interface to MOPAC is called through \texttt{LocOptAlgo=mopac:}, followed by
+a sequence of keywords to specify the method. Builtin support exists at the
+moment for the following levels of theory
+\begin{itemize}
+  \item \texttt{mndo}
+  \item \texttt{am1}
+  \item \texttt{pm3}
+  \item \texttt{pm5}
+  \item \texttt{pm6}
+  \item \texttt{mndo,cosmo(ethanol)}
+  \item \texttt{am1,cosmo(ethanol)}
+  \item \texttt{pm3,cosmo(ethanol)}
+  \item \texttt{pm5,cosmo(ethanol)}
+  \item \texttt{pm6,cosmo(ethanol)}
+  \item \texttt{mndo,cosmo(water)}
+  \item \texttt{am1,cosmo(water)}
+  \item \texttt{pm3,cosmo(water)}
+  \item \texttt{pm5,cosmo(water)}
+  \item \texttt{pm6,cosmo(water)}
+\end{itemize}
+
+Additionally, the location of the MOPAC executable needs to be exported in the
+environment variable \texttt{OGO\_MOPACCMD}, e.g. in bash syntax
+\begin{verbatim}
+export OGO_MOPACCMD=$HOME/software/mopac2010/mopac
+\end{verbatim}
+If this variable should be not set, \ogo{} will assume the binary to be in
+your path.
+
+Since MOPAC is a closed-source program it is only supported on the platforms the
+official MOPAC release supports.
+
+\subsection{Interface to NAMD}
+
+The interface to NAMD is called through \texttt{LocOptAlgo=namd}.
+
+The \texttt{namd2} executable needs to be in the path and named such.
+
+Additionally, there needs to be a fitting amber parameter file (yes, this is
+not an error!) named \texttt{input.prmtop}, where \texttt{input} is the prefix
+of your \texttt{input.ogo} file.
+
+The NAMD interface in its current state is not suitable for molecule only
+optimizations. This does currently not have any effect on \ogo{}.
+
+\subsection{Interface to OpenBabel}
+The interface to OpenBabel is called through \texttt{LocOptAlgo=openbabel:},
+followed by a sequence of keywords to specify which force field to use.
+Currently supported are
+\begin{itemize}
+  \item \texttt{ghemical}\\
+	the usage of this FF is highly encouraged since it is finnish
+technology ;-)
+  \item \texttt{mmff94s}
+  \item \texttt{mmff94}
+  \item \texttt{uff}
+\end{itemize}
+
+The \texttt{obminimize} executable needs to be in the path and named so.
+
+As a side note, the atom type recognition is done by OpenBabel automagically.
+This might be error prone and it is recommended to be checked in advance to a
+full global optimization.
+
+\subsection{Interface to Orca}
+The interface to Orca is called through \texttt{LocOptAlgo=orca:}, followed by a
+sequence of keywords to specify the method. Builtin support exists at the
+moment for the following levels of theory
+\begin{itemize}
+  \item \texttt{mndo}
+  \item \texttt{am1}
+  \item \texttt{pm3}
+  \item \texttt{b3lyp/vdz}
+  \item \texttt{bp86/svp}
+  \item \texttt{bp86/tzvp}
+  \item \texttt{ubp86/tzvp}\\
+	forces unrestricted Kohn-Sham
+  \item \texttt{b3lyp/6-31+g**}
+  \item \texttt{mp2/aug-cc-pVDZ}
+  \item \texttt{ccsd(t)/tzvpp}\\
+	only use this if you have way too much computing time
+  \item \texttt{custom}\\
+Requiring you to provide an input stub \texttt{YOURINPUT-orca.aux} containing
+all relevant input before the geometry block. Please note, that this input needs
+to contain the constraints, if wanted.
+  \item \texttt{custom,nolocopt}\\
+Just like above, an auxiliary file is required, with the \texttt{nolopt} flag
+signaling that no local optimization takes place, interesting for
+chained local optimizations.
+\end{itemize}
+
+Additionally, the location of the orca executable needs to be exported in the
+environment variable \texttt{OGO\_ORCACMD}, e.g. in bash syntax
+\begin{verbatim}
+export OGO_ORCACMD=$HOME/software/orca_v2.8.0/orca
+\end{verbatim}
+If this variable should be not set, \ogo{} will assume the binary to be in
+your path.
+
+Since Orca is a free, albeit closed-source program, it is only supported on the
+platforms the official Orca release supports (at the moment: Linux, Solaris,
+Windows).
+
+\subsection{Interface to Tinker}
+The interface to Tinker is called through \texttt{LocOptAlgo=tinker:}, followed
+by a sequence of keywords to specify some needed parameters for the local
+optimization employed by Tinker
+\begin{itemize}
+  \item \texttt{minimize}\\
+	use Tinkers minimize program for local optimization
+  \item \texttt{newton}\\
+	use Tinkers newton program for local optimization
+  \item \texttt{optimize}\\
+	use Tinkers optimize program for local optimization
+  \item \texttt{custom}\\
+	use a custom command and options for the local optimization
+\end{itemize}
+
+For the earlier three, the Tinker executables need to be in your path and named
+\texttt{minimize}, \texttt{newton} and \texttt{optimize}. For the last option,
+one needs to export the system variables \texttt{OGO\_TINKERCMD} and
+\texttt{OGO\_TINKEROPT}, e.g. in bash syntax
+\begin{verbatim}
+export OGO_TINKERCMD=$HOME/software/tinker_patched/optimize
+export OGO_TINKEROPT="0.01"
+\end{verbatim}
+
+Additionally, you need to have a file called \texttt{input-tinker.aux}, where
+\texttt{input} is the prefix of your input file in the same directory as the
+\texttt{ogo}-file. This file needs to start with a line
+\begin{verbatim}
+###OGOLEMAUX###
+\end{verbatim}
+followed by a line with the name of the tinker parameter file to use (e.g.
+\texttt{mm3.prm}), which also needs to be in the directory. Then the force
+field types for all atoms in your systems (same order as in the building block
+definition). The first column being some arbirtray identifier, followed by
+whitespace and the force field type ID as in the parameter file.
+
+Occasionally, the setup described above does not work but results in
+error messages like this:
+\begin{verbatim}
+WARNING: Error in Tinker: optimize locopt. Returning non-optimized geometry. 
+org.ogolem.core.ConvergenceException: Tinker has a problem (local optimization).
+\end{verbatim}
+If this happens, first make sure that Tinker in stand-alone mode (w/o \ogo{})
+can really do the intended calculations, using the input files automatically
+generated by \ogo{}. If Tinker does work in stand-alone mode, the above error
+may be related to system I/O issues on certain Linux systems. As a
+possible fix, you are then encouraged to try this workaround:
+\begin{itemize}
+\item replace the direct invocation of the desired Tinker routine (e.g.,
+  \texttt{optimize}), with a script of this contents:
+\begin{verbatim}
+#!/bin/sh
+base=`basename $1 .xyz`
+out=$base".out"
+/path/to/your/tinker/executables/optimize $@ > $out
+\end{verbatim}
+  For example, you can name this script ``optimize'' and put it in a directory
+  that occurs early in your \texttt{PATH}-variable (e.g.,
+  \texttt{\$HOME/bin}), before the normal Tinker executables (to be on the
+  safe side, remove the Tinker executables from your
+  \texttt{PATH}). Alternatively, you can also let \texttt{OGO\_TINKERCMD} point
+  to this script.
+\item additionally, in the $\ast$.ogo input file, call the Tinker interface with
+\begin{verbatim}
+LocOptAlgo=tinker:optimize,fileout
+\end{verbatim}
+\end{itemize}
+This (or obvious variations of this recipe for the other Tinker routines) may
+get rid of the above error.
+
+The Tinker interface in its current state is not suitable for molecule only
+optimizations. This does currently not have any effect on \ogo{}.
+
+\subsection{Interfacing to \textbf{any} other program (package)}
+Although \ogo{} provides a numerous set of interfaces to programs implementing
+methods ranging from force fields to wavefunction methods, we cannot implement
+an interface to every code that we find interesting. Additionally, if one of the
+interfaced codes changes input or output structure in a non-compatible manner,
+we will need to chase that.
+
+But fear not as there is an easy solution to interface \textbf{any} other code
+to \ogo{} with a little bit of simple scripting. This interface can be requested
+by setting \texttt{LocOptAlgo=generic}. Additionally, the environment variables
+\texttt{OGO\_GENERALCMD} will need to be set to the command to be called for the
+actual local optimization. Additionally, if \texttt{OGO\_GENERALOPTS} are set, 
+these
+options will be appended to the called command.
+
+If this interface is chosen, \ogo{} will create individual directories for each 
+local
+optimization task. In such directory, a file \texttt{input.xyz} within the 
+initial guess
+coordinates in xyz-format will be created. Subsequently, the 
+\texttt{OGO\_GENERALCMD} will
+be executed within the directory (optinally with the options appended) which is 
+supposed
+to read in the coordinates, run the local optimization and return the results
+in an xyz-formatted file \texttt{output.xyz}. In this file, the second line is 
+supposed
+to contain the fitness of the optimized structure in kJ/mol as the second token.
+
+Happy \ogo{} scripting!
+
+\subsection{Chaining multiple local optimizations}
+Any number of local optimizations can be chained. This is easily achieved by
+specifying \texttt{LocOptAlgo= chained:} followed by a
+\texttt{\textbar}-separated (pipe-separated) list of the local optimization
+options (inluding their possible options) to be chained.
+
+\subsection{Build-in local optimizations}
+\label{sec:geomlocopt}
+A variety of local optimization algorithms are available build-in in \ogo{}. 
+They all have in common that they require a backend specification as described 
+in the following sections.
+
+Please note that not all of the local optimization algorithms now described are 
+classically seen as local optimization but some of them are used in other 
+groups as global optimizations engines. Despite the semantics, we are convinced 
+that coupling mutliple global optimization engines can be benefical. No bigger 
+offense should be taken by naming them local optimizations.
+
+A word on syntax: unless otherwise noted, options to local optimizations are 
+semicolon separated. Classic choices for the local optimizations include:
+
+\begin{itemize}
+  \item \texttt{chained:XXX|YYY} which chains the local optimizations 
+\texttt{XXX} and \texttt{YYY}. Any number of local optimizations can be chained 
+and are \textit{pipe} | separated.
+  \item \texttt{none:backend=XXX} which uses the backend \texttt{XXX} for 
+single-point only evaluations.
+  \item \texttt{lbfgs:} to use a L-BFGS optimization through RISO's version of 
+the original Nocedal implementation. Recommended choice. Options are:
+    \begin{itemize}
+      \item \texttt{backend=XXX} uses backend \texttt{XXX} for this 
+optimization. Mandatory option.
+      \item \texttt{maxiter=XXX} sets the maximal number of iterations for this 
+local optimization to \texttt{XXX}. Default: global default. Optional input.
+      \item \texttt{lineiter=XXX} sets the number of line search iterations to 
+\texttt{XXX}. Default: 50. Optional input.
+      \item \texttt{gtol=X.X} sets the gradient tolerance to \texttt{X.X}. 
+Default: 0.9. Optional input.
+      \item \texttt{nocorrs=X} sets the number of corrections to \texttt{X}. 
+Default: 7. Optional input.
+      \item \texttt{absconvthresh=X.XX} sets the absolute convergence threshold 
+to \texttt{X.XX}. Default: global default. Optional input.
+      \item \texttt{tryresets=X} sets the number of resets of the L-BFGS state 
+to \texttt{X}. Default: 3. Optional input.
+    \end{itemize}
+  \item \texttt{apachecg:} to use Apache's conjugate gradient local 
+optimization, options include:
+    \begin{itemize}
+      \item \texttt{backend=XXX} uses backend \texttt{XXX} for this 
+optimization. Mandatory option.
+      \item \texttt{maxiter=XXX} sets the maximal number of iterations for this 
+local optimization to \texttt{XXX}. Default: global default. Optional input.
+      \item \texttt{usefletcher=true} enables Fletcher-Reeves updates over 
+Polak-Ribiere updates. Default: Polak-Ribiere. Optional input.
+      \item \texttt{absconvthresh=X.XX} sets the absolute convergence threshold 
+to \texttt{X.XX}. Default: global default. Optional input.
+    \end{itemize}
+  \item \texttt{flemin:} to use NUMAL's flemin optimization. Options:
+    \begin{itemize}
+      \item \texttt{backend=XXX} uses backend \texttt{XXX} for this 
+optimization. Mandatory option.
+      \item \texttt{maxiter=XXX} sets the maximal number of iterations for this 
+local optimization to \texttt{XXX}. Default: global default. Optional input.
+      \item \texttt{convthresh=X.XX} sets the convergence threshold in the 
+fitness to \texttt{X.XX}. Default: global default. Optional input.
+      \item \texttt{convthreshgrad=X.XX} sets the convergence threshold in the 
+gradient to \texttt{X.XX}. Default: global default. Optional input.
+    \end{itemize}
+  \item \texttt{rnk1min:} to use NUMAL's rnk1min optimization. Options:
+    \begin{itemize}
+      \item \texttt{backend=XXX} uses backend \texttt{XXX} for this 
+optimization. Mandatory option.
+      \item \texttt{maxiter=XXX} sets the maximal number of iterations for this 
+local optimization to \texttt{XXX}. Default: global default. Optional input.
+      \item \texttt{convthresh=X.XX} sets the convergence threshold in the 
+fitness to \texttt{X.XX}. Default: global default. Optional input.
+      \item \texttt{maxstep=X.X} sets the maximal step to \texttt{X.XX}. 
+Default: 0.1. Optional input.
+      \item \texttt{convthreshgrad=X.XX} sets the convergence threshold in the 
+gradient to \texttt{X.XX}. Default: global default. Optional input.
+    \end{itemize}
+
+\end{itemize}
+
+    \begin{itemize}
+      \item 
+    \end{itemize}
+
+
+Please note that the \texttt{flemin}, \texttt{praxis}, \texttt{rnk1min} 
+algorithms may only be used if you are in possession of Lau's Java Numal 
+book\cite{javanumalbook} (and 
+therefore the accompanying source code and jar-file). In this case, you can add 
+the numal.jar to the classpath prior 
+to \ogo{} excecution and make use of the optimization algorithms implemented in 
+Numal.
+
+%TODO localheat not included with source yet!
+
+% One of the global optimization algorithms \ogo{} included are local heat 
+% pulses 
+% as originally developed by Arnulf Moebius. The version in \ogo{} is fairly 
+% customized
+% in comparison to the original. You can specify this using: 
+% \texttt{localheat:} followed by the actual local optimization (may be any of 
+% the ones available in \ogo{} and the options for the local heat pulses, 
+% separated by ; so \texttt{localheat:lbfgs:lennardjones;OPTIONS}. The options 
+% are in turn a comma separated list of a variety of options. Please note that 
+% whilst you must have the correct number of commas, you may leave the space in 
+% between them empty and choose the default. We choose this input format to 
+% ensure that users are well aware that this is not a black-box method. The 
+% options are as follows: 
+% \texttt{MODE,doCDDD,eqIter,iters,moveCOMs,scaleFac,startAmpl,temp,useMetro,
+% startEuler,sigmaX,sigmaY,sigmaZ}.
+% \begin{itemize}
+%  \item mode: the mode for the local heat pulses. We support the following 
+% choices: 0 (default) move 5 atoms/COMs, 1: move 10\% of the atoms/COMs, 2: 
+% move 
+% 0 to 5 atoms/COMs, 4: return 0 to 10\% of the atoms/COMs, 10: shoot a pulse
+% into 
+% the cluster and disturb within a 3D Gaussian, 11: shoot a pulse on the 
+% cluster 
+% surface and disturb within a 3D Gaussian.
+% \item doCDDD: if we should check the geometries sanity after perturbation 
+% using
+% CD/DD. Default: false.
+% \item eqIters: the number of equillibration iterations before cooling the
+% amplitudes. Default: 3.
+% \item iters: the number of iterations of the local heat pulses. Default: 10.
+% \item moveCOMs: if the COMs of the building blocks or the atoms should be
+% perturbed. Default: true (move COMs).
+% \item scaleFac: how we scale amplitudes, temperature and euler amplitudes.
+% Default: 0.9.
+% \item startAmpl: what the start amplitude for atom/COM perturbation should be.
+% Default: 2\AA{} in $a_0$.
+% \item temp: if we use a Metropolis criterion, what the start temperature (in
+% Kelvin) should be. Default: 50.
+% \item useMetro: if we use the Metropolis criterion instead of the simplistic
+% criterion. Default: true (use Metropolis).
+% \item startEuler: the initial amplitude for Euler angle perturbation. Default:
+% 0.5.
+% \item sigmaX: the x-width of the 3D Gaussian (if mode 10 or 11). Default: 0.1.
+% \item sigmaY: the y-width of the 3D Gaussian (if mode 10 or 11). Default: 0.1.
+% \item sigmaZ: the z-width of the 3D Gaussian (if mode 10 or 11). Default: 0.1.
+% \end{itemize}
+
+
+\section{Internal and external backends}
+As discussed above, all internal local optimizations require a backend 
+definition. This backend definition can be
+either directly inlined or pre-defined and tagged. Please note that we prefer 
+the pre-defined version discussed
+here over direct inlining.
+
+In order to define a backend a \texttt{CLUSTERBACKEND} block must be in the 
+input. Options include:
+\begin{itemize}
+ \item \texttt{BackendTag=XYZ} to name this backend defintion \texttt{XYZ}. Tag 
+must be unique. Mandatory option.
+ \item \texttt{Backend=XXX} to provide the fully qualified backend definition. 
+Mandatory option.
+\end{itemize}
+
+As an example:
+\begin{verbatim}
+<CLUSTERBACKEND>
+BackendTag=lj
+Backend=xyz:lennardjones
+</CLUSTERBACKEND>
+\end{verbatim}
+would be used to assign a Cartesian-based LJ force-field the tag \texttt{lj}. 
+Subsequently, the tag \texttt{lj}
+could be used to refer to this backend in the local optimization definitions.
+
+Actual backend definitions will be covered in the next sections.
+
+\subsubsection{Internal LJ force field}
+Very simple, based on standard parameters for \emph{homogenous} LJ clusters of
+noble gases (excluding radon). Again, this does \emph{not} include any mixing 
+and can therefore only be used for
+homogenous clusters. Specify \texttt{lennardjones} as the backend.
+
+\subsubsection{Internal mixed LJ force field}
+Also simple, based on standard parameters for \emph{heterogenous} LJ clusters of
+noble gases. Through the
+use of Lorentz-Berthelot mixing rules, any mixed cluster of noble gases
+(excluding radon) can be studied. Specify \texttt{mixedlj} as the backend.
+
+\subsubsection{scaTTM3F}
+The \ogo{} contains a Scala-based implementation of the TTM3F force field by
+Xantheas \emph{et al.}. Despite being significantly faster than the reference
+implementation, this force field is equivalent in behaviour to said original. To
+use it, simply specify \texttt{scattm3f:X,Y.Y}, where \texttt{X} is the number
+of water molecules your system contains (our implementation also pre-allocates 
+some
+scratch arrays) and \texttt{Y.Y} is an energy cutoff in $E_h$. This cutoff is of
+importance, as (like the reference implementation) the induced dipols may
+converge to unphysical solutions which can be very low in energy. It is
+recommended to scale the cutoff with system size.
+
+Please also note that the implementation assumes your cluster to only contain
+water molecules with internal atom order O/H/H.
+
+\subsubsection{(EVB-)QMDFF}
+Thanks Stefan Grimme, we include his QMD force field natively in \ogo{}. 
+Additionally,
+we support the EVB-QMDFF extension by Bernd Hartke and Stefan Grimme. Before 
+running \ogo{}, a force field parameter must be created file with the 
+official tools from Stefan Grimme. Subsequently, QMDFF can be configured as
+\texttt{qmdff:} followed by a , (comma) separated list of options:
+\begin{itemize}
+ \item \texttt{params=XXX} sets the path to the parameter file to \texttt{XXX}. Default: \texttt{solvent}.
+ \item \texttt{addterm=XXX} add an additional term to QMDFF. Currently only supported: \texttt{electrostatic:PATHTOCHARGEFILE}. Default: no additional term.
+\end{itemize}
+
+To configure EVB-QMDFF, specify \texttt{evb-qmdff:} followed by any of the following options:
+% TODO specify
+\begin{itemize}
+ \item \texttt{evb=}
+ \item \texttt{qmdffs=}
+\end{itemize}
+
+Please note that we are in the testing phase for both EVB-QMDFF and QMDFF for structure global optimization and cannot make any guarantees as to the physical sensibility of obtained results!
+
+\subsubsection{Adaptive choices}
+Adaptive choices are in more detail described in section \ref{parameterfit}
+\emph{Global parametrization of potentials}.
+
+\section{Global optimization algorithms}
+\label{sec:geomglobopt}
+All global optimization algorithms are chosen through the \texttt{GlobOptAlgo=}
+keyword. The grammar is as follows: 
+\texttt{cluster$\{$xover(GEOMXOVERALGO:OPTS)mutation(GEOMMUTATIONALGO:OPTS)$\}
+$molecules$\{$ xover(MOLXOVERALGO:OPTS)mutation(MOLMUTATIONALGO:OPTS)$\}$}.
+The cluster algorithm specification is required, the molecule specification 
+(for explicit degrees of freedom) is optional. Algorithmic choices must end 
+with a colon, options are optional and comma-separated.
+
+Valid choices for \texttt{GEOMXOVERALGO} are:
+\begin{itemize}
+  \item \texttt{germany:} a very basic one-point genotype crossover. Options:
+  \begin{itemize}
+    \item \texttt{gausswidth=X.X} sets the width of the Gaussian deciding for 
+the cutting spot to X.X, default 0.3.
+  \end{itemize}
+  \item \texttt{portugal:} a $N$-point genotype crossover.
+  \begin{itemize}
+    \item \texttt{nocuts=X} sets the number of cuts to \texttt{X}. Default: 1.
+  \end{itemize}
+  \item \texttt{sweden:} our $N$-species phenotype crossover.
+  \begin{itemize}
+    \item \texttt{cutstyle=} specifies the cutting style, valid choices 0, 1 or 
+2. 0: cutting plane is always through the total COM of the cluster. 1: 
+Gauss-distributed cutting plane. 2: normal-distributed cutting plane. Default: 
+2.
+  \end{itemize}
+  \item \texttt{lapland:} a phenotype crossover with implicit exchange.
+  \begin{itemize}
+    \item \texttt{cutstyle=}, valid choices 0, 1 or 2. Default: 2.
+  \end{itemize}
+  \item \texttt{iceland:} a merging phenotype operator.
+  \begin{itemize}
+    \item \texttt{cutstyle=X}, valid choices 0, 1 or 2. Default: 2.
+    \item \texttt{colldetect=X} Choses a collision detection engine. See global 
+option for valid choices. Default: global setting.
+    \item \texttt{blowcoll=X.X} specifies the collision blow factor to be 
+\texttt{X.X}. Default: global setting.
+    \item \texttt{blowdiss=X.X} specifies the dissociation blow factor to be 
+\texttt{X.X}. Default: global setting.
+    \item \texttt{inittrust=X.X} specifies the initial trust radius for the 
+merge. Default: 0.1.
+    \item \texttt{stoptrust=X.X} specifies the stopping trust radius for the 
+merge. Default: 1E-5.
+    \item \texttt{mergeiter=X} specifies the number of iteration for the merge. 
+Default: 100.
+    \item \texttt{nointerpoints=X} specifies the number of interpolation points 
+for the merging. Default: 5.
+    \item \texttt{optbounds=} specifies the optimization bounds for the merging 
+as a $/$-separated array. Order: lower translation bound, higher translation 
+bound, lower rotation bound, higher rotation bound. Defaults: 
+\texttt{0.0/15.0/0.0/2*pi}
+  \end{itemize}
+  \item \texttt{aland:} a fitness-based phenotype operator with optional 
+merging.
+  \begin{itemize}
+    \item \texttt{cutstyle=X}, valid choices 0, 1 or 2. Default: 2.
+    \item \texttt{mergingpheno}, enables merging. Default: off.
+    \item \texttt{colldetect=X} Choses a collision detection engine. See global 
+option for valid choices. Default: global setting.
+    \item \texttt{blowcoll=X.X} specifies the collision blow factor to be 
+\texttt{X.X}. Default: global setting.
+    \item \texttt{blowdiss=X.X} specifies the dissociation blow factor to be 
+\texttt{X.X}. Default: global setting.
+    \item \texttt{inittrust=X.X} specifies the initial trust radius for the 
+merge. Default: 0.1.
+    \item \texttt{stoptrust=X.X} specifies the stopping trust radius for the 
+merge. Default: 1E-5.
+    \item \texttt{mergeiter=X} specifies the number of iteration for the merge. 
+Default: 100.
+    \item \texttt{nointerpoints=X} specifies the number of interpolation points 
+for the merging. Default: 5.
+    \item \texttt{optbounds=} specifies the optimization bounds for the merging 
+as a $/$-separated array. Order: lower translation bound, higher translation 
+bound, lower rotation bound, higher rotation bound. Defaults: 
+\texttt{0.0/15.0/0.0/2*pi}
+  \end{itemize}
+  \item \texttt{snaefellsjoekull:}
+  \begin{itemize}
+    \item \texttt{cutstyle=X} specifies a cut style. Allowed: 0 (full random), 
+1 (Gauss-distributed), 2 (inverted Gauss-distributed). Default: 0.
+    \item \texttt{gausswidth=X.X} the standard deviation if a Gauss-cut is 
+chosen. Default: 1.0.
+    \item \texttt{adjustradius=true/false} if the radius of the spheres should 
+be adjusted. Default: false.
+  \end{itemize}
+  \item \texttt{noxover:} disables crossovers in the global optimization.
+  \item \texttt{mutationasxover:GEOMMUTATIONALGO:OPTS} uses the mutation 
+specified by \texttt{GEOMMUTATIONALGO} as a crossover.
+  \item \texttt{multiple:XX\%GEOMXOVER1:OPTS|YY\%GEOMXOVER2:OPTS...} couples 
+multiple crossover operators together. Each definition starts with the percent 
+probabilty for this operator to be used. Different operators are separated by 
+pipes |. The percentages must add up to 100\%.
+  \item \texttt{chained:XX\%GEOMXOVER1:OPTS|YY\%GEOMXOVER2:OPTS...} chains 
+multiple crossover operators together. Each definition starts with the percent 
+probabilty for this operator to be used in the chain. Different operators are 
+separated by pipes |. Each percentage is independent.
+\end{itemize}
+
+We do recommend to choose \texttt{sweden} if one is not certain what the best
+crossover is.
+
+Valid choices for \texttt{GEOMMUTATIONALGO} are:
+\begin{itemize}
+  \item \texttt{germany:} for a basic genotype mutation of the COMs and 
+rotations for the molecules.
+  \begin{itemize}
+    \item \texttt{lowcom=X.X} the minimal translation for the COMs. Default: 
+0.5 bohr.
+    \item \texttt{highcom=X.X} the maximal translation for the COMs. Default: 
+1.5 bohr.
+    \item \texttt{widthCOM=X.X} the width of the Gaussian centered between the 
+two. Default: 0.1.
+    \item \texttt{loweuler=X.X} the minimal rotation of the COMs. Default: 0.0 
+(in the specific Euler angles definition.
+    \item \texttt{higheuler=X.X} the maximal rotation of the COM. Default: 1.0 
+(in the specific Euler angles definition.
+    \item \texttt{widtheuler=X.X} the width of the Gaussian centered between 
+the two Euler borders. Default: 0.1.
+  \end{itemize}
+  \item \texttt{montecarlo:} for a Monte-Carlo based mutation in the atomic 
+space.
+  \begin{itemize}
+    \item \texttt{mode=} to adjust the move mode. Valid choices: \texttt{all}, 
+\texttt{some}, \texttt{one}.
+    \item \texttt{maxmove=X} specifies the maximum move. Default: 0.2 (in bohr).
+  \end{itemize}
+  \item \texttt{finland:} for a one-parent phenotype crossover.
+  \begin{itemize}
+    \item \texttt{cutstyle=X}, valid choices 0, 1, 2. Default: 2.
+    \item \texttt{blowcoll=X.X} to set the blow factor for the collision 
+detection. Default: global setting.
+    \item \texttt{blowdiss=X.X} to set the blow factor for the dissociation 
+detection. Default: global setting.
+  \end{itemize}
+  \item \texttt{norway:} for a one-parent packing operator.
+  \begin{itemize}
+    \item \texttt{colldetect=} to set the collision detection algorithm. 
+Default: global setting.
+    \item \texttt{dissdetect=} to set the dissociation detection algorithm. 
+Default: global setting.
+    \item \texttt{blowcoll=X.X} to set the blow factor for the collision 
+detection. Default: global setting.
+    \item \texttt{blowdiss=X.X} to set the blow factor for the dissociation 
+detection. Default: global setting.
+  \end{itemize}
+  \item \texttt{xchangemut:} for an explicit exchange mutation.
+  \begin{itemize}
+    \item \texttt{mode=} the exchange mode. Valid choices: \texttt{single}, 
+\texttt{multiple}. Default: \texttt{single}.
+    \item \texttt{gausswidth=X.X} if multiple is chosen, the width of the 
+Gaussian used to determine how many should be exchanged. Default: 0.4.
+  \end{itemize}
+  \item \texttt{graphbasedmut:} the original GDM doing a graph-based analysis 
+of the cluster to determine the least connected building block and move it to a 
+better position.
+  \begin{itemize}
+    \item 
+  \end{itemize}
+\end{itemize}
+
+To be continued... %TODO
+
+
+\subsection{HACTAR}
+\label{sec:geomhactar}
+HACTAR is...... \textbf{not yet ready for prime time. Please do not use!} %TODO
+
+Input syntax: 
+\texttt{hactar$\{$HACTAROPTIONS$\}$cluster$\{$xover()mutation()$\}$}.  The 
+cluster specifications for both \texttt{xover()} and \texttt{mutation()} can 
+(and should) contain more than one algorithmic definition. These definitions 
+follow the \texttt{multiple:} syntax explained above, without the leading 
+\texttt{multiple:} keyword.
+
+Currently no molecular 
+HACTAR exists. \texttt{HACTAROPTION} are a series of optional, comma-separated 
+options. The following input keywords exists:
+\begin{itemize}
+  \item \texttt{mode=} Wich moving mode to use. Possible modes are 
+\texttt{all}, \texttt{some}, \texttt{one}. Default: \texttt{some}.
+  \item \texttt{dometropolis} To enable the Metropolis criterion. Default: 
+accept steps that lower the energy, no Metropolis criterion.
+  \item \texttt{beta=X.X} If the Metropolis criterion is enabled, which beta 
+factor to use. Default: 1.0.
+  \item \texttt{maxtoreset=X} After how many unsuccessful operations a reset to 
+the initial algorithmic configuration should take place. Default: 100.
+  \item \texttt{stepstopring=X} After how many steps we print the current 
+algorithmic configuration to standard out. Default: 1000.
+  \item \texttt{maxpercstep=X.X} What is the maximum percentage the 
+configuration is allowed to be moved in one step. Default: 1\%.
+  \item \texttt{dopercentages} evaluate the improvements as a percentage, not
+as the absolute.
+\end{itemize}
+
+
+\section{Diversity checkers}
+In order to maintain a sufficient diversity in the genetic pool, we use so 
+called
+diversity checkers. Their quality (and performance) are crucial for the success 
+of
+your global optimization.
+
+The default is a fitness-based diversity criterion with a threshold of 
+$1\cdot10^{-6}\:E_h$. This threshold may be too tight for your optimization and 
+is related to the convergence threshold of the local optimization. To change 
+the default, the \texttt{DiversityCheck=} keyword must be used. Options are:
+\begin{itemize}
+  \item \texttt{fitnessbased:X.X}\\
+    which is the simple fitness-based diversity checker with a threshold of 
+\texttt{X.X}.
+  \item \texttt{percfitnessbased:X.X}\\
+   which is the simple fitness diversity checker based on the percentage 
+difference w.r.t. the individual with the smaller fitness. \texttt{X.X} is the 
+percentage in the interval [0,100].
+  \item \texttt{hundtoverlap:CONFIG}\\
+    to use Hundt's overlap check as a diversity criterion using the 
+configuration options in \texttt{CONFIG}, semicolon separated.
+  \item \texttt{fitnesshundtoverlap:X.X,CONFIG}\\
+    to use a fitness-prescreened version (with threshold \texttt{X.X}) of 
+Hundt's overlap check as a diversity criterion using the configuration options 
+in \texttt{CONFIG}, semicolon separated.
+\end{itemize}
+
+
+\section{Running the job}
+After calling, e.g.,
+\begin{verbatim}
+java -jar ogolem.jar --shmem MYJOB.ogo 2
+\end{verbatim}
+there will, potentially, appear (a lot of files) in the directory the job was 
+started from. Additionally, depending upon the number of threads allowed, a 
+java process will start eating up CPU time. Concerning the latter: it is not 
+recommended to use all CPUs on a workstation which is supposed to be still used 
+for anything else.
+
+\ogo{} will clean up all automagically generated input files and/or directories
+for other programs in case of a sucessfull call to that program. In case that
+something unexpected (e.g. failing convergence) happens, the files will be left
+for inspection.
+
+Interesting datafiles are the folder named like your input file, where
+structures and output (the latter one is to be inspected to see whether all
+input keywords are correctly read in) are collected. Additionally, there is a
+log file containing timestamps and informations whenever a new individual took
+the first rank in the pool.
+
+Once the run is complete, there will be a lot of files of form
+\texttt{rankNUMBERgeometryNUMBER.xyz} appearing in that folder. This is the
+final pool of structures, where the first number is the rank in the pool (best
+candidate has rank 0) and the second is the ID of the geometry to give a measure
+when it was found in the run.
+
+\ogo{} might throw warnings or errors. These will be written to System.out and
+System.err and are of interest.
+
+\section{Cluster analysis}
+\ogo{} provides some, admittingly very trivial, means to analyze the outcome of
+a global optimization of clusters and, perhaps more important, to check a
+running job using the written restart files. For this, you call the
+\texttt{ogolem.jar} with the
+\begin{verbatim}
+--clusters
+\end{verbatim}
+option.
+
+The analysis program needs a binary pool, either the final \texttt{pool.bin}
+or a temporary \texttt{IntermediateClusterPool.bin}. This is specified using the
+\texttt{-i} flag followed by whitespace, e.g.
+\begin{verbatim}
+java -jar ogolem.jar --clusters -i IntermediateClusterPool.bin
+\end{verbatim}
+
+Some other options are possible
+\begin{itemize}
+  \item \texttt{-binstructs}\\
+	bin structures by number of structures instead of energies (which is
+the default)
+  \item \texttt{-dissblow}\\
+	the blow factor for the dissociation detection, defaults to 1.8.
+  \item \texttt{-getstructs}\\
+	 create a directory named \texttt{structs} and write the structures of
+this pool there in the xyz-file format. Good option for intermediate checks.
+  \item \texttt{-ljstrains}\\
+	calculate strain energies for LJ clusters. Defaults to off.
+  \item \texttt{-nocomdiffs}\\
+	disable analysis of COM differences (on by default).
+  \item \texttt{-nodissdetect}\\
+	disable dissociation detection (on by default).
+  \item \texttt{-noenergies}\\
+	disable scanning of energies (on by default).
+  \item \texttt{-noinertias}\\
+	disable moments of inertia analysis (on by default).
+  \item \texttt{-noofbins}\\
+	the number of bins for structure binning. Defaults to 100.
+  \item \texttt{-threshdiff}\\
+	threshold for moments of inertia, defining when they are considered to
+be different. Defaults to 2.5E-1.
+  \item \texttt{-threshequal}\\
+	threshold for moments of inertia, defining when they are considered to
+be same. Defaults to 1E-1.
+\end{itemize}
+
+We want to encourage you here to contribute to the \ogo{} by proposing
+cluster analysis techniques that are of interest to you!
+
+
+\chapter{Global parametrization of potentials, pseudopotentials, ...}
+
+This part of \ogo{} started as a way to globally optimize potentials in
+a system-specific fashion to later use them for cluster structure optimization.
+It has since significantly evolved from that basis towards optimizing
+potentials, pseudopotentials, and test benchmark functions. However, some traces
+of its ancestry are still present, i.e., in the names of keywords.
+
+\textbf{IMPORTANT:\\
+This part of the manual is not complete yet and does, e.g., not cover all
+possible adaptivable choices! It also is outdated as the input syntax has been 
+adjusted.}
+
+The part for the global optimization of potentials in the \ogo{} was primarily
+designed with the idea in mind to allow for a system-specific parametrization of
+potentials against a reference for later usage in the geometry structure
+optimization part. Therefore, it is strongly coupled to that part.
+
+Of importance is the definition of the fitness in this part. In the easiest case
+(no weights, no penalty functions, exact computation), it is
+\begin{equation}
+F=\sum_{i=0}^{N}abs\left( E_{i,fit}-E_{i,ref} \right)
+\end{equation}
+where $N$ is the number of reference points with their reference energies
+$E_{i,ref}$ and the fitted energies $E_{i,fit}$. Therefore, an exact agreement
+between reference and fitted energies causes the fitness to vanish, making 0.0
+the optimal one.
+
+\label{parameterfit}
+\section{General input structure}
+Due to the tight interaction between this part and the geometry optimization
+part, all direct input for the parameter optimization resides in the
+\texttt{.ogo} file. Therefore, there \emph{needs} to be a geometry definition.
+This is useful if one wants to use the feature of automatical generated
+reference structures and is otherwise only a small nuissance.
+
+All direct input is encapsulated into \texttt{<ADAPTIVE>} tags, e.g.,
+\begin{verbatim}
+###OGOLEM###
+<GEOMETRY>
+NumberOfParticles=2
+<MOLECULE>
+Ar;0.0;0.0;0.0
+</MOLECULE>
+<MOLECULE>
+Ar;0.0;0.0;0.0
+</MOLECULE>
+</GEOMETRY>
+
+<ADAPTIVE>
+AcceptableFitness=1E-8
+<REFERENCE>
+<PATH>
+arar_2.xyz
+</PATH>
+<ENERGY>
+1E-5
+</ENERGY>
+</REFERENCE>
+<REFERENCE>
+<PATH>
+arar_22.xyz
+</PATH>
+<ENERGY>
+1.2E-5
+</ENERGY>
+</REFERENCE>
+</ADAPTIVE>
+\end{verbatim}
+
+If one does not use the by default disabled feature of automatic reference point
+generation, the geometry definition does not need to be identical to the
+reference points. Also, in general the reference points may (depending on the
+adaptivable chosen) have different compositions and number of atoms.
+
+Additionally, there exists an optional file specific to the parametrization
+part. This file defines lower and upper boundaries to each parameter and will be
+used for this purpose if present, otherwise default borders will be used which
+might be very inefficient for your specific purpose.
+
+The file should be named \texttt{yourinputname-borders.aux}, where
+\texttt{yourinputname} is the prefix of the used \texttt{.ogo} file, and the
+general format is
+\begin{verbatim}
+###OGOLEMAUX###
+-3.0        2.0
+0.1         0.2
+1E3         1E5
+-1E3        -1E1
+\end{verbatim}
+where for each individual parameter a lower boundary is assigned on the left and
+a upper one on the right side. These bounds typically (exceptions are mentioned
+in the corresponding paragraph of the adaptivable choice) are in atomic units.
+
+
+It is important to note that to-date the length of the specified array of
+borders needs to agree with the overall number of parameters for the fit and the
+order needs to agree with the internal representation. Depending on the actual
+interface chosen, it may therefore by reasonable to start \ogo{} with default
+borders to figure these things out.
+
+The automatic calculation, how many parameters and which parameters are needed
+for a given set of reference points may be too conservative and generate too
+many parameters. This of course highers the problem dimensionality and makes the
+genetic operations and local optimizations be less efficient. If this is the
+case for you, you may provide a file named \texttt{yourinputname-stub.aux},
+where \texttt{yourinputname} is the prefix of the used \texttt{.ogo} file. This
+file will then be used as a reference stub for the global optimization. Please
+be aware that any errors here can cause really nasty behaviour of the
+optimization. In general, the format of this file should follow the later
+described parameter output format. The numerical values of the parameters given
+can be any floating point number and do not have any effect on the optimization.
+Again, this potentially very harmful option should only be used if one knows
+what one is doing!
+
+\section{Input of reference points}
+The reference points are handed over through input of form
+\begin{verbatim}
+<REFERENCE>
+<PATH>
+pathToCartesianReference.xyz
+</PATH>
+<ENERGY>
+0.1
+</ENERGY>
+<REFCHARGES>
+0;1;2
+</REFCHARGES>
+<REFSPINS>
+0;2;1
+</REFSPINS>
+<REFBONDS>
+bonds.list
+</REFBONDS>
+<REFWEIGHT>
+2.4
+</REFWEIGHT>
+<REFMAXDIFF>
+1E-5
+</REFMAXDIFF>
+</REFERENCE>
+\end{verbatim}
+All adaptive backends support energy fits currently (this may change in the future) and for these \texttt{<PATH>} and \texttt{<ENERGY>} tags are mandatory and hold the
+path to the Cartesian structure and its energy (in hartree) of this reference
+point. The other tags are optional with both \texttt{<REFSPINS>} and
+\texttt{<REFCHARGES>} following the exact same input syntax as described above
+for the geometry structure optimization.
+
+Please note that the \texttt{<PATH>} tags must always be located before any 
+other tags!
+
+The \texttt{<REFBONDS>} tags may contain the path to either a list or a full
+matrix of the bonds in this reference geometry. If the file suffix is
+\texttt{.list}, a list will be assumed, otherwise a full matrix needs to be in
+the file (in most cases, one wants to use the list option). If these tags are
+not given, \ogo{} makes estimates based on a distance criterion. The list needs
+to be in format
+\begin{verbatim}
+0 1
+6 5
+2 3
+4 5
+\end{verbatim}
+where each row specifies the two atoms (once more counting starts at 0) between
+a bond exists. Empty lines are permitted, no order needs to be pertained. If a
+full matrix needs to be read in, the file should contain
+\begin{verbatim}
+true true true
+true true false
+true false true
+\end{verbatim}
+for (in this case) a water molecule. No empty lines are permitted.
+
+The \texttt{<REFWEIGHT>} tag assigns a
+weight to this specific point, a feature that might be usable if e.g. the
+description of a certain region is important. The \texttt{<REFMAXDIFF>} tag
+defines how much the fitted energy is allowed to differ from the reference
+before a penalty is applied. This last tag obviously must be used with a penalty
+function enabled separatly.
+
+There is growing support for other properties. Please check if your problem supports the following. If not, patches are welcome!
+
+\subsection{Parametrizing energy order}
+Energy order refers to the ordering of different atomic arrangements (e.g., crystal structures). It can be input as follows:
+\begin{verbatim}
+<REFERENCE>
+<ENERGYORDER>
+ConsiderRelativeEnergies
+First;pathtofirst.xyz;-945.64
+Second;pathtosecond.xyz;-1213.3
+</ENERGYORDER>
+</REFERENCE>
+\end{verbatim}
+where \texttt{ConsiderRelativeEnergies} is an optional tag (must be in first line if used) to not use total energies for the parametrization
+but only relative ones. Followed by arrangements having a tag as the first element, a semicolon as a separator, the path (relative or absolute)
+to the atomic positions in either xyz or z-matrix format, another semicolon separator, and the energy (typically in Hartree, can be relative if above relative energies were requested).
+
+\subsection{Parametrizing bulk modulus}
+Bulk moduli are of importance for condensed matter applications. They can be input as follows:
+\begin{verbatim}
+<REFERENCE>
+<BULKMODULUS>
+Li(bcc):150.624
+</BULKMODULUS>
+</REFERENCE>
+\end{verbatim}
+where \texttt{Li(bcc)} refers to the bcc phase of lithium, followed by colon and the bulk modulus (typically in atomic units).
+
+\subsection{Parametrizing equilibrium volume}
+Equilibrium cell volumes are of importance for condensed matter applications. They can be input as follows:
+\begin{verbatim}
+<REFERENCE>
+<CELLVOLUME>
+Li(bcc):42.4242
+</CELLVOLUME>
+</REFERENCE>
+\end{verbatim}
+where \texttt{Li(bcc)} refers to the bcc phase of lithium, followed by colon and the equilibrium cell volume (typically in atomic units).
+
+\subsection{Parametrizing nuclear forces}
+Nuclear forces can be input as follows:
+\begin{verbatim}
+<REFERENCE>
+<PATH>
+...
+</PATH>
+<FORCES>
+ForcesFile=pathtoforces.dat
+</FORCES>
+</REFERENCE>
+\end{verbatim}
+where \texttt{ForcesFile=} points to a file (relative or absolute path) containing the forces for the current reference in a Cartesian xyz format. The forces input requires also a \texttt{<PATH>} environment with atomic positions as defined above.
+
+\subsection{Parametrizing $\delta$ gauge}
+$\delta$ gauges are of importance for condensed matter applications. They can be input as follows:
+\begin{verbatim}
+<REFERENCE>
+<PATH>
+...
+</PATH>
+<DELTAGAUGE>
+Li(bcc):0.0
+</DELTAGAUGE>
+</REFERENCE>
+\end{verbatim}
+where \texttt{Li(bcc)} refers to the bcc phase of lithium, followed by colon and the $\delta$ gauge (typically 0.0 in atomic units). Currently, the $\delta$ gauge requires also a \texttt{<PATH>} environment with atomic positions as defined above.
+
+\subsection{Parametrizing electron density}
+Electron density (on a grid) can be input as follows:
+\begin{verbatim}
+<REFERENCE>
+<PATH>
+...
+</PATH>
+<DENSITY>
+DensityFile=pathtodensity.dat
+ReferenceTag=myTag
+</DENSITY>
+</REFERENCE>
+\end{verbatim}
+where \texttt{DensityFile=} points to a file (relative or absolute path) containing the density on a grid for the current reference. First line contains the Cartesian grid dimensions (whitespace separated) and subsequent lines contain one data point on that grid. The electron density input requires also a \texttt{<PATH>} environment with atomic positions as defined above. The second line of the \texttt{<REFERENCE>} environment must define a tag for this density using \texttt{ReferenceTag=}.
+
+\subsection{Mixing properties for the same reference}
+Some of the above properties can be mixed if the same reference is meant (the definition of that is somewhat backend dependent!). For this, simply add multiple property tags (e.g., \texttt{<CELLVOLUME>} \texttt{BULKMODULUS} in the same \texttt{<REFERENCE>} environment.
+
+\section{Input keywords}
+Again, there are a lot of tunables to this part of \ogo{} with some of them more
+important than others. It is important to note that a certain setting might be
+optimal for one fit but not for another.
+
+\begin{itemize}
+   \item \texttt{AcceptableFitness=}\\
+        \label{page2:acceptableFitness}
+	which fitness is considered to be acceptable and causes the optimization
+to stop. Defaults to 0.0 which is by our definition total agreement between all
+references and the fit.
+  \item \texttt{AdaptivableChoice=}\\
+	what to adapt/parametrize. See details below.
+  \item \texttt{AllRefsSameChargesAndSpins=}\\
+	set to true if all reference geometries have the same charge and spin. Use
+	with extraordinary care only!
+  \item \texttt{AnyParamHistory=}\\
+	set to true if the genetic history of parameters should be tracked. This
+	implies a higher use of memory.
+  \item \texttt{DoNiching=}\\
+  \item \texttt{DoubleMorseDMax=}\\
+	if the double morse adaptivable is used, the $d_{max}$ value. Deprecated!
+	set to true if niching should be enabled.
+  \item \texttt{NichesPerDim=}\\
+	if niching is enabled, the number of niches per (static) grid dimension.
+  \item \texttt{MaxIndividualsPerNiche=}\\
+	if niching is enabled, the maximum number of individuals per niche.
+  \item \texttt{MaxNonConvSteps=}\\
+	maximum number of steps w/o fitness progress in the internal local
+optimization. Defaults to 100.
+  \item \texttt{MaxTasksToSubmit=}\\
+	maximum number of tasks that are submitted to the threadpool at once.
+Defaults to 1000000. Please keep this setting if you are not absolutely certain
+that you benefit from a change.
+  \item \texttt{ParamBorderPrint=}\\
+	set to false if the parameter borders should be printed.
+  \item \texttt{ParameterDetailedStats=}\\
+	set to true if detailed statistics for the global optimization are wanted.
+  \item \texttt{ParamEnergyDiv=}\\
+	the minimal fitness diversity needing to exist between two individuals
+in the pool. Defaults to 1E-8 which might be (depending on e.g. the convergence
+criterion of the local optimization) too small and cause premature convergence
+of the pool.
+  \item \texttt{ParamGlobOptIter=}\\
+	the number of global optimization steps. Defaults to 9900. Must be
+	increased for production runs!
+  \item \texttt{ParamLinesearchEnergyDecr=}\\
+	threshold for the fitness decrease in the linesearch. Defaults to 1E-10.
+  \item \texttt{ParameterGlobOpt=}\\
+	which global optimization ingredients to use. Syntax is
+	\texttt{parameters\{xover()mutation()\}}. Choices include: \texttt{portugal:}
+	with optional \texttt{nocuts=N} argument for an N-point genotype xover.
+	and \texttt{germany:} for both mutation and xover. Details below.
+  \item \texttt{ParamLocOptIter=}\\
+	maximum number of iterations for the parameter local optimization.
+Defaults to 5000.
+  \item \texttt{ParameterLocOpt=}\\
+	which local optimization engine should be used for the local optimization.
+	Choices include: apachecg (for Apache's conjugate gradient implementation),
+	lbfgs (for an L-BFGS), and bobyqa (for Powell's BOBYQA).
+  \item \texttt{ParamLocOptMaxStep=}\\
+	maximum stepsize in the local optimization. Defaults to 1E-5.
+  \item \texttt{ParamSeedingFolder=}\\
+	specify the folder where seeds for a seeding initialization are located.
+  \item \texttt{ParamSerializeAfterNewBest=}\\
+	set to false if the genetic pool should not be stored to disk after each
+	new best individual found.
+  \item \texttt{ParamThreshDiv=}\\
+	the minimal difference between the same gene of two individuals. Applies
+only if the corresponding diversity check is enabled. Defaults to 1E-8 which
+might be (depending on e.g. the convergence
+criterion of the local optimization) too small and cause premature convergence
+of the pool.
+  \item \texttt{ParamThreshLocOptGradient=}\\
+	threshold for the gradient convergence. Defaults to 1E-8.
+  \item \texttt{ParamThreshLocOptParam=}\\
+	threshold for the parameter convergence. Defaults to 1E-8.
+  \item \texttt{ParamsToBorders=}\\
+	whether the parameters should be put back into their borders. Otherwise,
+a local optimization may cause the parameters to run out of the borders.
+Defaults to false.
+  \item \texttt{ParamsToSerial=}\\
+	After how may steps a binary intermediate parameter pool is written to
+disk. Defaults to 10000;
+  \item \texttt{PercentageForDiffs=}\\
+	if percentage-scaled differences are enabled, what percentage should be
+	used. Default: 1 [in percent].
+  \item \texttt{PopulationSize=}\\
+	the pool size for the parameter fit. Defaults to 100.
+  \item \texttt{UsePercentageScaledDiffs=}\\
+	set to true to enable percentage-scaled differences for the maximum allowed
+	difference.
+\item \texttt{WhichNicher=}\\
+	selects the niching protocol being used. First an integer selection
+	for the niching algorithm, followed by a semicolon and the nicher. Choices
+	are 0 for static grid niches without ratio consideration and 1 for static
+	grid niches with ratio consideration.
+  \item \texttt{WhichDiversityCheck=}\\
+	integer choice which diversity check is to be used. Defaults to 0, which
+is a fitness based diversity check. Also possible: 2, which compares the
+individuals based on their gene values.
+
+
+
+% \item \texttt{ExactFitnessComp=}\\
+%	whether the fitness is computed based on the relative differences to the
+%first reference point or the absolute reference energies. Defaults to true,
+%which uses the absolute energies.
+%keyword defines how many should be generated. Defaults to 100.
+%  \item \texttt{ParamLocOptIter=}\\
+%	maximum number of iterations for the parameter local optimization.
+%Defaults to 5000.
+%  \item \texttt{PenaltyConst=}\\
+%	the $k$ for the penalty function of form $k\cdot x^y$. Defaults to 10.0
+%(please pay attention that the penalty is in hartree).
+%  \item \texttt{PenaltyPow=}\\
+%	the $y$ for the penalty function of form $k\cdot x^y$. Defaults to 2.0
+%(please pay attention that the penalty is in hartree).
+%  \item \texttt{UseMaxAllowedDiffs=}\\
+%	enables the usage of a penalty function if the difference at a reference
+%point between reference and fit is bigger than a certain threshold. Defaults to
+%false (off).
+%  \item \texttt{ReferenceEnergiesToFirst=}\\
+%	whether or not the reference energies should just be computed as a
+%difference to the first one. Defaults to false.
+  
+\end{itemize}
+
+\section{Adaptivable choices}
+\ogo{} supports a to-date only a few adaptivable choices. If there should be a
+(preferably free) program that you want to see supported and/or the methods
+listed here to do not satisfy you, feel free to write a mail to
+dieterich@ogolem.org . It is necessary to provide reference in- and output to
+the program you want to see support for and (in case that it is no freeware) at
+least a binary of the program/engine is required.
+
+In general, all adaptivable choices are easily called through input of form
+\begin{verbatim}
+AdaptivableChoice=IDENTIFIER:FLAGS
+\end{verbatim}
+
+\subsection{Adaptive GUPTA potential}
+The adaptive GUPTA potential can be called using
+\texttt{adaptivegupta:DISTBLOW,ENABLECACHE}, where \texttt{DISTBLOW} is a blow
+factor defining when to neglect contributions. \texttt{ENABLECACHE} is a boolean
+defining whether or not to enable the internal caching procedures. The later
+should only be used when all geometries are of precisely the same system. In
+general, it can and should be anabled for cluster global optimization and may be
+enable for parameter global optimization if (and \emph{only} if) all reference
+structures are of the same system. Using caching provides a significant speedup
+in comparision to the uncached procedures.
+
+The used function definition is as follows:
+\begin{equation}
+E(a,b)=A(a,b)\cdot
+\exp{\left[-p(a,b)\left(\dfrac{r_{ab}}{r_0(a,b)}-1\right)\right]}
+-\sqrt{\chi(a,b)^2\cdot\exp{\left[-2\cdot q(a,b)
+\left(\dfrac{r_{ab}}{r_0(a,b)}-1\right)\right]}}
+\end{equation}
+where $r_{ab}$ is the distance between atoms $a$ and $b$.
+
+
+The implementation loops over all atoms in the system, independent whether they
+are bonded or not. Therefore, this should primarily be used for e.g. metal
+clusters. The output parameters are in the order $A(a,b)$, $p(a,b)$, $r_0(a,b)$,
+$\chi(a,b)$ and $q(a,b)$ for each possible pair in atomic units. The
+implementation does feature an analytical gradient for both coordinates and
+parameters for enhanced performance of the local optimizations.
+
+%Default borders for parameter optimizations are ....
+%TODO 
+
+\subsection{Adaptive LJ potential}
+
+\subsection{Adaptive Morse potential}
+%TODO document borders and caching
+The adaptive Morse potential can be called using
+\texttt{adaptivemorse:CLOSEBLOW,DISTBLOW}, where \texttt{CLOSEBLOW} is a blow 
+factor defining when to use a cutoff for close cases and \texttt{DISTBLOW}
+defines when to neglect contributions.
+
+The implementation loops over all atoms in the system, independent whether they
+are bonded or not. Therefore, this should primarily be used for e.g. metal
+clusters. The output parameters are in the order $D_e$, $a$ and $r_e$ for each
+possible pair in atomic units. The implementation does feature an analytical
+gradient for both coordinates and parameters (suboptimal implementation) for
+enhanced performance of the local optimizations.
+
+Please note that currently no caching is implemented in the Morse potential. If
+you want to use this potential for bigger systems, please contact the author(s)
+whether this can be implemented.
+
+\subsection{Benchmark: Ackley}
+
+\subsection{Benchmark: Schaffer F6}
+
+\subsection{Benchmark: Schaffer F7}
+
+\subsection{Benchmark: Lunacek}
+
+\subsection{goLPS parametrization using PROFESS}
+\ogo{} can be used to fit local pseudopotentials following the goLPS formalism. Our
+current implementation requires PROFESS (open-source) for the actual OFDFT calculations
+with the modified pseudopotential and a set of helper scripts designed to translate
+from \ogo{} output to PROFESS input and from PROFESS output back to \ogo{} input.
+We will document here only the data exchange protocol, not the scripts themselves.
+The current recommendation is to write them based on the problem to be fitted yourself.
+If assistance with this step is required, please contact the author(s) of the
+original goLPS publication.
+
+In the following, the properties to-be-fitted are individually discussed. Please note
+that this feature is experimental and we do NOT recommend fitting goLPSss for multiple
+atoms simulaneously.
+
+\subsubsection{Energy}
+If a reference contains the energy (i.e., total energy), a directory following the scheme
+\texttt{professenergycalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format
+ \item a file \texttt{atompos.xyz} containing the atom positions of the reference in
+ xyz format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_energy\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSENERGYSCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed, using \texttt{XXX} as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated energy (in the same units as the reference) as
+a simple number in a file \texttt{energy.dat}).
+
+\subsubsection{Energy order}
+If a reference contains the energy order of different atomic arrangements (e.g., crystal structures), for each crystal structure a directory following the scheme
+\texttt{professenergycalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format
+ \item a file \texttt{atompos.xyz} containing the atom positions of the reference in
+ xyz format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_energy\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSENERGYSCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed for each structure, using the defined key for this arrangement as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated energy (in the same units as the reference) as
+a simple number in a file \texttt{energy.dat}). It will internally rank the energies.
+
+\subsubsection{Bulk modulus}
+If a reference contains the bulk modulus, a directory following the scheme
+\texttt{professbulkcalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_bulk\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSBULKSCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed, using the crystal symmetry (e.g., fcc) of the reference as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated bulk modulus (in the same units as the reference) as
+a simple number in a file \texttt{bulk.modulus}).
+
+\subsubsection{Equilibrium volume}
+If a reference contains the equilibrium volume, a directory following the scheme
+\texttt{professcellvolcalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_cellvol\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSCELLVOLSCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed, using the crystal symmetry (e.g., fcc) of the reference as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated equilibrium volume (in the same units as the reference) as
+a simple number in a file \texttt{cell.volume}).
+
+\subsubsection{Combined energy, bulk modulus, and equilibrium volume calculations}
+If the same reference contains total energy, bulk modulus, and equilibrium volume, they
+will be evaluated simulaneously. A directory following the scheme
+\texttt{professcombcalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format
+ \item a file \texttt{atompos.xyz} containing the atom positions of the reference in
+ xyz format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_combined\_calc.sh} a script to be called (name cannot be
+ overridden).
+\end{itemize}
+
+Subsequently, the script will be executed, using the crystal symmetry (e.g., fcc) of the reference as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated equilibrium volume (in the same units as the reference) as
+a simple number in a file \texttt{cell.volume}), the calculated bulk modulus (in the same units as the reference) as
+a simple number in a file \texttt{bulk.modulus}), and the calculated energy (in the same units as the reference) as
+a simple number in a file \texttt{energy.dat}).
+
+\subsubsection{$\delta$ gauge}
+If a reference contains the $\delta$ gauge, a directory following the scheme
+\texttt{professdeltagaugecalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_deltagauge\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSDELTAGAUGESCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed, using the crystal symmetry (e.g., fcc) of the reference as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated $\delta$ gauge (in the same units as the reference) as
+a simple number in a file \texttt{Delta.out}).
+
+\subsubsection{Forces}
+If a reference contains nuclear forces, a directory following the scheme
+\texttt{professforcescalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format
+ \item a file \texttt{atompos.xyz} containing the atom positions of the reference in
+ xyz format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_forces\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSFORCESSCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed, using \texttt{XXX} as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated nuclear forces (in the same units as the reference) as
+a simple number in a file \texttt{forces.out}). The format is as follows: first five lines are ignored, sixth line
+onwards contains the forces (same order as reference) in columns two (x-component) to four (z-component).
+
+\subsubsection{Electron density}
+If a reference contains the electron density, a directory following the scheme
+\texttt{professdensitycalc\_RUNNINGNUMNER\_TIMESTAMP} will be created. In it, the following files will be created:
+\begin{itemize}
+ \item a file \texttt{pseudopot\_ATOMNAME.recpot} for each ATOMNAME to be optimized,
+ containing the current goLPS trial in PROFESS format
+ \item a file \texttt{atompos.xyz} containing the atom positions of the reference in
+ xyz format.
+\end{itemize}
+The following files will be copied from the directory in which \ogo{} is executed
+\begin{itemize}
+ \item \texttt{profess\_density\_calc.sh} a script to be called (name can be overridden
+ by setting the environment variable \texttt{OGO\_PROFESSDENSITYSCRIPT} to the wanted
+ name).
+\end{itemize}
+
+Subsequently, the script will be executed, using the defined tag for this reference as the first argument. When execution of
+this script finishes, \ogo{} expects the calculated energy (in the same units as the reference) as
+a simple number in a file \texttt{density.out}). The format is as follows (please note, this is PROFESS's fault!): a single (!), white space separated line, containing the grid dimensions as values two, four, six, and density values (same order as reference) as values 11 and later. Negative density values will be ignored.
+
+\subsection{Interface to Polaris}
+A word of prelimenary caution is needed here. This interface was written for a
+single and special purpose. Therefore, it will not work for general-purpose
+tasks by design.
+
+The interface to Polaris is called through \texttt{AdaptivableChoice=polaris},
+followed by the choices \texttt{:totalenergy} or \texttt{:waterinteraction}
+defining which energy holds as reference. The references need to be adjusted
+accordingly and must be in $E_h$.
+
+Additionally, some auxiliary input and file stubs are required. Both a
+\texttt{MET.FFM} and \texttt{REP.FFM} file need to be present in the input
+directory, where all parameters that are to be fitted are replaced by the
+string \texttt{OGOPARAM}. A reference \texttt{donee} file needs to be present,
+starting from
+\begin{verbatim}
+-----------------------
+|   Options energie   |
+-----------------------
+\end{verbatim}
+and named \texttt{donee-ref.aux}. If there are other files to be copied for the
+Polaris jobs, they need to be present in the input directory and their name
+needs to be mentioned in a file \texttt{adaptive-polaris.aux} of form
+\begin{verbatim}
+###OGOLEMAUX###
+filenametocopy1
+filenametocopy2
+\end{verbatim}
+
+Since Polaris requires more than just a simple xyz-file as input, we assume that
+for each reference point the following files exist:
+\begin{itemize}
+  \item \texttt{GEOM.xyz\_NUMBER} and
+  \item \texttt{GEOM.sle\_NUMBER}
+\end{itemize}
+where number is the the position in the references starting from zero.
+
+It is highly recommended to use a custom border file as explained above where
+the parameters start with the \texttt{MET.FFM} parameters followed by the
+\texttt{REP.FFM} parameters. Due to the parameters not being known by \ogo{} in
+advance, the borders and parameter values in \ogo{} are in the same units as in
+Polaris.
+
+Last but not least, the path to the Polaris command needs to be exported
+through an environment variable named \texttt{OGO\_POLARISCMD}.
+
+Again, this interface was written for a single usage scenario and is not
+designed to be used for other purposes.
+
+\section{Global optimization algorithms}
+All global optimization algorithms are chosen through the
+\texttt{ParameterGlobOpt=} keyword. The input syntax follows the grammar as 
+described in Section \ref{sec:geomglobopt}, it is 
+\texttt{parameters{xover()mutation()}}.
+
+Possible crossover choices are:
+\begin{itemize}
+  \item \texttt{germany:} a basic single cut, Gaussian distributed genotype 
+crossover. Valid options:
+  \begin{itemize}
+    \item \texttt{gausswidth=X.X} Sets the width of the Gaussian to 
+\texttt{X.X}. Default: 0.3.
+  \end{itemize}
+  \item \texttt{portugal:} a genotype, normal-distributed crossover. 
+  \begin{itemize}
+    \item \texttt{nocuts=X} sets the number of genotype cuts to \texttt{X}. 
+Default: 1.
+  \end{itemize}
+  \item \texttt{noxover:} disables crossover operations.
+  \item \texttt{multiple:} uses multiple crossover operators. Syntax identical 
+to the one described in Section \ref{sec:geomglobopt}.
+  \item \texttt{chained:} chains multiple crossover operators. Syntax identical 
+to the one described in Section \ref{sec:geomglobopt}.
+  \item \texttt{mutationasxover:} uses a mutation operator instead of a 
+crossover operator for the xover step. Keyword must be followed by a valid 
+mutation as described below.
+\end{itemize}
+
+
+After some prelimenary testing we are of the opinion that the exact crossover
+(when using local optimization steps) is not important. Therefore we recommend
+to use either \texttt{germany} or \texttt{portugal} with a low number of cuts.
+
+In some cases (e.g. for a hypersurface with a lot of minima) it seems to be a
+good idea to aggressively mutate the parameters, making \texttt{france} or
+\texttt{spain} with a low number of cuts the methods of choice. 
+
+Possible mutation choices are:
+\begin{itemize}
+  \item \texttt{germany:} a basic genotype mutation. Valid options:
+  \begin{itemize}
+    \item \texttt{mode=} sets the strength of the mutation. Valid input: 
+\texttt{all} or \texttt{one}. Default: \texttt{one}.
+  \end{itemize}
+  \item \texttt{nomutation:} disables mutation operations.
+  \item \texttt{multiple:} uses multiple mutation operators. Syntax identical 
+to the one described in Section \ref{sec:geomglobopt}
+  \item \texttt{chained:} chains multiple crossover operators. Syntax identical 
+to the one described in Section \ref{sec:geomglobopt}.
+\end{itemize}
+
+
+\subsection{HACTAR}
+Please see Section \ref{sec:geomhactar} for a description of the input format.
+
+\section{Local optimization algorithms}
+All local optimization algorithms are chosen through the
+\texttt{ParameterLocOpt=} keyword. In general, the same choices are available 
+as mentioned in Sec.~\ref{sec:geomlocopt}. Please note that the same 
+restrictions concerning the methods obtained through the NUMAL interface apply 
+as mentioned there.
+
+In difference to the cluster structure optimization, the \texttt{backend=} 
+definition present in the local optimization definitions has a somewhat 
+restricted feature set. Either, one can specify \texttt{alldefault} to default 
+to the classic setup of the fitness function. Note however, this option may 
+well chance in the future! More future-proof is a pre-definition of fitness 
+functions as defined in Sec.~\ref{sec:paramfitfuncdef}.
+
+\section{Defining fitness functions}
+\label{sec:paramfitfuncdef}
+Fitness functions can be defined in between \texttt{<PARAMFITNESSFUNCTION>} 
+tags. Per fitness function definition, one set of tags is required. 
+Configuration options inside the tags are:
+\begin{itemize}
+  \item \texttt{FitFunctionTag=XYZ} assigns tag \texttt{XYZ} to this fitness 
+function. Mandatory.
+  \item \texttt{FitnessFunction=} specifies the fitness function to be used. At 
+the moment, only \texttt{default} is allowed. Mandatory.
+  \item \texttt{FitnessFunctionStyle=} specifies the fitness function style to 
+be used. \texttt{full} choses all parameters to be exposed always. 
+\texttt{ranged:} followed by range definitions (example: 1/3-4/7-8) specifies 
+only these parts of the parameters to be exposed. Optional, default: 
+\texttt{full}.
+\end{itemize}
+
+\section{Parameter output format}
+Both the inital and final population are written in a human-readable format.
+This format, as most input and output formats of \ogo{} uses an XML-like
+formatting. The general format is as follows
+\begin{verbatim}
+<PARAMETERSFOR>
+methodID
+</PARAMETERSFOR>
+<PARAMETERFITNESS>
+1.23E-1
+</PARAMETERFITNESS>
+<PARAMETERS>
+<ATOM>
+Key
+</ATOM>
+<VALUES>
+ -0.4636119053304735
+ -0.5097016790211515
+ -1.5220016461819896
+ -0.5629664946696742
+ -3.541843106605196
+ -3.5394934242499287
+ 0.5378639455382299
+ -3.5096479279350183
+ 0.2614123652818187
+ -2.399411743051027
+ -3.51017085778294
+ 1.4941457394022188
+ -2.539798139301017
+ -4.5084460220195215
+ -0.5152036256889749
+ -3.511654320068149
+ -4.456450012737577
+ -3.52578457936217
+ -2.539843561431608
+ 1.477287999076277
+</VALUES>
+</PARAMETERS>
+\end{verbatim}
+where the method ID resembles the fitted potential. The parameter fitness is in
+hartree and a \emph{reasonable} fitness depends on the settings, the
+dimensionality and form of the problem. E.g. the fitness of a high dimensional
+problem with a lot of reference points employing a steep penalty function
+accepting only a small deviation from the reference is surely higher than, e.g.,
+a two-body LJ(6,12,6) fit.
+
+In general, as pointed out before, the best fitness is \emph{per definitionem}
+0.0. This is, except for benchmark functions, in general not reachable.
+
+This is followed by (depending on the potential and reference data) a number of
+\texttt{<PARAMETER>} tags each uniquely identified by the key in between the
+\texttt{<ATOM>} tags. The tag is somewhat misleading since depending on the
+potential, it might not be a atom but, e.g., a three-body interaction. The
+actual key transparently informs about such cases. Each \texttt{<PARAMETER>}
+section contains in between the \texttt{<VALUES>} tags all raw values for the
+specific key. Which parameter means what depends on the potential and is
+explained in detail in the corresponding section of this manual.
+
+Although we consider this format to be rather final, we do not guarantee that it
+stays unchanged in later revisions of \ogo{}.
+
+\section{Running the job}
+After calling, e.g.,
+\begin{verbatim}
+java -jar ogolem.jar --adaptive input.ogo 2
+\end{verbatim}
+Depending on the adaptivable backend chosen, there might be a lot of files
+appearing in the directory and the specified amount of CPUs be used. Concerning
+the latter: it is not recommended to use all CPUs on a workstation which is
+supposed to be still used for something else.
+
+\ogo{} will clean up all automagically generated input files and/or directories
+for other programs in case of a sucessfull call to that program. In case that
+something unexpected (e.g. failing convergence) happens, the files will be left
+for inspection.
+
+Interesting datafiles are the intermediate binary pool
+(\texttt{IntermediateParamPool.bin}) as well as the human-readable parameter
+initial files \texttt{locrankRANKparamID.prm} and the final files
+\texttt{rankRANKparamID.prm}, where \texttt{RANK} is the rank of the parameter
+set (0 being the global minimum) and \texttt{ID} denotes when the specified set
+was found.
+
+\ogo{} might throw warnings or errors. These will be written to System.out and
+System.err and are of interest.
+
+
+\section{Parameter analysis}
+\ogo{} provides some possibilities for parameter analysis. The most useful
+application of them to-date is probably the intermediate check of parameters and
+genetic progress at runtime. For this, you call the
+\texttt{ogolem.jar} with the
+\begin{verbatim}
+--parameters
+\end{verbatim}
+option.
+
+The analysis program needs a binary pool, either the final
+\texttt{paramPool.bin}
+or the temporary \texttt{IntermediateParamPool.bin}. This is specified using the
+\texttt{-pool=} flag directly followed by the filename, e.g.
+\begin{verbatim}
+java -jar ogolem.jar --parameters -pool=IntermediateParamPool.bin
+\end{verbatim}
+
+Another option is possible
+\begin{itemize}
+  \item \texttt{-dontgetparams}\\
+  Do not write the parameters out. Currently a rather useless option.
+\end{itemize}
+
+Once more, we want to encourage you here to contribute to the \ogo{} by
+proposing some analysis techniques!
+
+\chapter{Molecular design: Switchable molecules}
+\textbf{IMPORTANT:\\
+This part of the manual is not complete yet!}
+%TODO
+
+\section{Switch analysis}
+\ogo{} provides means to check a running switch design job using the written
+restart files. For this, you call the
+\texttt{ogolem.jar} with the
+\begin{verbatim}
+--beswitched
+\end{verbatim}
+option.
+
+The analysis program needs a binary pool, either the final
+\texttt{switchespool.bin}
+or the temporary \texttt{snapswitchpool.bin}. This is specified using the
+\texttt{-i} flag followed by whitespace, e.g.
+\begin{verbatim}
+java -jar ogolem.jar --beswitched -i snapswitchpool.bin
+\end{verbatim}
+
+Some other options are possible
+\begin{itemize}
+  \item \texttt{-collblow}\\
+	the blow factor for the collision detection (needed for sidechain
+glueing), defaults to 1.4.
+  \item \texttt{-getswitches}\\
+	 create a directory named \texttt{switches} and write the switched of
+this pool there in the human-readable format.
+\end{itemize}
+
+
+\chapter{Molecular design: General molecular design}
+\textbf{IMPORTANT:\\
+This part of the manual is not complete yet!}
+%TODO
+
+\chapter{Meta-benchmarking \textsc{ogolem} using Lionbench}
+\section{Introduction}
+Lionbench is a Scala-code developed by Marvin Kammler and Johannes Dieterich at 
+the Georg-August-University G\"ottingen and has been embedded into the 
+ogolem.jar. It is designed to automatically create \textsc{ogolem} input, run 
+and analyze the performance based on all combinations of input settings. It is 
+therefore possible to e.g. determine optimal input settings for a series of 
+smaller cluster structure optimizations to use them for larger optimizations 
+and save considerable amounts of computing time. Also, it allows to benchmark 
+new algorithms against a set of known problems and in comparison to other 
+algorithms.
+
+Currently, no set of benchmark problems exists. Any contribution in this 
+respect is very welcome!
+
+\section{Usage within \textsc{ogolem}}
+Access to Lionbench is simply realized by calling the ogolem.jar with the 
+\texttt{--lionbench} flag followed by the Lionbench configuration file and the 
+number of CPUs to be used for all \ogo runs.
+
+Lionbench is calling ogolem through a runOGOLEM file which must be present and 
+executable. It automatically sniffs through all subdirectories of the directory 
+it has been started in and searches for \ogo{} input files to run them.
+
+\section{Input file format: Main Lionbench configuration}
+In general, the Lionbench configuration file contains keywords followed by 
+whitespace and the option(s).
+\begin{itemize}
+ \item \texttt{NumberOfSamples}\\ The number of independent runs on each input 
+configuration for statistics. Default: 5.
+ \item \texttt{ReadLocalOpts}\\ If the number of local optimizations should be 
+read. Default: false.
+ \item \texttt{ExitOnFirstNotFound}\\ If Lionbench should exit when a global 
+minimum is not found. Default: true.
+ \item \texttt{ExitOnProblem}\\ If Lionbench should exit ungracefully upon the 
+first encountered problem. Default: true.
+ \item \texttt{Blacklist}\\ A comma-separated list of subdirectories that shall 
+be ignored.
+ \item \texttt{PartialBlacklist}\\ A comma-separated list of to-be-ignored 
+inputs.
+ \item \texttt{Whitelist}\\ A comma-separated list of subdirectories that shall 
+be used (inverts the \texttt{Blacklist})
+ \item \texttt{VerbosePerFolder}\\ If verbose output for every folder of tests 
+is wanted. Default: true.
+ \item \texttt{VerbosePerInput}\\ If verbose output for every test input is 
+wanted. Default: true.
+ \item \texttt{DeleteAllFiles}\\ If files should be deleted after successful 
+excecution. Default: true.
+ \item \texttt{SaveErrorErrout}\\ If error and output stream of every \ogo{} 
+run should be save. Default: true.
+ \item \texttt{AllowedDiffToGlobMin}\\ By how much the solution found by any 
+input configuration is allowed to differ from the known global minimum. The
+known global minimum value is set in the .ogo-file with the
+\texttt{AcceptableFitness} option (cf.~pp.~\pageref{page1:acceptableFitness}
+and \pageref{page2:acceptableFitness}).
+Default: 1E-6.
+\end{itemize}
+
+
+\section{Input file format: Individual \ogo{} and \texttt{.lion} input files}
+Lionbench works based on a stub for an \ogo{} input (e.g. test.ogo) and a 
+corresponding Lionbench file (test.lion) defining how input parameters for 
+ogolem should be manipulated. For convinience, it is possible to have one .lion 
+file for all \ogo{} inputs if they should be altered in the same way. This file 
+must be named \texttt{generic.lion} and will be used if present.
+
+Every \ogo{} input variable to be varied with Lionbench will be replaced by the 
+\texttt{LIONVAR} identifier in the \texttt{.ogo} file, e.g., 
+\texttt{GlobOptAlgo=LIONVAR}. It is possible to vary multiple variables at 
+once, Lionbench will automatically test all variations of them. The 
+\texttt{.lion} file contains information on how those variables should be 
+substituted and which files are needed for this \ogo{} run to complete (e.g. 
+coordinate files, auxiliary files,...). For example:
+
+\begin{verbatim}
+<LIONOPTS>
+germany AND portugal:1 AND holland
+</LIONOPTS>
+<LIONFILES>
+dummy.xyz
+</LIONFILES>
+\end{verbatim}
+where the first \texttt{LIONVAR} marked input option will be replaced with the 
+identifiers \texttt{germany}, \texttt{portugal:1} and \texttt{holland}. If more 
+than one input option are to be changed in the same Lionbench run, their order 
+in both the \texttt{.ogo} and the \texttt{.lion} file must match.
+
+In case of numerical variables, another syntax is available. A start to end 
+with increment can be specified as \texttt{XXX...YYY...ZZZ} where \texttt{XXX} 
+is the numerical start value, \texttt{YYY} is the end value and \texttt{ZZZ} is 
+the increment.
+
+Every directory with \texttt{.ogo}/\texttt{.lion} combinations must contain an 
+executable shell script run ogolem named \texttt{runOGOLEM}. As an example:
+\begin{verbatim}
+#!/bin/sh
+$JAVA_HOME/bin/java -jar $OGOLEMDIR/ogolem.jar --adaptive $1 $2 > errout 2>&1
+\end{verbatim}
+with the usual call of the \texttt{ogolem.jar}, the correct switch for the job 
+to run and taking the input parameters \$1 and \$2 for the input file name and 
+the number of threads, respectively.
+
+
+\section{Output format}
+\emph{Please note that the current output format is rather verbose and will be 
+subject to change in later versions of Lionbench!}
+
+Depending on the chosen verbosity, Lionbench will report the average and 
+standard deviation of each input combination to console. Also, individual 
+reports for each run are possible. There is a Python-script written by Marvin 
+Kammler available to parse and beautify the Lionbench output. Eventually, the 
+output will be altered to provide a better out-of-the-box solution.
+
+\chapter{Lid/Threshold capabilites}
+\ogo features an implementation of Sch\"on and Sibanis lid/threshold algorithm
+that can be used to study funnels of the energy landscape of clusters and
+molecules. Please read the original publications for a description of this
+elegant algorithm.
+
+Our lid implementation is called with the \texttt{--lid} flag followed by the
+path to the .ogo file and the number of threads you intent to use for the lid
+search. The .ogo file must contain a geometry definition and a choice for the
+local optimization algorithm (please make sure to use something that also
+doubles as a backend!) and contains all settings for the lid run in
+\texttt{<LIDCONFIG>} tags.
+
+Relevant input keywords are
+\begin{itemize}
+ \item \texttt{ThreshMetaRuns=}\\ The number of meta runs for the lid algorithm
+(read: how often the total lid cycle will be run). Default: 2.
+ \item \texttt{ThreshUseKearsleyOverlap}\\ Choose Kearsley's aligner for
+structural comparison. Works only with single molecules. Mutually exclusive with
+\texttt{TheshUseHundtOverlap}. Default: off.
+ \item \texttt{ThreshUseHundtOverlap}\\ Choose Hundt's aligner for structural
+comparison. Mutually exclusive with \texttt{ThreshUseKearsleyOverlap}. Default:
+off.
+ \item \texttt{ThreshKearslerRMSD=}\\ Maximal RMSD in bohr for structures to be
+considered equal. Default: 0.1.
+ \item \texttt{ThreshOverlapCOnfig=}\\ Modifies the settings of Hundt's aligner.
+See description there.
+ \item \texttt{ThreshEnergyPrescreen=}\\ The energy threshold in Hartree for
+structural comparison or, if a secondary aligner is used, for prescreening.
+Default: 1E-4.
+ \item \texttt{NoVerboseSerialization}\\ Disable storage of intermediate results
+after every meta run. Default: on.
+ \item \texttt{ThreshMoveclass=}\\ Choosing a move class for the MC steps of the
+lid run. Options:
+ \begin{itemize}
+  \item \texttt{mcmove:} MC moves in the Cartesian coordinate space. mcmove must
+be followed by comma separated choices of move mode (0: move one atom, 1: move
+random number of atoms, 2: move all atoms) and the maximum move in bohr.
+  \item \texttt{mcextmove:} MC moves of fragements in the COM/Euler space.
+mcextmove must be followed by comma separated choices of move mode (0: move one
+fragment, 1: move random number of fragements, 2: move all fragements), the
+maximum move in the COM space in bohr and the maximum move in the Euler space as
+a fraction of the coordinate defintion (e.g. 0.2 as 20\% of the Euler
+coordinate).
+  \item \texttt{mcintmove:} MC moves in the internal coordinate space. THIS MUST
+BE USED ONLY FOR SYSTEMS CONTAINING ONE MOLECULE WITH A Z-MATRIX INPUT PRESENT
+AND PROPAGATED IN DIHEDRALS! mcintmove must be followed by comma separated
+choices of the usual mode definition and the maximum move in the dihedral space,
+e.g., 0.2 for 20\% of the $-\pi$ to $+\pi$ defined dihedral space. This input
+options relies on the previously mentioned \texttt{DOF} definition to allow
+specific dihedrals for propagation.
+ \end{itemize}
+ \item \texttt{ThresholdProvider=}\\ Defines which form the threshold increase
+should have. Currently, you must use \texttt{simple:} followed by a comma
+separated list of the starting energy, the end energy and the linear energy
+increment in Hartree (e.g. \texttt{simple:0.02,0.20,0.01} to go from 0.02 to 0.2
+Hartree in 0.01 Hartree increments).
+ \item \texttt{ThresholdConfig=}\\Can be used to modify the internals of the
+threshold algorithm. Tokens are semicolon separated and may contain the
+following keywords
+ \begin{itemize}
+  \item \texttt{threshruns=} the number of propagations at a certain lid level.
+Default: 30.
+  \item \texttt{nomoves=} the number of MC moves in one threshold run. Default:
+50000.
+  \item \texttt{freqanalysis} carry out a frequency analysis to check each
+obtained structure if it is a real minimum. NOT WORKING YET!
+ \end{itemize}
+\end{itemize}
+
+Additionally, at least one starting structure is required. The defintion is
+enclosed in \texttt{<LIDMINIMA>} tags, containing one structure (represented by
+the path to an xyz file) per line, any number of lines is supported.
+
+When running the lid algorithm, intermediate data will be printed out (unless
+disabled) with the \texttt{intermediate} suffix and the number of the meta run
+finished. Ultimately, the final results will be printed. A folder containing all
+structures found by the algorithm, a dot file representing the graph and the
+same graph as an \ogo internal binary for later reuse.
+
+\chapter{JVM-based distributed-memory parallelization (RMI)}
+\label{rmi}
+
+The cluster, parameter and switch optimization parts of \ogo{} can also use a 
+JVM-based parallelization via RMI (remote method invocation). While possessing
+some unique features of its own, its targeted use is replacing the MPI-based
+parallelization layer. See Ref.~\citenum{rmi} for a full discussion of the
+background rationale for this RMI parallelization mode, of its different modi,
+and of its performance, including in particular demonstrations of its
+excellent parallel scaling. The most important
+benefits include the ability to dynamically add or subtract clients at will
+during runtime, also resulting in almost total immunity against hardware
+failures, and parallelization across arbitrarily heterogenous ad-hoc networks,
+only needing a standard JVM on each node and standard TCP/IP connections
+between them.
+
+In order for this parallelization scheme to work, a standard java distribution 
+must be used, there need be two open TCP ports dedicated on the server and 
+(if applicable) proxy nodes. Please note that we do not support running 
+multiple proxies or server and proxies on the same machine.
+
+Also, some installation-dependent flags to the JVM must be passed for security 
+policies, CLASSPATH settings etc. These are included in the startup syntax
+discussions below but are not yet explained further in this version of this
+manual. 
+
+There are three possible modes: 
+\begin{description}
+\item[simple clients:] 1 server communicating directly with $N$ clients,
+\item[proxies:] 1 server communicating with $M$ proxies, which in turn
+  communicate with $N_M$ simple clients each,
+\item[threading clients:] 1 server communicating with $N$ tread-parallel
+  clients. 
+\end{description}
+Essential similarities and differences between these modes (fully explained in
+Ref.~\citenum{rmi}) include the following:
+\begin{itemize}
+\item The clients in the ``simple clients'' and ``proxies'' modes are simple
+  in several ways:
+  \begin{itemize}
+  \item tasks they receive for execution always consist of just one single
+    global optimization step, i.e., crossover and mutation of one or two
+    ``parents'', and local optimization of the resulting one or two
+    ``children'';
+  \item these tasks are executed serially (no parallelization);
+  \item from the user, these clients do not receive any problem-specific input
+    (which is provided at runtime by the server).
+  \end{itemize}
+  In contrast, 
+  \begin{itemize}
+  \item both proxies and threading clients receive chunks of tasks, consisting
+    of 1,2,\ldots,$m$ global optimization steps;
+  \item threading clients execute their task chunks in thread-parallel manner;
+  \item and both proxies and threading clients need a full \texttt{ogo}-file
+    as input.
+  \end{itemize}
+\item From the viewpoint of the RMI server, there is no difference in
+  communication to proxies or to threaded clients. From the viewpoint of the
+  simple clients, there is no difference in communication to proxies or
+  directly to the server. %bxh: I am speculating here. Is this correct?
+\end{itemize}
+Threading clients can be understood as combining the roles of one proxy and
+all the simple clients connected to this proxy into one single job that is
+then executed in shared-memory/thread-based parallelization. Alternatively,
+one proxy and all simple clients connected to it can be understood as a
+threading client executed in RMI parallelization.
+
+\section{Starting RMI job-hierarchies}
+
+As things are set up inside \ogo{}, all three of the above modes of RMI-mode
+hierarchies (simple clients, proxies, threading clients) consist of several
+(at least two) separate \ogo{} jobs that need 
+to be started separately, and jobs ``higher'' in the hierarchy (servers,
+proxies) always need to be started before jobs ``lower'' in the hierarchy
+(proxies, clients). 
+
+\subsection{Starting the RMI server}
+
+Hence, in every mode, 
+first a server process must be started. This can be accomplished using the
+following (in one single, long line):
+\begin{verbatim}
+java -Djava.security.main -Djava.rmi.server.codebase=file:<path/to/ogolem-jar-file> 
+-Djava.security.policy=polfile.txt -Djava.rmi.server.hostname=<IP-address> 
+-jar <path/to/ogolem-jar-file> 
+--rmiserver 
+--jobtype <job type> 
+--inputfile <input.ogo> 
+--timeout <timeout> 
+--timeoutjob <timeoutjob> 
+--myserverport <server-port#> 
+--myregistryport <registry-port#> 
+--noproxies <#proxies>
+--commname <nameofregistryobject>
+\end{verbatim}
+where
+\begin{itemize}
+  \item \texttt{-Djava.security.main} enables Java's security manager (mandatory)
+  \item \texttt{-Djava.rmi.server.codebase=file:} tells the security manager where
+    the ogolem.jar lies (mandatory)
+  \item \texttt{-Djava.security.policy=} specifies the location of the security
+    policy file (mandatory)
+  \item \texttt{polfile.txt} is the filename of a java security policy file,
+    with a content like this one (as the simplest and most permissive version):
+\begin{verbatim}
+grant{
+        permission java.security.AllPermission;
+};
+\end{verbatim}
+    We strongly advice you to only grant a minimum of permissions!
+  \item \texttt{-Djava.rmi.server.hostname=} sets the internally used hostname
+    (optional, use if there are problems with name resolution)
+  \item \texttt{IP-address} is a standard IP address for the machine this
+    server job is running on, e.g., a fully qualified numerical IPv4 address
+    like \texttt{121.232.212.202}, or a string-based one like
+    ``machine.domain.org'' or possibly even ``localhost'' (depending on the
+    IP-setup of this machine);
+  \item \texttt{job type} is the optimization problem to be solved. Options 
+    are: \texttt{geom} (cluster structure optimization), \texttt{param}
+    (parameter fitting), \texttt{switch} (switch design), this flag is
+    mandatory;
+  \item \texttt{input.ogo} is a regular \ogo{} input file for the problem to
+    be optimized (mandatory);
+  \item \texttt{timeout} is a timeout in seconds after which a client will be 
+    purged from the server-internal list of active clients, provided there has
+    been no communication with or heart beat from this client within this time
+    interval. Default: 10s. Can be increased on stable networks. (optional);
+  \item \texttt{timeoutjob} is a timeout in seconds after which a job will be 
+    purged. This should correspond to the expected time a global optimization
+    step (for simple clients) or a chunk of steps (proxies, threading clients)
+    needs for normal execution, hence this timeout must be increased for
+    demanding problems. Default: 10s. (optional);
+  \item \texttt{server-port\#} is the IP port number that the server will use
+    for task communication with the clients, typically/default 2500 (optional);
+  \item \texttt{registry-port\#} is the IP port number where the RMI registry is
+    running on, typically/default 1099 (optional);
+  \item \texttt{\#proxies} is the number of proxies or threading clients that
+    are initially expected to talk to this server. If there will be no
+    proxies, specify -1 (optional).
+    Note that \texttt{\#proxies} does \textit{not} limit (or otherwise affect)
+    the number of actual proxies or threading clients that can connect to this
+    server at runtime. \texttt{\#proxies = -1} denotes the ``simple client''
+    mode, and \texttt{\#proxies >= 0} denotes a ``proxies'' or ``threading
+    clients'' mode, where the initial value of \texttt{\#proxies} is only used
+    to organize the initialization phase more sensibly.
+  \item \texttt{commname\#} is the String name of the RMI communication for RMI 
+    object export it must match on server, proxy, and client, typically/default
+    RMICommunication (optional);
+\end{itemize}
+After \verb|--rmiserver|, the following flags can occur in any order.
+
+The server process will now setup and configure itself and listen to incoming 
+connections on \verb|server-port#| from clients.
+
+\subsection{Starting RMI proxies or threading clients}
+
+Subsequently, proxy processes or threading clients can be started if wished.
+
+The proxy invocation is as follows (again with everything in one line):
+\begin{verbatim}
+java -Djava.rmi.server.codebase=file:<path/to/ogolem-jar-file> 
+-Djava.security.policy=client.policy 
+-jar <path/to/ogolem-jar-file> 
+--rmiproxy
+--jobtype <job type>
+--inputfile <input.ogo>
+--server <IP-address>
+--serverregistryport <registry-port#>
+--myserverport <myserver-port#>
+--registryport <myregistry-port#>
+--timeout <timeout> 
+--timeoutjob <timeoutjob> 
+--sleeptime <sleeptime>
+--maxchunk <chunked steps>
+--mergeinds <#indivs2merge>
+--commname <nameofregistryobject>
+\end{verbatim}
+where
+\begin{itemize}
+\item \texttt{IP-address}: As above; however, on a remote machine, the user
+  should make sure beforehand (with commands like \texttt{ping},
+  \texttt{telnet}, etc.) that the address provided here is actually resolved
+  in the desired way; this is a mandatory flag;
+\item \texttt{registry-port\#} is the port number of the registry on the
+  server (optional). The additional \texttt{server-port\#} provided at server
+  startup need not be re-specified here since it is communicated to the client
+  from the server.
+\item \verb|myserver-port#| and \verb|myregistry-port#| are for the
+  ``server-like role'' this proxy plays towards the RMI clients to be
+  associated with it, and hence are fully analogous to the corresponding flags
+  in the actual server invocation, including their default values and optional
+  status. Only if proxy and server are located on the same physical machine,
+  the ports must differ between them;
+\item \texttt{sleeptime} has a dual role:
+  It specifies the time delay between ``heartbeat'' signals sent to the
+  server, indicating that the proxy is still ``alive''. And it also
+  is the time this proxy waits after contacting the
+  server and finding that the server is busy (e.g., waiting for another
+  client);
+\item \texttt{chunked steps} is the number of global optimization steps packed
+  together into one chunk of tasks communicated from the server to the proxy,
+  and of results communicated back from the proxy to the server; actual
+  chunks may be smaller during initialization or in the final phase.
+\item \verb|#indivs2merge| indicates how many individuals of the proxy's pool
+  (at the time results of a chunk are communicated back to the server) should
+  be merged with the server's pool. Default: -1 (full pool) (optional).
+  Note that the proxy pool size need not be equal to the server pool size,
+  since the proxy has its own input (where a pool size is specified).
+\end{itemize}
+After \verb|--rmiproxy|, the following flags can occur in any order.
+
+Note that both server and proxy jobs do not do any actual calculations (global
+optimization steps) themselves, but initially they do parse their \ogo{} input
+files. Hence, before simple or threading clients are started,
+\begin{itemize}
+\item there will be no optimization progress;
+\item but server and/or proxy jobs should report successful input parsing,
+\item or may exit prematurely in case of input parsing errors (in which case
+  client jobs being started subsequently may fail to connect).
+\end{itemize}
+Please note that both proxies and threading clients may output log files,
+binary snapshots etc. Hence, they should be started in a directory other than 
+the server process to avoid random overwrites.
+
+The threading client invocation is as follows:
+\begin{verbatim}
+java -Djava.rmi.server.codebase=file:<path/to/ogolem-jar-file> 
+-Djava.security.policy=client.policy 
+-jar <path/to/ogolem-jar-file> 
+--rmithreader 
+--jobtype <job type> 
+--inputfile <input.ogo> 
+--server <IP-address>
+--serverregistryport <registry-port#>
+--threads <#threads> 
+--sleeptime <sleeptime>
+--maxchunk <chunked steps>
+--mergeinds <#indiv2merge>
+--commname <nameofregistryobject>
+\end{verbatim}
+Several of these flags have already been explained above. The remaining ones
+are: 
+\begin{itemize}
+\item \texttt{registry-port\#} is the port number of the registry on the
+  server. The additional \texttt{server-port\#} provided at server startup need
+  not be re-specified here since it is communicated to the client from the
+  server. In contrast to a proxy, this threading client does not play a dual
+  RMI role, hence further ports for interactions with RMI clients need not be
+  specified. 
+\item \texttt{\#threads} specifies the number of shared-memory-parallel threads
+  this client should use on this machine. Note that a value of 1 (one) is
+  also possible, which establishes a mixture of features from simple clients
+  (serial execution) with those of threaded clients (chunking, separate input
+  file).
+\end{itemize}
+
+\subsection{Starting RMI simple clients}
+
+Lastly, one can start simple client processes. As explained above, in ``simple
+client'' mode, the simple clients connect directly to the server. In
+``proxies'' mode, there typically are several groups of simple clients, each
+of which connects to one proxy, and from the viewpoint of this simple client
+group, this proxy takes the role of a server.
+
+As explained above, simple clients need only very little information from the
+user, hence their invocation is very simple, too:
+\begin{verbatim}
+java -Djava.rmi.server.codebase=file:<path/to/ogolem-jar-file> 
+-Djava.security.policy=client.policy 
+-jar <path/to/ogolem-jar-file> 
+--rmiclient 
+--server <IP-address>
+--sleeptime <sleeptime>
+--serverregistryport <server-port#>
+--taskwaittime <taskwaittime>
+\end{verbatim}
+with
+\begin{itemize}
+ \item \texttt{taskwaittime} the time in seconds the client will wait for the
+   server upon receiving a wait signal before contacting again. Default: 5s
+   (optional).
+\end{itemize}
+and all other options have already been explained above, and again all
+options after \verb|--rmiclient| can appear in any order. Naturally,
+\verb|--server| is mandatory, but the other options are optional. If proxies
+are used, \verb|--server| and \verb|--serverregistryport| denote the IP
+address and registry port of the desired proxy (which takes the role of the
+server here); the ``actual server'' is then effectively invisible to the
+simple clients.
+
+\newpage
+\chapter{FAQs}
+\section{\ogo{} doesn't run and/or behaves crazy}
+Ensure that your environment is properly setup. In particular reduce the input
+to a minimal example and check the following things:
+\begin{itemize}
+  \item A JRE (preferably openJDK/JRE or Sun/Oracle-JDK/JRE) of at least version
+7 exists and works on your system.
+  \item If an external program is called, check whether is is properly installed
+and all conditions specified in the corresponding section are met.
+  \item  Check whether your input is sane (in particular blow factors for
+global geometry optimizations) and makes sense.
+  \item set DebugLevel= to 1 or higher and check the additional output for
+hints.
+\end{itemize}
+
+\section{I have problems running an external program}
+Most of the times, this is due to the fact that the program cannot be found in
+the \$PATH environment variable (for unixoid systems). Setup a wrapper script
+
+\begin{verbatim}
+#!/bin/sh
+PROGRAM $@
+\end{verbatim}
+
+in your \$HOME/bin directory named like the \texttt{PROGRAM} you want to call,
+mark it executable and see if it works (you might need to setup necessary
+environment variables and/or load modules in this script as well). Debug
+statements might help to make sure the wrapper is being executed:
+
+\begin{verbatim}
+#!/bin/sh
+echo "Calling external program..." >> $HOME/debug_ogolem
+PROGRAM $@
+echo "Finished calling external program." >> $HOME/debug_ogolem
+\end{verbatim}
+
+\section{I want to report a bug, how does it work and what is required?}
+In case your data is not confidential (or you can reduce the data set such that it
+is not confidential), please file a bug report to \texttt{developers@ogolem.org}, 
+providing your input(s) and a description of the problems encountered. We will 
+treat the data confidentially.
+
+Once the bug has been found and fixed, you can obtain a new snapshot of the 
+ogolem.jar from the \ogo{} homepage.
+
+\section{Does \ogo{} loose or change features over time?}
+In general, we strive to remain backwards compatible with regards to both 
+features 
+and input. However, we will remove features that have been superseded by 
+superior solutions, with the same rationale applying to input formats. Either of 
+the two has so far happened only most seldomly. If a regression should be 
+introduced, please notify the authors as we will want to fix it.
+
+%TODO more FAQs
+
+
+\addcontentsline{toc}{chapter}{References}
+\bibliography{manual.bib}
+
+\end{document}
