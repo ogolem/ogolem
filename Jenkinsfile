@@ -9,4 +9,10 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'build/libs/ogolem-snapshot.jar', fingerprint: true
+        }
+    }
 }
