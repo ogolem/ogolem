@@ -11,7 +11,7 @@ pipeline {
 	stage('Build ogolem manual') {
 	    steps {
 	        echo 'Building ogolem manual'
-		sh 'cd manual && pdflatex manual.tex && bibtex manual && pdflatex manual.tex && cd -'
+		sh 'cd manual && pdflatex manual.tex && bibtex manual && pdflatex manual.tex && pdflatex manual.tex && cd -'
 	    }
 	}
     }
