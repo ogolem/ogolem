@@ -89,7 +89,8 @@ public class ObjectCache<T extends Cloneable> {
     @SuppressWarnings("unchecked")
     private T dirtyClone(final T orig) throws Exception {
         
-        final Method method = Object.class.getDeclaredMethod("clone");
+        final Class<?> cl = orig.getClass();
+        final Method method = cl.getDeclaredMethod("clone");
         method.setAccessible(true);
         final T rtn = (T) method.invoke(orig);
 
