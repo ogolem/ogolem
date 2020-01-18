@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import java.lang.reflect.Method;
 /**
  * A 4D tuple.
  * @author Johannes Dieterich
- * @version 2015-07-25
+ * @version 2020-01-04
  */
 public class Tuple4D<E,T,V,W> extends Tuple3D<E,T,V> implements Serializable, Cloneable {
     
@@ -57,7 +57,7 @@ public class Tuple4D<E,T,V,W> extends Tuple3D<E,T,V> implements Serializable, Cl
     
     @SuppressWarnings("unchecked")
     @Override
-    public Tuple3D<E,T,V> clone() throws CloneNotSupportedException {
+    public Tuple4D<E,T,V,W> clone() throws CloneNotSupportedException {
         
         try {
             final Class<?> cE = object1.getClass();
