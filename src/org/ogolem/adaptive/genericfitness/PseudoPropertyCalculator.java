@@ -54,8 +54,8 @@ public class PseudoPropertyCalculator<T extends Property,V extends ReferenceInpu
     
     public PseudoPropertyCalculator(final PropertyCalculator<T,V> fallback, final BatchedPropertyCalculator batcher, final T propType){
         
-        assert(batcher == null);
-        assert(fallback == null);
+        assert(batcher != null);
+        assert(fallback != null);
         
         this.batcher = batcher;
         this.fallback = fallback;

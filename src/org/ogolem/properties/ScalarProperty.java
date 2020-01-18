@@ -37,44 +37,42 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.properties;
 
 /**
- * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
+ * The base class for a scalar property
  * @author Johannes Dieterich
  * @version 2017-12-15
  */
-public class DeltaGauge extends ScalarProperty {
+public abstract class ScalarProperty implements Property {
     
     private static final long serialVersionUID = (long) 20171215;
     
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
+    protected double scalar;
+    
+    protected ScalarProperty (final double scalar){
+        assert(!Double.isInfinite(scalar));
+        assert(!Double.isNaN(scalar));
+        this.scalar = scalar;
     }
     
     @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
+    public abstract ScalarProperty clone();
+    
+    @Override
+    public double getValue(){
+        return scalar;
     }
     
     @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
+    public double signedDifference(final Property p){
+        
+        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
+        return (this.getValue() - p.getValue());
     }
     
     @Override
-    public String printableProperty(){
-        return "" + this.getValue();
+    public double absoluteDifference(final Property p){
+        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
+        return Math.abs(this.getValue() - p.getValue());
     }
-
-    @Override
-    public String name() {
-        return "DELTA GAUGE";
-    }
-
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
-    }
+    
+    protected abstract boolean ensureCorrectProperty(final Property p);
 }

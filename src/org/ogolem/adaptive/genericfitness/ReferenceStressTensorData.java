@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,47 +34,44 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.adaptive.genericfitness;
+
+import org.ogolem.core.StructuralData;
+import org.ogolem.properties.StressTensor;
 
 /**
- * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
+ * Data for stress tensor calculations.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2018-01-23
  */
-public class DeltaGauge extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
-    }
-    
-    @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
-    }
+public class ReferenceStressTensorData<V extends StructuralData> implements ReferenceInputData<StressTensor>{
 
-    @Override
-    public String name() {
-        return "DELTA GAUGE";
+    private static final long serialVersionUID = (long) 20160716;
+    
+    private final ReferenceGeomData<StressTensor,V> geom;
+    private final int refPoint;
+    
+    public ReferenceStressTensorData(final int refPoint, final ReferenceGeomData<StressTensor,V> geom){
+        this.geom = geom;
+        this.refPoint = refPoint;
     }
-
+    
+    private ReferenceStressTensorData(final ReferenceStressTensorData<V> orig){
+        this.geom = orig.geom.clone();
+        this.refPoint = orig.refPoint;
+    }
+    
     @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
+    public ReferenceStressTensorData<V> clone() {
+        return new ReferenceStressTensorData<>(this);
+    }
+    
+    public ReferenceGeomData<StressTensor,V> getGeomData(){
+        return geom;
+    }
+    
+    @Override
+    public int belongsToReferencePoint() {
+        return refPoint;
     }
 }

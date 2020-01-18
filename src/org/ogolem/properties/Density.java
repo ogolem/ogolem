@@ -41,32 +41,20 @@ import org.ogolem.core.FixedValues;
 /**
  * A density on a grid (Cartesian, equidistantly spaced) property.
  * @author Johannes Dieterich
- * @version 2017-09-25
+ * @version 2017-12-15
  */
-public class Density implements Property {
+public class Density extends TensorProperty {
     
     private static final long serialVersionUID = (long) 20170925;
 
     public static final double DEFAULTDENSITY = 0.0;
     
-    private final double[][][] density;
-    
     public Density(final double[][][] density){
-        this.density = density;
+        super(density, true);
     }
     
     private Density(final Density orig){
-        
-        if(orig.density != null){        
-            this.density = new double[orig.density.length][orig.density[0].length][];
-            for(int i = 0; i < orig.density.length; i++){
-                for(int j = 0; j < orig.density[0].length; j++){
-                    this.density[i][j] = orig.density[i][j].clone();
-                }
-            }
-        } else {
-            this.density = null;
-        }
+        super(orig);
     }
     
     @Override
@@ -81,14 +69,14 @@ public class Density implements Property {
     @Override
     public double getValue() {
         
-        if(density == null){return FixedValues.NONCONVERGEDENERGY;}
+        if(data == null){return FixedValues.NONCONVERGEDENERGY;}
         
         double sum = 0.0;
-        for(int i = 0; i < density.length; i++){
-            for(int j = 0; j < density[i].length; j++){
-                for(int k = 0; k < density[i][j].length; k++){
-                    if(density[i][j][k] < 0.0) continue;
-                    sum += density[i][j][k];
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; j < data[i].length; j++){
+                for(int k = 0; k < data[i][j].length; k++){
+                    if(data[i][j][k] < 0.0) continue;
+                    sum += data[i][j][k];
                 }
             }
         }
@@ -107,52 +95,16 @@ public class Density implements Property {
     }
 
     @Override
-    public double absoluteDifference(final Property p) {
-        if(!(p instanceof Density)) {throw new IllegalArgumentException("Property should be an instance of Density!");}
-        else{                        
-            final Density other = (Density) p;
-            
-            if(this.density == null || other.density == null){
-                return FixedValues.NONCONVERGEDENERGY;
-            }
-            
-            final double[][][] oDensity = other.density;
-            if(oDensity.length != density.length){throw new IllegalArgumentException("First density dimension must be the same! Are " + density.length + " vs " + oDensity.length);}
-            double sumDiff = 0.0;
-            for(int i = 0; i < density.length; i++){
-                if(oDensity[i].length != density[i].length){throw new IllegalArgumentException("Second density dimension in " + i + " must be the same! Are " + density[i].length + " vs " + oDensity[i].length);}
-                for(int j = 0; j < density[i].length; j++){
-                    for(int k = 0; k < density[i][j].length; k++){
-                        if(oDensity[i][j].length != density[i][j].length){
-                            System.out.println("INFO: Full dimensions other: " + oDensity.length + "/" + oDensity[i].length + "/" + oDensity[i][j].length);
-                            System.out.println("INFO: Full dimensions this: " + density.length + "/" + density[i].length + "/" + density[i][j].length);
-                            throw new IllegalArgumentException("Third density dimension in " + i + "/" + j + " must be the same! Are " + density[i][j].length + " vs " + oDensity[i][j].length);
-                        }
-                        if(density[i][j][k] < 0.0 || oDensity[i][j][k] < 0.0) continue; // flagged to be ignored.
-                        final double diff = Math.abs(density[i][j][k] - oDensity[i][j][k]);
-                        sumDiff += diff;
-                    }
-                }
-            }
-            
-            // "norm"
-            sumDiff /= density.length;
-            
-            return sumDiff;
-        }
-    }
-
-    @Override
     public boolean makeSensible() {
         
-        if(density == null){return false;}
+        if(data == null){return false;}
         
         boolean wasTouched = false;
-        for(int i = 0; i < density.length; i++){
-            for(int j = 0; j < density[i].length; j++){
-                for(int k = 0; k < density[i][j].length; k++){
-                    if(Double.isInfinite(density[i][j][k]) || Double.isNaN(density[i][j][k]) || density[i][j][k] > FixedValues.NONCONVERGEDGRADIENT){
-                        density[i][j][k] = 0.0;
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; j < data[i].length; j++){
+                for(int k = 0; k < data[i][j].length; k++){
+                    if(Double.isInfinite(data[i][j][k]) || Double.isNaN(data[i][j][k]) || data[i][j][k] > FixedValues.NONCONVERGEDGRADIENT){
+                        data[i][j][k] = 0.0;
                         wasTouched = true;
                     }
                 }
@@ -165,13 +117,13 @@ public class Density implements Property {
     @Override
     public String printableProperty() {
         
-        if(density == null){return "NULL'D DENSITY";}
+        if(data == null){return "NULL'D DENSITY";}
         
         String s = "";
-        for(int i = 0; i < density.length; i++){
-            for(int j = 0; j < density[i].length; j++){
-                for(int k = 0; k < density[i][j].length; k++){
-                    s += density[i][j][k] + "\t";
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; j < data[i].length; j++){
+                for(int k = 0; k < data[i][j].length; k++){
+                    s += data[i][j][k] + "\t";
                 }
                 
                 s += "\n";
@@ -206,25 +158,30 @@ public class Density implements Property {
     
     public int getGridDimX(){
         
-        if(density == null){return 0;}
+        if(data == null){return 0;}
         
-        assert(density.length > 0);
-        return density.length;
+        assert(data.length > 0);
+        return data.length;
     }
     
     public int getGridDimY(){
         
-        if(density == null){return 0;}
+        if(data == null){return 0;}
         
-        assert(density[0].length > 0);
-        return density[0].length;
+        assert(data[0].length > 0);
+        return data[0].length;
     }
     
     public int getGridDimZ(){
         
-        if(density == null){return 0;}
+        if(data == null){return 0;}
         
-        assert(density[0][0].length > 0);
-        return density[0][0].length;
+        assert(data[0][0].length > 0);
+        return data[0][0].length;
+    }
+
+    @Override
+    protected boolean ensureCorrectProperty(Property p) {
+        return (p instanceof Density);
     }
 }

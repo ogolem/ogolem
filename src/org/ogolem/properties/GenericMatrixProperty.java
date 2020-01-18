@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,44 +37,75 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.properties;
 
 /**
- * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
+ * A generic matrix property, i.e., a bare bones implementation.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2018-01-02
  */
-public class DeltaGauge extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
-    }
-    
-    @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
-    }
+public class GenericMatrixProperty extends MatrixProperty {
 
+    private static final long serialVersionUID = (long) 20180102;
+    
+    private final long id;
+    
+    public GenericMatrixProperty(final double[][] data, final boolean normDifferences, final long id){
+        super(data, normDifferences);
+        this.id = id;
+    }
+    
+    private GenericMatrixProperty(final GenericMatrixProperty orig){
+        super(orig);
+        this.id = orig.id;
+    }
+    
     @Override
-    public String name() {
-        return "DELTA GAUGE";
+    public GenericMatrixProperty clone() {
+        return new GenericMatrixProperty(this);
     }
 
     @Override
     protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
+        if(!(p instanceof GenericMatrixProperty)) {return false;}
+        
+        final GenericMatrixProperty gp = (GenericMatrixProperty) p;
+        return (gp.id == id);
+    }
+
+    @Override
+    public boolean makeSensible() {
+        
+        if(data == null){return false;}
+        
+        boolean manip = false;
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; i < data[i].length; j++){
+                if(Double.isInfinite(data[i][j]) || Double.isNaN(data[i][j])){
+                    this.data[i][j] = 0.0;
+                    manip = true;
+                }
+            }
+        }
+        
+        return manip;
+    }
+
+    @Override
+    public String printableProperty() {
+        
+        if(data == null){return "NULL'D";}
+        
+        String s = "";
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; i < data[i].length; j++){
+                s += "\t" + data[i][j];
+            }
+            s += "\n";
+        }
+        
+        return s;
+    }
+
+    @Override
+    public String name() {
+        return "GENERICMATRIX" + id;
     }
 }

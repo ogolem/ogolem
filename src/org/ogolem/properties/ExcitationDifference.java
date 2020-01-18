@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,43 +43,25 @@ import static org.ogolem.core.FixedValues.NONCONVERGEDENERGY;
 /**
  * The difference of two excitation energies as a property.
  * @author Johannes Dieterich
- * @version 2015-03-03
+ * @version 2017-12-15
  */
-public class ExcitationDifference implements Property{
+public class ExcitationDifference extends ScalarProperty{
     
-    private static final long serialVersionUID = (long) 20130104;
-    private double diff;
+    private static final long serialVersionUID = (long) 20171215;
     
     public ExcitationDifference(final double diff){
-        this.diff = diff;
+        super(diff);
     }
     
     @Override
     public ExcitationDifference clone(){
-        return new ExcitationDifference(diff);
-    }
-    
-    @Override
-    public double getValue(){
-        return diff;
-    }
-    
-    @Override
-    public double signedDifference(Property p){
-        if(!(p instanceof EnergyOrder)) {throw new IllegalArgumentException("Property should be an instance of ExcitationDifference!");}
-        return (diff - p.getValue());
-    }
-    
-    @Override
-    public double absoluteDifference(Property p){
-        if(!(p instanceof ExcitationDifference)) {throw new IllegalArgumentException("Property should be an instance of ExcitationDifference!");}
-        return Math.abs(diff - p.getValue());
+        return new ExcitationDifference(this.getValue());
     }
     
     @Override
     public boolean makeSensible(){
-        if(Double.isInfinite(diff) || Double.isNaN(diff) || diff > NONCONVERGEDENERGY){
-            diff = NONCONVERGEDENERGY;
+        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() > NONCONVERGEDENERGY){
+            this.scalar = NONCONVERGEDENERGY;
             return true;
         }
         return false;
@@ -86,11 +69,16 @@ public class ExcitationDifference implements Property{
     
     @Override
     public String printableProperty(){
-        return "" + diff;
+        return "" + this.getValue();
     }
 
     @Override
     public String name() {
         return "EXCITATION DIFFERENCE";
+    }
+
+    @Override
+    protected boolean ensureCorrectProperty(Property p) {
+        return (p instanceof ExcitationDifference);
     }
 }

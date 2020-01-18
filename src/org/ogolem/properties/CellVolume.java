@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,23 +40,19 @@ package org.ogolem.properties;
 /**
  * An (equilibrium) cell volume property.
  * @author Johannes Dieterich
- * @version 2015-09-21
+ * @version 2017-12-15
  */
-public class CellVolume implements Property {
+public class CellVolume extends ScalarProperty {
     
-    private static final long serialVersionUID = (long) 20150921;
+    private static final long serialVersionUID = (long) 20171215;
 
-    private double cellVolume;
-    
     public CellVolume(final double cellVolume){
-        assert(!Double.isInfinite(cellVolume));
-        assert(!Double.isNaN(cellVolume));
+        super(cellVolume);
         assert(cellVolume >= 0.0);
-        this.cellVolume = cellVolume;
     }
     
     private CellVolume(final CellVolume orig){
-        this.cellVolume = orig.cellVolume;
+        super(orig.scalar);
     }
     
     @Override
@@ -64,26 +61,9 @@ public class CellVolume implements Property {
     }
 
     @Override
-    public double getValue() {
-        return cellVolume;
-    }
-
-    @Override
-    public double signedDifference(final Property p) {
-        if(!(p instanceof CellVolume)) {throw new IllegalArgumentException("Property should be an instance of CellVolume!");}
-        return (cellVolume - p.getValue());
-    }
-
-    @Override
-    public double absoluteDifference(final Property p) {
-        if(!(p instanceof CellVolume)) {throw new IllegalArgumentException("Property should be an instance of CellVolume!");}
-        return Math.abs(cellVolume - p.getValue());
-    }
-
-    @Override
     public boolean makeSensible() {
-        if(Double.isInfinite(cellVolume) || Double.isNaN(cellVolume) || cellVolume < 0.0){
-            cellVolume = 0.0; // not too sane...
+        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
+            this.scalar = 0.0; // not too sane...
             return true;
         }
         
@@ -92,11 +72,16 @@ public class CellVolume implements Property {
 
     @Override
     public String printableProperty() {
-        return "" + cellVolume;
+        return "" + this.scalar;
     }
 
     @Override
     public String name() {
         return "CELL VOLUME";
+    }
+
+    @Override
+    protected boolean ensureCorrectProperty(Property p) {
+        return (p instanceof CellVolume);
     }
 }

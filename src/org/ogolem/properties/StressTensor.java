@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,45 +36,72 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.properties;
 
-/**
- * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
- * @author Johannes Dieterich
- * @version 2017-12-15
- */
-public class DeltaGauge extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
-    }
-    
-    @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
-    }
+import org.ogolem.core.FixedValues;
 
+/**
+ * A Cauchy stress tensor (i.e., a 3x3 matrix).
+ * @author Johannes Dieterich
+ * @version 2018-01-23
+ */
+public class StressTensor extends MatrixProperty {
+    
+    private static final long serialVersionUID = (long) 20180123;
+
+    public StressTensor(final double[][] stress){
+        super(stress, false);
+        if(stress != null){
+            assert(stress.length == 3);
+            assert(stress[0].length == 3);
+            assert(stress[1].length == 3);
+            assert(stress[2].length == 3);
+        }
+    }
+    
+    private StressTensor(final StressTensor orig){
+        super(orig);
+    }
+    
     @Override
-    public String name() {
-        return "DELTA GAUGE";
+    public StressTensor clone() {
+        return new StressTensor(this);
     }
 
     @Override
     protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
+        return (p instanceof StressTensor);
+    }
+
+    @Override
+    public boolean makeSensible() {
+
+        if(data == null){return false;}
+        
+        boolean wasTouched = false;
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                if(Double.isInfinite(data[i][j]) || Double.isNaN(data[i][j]) || data[i][j] > FixedValues.NONCONVERGEDGRADIENT){
+                    data[i][j] = FixedValues.NONCONVERGEDGRADIENT;
+                    wasTouched = true;
+                }
+            }
+        }
+        
+        return wasTouched;
+    }
+
+    @Override
+    public String printableProperty() {
+        if(data == null){return "NULL'D STRESS TENSOR";}
+        
+        String s = data[0][0] + "\t" + data[0][1] + "\t" + data[0][2];
+        s += data[1][0] + "\t" + data[1][1] + "\t" + data[1][2];
+        s += data[2][0] + "\t" + data[2][1] + "\t" + data[2][2];
+        
+        return s;
+    }
+
+    @Override
+    public String name() {
+        return "STRESS TENSOR";
     }
 }

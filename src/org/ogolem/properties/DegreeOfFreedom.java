@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,39 +41,21 @@ package org.ogolem.properties;
 /**
  * A degree of freedom.
  * @author Johannes Dieterich
- * @version 2015-03-03
+ * @version 2017-12-15
  */
-public class DegreeOfFreedom implements Property {
+public class DegreeOfFreedom extends ScalarProperty {
     
-    private static final long serialVersionUID = (long) 20130104;
+    private static final long serialVersionUID = (long) 20171215;
     private final int[] refPoints;
-    private double value;
     
     public DegreeOfFreedom(final double value, final int[] points){
-        this.value = value;
+        super(value);
         this.refPoints = points;
     }
     
     @Override
     public DegreeOfFreedom clone(){
-        return new DegreeOfFreedom(value, refPoints.clone());
-    }
-    
-    @Override
-    public double getValue(){
-        return value;
-    }
-    
-    @Override
-    public double signedDifference(Property p){
-        if(!(p instanceof DegreeOfFreedom)) {throw new IllegalArgumentException("Property should be an instance of DegreeOfFreedom!");}
-        return (value - p.getValue());
-    }
-    
-    @Override
-    public double absoluteDifference(Property p){
-        if(!(p instanceof DegreeOfFreedom)) {throw new IllegalArgumentException("Property should be an instance of DegreeOfFreedom!");}
-        return Math.abs(value - p.getValue());
+        return new DegreeOfFreedom(this.getValue(), refPoints.clone());
     }
     
     @Override
@@ -80,15 +63,15 @@ public class DegreeOfFreedom implements Property {
         
         // treatment depends on the exact degree of freedom type
         boolean unsensible = false;
-        if(Double.isInfinite(value) || Double.isNaN(value)){
-            value = 0.0;
+        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue())){
+            this.scalar = 0.0;
             unsensible = true;
         }
         
         if(refPoints.length == 2){
             // bond
-            if(value <= 0.0){
-                value = 1.0;
+            if(this.scalar <= 0.0){
+                this.scalar = 1.0;
                 unsensible = true;
             }
         } else if(refPoints.length == 3){
@@ -125,11 +108,16 @@ public class DegreeOfFreedom implements Property {
             points += p + "  ";
         }
         
-        return "" + value + "(" + type + ")" + points;
+        return "" + this.getValue() + "(" + type + ")" + points;
     }
 
     @Override
     public String name() {
         return "DEGREE OF FREEDOM";
+    }
+
+    @Override
+    protected boolean ensureCorrectProperty(Property p) {
+        return (p instanceof DegreeOfFreedom);
     }
 }

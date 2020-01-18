@@ -1,6 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,59 +37,80 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.properties;
 
 /**
- * The dipole moment property (i.e., the full vector representation of the Dipole class).
+ * A generic tensor property, i.e., a bare bones implementation.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2018-01-02
  */
-public class DipoleMoment extends VectorProperty {
+public class GenericTensorProperty extends TensorProperty {
+
+    private static final long serialVersionUID = (long) 20180102;
     
-    private static final long serialVersionUID = (long) 20171215;
-    public static final double MAXABSDIPOLE = 1000;
+    private final long id;
     
-    
-    public DipoleMoment(final double[] dipoleMoment){
-        super(dipoleMoment, false); // no norming wanted ATM
-        if(dipoleMoment == null || dipoleMoment.length != 3){throw new RuntimeException("Dipole moment in constructor must be non-null and of cartesian type.");}
+    public GenericTensorProperty(final double[][][] data, final boolean normDifferences, final long id){
+        super(data, normDifferences);
+        this.id = id;
     }
     
-    private DipoleMoment(final DipoleMoment orig){
+    private GenericTensorProperty(final GenericTensorProperty orig){
         super(orig);
+        this.id = orig.id;
     }
     
     @Override
-    public DipoleMoment clone(){
-        return new DipoleMoment(this);
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        
-        boolean ret = false;
-        for(int i = 0; i < 3; i++){
-            if(Double.isInfinite(this.data[i]) || Double.isNaN(this.data[i]) || Math.abs(this.data[i]) >= MAXABSDIPOLE){
-                this.data[i] = -1000.0;
-                ret = true;
-            }
-        }
-        return ret;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.data[0] + "\t" + this.data[1] + "\t" + this.data[2];
-    }
-    
-    @Override
-    public String name() {
-        return "DIPOLE MOMENT";
-    }
-    
-    public double[] getDipoleMoment(){
-        return this.data;
+    public GenericTensorProperty clone() {
+        return new GenericTensorProperty(this);
     }
 
     @Override
     protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DipoleMoment);
+        if(!(p instanceof GenericTensorProperty)) {return false;}
+        
+        final GenericTensorProperty gp = (GenericTensorProperty) p;
+        return (gp.id == id);
+    }
+
+    @Override
+    public boolean makeSensible() {
+        
+        if(data == null){return false;}
+        
+        boolean manip = false;
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; i < data[i].length; j++){
+                for(int k = 0; k < data[i][j].length; k++){
+                    if(Double.isInfinite(data[i][j][k]) || Double.isNaN(data[i][j][k])){
+                        this.data[i][j][k] = 0.0;
+                        manip = true;
+                    }
+                }
+            }
+        }
+        
+        return manip;
+    }
+
+    @Override
+    public String printableProperty() {
+        
+        if(data == null){return "NULL'D";}
+        
+        String s = "";
+        for(int i = 0; i < data.length; i++){
+            for(int j = 0; i < data[i].length; j++){
+                for(int k = 0; i < data[i][j].length; k++){
+                    s += "\t" + data[i][j][k];
+                }
+                s += "\n";
+            }
+            s += "\n";
+        }
+        
+        return s;
+    }
+
+    @Override
+    public String name() {
+        return "GENERICTENSOR" + id;
     }
 }

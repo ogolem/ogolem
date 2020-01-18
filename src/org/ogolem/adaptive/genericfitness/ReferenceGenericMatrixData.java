@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,47 +34,50 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.adaptive.genericfitness;
+
+import org.ogolem.properties.GenericMatrixProperty;
 
 /**
- * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
+ * A trivial data object for generic matrix properties.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2018-01-02
  */
-public class DeltaGauge extends ScalarProperty {
+public class ReferenceGenericMatrixData implements ReferenceInputData<GenericMatrixProperty>{
+
+    private static final long serialVersionUID = (long) 20180102;
     
-    private static final long serialVersionUID = (long) 20171215;
+    private final int refPoint;
+    private final long pointID;
+    private final int typeID;
     
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
+    public ReferenceGenericMatrixData(final int refPoint, final long pointID, final int typeID){
+        this.refPoint = refPoint;
+        this.pointID = pointID;
+        this.typeID = typeID;
+    }
+    
+    private ReferenceGenericMatrixData(final ReferenceGenericMatrixData orig){
+        this.refPoint = orig.refPoint;
+        this.pointID = orig.pointID;
+        this.typeID = orig.typeID;
     }
     
     @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
+    public ReferenceGenericMatrixData clone() {
+        return new ReferenceGenericMatrixData(this);
     }
 
     @Override
-    public String name() {
-        return "DELTA GAUGE";
+    public int belongsToReferencePoint() {
+        return refPoint;
     }
-
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
+    
+    public long getPointID(){
+        return pointID;
+    }
+    
+    public int getTypeID(){
+        return typeID;
     }
 }
