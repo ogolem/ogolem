@@ -43,7 +43,8 @@ import org.junit.Test;
 /**
  * Tests the random utilities.
  * @author Johannes Dieterich
- * @version 2013-04-22
+ * @author Mark Dittner
+ * @version 2020-01-07
  */
 public class RandomUtilsTest {
     
@@ -73,6 +74,30 @@ public class RandomUtilsTest {
         for(int it = 0; it < 100; it++){
             final double d = RandomUtils.gaussDouble(-5.0, -1.0, 1.4);
             if(d > -1.0 || d < -5.0){fail("gaussDouble outside valid range IV.");}
+        }
+    }
+
+    @Test
+    public void testGaussDoubleAroundVal(){
+        System.out.println("gaussDoubleAroundVal");
+        for(int it = 0; it < 100; it++){
+            final double d = RandomUtils.gaussDoubleAroundVal(-5.0, 5.0, 2.0, 0.0);
+            if(d > 5.0 || d < -5.0){fail("gaussDoubleAroundVal outside valid range I.");}
+        }
+
+        for(int it = 0; it < 100; it++){
+            final double d = RandomUtils.gaussDoubleAroundVal(-5.0, 10.0, 4.0, 7.0);
+            if(d > 10.0 || d < -5.0){fail("gaussDoubleAroundVal outside valid range II.");}
+        }
+
+        for(int it = 0; it < 100; it++){
+            final double d = RandomUtils.gaussDoubleAroundVal(0.0, 5.0, 0.4, 1.0);
+            if(d > 5.0 || d < 0.0){fail("gaussDoubleAroundVal outside valid range III.");}
+        }
+
+        for(int it = 0; it < 100; it++){
+            final double d = RandomUtils.gaussDoubleAroundVal(-5.0, -1.0, 1.4, -1.42);
+            if(d > -1.0 || d < -5.0){fail("gaussDoubleAroundVal outside valid range IV.");}
         }
     }
     

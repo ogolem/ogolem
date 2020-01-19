@@ -44,7 +44,8 @@ import org.ogolem.core.CoordTranslation;
 /**
  * Some helper functions for random numbers.
  * @author Johannes Dieterich
- * @version 2013-08-02
+ * @author Mark Dittner
+ * @version 2019-11-25
  */
 public class RandomUtils {
     
@@ -74,25 +75,44 @@ public class RandomUtils {
      * @return a random number
      */
     public static double gaussDouble(final double low, final double high, final double stdDev){
-        
-        assert(high != low);
-        assert(high > low);
-        assert(stdDev > 0.0);
-        
+
         final double mid = (high-low)/2+low;
-        final double std = Math.abs(stdDev*(high-low)/2);
-        
-        long c = 0;
-        do {
-            final double d = r.nextGaussian()*std+mid;
-            c++;
-            if(d >= low && d <= high){return d;}
-        } while(c < TRIESTOEMERGENCY);
-                
-        System.err.println("WARNING: Emergency occured in gaussDouble(). Returning " + mid + ".");
-        return mid;
+        return gaussDoubleAroundVal(low, high, stdDev, mid);
     }
     
+    /**
+     * Generates a Gaussian-distributed random number around a specified center value (between max/min
+     * bounds)
+     *
+     * @param low    lower bound for the number
+     * @param high   upper bound for the number
+     * @param stdDev the standard deviation of the Gaussian distribution
+     * @param center is used as the center, i.e., mu, of the Gaussian distribution
+     *
+     * @return a random number
+     */
+    public static double gaussDoubleAroundVal(final double low, final double high,
+            final double stdDev, final double center) {
+
+        assert (high != low);
+        assert (high > low);
+        assert (stdDev > 0.0);
+        assert (center >= low);
+        assert (center <= high);
+
+        final double std = Math.abs(stdDev * (high - low) / 2);
+
+        long c = 0;
+        do {
+            final double d = r.nextGaussian() * std + center;
+            c++;
+            if (d >= low && d <= high) { return d;}
+        } while (c < TRIESTOEMERGENCY);
+
+        System.err.println("WARNING: Emergency occurred in gaussDoubleAroundVal(). Returning " + center + ".");
+        return center;
+    }
+
     /**
      * Generates a Gaussian-distributed random number in between bounds.
      * @param low lower bound for the number
