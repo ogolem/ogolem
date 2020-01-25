@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.adaptive;
 
+import java.util.Arrays;
 import org.ogolem.generic.BoundedGenericMutation;
 import org.ogolem.generic.GenericCrossover;
 import org.ogolem.generic.GenericFitnessFunction;
@@ -50,7 +51,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Specialized parameter factory.
  * @author Johannes Dieterich
- * @version 2014-08-11
+ * @author Mark Dittner
+ * @version 2019-11-25
  */
 public class ParamGlobOptFactory extends GenericGlobalOptimizationFactory<Double, AdaptiveParameters>{
 
@@ -89,7 +91,6 @@ public class ParamGlobOptFactory extends GenericGlobalOptimizationFactory<Double
     @Override
     public GenericGlobalOptimization<Double, AdaptiveParameters> translateToGlobOpt(String globOptString) throws Exception {
         
-        
             // syntax: parameters{xover() mutation()}
             final String w = globOptString.trim();
             if(!w.startsWith("parameters{")){
@@ -120,7 +121,44 @@ public class ParamGlobOptFactory extends GenericGlobalOptimizationFactory<Double
     }
         
     @Override
+    protected GenericCrossover<Double, AdaptiveParameters> specializedXOver(final String xOverString)
+            throws Exception {
+
+        log.info("Working on crossover string " + xOverString);
+
+        if (xOverString.startsWith("arctic:")) {
+
+            final String[] tokens = tokenizeThirdLevel(xOverString.substring(7));
+            int noMix = 1;
+            boolean hasRandomWeight = false;
+            int order = 1;
+            for (final String token : tokens) {
+                if (token.startsWith("nomix=")) {
+                    noMix = integerToken("nomix=", token);
+                    if (noMix < 0) {
+                        throw new RuntimeException("Number of mixing points must be positive!");
+                    }
+                } else if (token.startsWith("random")) {
+                    hasRandomWeight = true;
+                } else if (token.startsWith("order=")) {
+                    order = integerToken("order=", token);
+                    if (order < 1) {
+                        throw new RuntimeException("order of perference to the average must be a integer >= 1!");
+                    }
+                } else {
+                    throw new RuntimeException("Unknown token '" + token + "' in specialized xover (arctic).");
+                }
+            }
+
+            return new ArcticAdaptiveCrossover(noMix, hasRandomWeight, order);
+        }
+
+        return null;
+    }
+
+    @Override
     protected GenericMutation<Double,AdaptiveParameters> specializedMutation(final String mutString) throws Exception {
+        
         log.info("Working on mutation string " + mutString);
         
         if(mutString.startsWith("germany:")){
@@ -141,8 +179,44 @@ public class ParamGlobOptFactory extends GenericGlobalOptimizationFactory<Double
                     throw new RuntimeException("Unknown option for specialized mutation germany " + token);
                 }
             }
-            
+        
             return new BoundedGenericMutation<>(mode,lower,upper);
+        } else if (mutString.startsWith("arctic:")) {
+
+            UnaryGaussianMutation.Mode mode = UnaryGaussianMutation.Mode.ONE;
+            UnaryGaussianMutation.SubMode subMode = UnaryGaussianMutation.SubMode.CURRENT;
+            double gaussShaper = 0.3;
+            final String[] tokens = tokenizeThirdLevel(mutString.substring("arctic:".length()));
+            for (final String token : tokens) {
+                if (token.startsWith("mode=")) {
+                    final String s = token.substring("mode=".length()).trim();
+                    try {
+                        mode = UnaryGaussianMutation.Mode.valueOf(s.toUpperCase());
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Unknown mode '" + s + "' in mutation mode for arctic. Implemented ones: " +
+                                Arrays.toString(UnaryGaussianMutation.Mode.values()));
+                    }
+                } else if (token.startsWith("submode=")) {
+                    final String s2 = token.substring("submode=".length()).trim();
+                    try {
+                        subMode = UnaryGaussianMutation.SubMode.valueOf(s2.toUpperCase());
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Unknown submode '" + s2 + "' in mutation mode for arctic. Implemented ones: " +
+                                Arrays.toString(UnaryGaussianMutation.SubMode.values()));
+                    }
+                } else if (token.startsWith("shape=")) {
+                    final String s3 = token.substring("shape=".length()).trim();
+                    try {
+                        gaussShaper = Double.parseDouble(s3);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Cannot parse gausshape '" + s3 + "' as option in " + subMode + " in mutation subMode for arctic.");
+                    }
+                } else {
+                    throw new RuntimeException("Unknown token '" + token + "' in specialized mutation (arctic).");
+                }
+            }
+
+            return new UnaryGaussianMutation(mode, subMode, gaussShaper, lower, upper);
         }
         
         return null;
