@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import static org.ogolem.math.TrivialLinearAlgebra.crossProduct;
  * This class transforms coordinates back and forth from different coordinate
  * systems and object representations.
  * @author Johannes Dieterich
- * @version 2016-08-29
+ * @version 2019-12-30
  */
 public final class CoordTranslation {
 
@@ -311,6 +311,18 @@ public final class CoordTranslation {
             final List<boolean[][]> degreesOfFreedom, final boolean[] molConstraints,
             final boolean[][] constraintsXYZ, final String[] sids, final BondInfo bonds) {
 
+        assert(cartesian != null);
+        assert(noOfMols >= 0);
+        assert(atsPerMol != null);
+        assert(atsPerMol.length >= noOfMols);
+        assert(molFlexies != null);
+        assert(molFlexies.length >= noOfMols);
+        assert(degreesOfFreedom != null);
+        assert(!degreesOfFreedom.isEmpty());
+        assert(molConstraints != null);
+        assert(molConstraints.length >= noOfMols);
+        assert(bonds != null);
+        
         final GeometryConfig gc = cartesianToGeomConfig(cartesian, noOfMols,
                 atsPerMol, molFlexies, degreesOfFreedom, molConstraints, constraintsXYZ, sids, bonds);
         final Geometry geom = new Geometry(gc);
@@ -446,6 +458,8 @@ public final class CoordTranslation {
     public static MoleculeConfig cartesianToBareMolConfig(final CartesianCoordinates cartesian,
             final int moleculeID, final String sID, final boolean flexyMolecule, final boolean[][] zmatDoFs,
             final boolean constrictedMol, final boolean[][] molConstraints) {
+        
+        assert(cartesian != null);
         
         // 1. STEP: CREATE THE NEEDED CONFIG OBJECTS
         final MoleculeConfig mc = new MoleculeConfig(true);
@@ -632,6 +646,12 @@ public final class CoordTranslation {
      */
     public static double[][] rotateXYZAroundY(final double[][] xyz, final double rotation){
         
+        assert(xyz != null);
+        assert(xyz.length == 3);
+        assert(xyz[0].length > 0);
+        assert(xyz[0].length == xyz[1].length);
+        assert(xyz[0].length == xyz[2].length);
+        
         final double[][] rotated = new double[3][xyz[0].length];
         final double[][] rot = new double[3][3];
         
@@ -685,6 +705,12 @@ public final class CoordTranslation {
      * @return the rotated set of Cartesian coordinates. Will be of dimensions [3][N].
      */
     public static double[][] rotateXYZAroundZ(final double[][] xyz, final double rotation){
+        
+        assert(xyz != null);
+        assert(xyz.length == 3);
+        assert(xyz[0].length > 0);
+        assert(xyz[0].length ==xyz[1].length);
+        assert(xyz[0].length ==xyz[2].length);
         
         final double[][] rotated = new double[3][xyz[0].length];
         final double[][] rot = new double[3][3];
@@ -1024,7 +1050,7 @@ public final class CoordTranslation {
         rot[0][2] = 0.0;
         rot[1][2] = 0.0;
         rot[2][2] = 0.0;
-         
+        
         // call the matrix multiplication
         org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated, 3, 3, xyz[0].length, cache);
     }
@@ -1166,6 +1192,10 @@ public final class CoordTranslation {
      */
     public static SimpleBondInfo checkForBonds(final CartesianCoordinates cartes, final double blowFacBonds) {
 
+        assert(cartes != null);
+        assert(cartes.getNoOfAtoms() > 0);
+        assert(blowFacBonds > 0.0);
+        
         final int noOfAtoms = cartes.getNoOfAtoms();
         final SimpleBondInfo bonds = new SimpleBondInfo(noOfAtoms);
 
@@ -1208,6 +1238,9 @@ public final class CoordTranslation {
      */
     public static CartesianCoordinates zMatToCartesians(final ZMatrix zmat) {
         
+        assert(zmat != null);
+        assert(zmat.getNoOfAtoms() > 0);
+        
         final int noOfAtoms = zmat.getNoOfAtoms();
         final int[] atsPerMol = {noOfAtoms};
         final CartesianCoordinates cartes = new CartesianCoordinates(noOfAtoms, 1, atsPerMol);
@@ -1223,6 +1256,8 @@ public final class CoordTranslation {
     
     public static void updateCartesians(final ZMatrix zmat, final CartesianCoordinates cartes) {
         
+        assert(zmat != null);
+        assert(cartes != null);
         assert(cartes.getNoOfMolecules() == 1);
         assert(cartes.getNoOfAtoms() == zmat.getNoOfAtoms());
 
@@ -1366,6 +1401,11 @@ public final class CoordTranslation {
      */
     public static double distance(final double[] a, final double[] b){
         
+        assert(a != null);
+        assert(b != null);
+        assert(a.length >= 3);
+        assert(b.length >= 3);
+        
         final double dx = a[0]-b[0];
         final double dy = a[1]-b[1];
         final double dz = a[2]-b[2];
@@ -1386,8 +1426,11 @@ public final class CoordTranslation {
         assert(j >= 0);
         assert(xyz != null);
         assert(xyz.length == 3);
+        assert(xyz[0].length == xyz[1].length);
+        assert(xyz[0].length == xyz[2].length);
         assert(xyz[0].length > i);
         assert(xyz[0].length > j);
+        
         final double dx = xyz[0][i]-xyz[0][j];
         final double dy = xyz[1][i]-xyz[1][j];
         final double dz = xyz[2][i]-xyz[2][j];
@@ -1397,6 +1440,17 @@ public final class CoordTranslation {
 
     public static double calcAngle(final double[][] xyz, final int i, final int j, final int k){
 
+        assert(i >= 0);
+        assert(j >= 0);
+        assert(k >= 0);
+        assert(xyz != null);
+        assert(xyz.length == 3);
+        assert(xyz[0].length == xyz[1].length);
+        assert(xyz[0].length == xyz[2].length);
+        assert(xyz[0].length > i);
+        assert(xyz[0].length > j);
+        assert(xyz[0].length > k);
+        
         // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
         final double[] daVectorOne = new double[3];
         final double[] daVectorTwo = new double[3];
@@ -1415,23 +1469,43 @@ public final class CoordTranslation {
     public static double calcAngle(final double[][] xyz, final int i, final int j,
             final int k, final double[] scr1, final double[] scr2){
 
+        assert(i >= 0);
+        assert(j >= 0);
+        assert(k >= 0);
+        assert(xyz != null);
+        assert(xyz.length == 3);
+        assert(xyz[0].length == xyz[1].length);
+        assert(xyz[0].length == xyz[2].length);
+        assert(xyz[0].length > i);
+        assert(xyz[0].length > j);
+        assert(xyz[0].length > k);
+        assert(scr1 != null);
+        assert(scr2 != null);
+        assert(scr1.length >= 3);
+        assert(scr2.length >= 3);
+        
         // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        final double[] daVectorOne = scr1;
-        final double[] daVectorTwo = scr2;
         // calculate the direction vectors
         for (int c = 0; c < 3; c++) {
-            daVectorOne[c] = xyz[c][i] - xyz[c][j];
-            daVectorTwo[c] = xyz[c][k] - xyz[c][j];
+            scr1[c] = xyz[c][i] - xyz[c][j];
+            scr2[c] = xyz[c][k] - xyz[c][j];
         }
 
-        final double dAngle = angle(daVectorOne, daVectorTwo);
+        final double angle = angle(scr1, scr2);
 
-        return dAngle;
+        return angle;
 
     }
     
     public static double calcAngle(final double[] pos1, final double[] pos2, final double[] pos3){
 
+        assert(pos1 != null);
+        assert(pos1.length >=3);
+        assert(pos2 != null);
+        assert(pos2.length >=3);
+        assert(pos3 != null);
+        assert(pos3.length >=3);
+        
         // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
         final double[] daVectorOne = new double[3];
         final double[] daVectorTwo = new double[3];
@@ -1450,16 +1524,25 @@ public final class CoordTranslation {
     public static double calcAngle(final double[] pos1, final double[] pos2,
             final double[] pos3, final double[] scr1, final double[] scr2){
 
+        assert(pos1 != null);
+        assert(pos1.length >=3);
+        assert(pos2 != null);
+        assert(pos2.length >=3);
+        assert(pos3 != null);
+        assert(pos3.length >=3);
+        assert(scr1 != null);
+        assert(scr1.length >=3);
+        assert(scr2 != null);
+        assert(scr2.length >=3);
+        
         // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        final double[] daVectorOne = scr1;
-        final double[] daVectorTwo = scr2;
         // calculate the direction vectors
         for (int c = 0; c < 3; c++) {
-            daVectorOne[c] = pos1[c] - pos2[c];
-            daVectorTwo[c] = pos3[c] - pos2[c];
+            scr1[c] = pos1[c] - pos2[c];
+            scr2[c] = pos3[c] - pos2[c];
         }
 
-        final double dAngle = angle(daVectorOne, daVectorTwo);
+        final double dAngle = angle(scr1, scr2);
 
         return dAngle;
 
@@ -1502,6 +1585,29 @@ public final class CoordTranslation {
             final double[] scr1, final double[] scr2, final double[] scr3,
             final double[] scr4, final double[] scr5) {
         
+        assert(k >= 0);
+        assert(l >= 0);
+        assert(m >= 0);
+        assert(n >= 0);
+        assert(xyz != null);
+        assert(xyz.length == 3);
+        assert(xyz[0].length == xyz[1].length);
+        assert(xyz[0].length == xyz[2].length);
+        assert(xyz[0].length > k);
+        assert(xyz[0].length > l);
+        assert(xyz[0].length > m);
+        assert(xyz[0].length > n);
+        assert(scr1 != null);
+        assert(scr1.length >= 3);
+        assert(scr2 != null);
+        assert(scr2.length >= 3);
+        assert(scr3 != null);
+        assert(scr3.length >= 3);
+        assert(scr4 != null);
+        assert(scr4.length >= 3);
+        assert(scr5 != null);
+        assert(scr5.length >= 3);
+        
         for (int i = 0; i < 3; i++) {
             scr1[i] = xyz[i][k] - xyz[i][l];
             scr2[i] = xyz[i][l] - xyz[i][m];
@@ -1543,6 +1649,25 @@ public final class CoordTranslation {
             final double[] scr1, final double[] scr2, final double[] scr3,
             final double[] scr4, final double[] scr5) {
         
+        assert(pos1 != null);
+        assert(pos1.length >=3);
+        assert(pos2 != null);
+        assert(pos2.length >=3);
+        assert(pos3 != null);
+        assert(pos3.length >=3);
+        assert(pos4 != null);
+        assert(pos4.length >=3);
+        assert(scr1 != null);
+        assert(scr1.length >=3);
+        assert(scr2 != null);
+        assert(scr2.length >=3);
+        assert(scr3 != null);
+        assert(scr3.length >=3);
+        assert(scr4 != null);
+        assert(scr4.length >=3);
+        assert(scr5 != null);
+        assert(scr5.length >=3);
+        
         for (int i = 0; i < 3; i++) {
             scr1[i] = pos1[i] - pos2[i];
             scr2[i] = pos2[i] - pos3[i];
@@ -1570,6 +1695,15 @@ public final class CoordTranslation {
     public static double calcDihedral(final double[] pos1, final double[] pos2,
             final double[] pos3, final double[] pos4) {
 
+        assert(pos1 != null);
+        assert(pos1.length >=3);
+        assert(pos2 != null);
+        assert(pos2.length >=3);
+        assert(pos3 != null);
+        assert(pos3.length >=3);
+        assert(pos4 != null);
+        assert(pos4.length >=3);
+        
         final double[] scr1 = new double[3];
         final double[] scr2 = new double[3];
         final double[] scr3 = new double[3];
@@ -1614,35 +1748,66 @@ public final class CoordTranslation {
         assert(refCartes != null);
         assert(refCartes.length == 3);
         assert(refCartes[0].length > 0);
+        assert(refCartes[0].length == refCartes[1].length);
+        assert(refCartes[0].length == refCartes[2].length);        
         assert(cartes != null);
         assert(cartes.getNoOfAtoms() > 0);
+        assert(refCartes[0].length == cartes.getNoOfAtoms());
         
         final CartesianCoordinates aligned = new CartesianCoordinates(cartes);
         aligned.moveCoordsToCOM();
         
         // set up the kearsley matrix
-        final contrib.jama.Matrix matKearsley = new contrib.jama.Matrix(4,4);
-        setupKearsleyMatrix(refCartes, aligned.getAllXYZCoord(), matKearsley.getArray());
-
-        final contrib.jama.EigenvalueDecomposition eigen = new contrib.jama.EigenvalueDecomposition(matKearsley, true);
-        final contrib.jama.Matrix matEigenVec = eigen.getV();
-        final double[] evals = eigen.getRealEigenvalues();
-        /*
-        for(final double e : evals){
-            System.err.println("Eigenval " + e);
-        }*/
-
+        final org.ejml.data.DMatrixRMaj matKearsley = setupKearsleyMatrix(refCartes, aligned.getAllXYZCoord());
+        
+        final org.ejml.interfaces.decomposition.EigenDecomposition_F64<org.ejml.data.DMatrixRMaj> eig = org.ejml.dense.row.factory.DecompositionFactory_DDRM.eig(4, true,true);
+        eig.decompose(matKearsley);
+        final int noEigenVals = eig.getNumberOfEigenvalues();
+        if(noEigenVals == 0){
+            throw new Exception("Kearsely matrix decomposition has no eigenvalues.");
+        }
+        
+        int minEigenValueIndex = -1;
+        double minEigenValue = Double.MAX_VALUE;
+        for(int i = 0; i < noEigenVals; i++){
+            final org.ejml.data.Complex_F64 eval = eig.getEigenvalue(i);
+            if(!eval.isReal()){continue;} // do not check if the eigenvalue is complex and error (since symmetric matrices have no complex ones) - has caused numerical issues
+            final double d = eval.getReal();
+            if(d < minEigenValue){
+                minEigenValue = d;
+                minEigenValueIndex = i;
+            }
+        }
+        if(minEigenValueIndex <= 0){
+            throw new Exception("Kearsely matrix has no real eigenvalues - this shouldn't happen.");
+        }
+        
+        final org.ejml.data.DMatrixRMaj matEigenVec = eig.getEigenVector(minEigenValueIndex);
+        if(matEigenVec == null){
+            // this really shouldn't happen here as we checked above
+            throw new Exception("Kearsley matrix decomposition - minimal eigenvalue is complex, should not happen here.");
+        }
+        
         // calculate the rotation matrix
-        final double[][] rot = new double[3][3];
-        calculateRotationMatrix(matEigenVec.getArray(), rot);
+        final org.ejml.data.DMatrixRMaj rotMat = calculateRotationMatrix(matEigenVec);        
+        final org.ejml.data.DMatrixRMaj unrotCoordsMat = new org.ejml.data.DMatrixRMaj(aligned.getAllXYZCoord());
 
-        // rotate the cartesians
-        final double[][] newCartes = new double[3][cartes.getNoOfAtoms()];
-        TrivialLinearAlgebra.matMult(rot, aligned.getAllXYZCoord(), newCartes);
+        final org.ejml.data.DMatrixRMaj rotCoordsMat = new org.ejml.data.DMatrixRMaj(3, cartes.getNoOfAtoms());
 
-        aligned.setAllXYZ(newCartes);
+        org.ejml.dense.row.CommonOps_DDRM.mult(rotMat, unrotCoordsMat, rotCoordsMat);
 
-        final double rmsd = Math.sqrt(evals[0]/Math.min(refCartes[0].length,cartes.getNoOfAtoms()));
+        final double[][] xyzAligned = aligned.getAllXYZCoord();
+        final int startX = rotCoordsMat.getIndex(0,0);
+        final int startY = rotCoordsMat.getIndex(1,0);
+        final int startZ = rotCoordsMat.getIndex(2,0);
+
+        final int noAtoms = aligned.getNoOfAtoms();
+        final double[] rotCoordsMatData = rotCoordsMat.getData();
+        System.arraycopy(rotCoordsMatData, startX, xyzAligned[0], 0, noAtoms);
+        System.arraycopy(rotCoordsMatData, startY, xyzAligned[1], 0, noAtoms);
+        System.arraycopy(rotCoordsMatData, startZ, xyzAligned[2], 0, noAtoms);
+
+        final double rmsd = Math.sqrt(minEigenValue/Math.min(refCartes[0].length,cartes.getNoOfAtoms()));
         
         return new Tuple<>(aligned, rmsd);
     }
@@ -1660,6 +1825,9 @@ public final class CoordTranslation {
      */
     public static CartesianCoordinates alignTwoCartes(final CartesianCoordinates refCartes,
             final CartesianCoordinates cartes) {
+        
+        assert(refCartes != null);
+        assert(cartes != null);
 
         /*
          * first move the cartesian coordinate set to the COM. this might not be needed in all
@@ -1866,6 +2034,12 @@ public final class CoordTranslation {
      */
     public static double[][] cartesianToSphericalCoord(final double[][] xyz) {
 
+        assert(xyz != null);
+        assert(xyz.length == 3);
+        assert(xyz[0].length > 0);
+        assert(xyz[0].length == xyz[1].length);
+        assert(xyz[0].length == xyz[2].length);
+        
         final int noOfAtoms = xyz[0].length;
         final double[][] sphericalCoords = new double[3][noOfAtoms];
 
@@ -1911,6 +2085,12 @@ public final class CoordTranslation {
      * @return cartesian coordinates as a double[][]
      */
     public static double[][] sphericalToCartesianCoord(final double[][] spherical) {
+        
+        assert(spherical != null);
+        assert(spherical.length == 3);
+        assert(spherical[0].length > 0);
+        assert(spherical[0].length == spherical[1].length);
+        assert(spherical[0].length == spherical[2].length);
 
         final int noOfAtoms = spherical[0].length;
         final double[][] xyz = new double[3][noOfAtoms];
@@ -1952,19 +2132,26 @@ public final class CoordTranslation {
      * Sets the Kearsley matrix up.
      * @param refCoords The reference coordinate set, with the COM being 0.0,0.0,0.0.
      * @param coords The to be moved coordinate set, with the COM being 0.0,0.0,0.0.
-     * @param kearsley The kearsley matrix, needs to be initialized with zeros!
+     * @return The Kearsley matrix, needs to be initialized with zeros!
      */
-    private static void setupKearsleyMatrix(final double[][] refCoords, final double[][] coords, final double[][] kearsley) {
-        
-        assert(kearsley != null);
-        assert(kearsley.length == 4);
-        assert(kearsley[0].length == 4);
+    private static org.ejml.data.DMatrixRMaj setupKearsleyMatrix(final double[][] refCoords, final double[][] coords) {
 
+        assert(refCoords != null);
+        assert(coords != null);
+        assert(refCoords.length == 3);
+        assert(coords.length == 3);
+        
         final int noOfAtoms = refCoords[0].length;
 
         // set the actual kearsley matrix up
         final double[] diff = new double[3];
         final double[] summ = new double[3];
+        double kearsley00 = 0.0, kearsley01 = 0.0, kearsley02 = 0.0, kearsley03 = 0.0,
+                kearsley11 = 0.0, kearsley12 = 0.0, kearsley13 = 0.0, kearsley22 = 0.0,
+                kearsley23 = 0.0, kearsley33 = 0.0;
+        
+        // NOTE: this is clearly not an efficient way to set the matrix up, we'd
+        //   prefer to loop the other way round
         for (int i = 0; i < noOfAtoms; i++) {
 
             for(int j = 0; j < 3; j++){
@@ -1972,30 +2159,40 @@ public final class CoordTranslation {
                 summ[j] = refCoords[j][i] + coords[j][i];
             }
 
-            kearsley[0][0] += diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2];
-            kearsley[0][1] += summ[1]*diff[2] - diff[1]*summ[2];
-            kearsley[0][2] += diff[0]*summ[2] - summ[0]*diff[2];
-            kearsley[0][3] += summ[0]*diff[1] - diff[0]*summ[1];
+            kearsley00 += diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2];
+            kearsley01 += summ[1]*diff[2] - diff[1]*summ[2];
+            kearsley02 += diff[0]*summ[2] - summ[0]*diff[2];
+            kearsley03 += summ[0]*diff[1] - diff[0]*summ[1];
 
-            kearsley[1][1] += summ[1]*summ[1] + summ[2]*summ[2] + diff[0]*diff[0];
-            kearsley[1][2] += diff[0]*diff[1] - summ[0]*summ[1];
-            kearsley[1][3] += diff[0]*diff[2] - summ[0]*summ[2];
+            kearsley11 += summ[1]*summ[1] + summ[2]*summ[2] + diff[0]*diff[0];
+            kearsley12 += diff[0]*diff[1] - summ[0]*summ[1];
+            kearsley13 += diff[0]*diff[2] - summ[0]*summ[2];
 
-            kearsley[2][2] += summ[0]*summ[0] + summ[2]*summ[2] + diff[1]*diff[1];
-            kearsley[2][3] += diff[1]*diff[2] - summ[1]*summ[2];
+            kearsley22 += summ[0]*summ[0] + summ[2]*summ[2] + diff[1]*diff[1];
+            kearsley23 += diff[1]*diff[2] - summ[1]*summ[2];
 
-            kearsley[3][3] += summ[0]*summ[0] + summ[1]*summ[1] + diff[2]*diff[2];
+            kearsley33 += summ[0]*summ[0] + summ[1]*summ[1] + diff[2]*diff[2];
         }
 
-        /*
-         * only upper half is filled so far, we transpose this down now since the matrix is
-         * symmetric
-         */
-        for (int i = 0; i < 3; i++) {
-            for (int j = i+1; j < 4; j++) {
-                kearsley[j][i] = kearsley[i][j];
-            }
-        }
+        final org.ejml.data.DMatrixRMaj matKearsley = new org.ejml.data.DMatrixRMaj(4,4);
+        matKearsley.unsafe_set(0,0, kearsley00);
+        matKearsley.unsafe_set(0,1, kearsley01);
+        matKearsley.unsafe_set(0,2, kearsley02);
+        matKearsley.unsafe_set(0,3, kearsley03);
+        matKearsley.unsafe_set(1,0, kearsley01);
+        matKearsley.unsafe_set(1,1, kearsley11);
+        matKearsley.unsafe_set(1,2, kearsley12);
+        matKearsley.unsafe_set(1,3, kearsley13);
+        matKearsley.unsafe_set(2,0, kearsley02);
+        matKearsley.unsafe_set(2,1, kearsley12);
+        matKearsley.unsafe_set(2,2, kearsley22);
+        matKearsley.unsafe_set(2,3, kearsley23);
+        matKearsley.unsafe_set(3,0, kearsley03);
+        matKearsley.unsafe_set(3,1, kearsley13);
+        matKearsley.unsafe_set(3,2, kearsley23);
+        matKearsley.unsafe_set(3,3, kearsley33);
+        
+        return matKearsley;
     }
 
     /**
@@ -2004,28 +2201,37 @@ public final class CoordTranslation {
      * @param rot The minimum [3,3] rotation matrix, changed on exit.
      * @return The rotation matrix.
      */
-    private static void calculateRotationMatrix(final double[][] eigen, final double[][] rot) {
+    private static org.ejml.data.DMatrixRMaj calculateRotationMatrix(final org.ejml.data.DMatrixRMaj eigen) {
         
-        assert(rot != null);
-        assert(rot.length >= 3);
-        assert(rot[0].length >= 3);
-
-        final double q1 = eigen[0][0];
-        final double q2 = eigen[1][0];
-        final double q3 = eigen[2][0];
-        final double q4 = eigen[3][0];
+        final org.ejml.data.DMatrixRMaj rot = new org.ejml.data.DMatrixRMaj(3,3);
         
-        rot[0][0] = q1*q1 + q2*q2 - q3*q3 - q4*q4;
-        rot[0][1] = 2 * (q2*q3 + q1*q4);
-        rot[0][2] = 2 * (q2*q4 - q1*q3);
+        final double q1 = eigen.get(0,0);
+        final double q2 = eigen.get(1,0);
+        final double q3 = eigen.get(2,0);
+        final double q4 = eigen.get(3,0);
+        
+        final double rot00 = q1*q1 + q2*q2 - q3*q3 - q4*q4;
+        rot.unsafe_set(0, 0, rot00);
+        final double rot01 = 2 * (q2*q3 + q1*q4);
+        rot.unsafe_set(0, 1, rot01);
+        final double rot02 = 2 * (q2*q4 - q1*q3);
+        rot.unsafe_set(0, 2, rot02);
 
-        rot[1][0] = 2 * (q2*q3 - q1*q4);
-        rot[1][1] = q1*q1 + q3*q3 - q2*q2 - q4*q4;
-        rot[1][2] = 2 * (q3*q4 + q1*q2);
+        final double rot10 = 2 * (q2*q3 - q1*q4);
+        rot.unsafe_set(1, 0, rot10);
+        final double rot11 = q1*q1 + q3*q3 - q2*q2 - q4*q4;
+        rot.unsafe_set(1, 1, rot11);
+        final double rot12 = 2 * (q3*q4 + q1*q2);
+        rot.unsafe_set(1, 2, rot12);        
 
-        rot[2][0] = 2 * (q2*q4 + q1*q3);
-        rot[2][1] = 2 * (q3*q4 - q1*q2);
-        rot[2][2] = q1*q1 + q4*q4 - q2*q2 - q3*q3;
+        final double rot20 = 2 * (q2*q4 + q1*q3);
+        rot.unsafe_set(2, 0, rot20);
+        final double rot21 = 2 * (q3*q4 - q1*q2);
+        rot.unsafe_set(2, 1, rot21);
+        final double rot22 = q1*q1 + q4*q4 - q2*q2 - q3*q3;
+        rot.unsafe_set(2, 2, rot22);
+        
+        return rot;
     }
     
     /**
@@ -2038,8 +2244,14 @@ public final class CoordTranslation {
      */
     public static double[][] rotatePointToZAxis(final double[][] xyz, final double[] point, final int ats){
         
+        assert(xyz != null);
         assert(xyz.length == 3);
-        assert(ats == xyz[0].length);
+        assert(ats >= 0);
+        assert(ats <= xyz[0].length);
+        assert(ats <= xyz[1].length);
+        assert(ats <= xyz[2].length);
+        assert(point != null);
+        assert(point.length == 3);
         
         // strategy: use the Euler angle rotation and determine the necessary Euler angles
 

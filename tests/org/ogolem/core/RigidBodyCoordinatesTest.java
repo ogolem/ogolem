@@ -1043,7 +1043,7 @@ public class RigidBodyCoordinatesTest {
         try{
             ar = Input.parseCartesFromFileData(lj, 1, atsPerMol, spins, charges);
         } catch(Exception e){
-            throw new Error("Error to parse in known w20 global minimum.",e);
+            throw new Error("Error to parse in Ar single atom.",e);
         }
         
         final int noOfMols = 1;
