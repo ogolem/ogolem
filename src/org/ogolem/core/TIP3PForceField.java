@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2015, J. M. Dieterich
+              2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,7 +48,7 @@ import org.ogolem.math.GenericLookup;
  * Provides the TIP3P force field for an simple (and very biased) description of water clusters.
  * Numerical data from http://www1.lsbu.ac.uk/water/water_models.html and wiki
  * @author Johannes Dieterich
- * @version 2015-01-11
+ * @version 2019-12-28
  */
 public class TIP3PForceField implements RigidBodyBackend {
 
@@ -154,10 +155,9 @@ public class TIP3PForceField implements RigidBodyBackend {
         
         // first figure out whether the the first three could be a water
         final short[] atomNos = ref.getMoleculeAtPosition(0).getAtomNumbers();
-        if(atomNos[0] == 8
+        if(!(atomNos.length == 3 && atomNos[0] == 8
                 && atomNos[1] == 1
-                && atomNos[2] == 1){
-        } else{
+                && atomNos[2] == 1)){
             System.err.println("ERROR: We figured out that this is no suitable water (in O/H/H order) cluster!");
             return false;
         }
@@ -167,9 +167,7 @@ public class TIP3PForceField implements RigidBodyBackend {
             
             final short[] atomNosMol = ref.getMoleculeAtPosition(mol).getAtomNumbers();
             // check whether all molecules are having the right order
-            if (atomNosMol[0] == 8 && atomNosMol[1] == 1 && atomNosMol[2] == 1) {
-                // good
-            } else {
+            if (!(atomNosMol.length == 3 && atomNosMol[0] == 8 && atomNosMol[1] == 1 && atomNosMol[2] == 1)) {
                 // something is f***** up
                 System.err.println("ERROR: Some parts of your cluster aren't water (in O/H/H order).");
                 return false;

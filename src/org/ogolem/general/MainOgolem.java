@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ package org.ogolem.general;
 /**
  * The unified entry point to the OGOLEM framework.
  * @author Johannes Dieterich
- * @version 2016-01-26
+ * @version 2019-12-29
  */
 public class MainOgolem {
 
@@ -96,6 +96,8 @@ public class MainOgolem {
             org.ogolem.ljreferences.MainLJRefs.main(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--md")){
             org.ogolem.md.MainMolecularDynamics.run(strippedArgs);
+        } else if(args[0].equalsIgnoreCase("--microbenchmarks")){
+            org.ogolem.microbenchmarks.MainMicroBenchmarks.run(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--ogo2atom")){
             org.ogolem.atom2ogo.MainOgo2Atom.run(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--parameters")){
@@ -176,6 +178,8 @@ public class MainOgolem {
             System.out.println("     for ejecting LJ reference structures (deprecated!)");
             System.out.println("   --md");
             System.out.println("     for running simple molecular dynamics");
+            System.out.println("   --microbenchmarks");
+            System.out.println("     for running some micro benchmarks");
             System.out.println("   --molecules");
             System.out.println("     to optimize molecules with respect to a or multiple properties");
             System.out.println("   --ogo2atom");
