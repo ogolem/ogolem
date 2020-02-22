@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,11 +44,11 @@ import java.util.List;
 /**
  * The decorator for collision detections in and between molecules.
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-02-01
  */
 public class CollisionDetection implements CollisionDetectionEngine {
 
-    private static final long serialVersionUID = (long) 20111007;
+    private static final long serialVersionUID = (long) 20200201;
     
     public static enum CDTYPE{SIMPLEPAIRWISE, ADVANCEDPAIRWISE, SIMPLEGRID, ADVANCEDGRID};
     public static final CDTYPE DEFAULTCD = CDTYPE.SIMPLEPAIRWISE;
@@ -104,6 +104,13 @@ public class CollisionDetection implements CollisionDetectionEngine {
     @Override
     public void checkForCollision(final CartesianCoordinates cartesians, final double blowFactor, final BondInfo bonds, final CollisionInfo info) {
         detection.checkForCollision(cartesians, blowFactor, bonds, info);
+    }
+    
+    @Override
+    public boolean checkOnlyForCollision(final CartesianCoordinates cartesians,
+                final double blowFactor, final BondInfo bonds, final int offset,
+                final int endset){
+        return detection.checkOnlyForCollision(cartesians, blowFactor, bonds, offset, endset);
     }
     
     static boolean checkOnlyForCollision(final Geometry geom, final double blowFactor){

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,11 +49,11 @@ import org.ogolem.helpers.RandomUtils;
  * know from the 3D knappsack problem that one should arrange "big" molecules
  * first to have an optimal packing, we do exactly this.
  * @author Johannes Dieterich
- * @version 2015-11-16
+ * @version 2020-02-01
  */
 public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry> {
 
-    private static final long serialVersionUID = (long) 20151116;
+    private static final long serialVersionUID = (long) 20200201;
     private static final boolean DEBUG = false;
     
     private static final int FAILEDATTEMPTSTOINCR = 500;
@@ -63,7 +63,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     
     public static enum MUTMODE{ASCENDING,RANDOM,BYSIZE};
     
-    private final Random random = new Random();
+    private final Random random;
     private final CollisionDetection colldetect;
     private final double blowColl;
     private final double blowDiss;
@@ -72,8 +72,39 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     
     //TODO explicit DoF are not initialized
     
+    /**
+     * XXX TODO A strictly temporary workaround until the lottery concept lands 
+     * allowing us to better control the random number generation.
+     */
+    public NorwayGeometryMutation(final CollisionDetection.CDTYPE whichCollDetect, final double blowColl, final double blowDiss,
+            final DissociationDetection.DDTYPE whichDissDetect, final MUTMODE mode, final long rngSeed){
+        
+        assert(blowColl >= 0.0);
+        assert(blowDiss >= 0.0);
+        assert(blowDiss >= blowColl);
+        assert(whichCollDetect != null);
+        assert(whichDissDetect != null);
+        assert(mode != null);
+        
+        this.random = new Random(rngSeed);
+        this.colldetect = new CollisionDetection(whichCollDetect);
+        this.blowColl = blowColl;
+        this.blowDiss = blowDiss;
+        this.whichDissDetect = whichDissDetect;
+        this.mode = mode;
+    }
+    
     NorwayGeometryMutation(final CollisionDetection.CDTYPE whichCollDetect, final double blowColl, final double blowDiss,
             final DissociationDetection.DDTYPE whichDissDetect, final MUTMODE mode){
+        
+        assert(blowColl >= 0.0);
+        assert(blowDiss >= 0.0);
+        assert(blowDiss >= blowColl);
+        assert(whichCollDetect != null);
+        assert(whichDissDetect != null);
+        assert(mode != null);
+        
+        this.random = new Random();
         this.colldetect = new CollisionDetection(whichCollDetect);
         this.blowColl = blowColl;
         this.blowDiss = blowDiss;
@@ -82,6 +113,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     }
     
     NorwayGeometryMutation(final NorwayGeometryMutation orig){
+        this.random = new Random();
         this.blowColl = orig.blowColl;
         this.blowDiss = orig.blowDiss;
         this.colldetect = orig.colldetect.clone();
@@ -177,6 +209,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
             assert(gc.noOfParticles == gc.geomMCs.size());
 
             final int atsThisMol = gc.geomMCs.get(wherePlaced).noOfAtoms;
+            final int offsetNoAtoms = noAtoms;
             noAtoms += atsThisMol;
             
             int jumpIndex = 0;
@@ -293,10 +326,13 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
                 System.arraycopy(rotResult[2], 0, xyz[2], jumpIndex, noMolAts);
 
                 // collision and dissociation detection
-                /*XXX we DO NOT NEED FULL ONES! WE ONLY NEED INCREMENTAL ONES!!!*/
-                collInfo.resizeDistsAndClearState(noAtoms);
-                colldetect.checkForCollision(cartesCache, blowColl, mutated.getBondInfo(),collInfo);
-                if(!collInfo.hasCollision()){
+                final boolean hasCollision = colldetect.checkOnlyForCollision(cartesCache, blowColl, mutated.getBondInfo(), offsetNoAtoms, noAtoms);
+                if(!hasCollision){
+                    
+                    // to get the full pairwise distances needed for DD
+                    collInfo.resizeDistsAndClearState(noAtoms);
+                    colldetect.checkForCollision(cartesCache, blowColl, mutated.getBondInfo(),collInfo);
+                    
                     if(DEBUG){System.out.println("DEBUG: NO collision detected.");}
                     // do a dissociation detection
                     final boolean hasDissociation = DissociationDetection.checkForDissociation(collInfo.getPairWiseDistances(),

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,58 +34,60 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
+package org.ogolem.microbenchmarks;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.ogolem.core.BondInfo;
+import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.Gradient;
+import org.ogolem.core.ScaTTM3FBackend;
 
 /**
- * A collision info only able to store a single collision.
+ * Tests TTM3F gradient cost with a random water 25 geometry.
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-01-02
  */
-public class SingleCollisionInfo extends AbstractCollisionInfo {
-
-    private static final long serialVersionUID = (long) 20150720;
+class WaterTTM3FLargeBenchmark implements SingleMicroBenchmark {
     
-    private int atom1;
-    private int atom2;
-    private double strength;
+    private final ScaTTM3FBackend back;
+    private final double[] xyz1D;
+    private final String[] atoms;
+    private final short[] atomNos;
+    private final int[] atsPerMol;
+    private final double[] energyparts;
+    private final int noAtoms;
+    private final float[] charges;
+    private final short[] spins;
+    private final BondInfo bonds;
+    private final Gradient gradient;
     
-    @Override
-    public boolean reportCollision(final int atom1, final int atom2, final double strength) {
+    WaterTTM3FLargeBenchmark(){
         
-        if(noCollisions > 0){
-            System.err.println("Previous collision already stored in SingleCollisionInfo.");
-            return false;
-        }
+        final CartesianCoordinates cartes = CartesianCoordinatesLibrary.getWater25Random();
         
-        this.atom1 = atom1;
-        this.atom2 = atom2;
-        this.strength = strength;
-        noCollisions++;
+        this.xyz1D = cartes.getAll1DCartes();
+        this.atoms = cartes.getAllAtomTypes();
+        this.atomNos = cartes.getAllAtomNumbers();
+        this.atsPerMol = cartes.getAllAtomsPerMol();
+        this.energyparts = new double[cartes.getNoOfMolecules()];
+        this.noAtoms = cartes.getNoOfAtoms();
+        this.charges = cartes.getAllCharges();
+        this.spins = cartes.getAllSpins();
+        this.bonds = null; // can be null since we really don't use it
+        this.gradient = new Gradient(3, cartes.getNoOfAtoms());
         
-        return true;
+        this.back = new ScaTTM3FBackend(cartes.getNoOfMolecules(), 0.5, false, "scattm3fout", false);
     }
 
     @Override
-    public List<Collision> getCollisions() {
+    public double runSingle() throws Exception {
         
-        if(noCollisions == 0){
-            return new ArrayList<>();
-        }
+        back.gradientCalculation(1, 1, xyz1D, atoms, atomNos, atsPerMol, energyparts, noAtoms, charges, spins, bonds, gradient);
         
-        final Collision coll = new Collision(atom1,atom2,strength);
-        final List<Collision> colls = new ArrayList<>();
-        colls.add(coll);
-        
-        return colls;
-    } 
+        return gradient.getTotalEnergy();
+    }
 
     @Override
-    protected void cleanState() {
-        atom1 = -1;
-        atom2 = -1;
-        strength = -1.0;
+    public String name() {
+        return "water25 TTM3F gradient";
     }
 }

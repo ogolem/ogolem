@@ -631,4 +631,10 @@ class GridCollisionDetection implements CollisionDetectionEngine{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public boolean checkOnlyForCollision(final CartesianCoordinates cartesians,
+                final double blowFactor, final BondInfo bonds, final int offset,
+                final int endset){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import java.io.Serializable;
 /**
  * The interface defining what ALL the collision detection engines need to know.
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-02-01
  */
 public interface CollisionDetectionEngine extends Serializable, Cloneable {
 	
@@ -58,4 +58,20 @@ public interface CollisionDetectionEngine extends Serializable, Cloneable {
     
     boolean checkOnlyForCollision(final CartesianCoordinates cartesians,
                 final double blowFactor, final BondInfo bonds);
+    
+    /**
+     * Check only for collisions in - presumably - a changed part of the Cartesian.
+     * Note that this routine is specified to check collisions of the changed part
+     * WITH the rest of the Cartesian (i.e., it will check before offset and after
+     * endset if applicable)
+     * @param cartesians the Cartesian coordinates to be checked
+     * @param blowFactor the blow factor to be used to scale atomic radii
+     * @param bonds the known bonds in this Cartesian set
+     * @param offset the offset from which collisions should be checked (inclusive)
+     * @param endset the endset towards which collisions should be checked (exclusive)
+     * @return whether a collision was found or not
+     */
+    boolean checkOnlyForCollision(final CartesianCoordinates cartesians,
+                final double blowFactor, final BondInfo bonds, final int offset,
+                final int endset);
 }
