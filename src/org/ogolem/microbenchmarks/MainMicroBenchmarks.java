@@ -84,6 +84,18 @@ public class MainMicroBenchmarks {
         final AligningBench alignBench = new AligningBench();
         runOne(alignBench, 1000);
 
+        // run angle benchmark
+        final AngleBench angleBench = new AngleBench();
+        runOne(angleBench, 10000);
+        
+        // run angle 2 benchmark
+        final AngleBench2 angleBench2 = new AngleBench2();
+        runOne(angleBench2, 10000);
+        
+        // run dihedral benchmark
+        final DihedralBench dihedralBench = new DihedralBench();
+        runOne(dihedralBench, 10000);
+
         // run a Norway packing mutation benchmark
         final NorwayPackingLJBench norwayLJ38Bench = new NorwayPackingLJBench(38);
         runOne(norwayLJ38Bench, 5);

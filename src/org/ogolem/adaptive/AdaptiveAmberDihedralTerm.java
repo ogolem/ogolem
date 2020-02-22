@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2011-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.CoordTranslation;
 import org.ogolem.core.Gradient;
 import org.ogolem.core.Topology;
 import org.ogolem.helpers.Tuple3D;
@@ -52,7 +53,7 @@ import org.ogolem.math.TrivialLinearAlgebra;
  * An implementation of AMBERs dihedral term. Please note that to-date it is
  * fixed to two terms per dihedral.
  * @author Johannes Dieterich
- * @version 2015-07-31
+ * @version 2019-12-30
  */
 public final class AdaptiveAmberDihedralTerm implements AdaptiveInteractionTerm {
     //XXX do not always compute both sin/cos() depending upon param[0] and param[3]
@@ -115,12 +116,6 @@ public final class AdaptiveAmberDihedralTerm implements AdaptiveInteractionTerm 
 
         final String[] atoms = topology.getAtomNames();
         final double[][] pos = topology.getPositions();
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-        final double[] scr3 = new double[3];
-        final double[] scr4 = new double[3];
-        final double[] scr5 = new double[3];
-        final double[] scr6 = new double[3];
         final int[][] inter14 = topology.get14ContributionsField();
 
         if(useCaching && paramOffsetCache == null){
@@ -153,7 +148,7 @@ public final class AdaptiveAmberDihedralTerm implements AdaptiveInteractionTerm 
             } else offset = paramOffsetCache[counter]; // use the cache
             
             // compute angle
-            final double angle = calcDihedral(pos, inter[0], inter[1], inter[2], inter[3], scr1, scr2, scr3, scr4, scr5, scr6);
+            final double angle = CoordTranslation.calcDihedral(pos, inter[0], inter[1], inter[2], inter[3]);
             if(angle != angle){
                 System.err.println("WARNING: NaN angle in Amber dihedral for "
                         + inter[0] +" " + inter[1] + " " + inter[2] + " " + inter[3]
@@ -176,12 +171,6 @@ public final class AdaptiveAmberDihedralTerm implements AdaptiveInteractionTerm 
         if(startEnd == null) return FixedValues.NONCONVERGEDENERGY;
 
         final double[][] pos = topology.getPositions();
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-        final double[] scr3 = new double[3];
-        final double[] scr4 = new double[3];
-        final double[] scr5 = new double[3];
-        final double[] scr6 = new double[3];
         final String[] atoms = topology.getAtomNames();
         final int[][] inters = topology.get14ContributionsField();
 
@@ -215,7 +204,7 @@ public final class AdaptiveAmberDihedralTerm implements AdaptiveInteractionTerm 
             } else param = paramOffsetCache[counter];
 
             // compute angle
-            final double angle = calcDihedral(pos, inter[0], inter[1], inter[2], inter[3], scr1, scr2, scr3, scr4, scr5, scr6);
+            final double angle = CoordTranslation.calcDihedral(pos, inter[0], inter[1], inter[2], inter[3]);
             if (angle != angle) {
                 System.err.println("WARNING: NaN angle in Amber dihedral for "
                         + inter[0] + " " + inter[1] + " " + inter[2] + " " + inter[3]
@@ -514,67 +503,5 @@ public final class AdaptiveAmberDihedralTerm implements AdaptiveInteractionTerm 
             // needs to be this one now. in good and in bad...
             return sb2.toString();
         }
-    }
-        
-    /**
-     * Calculates the dihedral angle out of four cartesian coordinates.
-     * see e.g.: http://structbio.biochem.dal.ca/jrainey/dihedralcalc.html for an explanation.
-     * @return The dihedral angle.
-     */    
-    private double calcDihedral(final double[][] xyz, final int k, final int l,
-            final int m, final int n,
-            final double[] scr1, final double[] scr2, final double[] scr3,
-            final double[] scr4, final double[] scr5, final double[] scr6) {
-
-        final double[] daBOne = scr1;
-        final double[] daBTwo = scr2;
-        final double[] daBThree = scr3;
-        final double[] daCOne = scr4;
-        final double[] daCTwo = scr5;
-        final double[] daCThree = scr6;
-
-        for (int i = 0; i < 3; i++) {
-            daBOne[i] = xyz[i][k] - xyz[i][l];
-            daBTwo[i] = xyz[i][l] - xyz[i][m];
-            daBThree[i] = xyz[i][m] - xyz[i][n];
-        }
-
-        TrivialLinearAlgebra.crossProduct(daBOne, daBTwo, daCOne);
-        TrivialLinearAlgebra.crossProduct(daBTwo, daBThree, daCTwo);
-        TrivialLinearAlgebra.crossProduct(daCOne, daCTwo, daCThree);
-
-        // calculate the length of the daCThree vector
-        final double le = sqrt(daCThree[0]*daCThree[0] + daCThree[1]*daCThree[1] + daCThree[2]*daCThree[2]);
-
-        if (le < 0.001) {
-            // take care of numerical inaccuracies
-            if (daCOne[0] * daCTwo[0] >= 0
-                    && daCOne[1] * daCTwo[1] >= 0
-                    && daCOne[2] * daCTwo[2] >= 0) {
-                return 0.0; // parallel vectors
-            } else return Math.PI;
-        }
-
-        // calculate the dihedral as the vector angle
-        final double dDihedral = (TrivialLinearAlgebra.dotProduct(daBTwo, daCThree) > 0.0) ? -angle(daCOne, daCTwo) : angle(daCOne, daCTwo);
-
-        return dDihedral;
-    }
-    
-    private double angle(final double[] v1, final double[] v2) {
-        
-        // the angle is given by math.acos of the dot product of the two (normalized) direction vectors: v1 v2 = |v1||v2| cos(angle)
-
-        // normalize them
-        final double n1 = 1/sqrt(v1[0]*v1[0] + v1[1]*v1[1] + v1[2]*v1[2]);
-        final double n2 = 1/sqrt(v2[0]*v2[0] + v2[1]*v2[1] + v2[2]*v2[2]);
-
-        // calculate the dot product
-        final double dp = n1*v1[0] * n2*v2[0] + n1*v1[1] * n2*v2[1] + n1*v1[2] * n2*v2[2];
-
-        // calculate the bond angle and return it
-        final double ang = math.acos(dp);
-        
-        return ang;
     }
 }

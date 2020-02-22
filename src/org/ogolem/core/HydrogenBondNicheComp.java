@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import org.ogolem.generic.genericpool.NicheComputer;
  * based on water molecules where atoms are defined as OHH in the input.
  * Ignores other building blocks/molecules.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2019-12-29
  */
 public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
     
@@ -84,10 +84,7 @@ public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
         final int[] noAtsPerMol = c.getAllAtomsPerMol();
         
         int noHBonds = 0;
-        
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-        
+                
         int atOff1 = 0;
         for(int mol1 = 0; mol1 < c.getNoOfMolecules()-1; mol1++){
             if(noAtsPerMol[mol1] != 3 || !allAtsCorrect(atomNos, atOff1)){
@@ -117,7 +114,7 @@ public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
                 final double ohO1Z = xyz[2][atOff1]-xyz[2][atOff2+1];
                 final double distO1 = sqrt(ohO1X*ohO1X + ohO1Y*ohO1Y + ohO1Z*ohO1Z);
                 if(distO1 <= maxDistOH){
-                    final double angle = CoordTranslation.calcAngle(xyz, atOff2+1, atOff2, atOff1, scr1, scr2);
+                    final double angle = CoordTranslation.calcAngle(xyz, atOff2+1, atOff2, atOff1);
                     if (angle <= maxAngle) {
                         noHBonds++;
                         continue;
@@ -129,7 +126,7 @@ public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
                 final double ohO2Z = xyz[2][atOff1]-xyz[2][atOff2+2];
                 final double distO2 = sqrt(ohO2X*ohO2X + ohO2Y*ohO2Y + ohO2Z*ohO2Z);
                 if(distO2 <= maxDistOH){
-                    final double angle = CoordTranslation.calcAngle(xyz, atOff2+2, atOff2, atOff1, scr1, scr2);
+                    final double angle = CoordTranslation.calcAngle(xyz, atOff2+2, atOff2, atOff1);
                     if (angle <= maxAngle) {
                         noHBonds++;
                         continue;
@@ -141,7 +138,7 @@ public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
                 final double oh1OZ = xyz[2][atOff1+1]-xyz[2][atOff2];
                 final double dist1O = sqrt(oh1OX*oh1OX + oh1OY*oh1OY + oh1OZ*oh1OZ);
                 if(dist1O <= maxDistOH){
-                    final double angle = CoordTranslation.calcAngle(xyz, atOff1+1, atOff1, atOff2, scr1, scr2);
+                    final double angle = CoordTranslation.calcAngle(xyz, atOff1+1, atOff1, atOff2);
                     if (angle <= maxAngle) {
                         noHBonds++;
                         continue;
@@ -153,7 +150,7 @@ public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
                 final double oh2OZ = xyz[2][atOff1+2]-xyz[2][atOff2];
                 final double dist2O = sqrt(oh2OX*oh2OX + oh2OY*oh2OY + oh2OZ*oh2OZ);
                 if(dist2O <= maxDistOH){
-                    final double angle = CoordTranslation.calcAngle(xyz, atOff1+2, atOff1, atOff2, scr1, scr2);
+                    final double angle = CoordTranslation.calcAngle(xyz, atOff1+2, atOff1, atOff2);
                     if (angle <= maxAngle) {
                         noHBonds++;
                         continue;

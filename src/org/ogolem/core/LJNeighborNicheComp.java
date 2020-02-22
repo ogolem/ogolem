@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import org.ogolem.helpers.IndexSort;
  * icosahedral, decahedral, tetrahedral, and fcc,
  * based on the neighborhoods of selected or all atoms
  * @author Bernd Hartke
- * @version 2015-11-11
+ * @version 2019-12-29
  */
 class LJNeighborNicheComp implements NicheComputer<Molecule,Geometry> {
     
@@ -301,8 +301,6 @@ class LJNeighborNicheComp implements NicheComputer<Molecule,Geometry> {
 // now finally really loop through all surface atoms
         int count90 = 0;
         final double radtodeg = 180.0/Math.PI;
-        final double [] scr1 = new double[3];
-        final double [] scr2 = new double[3];
 // All these loops should start at 1, not at 0, since we want to skip the 1st = central atom!!        
         for(int i=1; i < lastNNIndex; i++){
             for(int j=1; j < lastNNIndex; j++){
@@ -312,7 +310,7 @@ class LJNeighborNicheComp implements NicheComputer<Molecule,Geometry> {
 // we want to have "i" "in the middle" (since ij and ik are bound, but possibly not jk)                            
 //                            System.out.println((j+2) + " " + (i+2) + " " + (k+2));
                             final double angle = radtodeg * CoordTranslation.calcAngle(xyz, 
-                                    distIndexOrdered[j+1], distIndexOrdered[i+1], distIndexOrdered[k+1], scr1, scr2);
+                                    distIndexOrdered[j+1], distIndexOrdered[i+1], distIndexOrdered[k+1]);
 //                            System.out.println("angle: " + angle);
 // again, also this tolerance is somewhat arbitrary; non-central neighborhoods are somewhat distorted,
 // even in the perfect lowest-energy minima, to within about 3 degrees...                            
