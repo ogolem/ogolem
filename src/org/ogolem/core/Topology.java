@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import org.ogolem.math.AcosLookup;
  * A value object representing a topology. Not everything needs to be filled in
  * and it is highly recommended to extend this when needed.
  * @author Johannes Dieterich
- * @version 2016-02-24
+ * @version 2019-12-29
  */
 public class Topology implements Cloneable, Serializable {
 
@@ -459,7 +459,7 @@ public class Topology implements Cloneable, Serializable {
         // only compute if necessary
         if(angles != null) {return angles[i][j][k];}
         //XXX acos()?!
-        else {return CoordTranslation.calcAngle(positions, i, j, k, scr1, scr2);}
+        else {return CoordTranslation.calcAngle(positions, i, j, k);}
     }
     
     /**
@@ -538,7 +538,7 @@ public class Topology implements Cloneable, Serializable {
                 for(int k = 0; k < noOfAngles; k++){
                     if(i == k || j == k) {continue;}
                     //XXX symmetry!
-                    angles[i][j][k] = CoordTranslation.calcAngle(positions, i, j, k, scr1, scr2);
+                    angles[i][j][k] = CoordTranslation.calcAngle(positions, i, j, k);
                 }
             }
         }
@@ -557,7 +557,7 @@ public class Topology implements Cloneable, Serializable {
                 for(int k = 0; k < noOfAngles; k++){
                     if(i == k || j == k || !bonds.hasBond(j, k)) {continue;}
                     //XXX symmetry!
-                    bondedAngles[i][j][k] = CoordTranslation.calcAngle(positions, i, j, k, scr1, scr2);
+                    bondedAngles[i][j][k] = CoordTranslation.calcAngle(positions, i, j, k);
                 }
             }
         }

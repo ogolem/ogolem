@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2011-2012, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.CoordTranslation;
 import org.ogolem.core.Gradient;
 import org.ogolem.core.Topology;
 import org.ogolem.helpers.Tuple3D;
@@ -52,7 +53,7 @@ import org.ogolem.io.InputPrimitives;
  * is assumed that *all* systems calculated with this object are the same!
  * Please note this!
  * @author Johannes Dieterich
- * @version 2015-07-31
+ * @version 2019-12-30
  */
 public final class AdaptiveAmberAngleTerm implements AdaptiveInteractionTerm {
 
@@ -127,8 +128,6 @@ public final class AdaptiveAmberAngleTerm implements AdaptiveInteractionTerm {
             }
         }
 
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
         // a paramobject, per default with all params
         double[] p = params.getAllParamters();
         int offset = 0;
@@ -151,7 +150,7 @@ public final class AdaptiveAmberAngleTerm implements AdaptiveInteractionTerm {
             }
 
             // compute angle
-            final double angle = calcAngle(pos, inter[0], inter[1], inter[2], scr1, scr2);
+            final double angle = CoordTranslation.calcAngle(pos, inter[0], inter[1], inter[2]);
             if(angle != angle){
                 System.err.println("WARNING: NaN angle in Amber angle for "
                         + inter[0] +" " + inter[1] + " " + inter[2] + ". Continuing.");
@@ -191,9 +190,6 @@ public final class AdaptiveAmberAngleTerm implements AdaptiveInteractionTerm {
             }
         }
 
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-
         // loop over all interactions
         double energy = 0.0;
         for (int counter = 0; counter < inters.length; counter++) {
@@ -210,7 +206,7 @@ public final class AdaptiveAmberAngleTerm implements AdaptiveInteractionTerm {
             }
 
             // compute angle
-            final double angle = calcAngle(pos, inters[counter][0], inters[counter][1], inters[counter][2], scr1, scr2);
+            final double angle = CoordTranslation.calcAngle(pos, inters[counter][0], inters[counter][1], inters[counter][2]);
             if (angle != angle) {
                 System.err.println("WARNING: NaN angle in Amber angle for "
                         + inters[counter][0] + " " + inters[counter][1] + " " + inters[counter][2] + ". Continuing.");
@@ -450,40 +446,5 @@ public final class AdaptiveAmberAngleTerm implements AdaptiveInteractionTerm {
             // needs to be this one now. in good and in bad...
             return sb2.toString();
         }
-    }
-    
-    private double calcAngle(final double[][] xyz, final int i, final int j,
-            final int k, final double[] scr1, final double[] scr2){
-
-        // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        final double[] daVectorOne = scr1;
-        final double[] daVectorTwo = scr2;
-        // calculate the direction vectors
-        for (int c = 0; c < 3; c++) {
-            daVectorOne[c] = xyz[c][i] - xyz[c][j];
-            daVectorTwo[c] = xyz[c][k] - xyz[c][j];
-        }
-
-        final double dAngle = angle(daVectorOne, daVectorTwo);
-
-        return dAngle;
-
-    }
-    
-    private double angle(final double[] v1, final double[] v2) {
-        
-        // the angle is given by acos of the dot product of the two (normalized) direction vectors: v1 v2 = |v1||v2| cos(angle)
-
-        // normalize them
-        final double n1 = sqrt(v1[0]*v1[0] + v1[1]*v1[1] + v1[2]*v1[2]);
-        final double n2 = sqrt(v2[0]*v2[0] + v2[1]*v2[1] + v2[2]*v2[2]);
-
-        // calculate the dot product
-        final double dp = (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2])/(n1*n2);
-
-        // calculate the bond angle and return it
-        final double ang = math.acos(dp);
-        
-        return ang;
     }
 }

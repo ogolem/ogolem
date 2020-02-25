@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,58 +34,46 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
+package org.ogolem.microbenchmarks;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.CoordTranslation;
 
 /**
- * A collision info only able to store a single collision.
+ *Benchmark the speed of computing an angle from three vectors of Cartesian coordinates
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2019-12-29
  */
-public class SingleCollisionInfo extends AbstractCollisionInfo {
-
-    private static final long serialVersionUID = (long) 20150720;
+class AngleBench2 implements SingleMicroBenchmark {
     
-    private int atom1;
-    private int atom2;
-    private double strength;
+    private final double[] coord1 = new double[3];
+    private final double[] coord2 = new double[3];
+    private final double[] coord3 = new double[3];
+    
+    AngleBench2(){
+        final CartesianCoordinates kana = CartesianCoordinatesLibrary.getKanamycinAMP2Opt();
+        final double[][] xyz = kana.getAllXYZCoordsCopy();
+        
+        coord1[0] = xyz[0][10];
+        coord1[1] = xyz[1][10];
+        coord1[2] = xyz[2][10];
+        
+        coord2[0] = xyz[0][30];
+        coord2[1] = xyz[1][30];
+        coord2[2] = xyz[2][30];
+        
+        coord3[0] = xyz[0][68];
+        coord3[1] = xyz[1][68];
+        coord3[2] = xyz[2][68];
+    }
     
     @Override
-    public boolean reportCollision(final int atom1, final int atom2, final double strength) {
-        
-        if(noCollisions > 0){
-            System.err.println("Previous collision already stored in SingleCollisionInfo.");
-            return false;
-        }
-        
-        this.atom1 = atom1;
-        this.atom2 = atom2;
-        this.strength = strength;
-        noCollisions++;
-        
-        return true;
+    public double runSingle() throws Exception {
+        return CoordTranslation.calcAngle(coord1, coord2, coord3);
     }
 
     @Override
-    public List<Collision> getCollisions() {
-        
-        if(noCollisions == 0){
-            return new ArrayList<>();
-        }
-        
-        final Collision coll = new Collision(atom1,atom2,strength);
-        final List<Collision> colls = new ArrayList<>();
-        colls.add(coll);
-        
-        return colls;
-    } 
-
-    @Override
-    protected void cleanState() {
-        atom1 = -1;
-        atom2 = -1;
-        strength = -1.0;
+    public String name() {
+        return "angle benchmark II";
     }
 }

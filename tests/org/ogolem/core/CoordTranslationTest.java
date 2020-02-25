@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,7 +44,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Johannes Dieterich
- * @version 2014-12-30
+ * @version 2019-12-30
  */
 public class CoordTranslationTest {
     
@@ -183,5 +184,105 @@ public class CoordTranslationTest {
             assertEquals(ang1,san5,NUMACC);
             
         }
+    }
+    
+    @Test
+    public void testCalcAngle() {
+        
+        double[][] xyz = new double[3][3];
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        double angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+        assertEquals(Math.PI,angle,NUMACC);
+        
+        xyz = new double[3][3];
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 1.0;
+        xyz[1][2] = 1.0;
+        angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+        assertEquals(Math.PI/2,angle,NUMACC);
+        
+        xyz = new double[3][3];
+        xyz[0][1] = 1.0;
+        angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+        assertEquals(0.0,angle,NUMACC);
+        
+        xyz = new double[3][3];
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 1.0;
+        xyz[1][2] = -1.0;
+        angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+        assertEquals(Math.PI/2,angle,NUMACC);
+    }
+    
+    @Test
+    public void testCalcDihedral() {
+        
+        double[][] xyz = new double[3][4];
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 3.0;
+        double dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(0.0,dihedral,NUMACC);
+        
+        xyz = new double[3][4];
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 2.0;
+        xyz[1][3] = 1.0;
+        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(0.0,dihedral,NUMACC);
+        
+        xyz = new double[3][4];
+        xyz[1][0] = -1.0;
+        xyz[0][0] = 1.0;
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 2.0;
+        xyz[1][3] = 1.0;
+        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(Math.PI,dihedral,NUMACC);
+        
+        xyz = new double[3][4];
+        xyz[1][0] = -1.0;
+        xyz[0][0] = 1.0;
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 2.0;
+        xyz[2][3] = 1.0;
+        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(-Math.PI/2,dihedral,NUMACC);
+        
+        xyz = new double[3][4];
+        xyz[1][0] = -1.0;
+        xyz[0][0] = 1.0;
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 2.0;
+        xyz[2][3] = -1.0;
+        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(Math.PI/2,dihedral,NUMACC);
+        
+        xyz = new double[3][4];
+        xyz[1][0] = -1.0;
+        xyz[0][0] = 1.0;
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 2.0;
+        xyz[1][3] = -1.0;
+        xyz[2][3] = -1.0;
+        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(Math.PI/4,dihedral,NUMACC);
+        
+        xyz = new double[3][4];
+        xyz[1][0] = -1.0;
+        xyz[0][0] = 1.0;
+        xyz[0][1] = 1.0;
+        xyz[0][2] = 2.0;
+        xyz[0][3] = 2.0;
+        xyz[1][3] = 1.0;
+        xyz[2][3] = -1.0;
+        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+        assertEquals(3*Math.PI/4,dihedral,NUMACC);
     }
 }

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,58 +34,32 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
+package org.ogolem.microbenchmarks;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.CoordTranslation;
 
 /**
- * A collision info only able to store a single collision.
+ * Benchmark the speed of computing an angle from Cartesian coordinates
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2019-12-29
  */
-public class SingleCollisionInfo extends AbstractCollisionInfo {
+class AngleBench implements SingleMicroBenchmark {
 
-    private static final long serialVersionUID = (long) 20150720;
+    private final double[][] xyz;
     
-    private int atom1;
-    private int atom2;
-    private double strength;
+    AngleBench(){        
+        final CartesianCoordinates kana = CartesianCoordinatesLibrary.getKanamycinAMP2Opt();
+        this.xyz = kana.getAllXYZCoordsCopy();
+    }
     
     @Override
-    public boolean reportCollision(final int atom1, final int atom2, final double strength) {
-        
-        if(noCollisions > 0){
-            System.err.println("Previous collision already stored in SingleCollisionInfo.");
-            return false;
-        }
-        
-        this.atom1 = atom1;
-        this.atom2 = atom2;
-        this.strength = strength;
-        noCollisions++;
-        
-        return true;
+    public double runSingle() throws Exception {
+        return CoordTranslation.calcAngle(xyz, 10, 30, 68);
     }
 
     @Override
-    public List<Collision> getCollisions() {
-        
-        if(noCollisions == 0){
-            return new ArrayList<>();
-        }
-        
-        final Collision coll = new Collision(atom1,atom2,strength);
-        final List<Collision> colls = new ArrayList<>();
-        colls.add(coll);
-        
-        return colls;
-    } 
-
-    @Override
-    protected void cleanState() {
-        atom1 = -1;
-        atom2 = -1;
-        strength = -1.0;
+    public String name() {
+        return "angle benchmark";
     }
 }

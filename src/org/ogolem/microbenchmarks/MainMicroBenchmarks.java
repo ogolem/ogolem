@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2019, J. M. Dieterich and B. Hartke
+Copyright (c) 2019-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * Benchmarked functionalities should be micro - hence fast to benchmark and
  * fundamental.
  * @author Johannes Dieterich
- * @version 2019-12-29
+ * @version 2020-02-21
  */
 public class MainMicroBenchmarks {
     
@@ -72,10 +72,43 @@ public class MainMicroBenchmarks {
     
     public static void run(final String[] args){
         
+        // run advanced CD benchmark
+        final AdvPairwiseCDBenchmark advCDBench = new AdvPairwiseCDBenchmark();
+        runOne(advCDBench, 1000);
+        
+        // run advanced CD benchmark (check only)
+        final AdvPairwiseCDCheckOnlyBenchmark advCDBench2 = new AdvPairwiseCDCheckOnlyBenchmark();
+        runOne(advCDBench2, 1000);
+        
         // run aligning benchmark
         final AligningBench alignBench = new AligningBench();
         runOne(alignBench, 1000);
+
+        // run angle benchmark
+        final AngleBench angleBench = new AngleBench();
+        runOne(angleBench, 10000);
         
+        // run angle 2 benchmark
+        final AngleBench2 angleBench2 = new AngleBench2();
+        runOne(angleBench2, 10000);
+        
+        // run dihedral benchmark
+        final DihedralBench dihedralBench = new DihedralBench();
+        runOne(dihedralBench, 10000);
+
+        // run a Norway packing mutation benchmark
+        final NorwayPackingLJBench norwayLJ38Bench = new NorwayPackingLJBench(38);
+        runOne(norwayLJ38Bench, 5);
+        final NorwayPackingLJBench norwayLJ55Bench = new NorwayPackingLJBench(55);
+        runOne(norwayLJ55Bench, 2);
+        
+        // run small water TTM3F benchmark
+        final WaterTTM3FSmallBenchmark ttm3fSmall = new WaterTTM3FSmallBenchmark();
+        runOne(ttm3fSmall, 10);
+        
+        // run large water TTM3F benchmark
+        final WaterTTM3FLargeBenchmark ttm3fLarge = new WaterTTM3FLargeBenchmark();
+        runOne(ttm3fLarge, 10);
     }
     
     /**

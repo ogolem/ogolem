@@ -559,11 +559,6 @@ public final class CoordTranslation {
         final int[] aps = zmat.getAllAnglesConnects();
         final int[] dps = zmat.getAllDihedralConnects();
         
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-        final double[] scr3 = new double[3];
-        final double[] scr4 = new double[3];
-        final double[] scr5 = new double[3];
         for (int i = 1; i < zmat.getNoOfAtoms(); i++) {
             
             // bond length
@@ -573,13 +568,13 @@ public final class CoordTranslation {
             if(i == 1) {continue;}
             
             // bond angle
-            final double ang = calcAngle(xyz, i, bps[i], aps[i], scr1, scr2);
+            final double ang = calcAngle(xyz, i, bps[i], aps[i]);
             zmat.setABondAngle(i, ang);
             
             if(i == 2) {continue;}
             
             // dihedral
-            final double di = calcDihedral(xyz, i, bps[i], aps[i], dps[i], scr1, scr2, scr3, scr4, scr5);
+            final double di = calcDihedral(xyz, i, bps[i], aps[i], dps[i]);
             zmat.setADihedral(i, di);
         }
     }
@@ -1451,50 +1446,52 @@ public final class CoordTranslation {
         assert(xyz[0].length > j);
         assert(xyz[0].length > k);
         
-        // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        final double[] daVectorOne = new double[3];
-        final double[] daVectorTwo = new double[3];
-        // calculate the direction vectors
-        for (int c = 0; c < 3; c++) {
-            daVectorOne[c] = xyz[c][i] - xyz[c][j];
-            daVectorTwo[c] = xyz[c][k] - xyz[c][j];
-        }
-
-        final double dAngle = angle(daVectorOne, daVectorTwo);
-
-        return dAngle;
-
+        return calcAngle(xyz[0][i], xyz[1][i], xyz[2][i], xyz[0][j], xyz[1][j], xyz[2][j], xyz[0][k], xyz[1][k], xyz[2][k]);
     }
     
-    public static double calcAngle(final double[][] xyz, final int i, final int j,
-            final int k, final double[] scr1, final double[] scr2){
-
-        assert(i >= 0);
-        assert(j >= 0);
-        assert(k >= 0);
-        assert(xyz != null);
-        assert(xyz.length == 3);
-        assert(xyz[0].length == xyz[1].length);
-        assert(xyz[0].length == xyz[2].length);
-        assert(xyz[0].length > i);
-        assert(xyz[0].length > j);
-        assert(xyz[0].length > k);
-        assert(scr1 != null);
-        assert(scr2 != null);
-        assert(scr1.length >= 3);
-        assert(scr2.length >= 3);
+    /**
+     * Yes, this may look like an ugly routine and it is. However, it allows us
+     * to fuse the individual operations to obtain an angle and get rid of all
+     * scratch arrays (and array access into them).
+     * @param i0
+     * @param i1
+     * @param i2
+     * @param j0
+     * @param j1
+     * @param j2
+     * @param k0
+     * @param k1
+     * @param k2
+     * @return the angle in rads
+     */
+    private static double calcAngle(final double i0, final double i1, final double i2,
+            final double j0, final double j1, final double j2,
+            final double k0, final double k1, final double k2){
         
-        // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        // calculate the direction vectors
-        for (int c = 0; c < 3; c++) {
-            scr1[c] = xyz[c][i] - xyz[c][j];
-            scr2[c] = xyz[c][k] - xyz[c][j];
-        }
+        // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)        
+        
+        // calculate the direction vector components
+        final double d0 = i0 - j0;
+        final double d1 = i1 - j1;
+        final double d2 = i2 - j2;
+        final double e0 = k0 - j0;
+        final double e1 = k1 - j1;
+        final double e2 = k2 - j2;
+        
+        // normalize them
+        final double n1 = sqrt(d0*d0 + d1*d1 + d2*d2);
+        final double n2 = sqrt(e0*e0 + e1*e1 + e2*e2);
 
-        final double angle = angle(scr1, scr2);
+        assert(n1 != 0.0);
+        assert(n2 != 0.0);
+        
+        // calculate the dot product
+        final double dp = (d0*e0 + d1*e1 + d2*e2)/(n1*n2);
 
-        return angle;
-
+        // calculate the bond angle and return it
+        final double ang = Math.acos(dp);
+        
+        return ang;
     }
     
     public static double calcAngle(final double[] pos1, final double[] pos2, final double[] pos3){
@@ -1506,46 +1503,7 @@ public final class CoordTranslation {
         assert(pos3 != null);
         assert(pos3.length >=3);
         
-        // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        final double[] daVectorOne = new double[3];
-        final double[] daVectorTwo = new double[3];
-        // calculate the direction vectors
-        for (int c = 0; c < 3; c++) {
-            daVectorOne[c] = pos1[c] - pos2[c];
-            daVectorTwo[c] = pos3[c] - pos2[c];
-        }
-
-        final double dAngle = angle(daVectorOne, daVectorTwo);
-
-        return dAngle;
-
-    }
-    
-    public static double calcAngle(final double[] pos1, final double[] pos2,
-            final double[] pos3, final double[] scr1, final double[] scr2){
-
-        assert(pos1 != null);
-        assert(pos1.length >=3);
-        assert(pos2 != null);
-        assert(pos2.length >=3);
-        assert(pos3 != null);
-        assert(pos3.length >=3);
-        assert(scr1 != null);
-        assert(scr1.length >=3);
-        assert(scr2 != null);
-        assert(scr2.length >=3);
-        
-        // the angle is given by acos of the dot product of the two (normalised) direction vectors: v1 v2 = |v1||v2| cos(angle)
-        // calculate the direction vectors
-        for (int c = 0; c < 3; c++) {
-            scr1[c] = pos1[c] - pos2[c];
-            scr2[c] = pos3[c] - pos2[c];
-        }
-
-        final double dAngle = angle(scr1, scr2);
-
-        return dAngle;
-
+        return calcAngle(pos1[0], pos1[1], pos1[2], pos2[0], pos2[1], pos2[2], pos3[0], pos3[1], pos3[2]);
     }
 
     private static double angle(final double[] v1, final double[] v2) {
@@ -1564,6 +1522,67 @@ public final class CoordTranslation {
         
         return ang;
     }
+    
+    private static double calcDihedral(final double k0, final double k1, final double k2,
+            final double l0, final double l1, final double l2,
+            final double m0, final double m1, final double m2,
+            final double n0, final double n1, final double n2){
+        
+        final double diffKL0 = k0 - l0;
+        final double diffKL1 = k1 - l1;
+        final double diffKL2 = k2 - l2;
+        
+        final double diffLM0 = l0 - m0;
+        final double diffLM1 = l1 - m1;
+        final double diffLM2 = l2 - m2;
+        
+        final double diffMN0 = m0 - n0;
+        final double diffMN1 = m1 - n1;
+        final double diffMN2 = m2 - n2;
+        
+        final double crossKL_LM_0 = diffKL1*diffLM2 - diffKL2*diffLM1;
+        final double crossKL_LM_1 = diffKL2*diffLM0 - diffKL0*diffLM2;
+        final double crossKL_LM_2 = diffKL0*diffLM1 - diffKL1*diffLM0;
+        
+        final double crossLM_MN_0 = diffLM1*diffMN2 - diffLM2*diffMN1;
+        final double crossLM_MN_1 = diffLM2*diffMN0 - diffLM0*diffMN2;
+        final double crossLM_MN_2 = diffLM0*diffMN1 - diffLM1*diffMN0;
+        
+        final double crossCross_0 = crossKL_LM_1*crossLM_MN_2 - crossKL_LM_2*crossLM_MN_1;
+        final double crossCross_1 = crossKL_LM_2*crossLM_MN_0 - crossKL_LM_0*crossLM_MN_2;
+        final double crossCross_2 = crossKL_LM_0*crossLM_MN_1 - crossKL_LM_1*crossLM_MN_0;
+        
+        // calculate the length of the cross-cross vector
+        final double le = sqrt(crossCross_0*crossCross_0 + crossCross_1*crossCross_1 + crossCross_2*crossCross_2);
+
+        if (le < 0.001) {
+            // take care of numerical inaccuracies
+            if (crossKL_LM_0*crossLM_MN_0 >= 0
+                    && crossKL_LM_1*crossLM_MN_1 >= 0
+                    && crossKL_LM_2*crossLM_MN_2 >= 0) {
+                return 0.0; // parallel vectors
+            } else return Math.PI;
+        }
+
+        // calculate the dihedral as the vector angle
+        
+        final double norm1 = sqrt(crossKL_LM_0*crossKL_LM_0 + crossKL_LM_1*crossKL_LM_1 + crossKL_LM_2*crossKL_LM_2);
+        final double norm2 = sqrt(crossLM_MN_0*crossLM_MN_0 + crossLM_MN_1*crossLM_MN_1 + crossLM_MN_2*crossLM_MN_2);
+
+        assert(norm1 != 0.0);
+        assert(norm2 != 0.0);
+        
+        // calculate the dot product
+        final double dp = (crossKL_LM_0*crossLM_MN_0 + crossKL_LM_1*crossLM_MN_1 + crossKL_LM_2*crossLM_MN_2)/(norm1*norm2);
+
+        // calculate the dihedral and return it after figuring sign out
+        final double dihedral = Math.acos(dp);
+
+        final double dotProd = diffLM0*crossCross_0 + diffLM1*crossCross_1 + diffLM2*crossCross_2;
+        
+        // i.e., diffLM_x and crossCross_x
+        return (dotProd > 0.0) ? -dihedral : dihedral;
+    }
 
     /**
      * Calculates the dihedral angle out of four cartesian coordinates in the order present in a z matrix.
@@ -1573,125 +1592,15 @@ public final class CoordTranslation {
      * @param l atom 2 for dihedral calculation
      * @param m atom 3 for dihedral calculation
      * @param n atom 4 for dihedral calculation
-     * @param scr1 scratch space, 3 element array
-     * @param scr2 scratch space, 3 element array
-     * @param scr3 scratch space, 3 element array
-     * @param scr4 scratch space, 3 element array
-     * @param scr5 scratch space, 3 element array
      * @return The dihedral angle.
      */    
     public static double calcDihedral(final double[][] xyz, final int k, final int l,
-            final int m, final int n,
-            final double[] scr1, final double[] scr2, final double[] scr3,
-            final double[] scr4, final double[] scr5) {
-        
-        assert(k >= 0);
-        assert(l >= 0);
-        assert(m >= 0);
-        assert(n >= 0);
-        assert(xyz != null);
-        assert(xyz.length == 3);
-        assert(xyz[0].length == xyz[1].length);
-        assert(xyz[0].length == xyz[2].length);
-        assert(xyz[0].length > k);
-        assert(xyz[0].length > l);
-        assert(xyz[0].length > m);
-        assert(xyz[0].length > n);
-        assert(scr1 != null);
-        assert(scr1.length >= 3);
-        assert(scr2 != null);
-        assert(scr2.length >= 3);
-        assert(scr3 != null);
-        assert(scr3.length >= 3);
-        assert(scr4 != null);
-        assert(scr4.length >= 3);
-        assert(scr5 != null);
-        assert(scr5.length >= 3);
-        
-        for (int i = 0; i < 3; i++) {
-            scr1[i] = xyz[i][k] - xyz[i][l];
-            scr2[i] = xyz[i][l] - xyz[i][m];
-            scr3[i] = xyz[i][m] - xyz[i][n];
-        }
-
-        crossProduct(scr1, scr2, scr4);
-        crossProduct(scr2, scr3, scr1);
-        crossProduct(scr4, scr1, scr5);
-
-        // calculate the length of the daCThree vector
-        final double le = sqrt(scr5[0]*scr5[0] + scr5[1]*scr5[1] + scr5[2]*scr5[2]);
-
-        if (le < 0.001) {
-            // take care of numerical inaccuracies
-            return 0.0;
-        }
-
-        // calculate the dihedral as the vector angle
-        final double dihedral = angle(scr4, scr1);
-
-        return (TrivialLinearAlgebra.dotProduct(scr2, scr5) > 0.0) ? -dihedral : dihedral;
-    }
-    
-    public static double calcDihedral(final double[][] xyz, final int k, final int l,
             final int m, final int n) {
-
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-        final double[] scr3 = new double[3];
-        final double[] scr4 = new double[3];
-        final double[] scr5 = new double[3];
         
-        return calcDihedral(xyz,k,l,m,n,scr1,scr2,scr3,scr4,scr5);
+        return calcDihedral(xyz[0][k], xyz[1][k], xyz[2][k], xyz[0][l], xyz[1][l], xyz[2][l],
+                xyz[0][m], xyz[1][m], xyz[2][m], xyz[0][n], xyz[1][n], xyz[2][n]);
     }
-    
-    public static double calcDihedral(final double[] pos1, final double[] pos2,
-                final double[] pos3, final double[] pos4,
-            final double[] scr1, final double[] scr2, final double[] scr3,
-            final double[] scr4, final double[] scr5) {
         
-        assert(pos1 != null);
-        assert(pos1.length >=3);
-        assert(pos2 != null);
-        assert(pos2.length >=3);
-        assert(pos3 != null);
-        assert(pos3.length >=3);
-        assert(pos4 != null);
-        assert(pos4.length >=3);
-        assert(scr1 != null);
-        assert(scr1.length >=3);
-        assert(scr2 != null);
-        assert(scr2.length >=3);
-        assert(scr3 != null);
-        assert(scr3.length >=3);
-        assert(scr4 != null);
-        assert(scr4.length >=3);
-        assert(scr5 != null);
-        assert(scr5.length >=3);
-        
-        for (int i = 0; i < 3; i++) {
-            scr1[i] = pos1[i] - pos2[i];
-            scr2[i] = pos2[i] - pos3[i];
-            scr3[i] = pos3[i] - pos4[i];
-        }
-
-        crossProduct(scr1, scr2, scr4);
-        crossProduct(scr2, scr3, scr1);
-        crossProduct(scr4, scr1, scr5);
-
-        // calculate the length of the daCThree vector
-        final double le = sqrt(scr5[0]*scr5[0] + scr5[1]*scr5[1] + scr5[2]*scr5[2]);
-
-        if (le < 0.001) {
-            // take care of numerical inaccuracies
-            return 0.0;
-        }
-
-        // calculate the dihedral as the vector angle
-        final double dihedral = angle(scr4, scr1);
-
-        return (TrivialLinearAlgebra.dotProduct(scr2, scr5) > 0.0) ? -dihedral : dihedral;
-    }
-    
     public static double calcDihedral(final double[] pos1, final double[] pos2,
             final double[] pos3, final double[] pos4) {
 
@@ -1704,13 +1613,8 @@ public final class CoordTranslation {
         assert(pos4 != null);
         assert(pos4.length >=3);
         
-        final double[] scr1 = new double[3];
-        final double[] scr2 = new double[3];
-        final double[] scr3 = new double[3];
-        final double[] scr4 = new double[3];
-        final double[] scr5 = new double[3];
-        
-        return calcDihedral(pos1,pos2,pos3,pos4,scr1,scr2,scr3,scr4,scr5);
+        return calcDihedral(pos1[0], pos1[1], pos1[2], pos2[0], pos2[1], pos2[2],
+                pos3[0], pos3[1], pos3[2], pos4[0], pos4[1], pos4[2]);
     }
     
     /**

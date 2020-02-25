@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2019, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,58 +34,43 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
+package org.ogolem.microbenchmarks;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.ogolem.core.AdvancedPairWise;
+import org.ogolem.core.BondInfo;
+import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.CoordTranslation;
+import org.ogolem.core.DummyCollisionStrengthComputer;
 
 /**
- * A collision info only able to store a single collision.
+ * Benchmark the advanced pairwise CD which is our work horse for CD. Check only
+ * for collisions w/o calculating explicit distances or storing them.
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-02-01
  */
-public class SingleCollisionInfo extends AbstractCollisionInfo {
-
-    private static final long serialVersionUID = (long) 20150720;
+class AdvPairwiseCDCheckOnlyBenchmark implements SingleMicroBenchmark {
     
-    private int atom1;
-    private int atom2;
-    private double strength;
+    private static final double BLOWFAC = 1.4;
+    private final CartesianCoordinates cartesians;
+    private final AdvancedPairWise cd;
+    private final BondInfo bonds;
     
-    @Override
-    public boolean reportCollision(final int atom1, final int atom2, final double strength) {
-        
-        if(noCollisions > 0){
-            System.err.println("Previous collision already stored in SingleCollisionInfo.");
-            return false;
-        }
-        
-        this.atom1 = atom1;
-        this.atom2 = atom2;
-        this.strength = strength;
-        noCollisions++;
-        
-        return true;
+    AdvPairwiseCDCheckOnlyBenchmark(){
+        this.cartesians = CartesianCoordinatesLibrary.getKanamycinAPM3Opt();
+        this.cd = new AdvancedPairWise(false, new DummyCollisionStrengthComputer());
+        this.bonds = CoordTranslation.checkForBonds(cartesians, BLOWFAC);
     }
-
+    
     @Override
-    public List<Collision> getCollisions() {
-        
-        if(noCollisions == 0){
-            return new ArrayList<>();
-        }
-        
-        final Collision coll = new Collision(atom1,atom2,strength);
-        final List<Collision> colls = new ArrayList<>();
-        colls.add(coll);
-        
-        return colls;
-    } 
-
+    public String name() {
+        return "advanced pairwise collision detection (check only) bench";
+    }
+    
     @Override
-    protected void cleanState() {
-        atom1 = -1;
-        atom2 = -1;
-        strength = -1.0;
+    public double runSingle() throws Exception {
+        
+        final boolean coll = cd.checkOnlyForCollision(cartesians, BLOWFAC, bonds);
+        
+        return (coll) ? 0 : 1;
     }
 }
