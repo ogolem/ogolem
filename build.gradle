@@ -62,6 +62,23 @@ compileJava {
   options.debug = true
 }
 
+// This debug target can be used from within Netbeans. Note that the "Debug Project"
+// button does not work! However, you can open this file inside Netbeans (via
+// Projects -> Build Scripts -> build.gradle) and then in the Navigator pane
+// select and execute the "debug" task from the "Other Tasks" category.
+// From there, Netbeans debugging works, i.e., pausing and continuing of execution
+// with the regular buttons. Stopping seems to not work (yet)
+// Obviously, adjustments to this target may be necessary for the specific debugging
+// intended.
+task(debug, dependsOn: 'classes', type: JavaExec) {
+  main = 'org.ogolem.general.MainOgolem'
+  classpath = sourceSets.main.runtimeClasspath
+  // adjust these for your debugging needs
+  args '--shmem', 'ar38_sweden.ogo', '1'
+  workingDir 'examples/clusteropt/ar38/'
+  debug true
+}
+
 test {
   useJUnitPlatform()
   // branches != production lack implementation of NUMAL algorithms
