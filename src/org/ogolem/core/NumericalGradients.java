@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2011-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,7 +44,7 @@ import org.ogolem.helpers.Machine;
 /**
  * Gradients using numerical algorithms.
  * @author Johannes Dieterich
- * @version 2015-01-01
+ * @version 2020-02-09
  */
 public class NumericalGradients {
 
@@ -193,11 +194,9 @@ public class NumericalGradients {
         assert(origCartes.size() == rotated.size());
         assert(eulers.length == origCartes.size());
         
-        final double[][] rotMat = new double[3][3];
-        
         for(int mol = 0; mol < origCartes.size(); mol++){
         
-            final double[][] rotP = CoordTranslation.rotateXYZ(origCartes.get(mol).getAllXYZCoord(), eulers[mol], rotMat);
+            final double[][] rotP = CoordTranslation.rotateXYZ(origCartes.get(mol).getAllXYZCoord(), eulers[mol]);
             rotated.get(mol).setAllXYZ(rotP);
         }
     }

@@ -84,7 +84,7 @@ public class MainMicroBenchmarks {
         final AligningBench alignBench = new AligningBench();
         runOne(alignBench, 1000);
 
-        // run angle benchmark
+	// run angle benchmark
         final AngleBench angleBench = new AngleBench();
         runOne(angleBench, 10000);
         
@@ -95,14 +95,26 @@ public class MainMicroBenchmarks {
         // run dihedral benchmark
         final DihedralBench dihedralBench = new DihedralBench();
         runOne(dihedralBench, 10000);
-
+        
         // run a Norway packing mutation benchmark
         final NorwayPackingLJBench norwayLJ38Bench = new NorwayPackingLJBench(38);
-        runOne(norwayLJ38Bench, 5);
+        runOne(norwayLJ38Bench, 10);
         final NorwayPackingLJBench norwayLJ55Bench = new NorwayPackingLJBench(55);
-        runOne(norwayLJ55Bench, 2);
+        runOne(norwayLJ55Bench, 10);
         
-        // run small water TTM3F benchmark
+        // run TIP3P benchmarks
+        final TIP3PEnergyBench tip3pEBench = new TIP3PEnergyBench();
+        runOne(tip3pEBench, 10);
+        final TIP3PGradientBench tip3pGBench = new TIP3PGradientBench();
+        runOne(tip3pGBench, 10);
+        
+        // run TIP4P benchmarks
+        final TIP4PEnergyBench tip4pEBench = new TIP4PEnergyBench();
+        runOne(tip4pEBench, 10);
+        final TIP4PGradientBench tip4pGBench = new TIP4PGradientBench();
+        runOne(tip4pGBench, 10);
+
+	// run small water TTM3F benchmark
         final WaterTTM3FSmallBenchmark ttm3fSmall = new WaterTTM3FSmallBenchmark();
         runOne(ttm3fSmall, 10);
         

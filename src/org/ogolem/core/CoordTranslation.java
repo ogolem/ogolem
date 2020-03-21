@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2019, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import static java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.math.Matrix3x3;
 import org.ogolem.math.TrivialLinearAlgebra;
 import static org.ogolem.math.TrivialLinearAlgebra.crossProduct;
 
@@ -49,7 +50,7 @@ import static org.ogolem.math.TrivialLinearAlgebra.crossProduct;
  * This class transforms coordinates back and forth from different coordinate
  * systems and object representations.
  * @author Johannes Dieterich
- * @version 2019-12-30
+ * @version 2020-02-08
  */
 public final class CoordTranslation {
 
@@ -588,9 +589,8 @@ public final class CoordTranslation {
     public static double[][] rotateXYZAroundX(final double[][] xyz, final double rotation){
         
         final double[][] rotated = new double[3][xyz[0].length];
-        final double[][] rot = new double[3][3];
         
-        rotateXYZAroundX(xyz,rotation,rotated,rot);
+        rotateXYZAroundX(xyz,rotation,rotated);
         
         return rotated;
     }
@@ -600,16 +600,11 @@ public final class CoordTranslation {
      * @param xyz the set of Cartesian coordinates to be rotated. Must be of dimensions[3][N].
      * @param rotation the rotation angle in rad.
      * @param rotated a matrix of dimension [3][N] for the rotated Cartesian coordinates. Will be overwritten on return.
-     * @param scr1 a scratch matrix of dimension [3][3].
      */
     public static void rotateXYZAroundX(final double[][] xyz, final double rotation,
-            final double[][] rotated, final double[][] scr1){
+            final double[][] rotated){
         
         assert(xyz.length == 3);
-        assert(scr1.length == 3);
-        assert(scr1[0].length == 3);
-        assert(scr1[1].length == 3);
-        assert(scr1[2].length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
         assert(rotated[1].length == xyz[1].length);
@@ -618,19 +613,20 @@ public final class CoordTranslation {
         final double sinR = sin(rotation);
         final double cosR = cos(rotation);
         
-        final double[][] rot = scr1;
-        rot[0][0] = 1.0;
-        rot[0][1] = 0.0;
-        rot[0][2] = 0.0;
-        rot[1][0] = 0.0;
-        rot[1][1] = cosR;
-        rot[1][2] = -sinR;
-        rot[2][0] = 0.0;
-        rot[2][1] = sinR;
-        rot[2][2] = cosR;
+        final double rot00 = 1.0;
+        final double rot01 = 0.0;
+        final double rot02 = 0.0;
+        final double rot10 = 0.0;
+        final double rot11 = cosR;
+        final double rot12 = -sinR;
+        final double rot20 = 0.0;
+        final double rot21 = sinR;
+        final double rot22 = cosR;
+        
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
         
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
     }
     
     /**
@@ -648,9 +644,8 @@ public final class CoordTranslation {
         assert(xyz[0].length == xyz[2].length);
         
         final double[][] rotated = new double[3][xyz[0].length];
-        final double[][] rot = new double[3][3];
         
-        rotateXYZAroundY(xyz,rotation,rotated,rot);
+        rotateXYZAroundY(xyz,rotation,rotated);
         
         return rotated;
     }
@@ -660,16 +655,11 @@ public final class CoordTranslation {
      * @param xyz the set of Cartesian coordinates to be rotated. Must be of dimensions[3][N].
      * @param rotation the rotation angle in rad.
      * @param rotated a matrix of dimension [3][N] for the rotated Cartesian coordinates. Will be overwritten on return.
-     * @param scr1 a scratch matrix of dimension [3][3].
      */
     public static void rotateXYZAroundY(final double[][] xyz, final double rotation,
-            final double[][] rotated, final double[][] scr1){
+            final double[][] rotated){
         
         assert(xyz.length == 3);
-        assert(scr1.length == 3);
-        assert(scr1[0].length == 3);
-        assert(scr1[1].length == 3);
-        assert(scr1[2].length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
         assert(rotated[1].length == xyz[1].length);
@@ -678,19 +668,20 @@ public final class CoordTranslation {
         final double sinR = sin(rotation);
         final double cosR = cos(rotation);
         
-        final double[][] rot = scr1;
-        rot[0][0] = cosR;
-        rot[0][1] = 0.0;
-        rot[0][2] = sinR;
-        rot[1][0] = 0.0;
-        rot[1][1] = 1.0;
-        rot[1][2] = 0.0;
-        rot[2][0] = -sinR;
-        rot[2][1] = 0.0;
-        rot[2][2] = cosR;
+        final double rot00 = cosR;
+        final double rot01 = 0.0;
+        final double rot02 = sinR;
+        final double rot10 = 0.0;
+        final double rot11 = 1.0;
+        final double rot12 = 0.0;
+        final double rot20 = -sinR;
+        final double rot21 = 0.0;
+        final double rot22 = cosR;
+        
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
         
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
     }
 
     /**
@@ -708,9 +699,8 @@ public final class CoordTranslation {
         assert(xyz[0].length ==xyz[2].length);
         
         final double[][] rotated = new double[3][xyz[0].length];
-        final double[][] rot = new double[3][3];
         
-        rotateXYZAroundZ(xyz,rotation,rotated,rot);
+        rotateXYZAroundZ(xyz,rotation,rotated);
         
         return rotated;
     }
@@ -720,16 +710,11 @@ public final class CoordTranslation {
      * @param xyz the set of Cartesian coordinates to be rotated. Must be of dimensions[3][N].
      * @param rotation the rotation angle in rad.
      * @param rotated a matrix of dimension [3][N] for the rotated Cartesian coordinates. Will be overwritten on return.
-     * @param scr1 a scratch matrix of dimension [3][3].
      */
     public static void rotateXYZAroundZ(final double[][] xyz, final double rotation,
-            final double[][] rotated, final double[][] scr1){
+            final double[][] rotated){
         
         assert(xyz.length == 3);
-        assert(scr1.length == 3);
-        assert(scr1[0].length == 3);
-        assert(scr1[1].length == 3);
-        assert(scr1[2].length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
         assert(rotated[1].length == xyz[1].length);
@@ -738,51 +723,20 @@ public final class CoordTranslation {
         final double sinR = sin(rotation);
         final double cosR = cos(rotation);
         
-        final double[][] rot = scr1;
-        rot[0][0] = cosR;
-        rot[0][1] = -sinR;
-        rot[0][2] = 0.0;
-        rot[1][0] = sinR;
-        rot[1][1] = cosR;
-        rot[1][2] = 0.0;
-        rot[2][0] = 0.0;
-        rot[2][1] = 0.0;
-        rot[2][2] = 1.0;
+        final double rot00 = cosR;
+        final double rot01 = -sinR;
+        final double rot02 = 0.0;
+        final double rot10 = sinR;
+        final double rot11 = cosR;
+        final double rot12 = 0.0;
+        final double rot20 = 0.0;
+        final double rot21 = 0.0;
+        final double rot22 = 1.0;
+        
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
         
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated);
-    }
-    
-    static void rotateXYZAroundZ(final double[][] xyz, final double rotation,
-            final double[][] rotated, final double[][] rotMat, final double[] cache){
-        
-        assert(xyz.length == 3);
-        assert(cache.length >= 3);
-        assert(rotated.length == 3);
-        assert(rotated[0].length == xyz[0].length);
-        assert(rotated[1].length == xyz[1].length);
-        assert(rotated[2].length == xyz[2].length);
-        
-        final double sinR = sin(rotation);
-        final double cosR = cos(rotation);
-        
-        final double[][] rot = rotMat;
-        assert(rot.length == 3);
-        assert(rot[0].length == 3);
-        assert(rot[1].length == 3);
-        assert(rot[2].length == 3);
-        rot[0][0] = cosR;
-        rot[0][1] = -sinR;
-        rot[0][2] = 0.0;
-        rot[1][0] = sinR;
-        rot[1][1] = cosR;
-        rot[1][2] = 0.0;
-        rot[2][0] = 0.0;
-        rot[2][1] = 0.0;
-        rot[2][2] = 1.0;
-        
-        // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated, 3, 3, xyz[0].length, cache);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
     }
 
     /**
@@ -794,28 +748,13 @@ public final class CoordTranslation {
      */
     public static double[][] rotateXYZ(final double[][] xyz, final double[] eulers) {
         
-        final double[][] rot = new double[3][3];
-        return rotateXYZ(xyz, eulers, rot);
-    }
-    
-    /**
-     * Rotates a matrix of xyz-coordinates using the yaw-pitch-roll definition.
-     * Sanitizes the Euler angles if need be.
-     * @param xyz The matrix to be rotated in XYZ coordinates (double[3][n] though!).
-     * @param eulers The Euler angles. (phi, omega, psi)
-     * @param rot the rotation matrix as a scratch object, size [3][3]
-     * @return The rotated coordinates. Is the same object if psi=omega=phi=0.0 .
-     */
-    public static double[][] rotateXYZ(final double[][] xyz, final double[] eulers, final double[][] rot) {
-        
         final double phi = eulers[0];
         final double omega = eulers[1];
         final double psi = eulers[2];
         if(phi == 0.0 && omega == 0.0 && psi == 0.0) {return xyz;}
         
         final double[][] rotated = new double[3][xyz[0].length];
-        final double[] cache = new double[3];
-        rotateXYZ(xyz,eulers,rot,rotated, cache);
+        rotateXYZ(xyz,eulers,rotated);
         
         return rotated;
     }
@@ -826,19 +765,15 @@ public final class CoordTranslation {
      * Sanitizes the Euler angles if need be.
      * @param xyz The matrix to be rotated in XYZ coordinates (double[3][n] though!).
      * @param eulers The Euler angles. (phi, omega, psi)
-     * @param rot the rotation matrix as a scratch object, size [3][3]
      * @param rotated The rotated coordinates.
-     * @param cache a scratch array of length n or longer
      */
-    public static void rotateXYZ(final double[][] xyz, final double[] eulers, final double[][] rot,
-            final double[][] rotated, final double[] cache) {
+    public static void rotateXYZ(final double[][] xyz, final double[] eulers,
+            final double[][] rotated) {
         
-        assert(rot.length == 3);
-        assert(rot[0].length == 3);
         assert(xyz.length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
-        assert(cache.length >= 3);
+        assert(eulers.length == 3);
         
         // rotate using yaw-pitch-roll notation
         double phi = eulers[0];
@@ -868,18 +803,20 @@ public final class CoordTranslation {
         final double os = sin(omega);
         final double ss = sin(psi);
         
-        rot[0][0] = oc*sc;
-        rot[1][0] = ps*os*sc-pc*ss;
-        rot[2][0] = pc*os*sc+ps*ss;
-        rot[0][1] = oc*ss;
-        rot[1][1] = ps*os*ss+pc*sc;
-        rot[2][1] = pc*os*ss-ps*sc;
-        rot[0][2] = -os;
-        rot[1][2] = ps*oc;
-        rot[2][2] = pc*oc;
+        final double rot00 = oc*sc;
+        final double rot10 = ps*os*sc-pc*ss;
+        final double rot20 = pc*os*sc+ps*ss;
+        final double rot01 = oc*ss;
+        final double rot11 = ps*os*ss+pc*sc;
+        final double rot21 = pc*os*ss-ps*sc;
+        final double rot02 = -os;
+        final double rot12 = ps*oc;
+        final double rot22 = pc*oc;
  
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
+        
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated, 3, 3, xyz[0].length, cache);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
     }
     
     /**
@@ -888,19 +825,15 @@ public final class CoordTranslation {
      * Sanitizes the Euler angles if need be.
      * @param xyz The matrix to be rotated in XYZ coordinates (double[3][n] though!).
      * @param eulers The Euler angles. (phi, omega, psi)
-     * @param rot the rotation matrix as a scratch object, size [3][3]
      * @param rotated The derivative of the rotated coordinates w.r.t. phi.
-     * @param cache a scratch array of length n or longer
      */
-    public static void rotateXYZ_dphi(final double[][] xyz, final double[] eulers, final double[][] rot,
-            final double[][] rotated, final double[] cache) {
+    public static void rotateXYZ_dphi(final double[][] xyz, final double[] eulers,
+            final double[][] rotated) {
         
-        assert(rot.length == 3);
-        assert(rot[0].length == 3);
         assert(xyz.length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
-        assert(cache.length >= xyz[0].length);
+        assert(eulers.length == 3);
         
         // rotate using yaw-pitch-roll notation
         double phi = eulers[0];
@@ -924,18 +857,20 @@ public final class CoordTranslation {
         final double os = sin(omega);
         final double ss = sin(psi);
         
-        rot[0][0] = 0.0;
-        rot[1][0] = pc*os*sc+ps*ss;
-        rot[2][0] = -ps*os*sc+pc*ss;
-        rot[0][1] = 0.0;
-        rot[1][1] = pc*os*ss-ps*sc;
-        rot[2][1] = -ps*os*ss-pc*sc;
-        rot[0][2] = 0.0;
-        rot[1][2] = pc*oc;
-        rot[2][2] = -ps*oc;
+        final double rot00 = 0.0;
+        final double rot10 = pc*os*sc+ps*ss;
+        final double rot20 = -ps*os*sc+pc*ss;
+        final double rot01 = 0.0;
+        final double rot11 = pc*os*ss-ps*sc;
+        final double rot21 = -ps*os*ss-pc*sc;
+        final double rot02 = 0.0;
+        final double rot12 = pc*oc;
+        final double rot22 = -ps*oc;
  
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
+        
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated, 3, 3, xyz[0].length, cache);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
     }
     
     /**
@@ -944,19 +879,15 @@ public final class CoordTranslation {
      * Sanitizes the Euler angles if need be.
      * @param xyz The matrix to be rotated in XYZ coordinates (double[3][n] though!).
      * @param eulers The Euler angles. (phi, omega, psi)
-     * @param rot the rotation matrix as a scratch object, size [3][3]
      * @param rotated The derivative of the rotated coordinates w.r.t. omega.
-     * @param cache a scratch array of length n or longer
      */
-    public static void rotateXYZ_domega(final double[][] xyz, final double[] eulers, final double[][] rot,
-            final double[][] rotated, final double[] cache) {
+    public static void rotateXYZ_domega(final double[][] xyz, final double[] eulers,
+            final double[][] rotated) {
         
-        assert(rot.length == 3);
-        assert(rot[0].length == 3);
         assert(xyz.length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
-        assert(cache.length >= xyz[0].length);
+        assert(eulers.length == 3);
         
         // rotate using yaw-pitch-roll notation
         double phi = eulers[0];
@@ -980,18 +911,20 @@ public final class CoordTranslation {
         final double os = sin(omega);
         final double ss = sin(psi);
         
-        rot[0][0] = -os*sc;
-        rot[1][0] = ps*oc*sc;
-        rot[2][0] = pc*oc*sc;
-        rot[0][1] = -os*ss;
-        rot[1][1] = ps*oc*ss;
-        rot[2][1] = pc*oc*ss;
-        rot[0][2] = -oc;
-        rot[1][2] = -ps*os;
-        rot[2][2] = -pc*os;
+        final double rot00 = -os*sc;
+        final double rot10 = ps*oc*sc;
+        final double rot20 = pc*oc*sc;
+        final double rot01 = -os*ss;
+        final double rot11 = ps*oc*ss;
+        final double rot21 = pc*oc*ss;
+        final double rot02 = -oc;
+        final double rot12 = -ps*os;
+        final double rot22 = -pc*os;
+        
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
         
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated, 3, 3, xyz[0].length, cache);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
     }
     
     /**
@@ -1000,19 +933,15 @@ public final class CoordTranslation {
      * Sanitizes the Euler angles if need be.
      * @param xyz The matrix to be rotated in XYZ coordinates (double[3][n] though!).
      * @param eulers The Euler angles. (phi, omega, psi)
-     * @param rot the rotation matrix as a scratch object, size [3][3]
      * @param rotated The derivative of the rotated coordinates w.r.t. psi.
-     * @param cache a scratch array of length n or longer
      */
-    public static void rotateXYZ_dpsi(final double[][] xyz, final double[] eulers, final double[][] rot,
-            final double[][] rotated, final double[] cache) {
+    public static void rotateXYZ_dpsi(final double[][] xyz, final double[] eulers,
+            final double[][] rotated) {
         
-        assert(rot.length == 3);
-        assert(rot[0].length == 3);
         assert(xyz.length == 3);
         assert(rotated.length == 3);
         assert(rotated[0].length == xyz[0].length);
-        assert(cache.length >= xyz[0].length);
+        assert(eulers.length == 3);
         
         // rotate using yaw-pitch-roll notation
         double phi = eulers[0];
@@ -1036,18 +965,113 @@ public final class CoordTranslation {
         final double os = sin(omega);
         final double ss = sin(psi);
         
-        rot[0][0] = -oc*ss;
-        rot[1][0] = -ps*os*ss-pc*sc;
-        rot[2][0] = -pc*os*ss+ps*sc;
-        rot[0][1] = oc*sc;
-        rot[1][1] = ps*os*sc-pc*ss;
-        rot[2][1] = pc*os*sc+ps*ss;
-        rot[0][2] = 0.0;
-        rot[1][2] = 0.0;
-        rot[2][2] = 0.0;
+        final double rot00 = -oc*ss;
+        final double rot10 = -ps*os*ss-pc*sc;
+        final double rot20 = -pc*os*ss+ps*sc;
+        final double rot01 = oc*sc;
+        final double rot11 = ps*os*sc-pc*ss;
+        final double rot21 = pc*os*sc+ps*ss;
+        final double rot02 = 0.0;
+        final double rot12 = 0.0;
+        final double rot22 = 0.0;
+        
+        final Matrix3x3 rotMat = new Matrix3x3(rot00, rot01, rot02, rot10, rot11, rot12, rot20, rot21, rot22);
         
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, rotated, 3, 3, xyz[0].length, cache);
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, xyz, xyz[0].length, rotated);
+    }
+    
+    /**
+     * Derives a matrix of xyz-coordinates using the yaw-pitch-roll definition
+     * with respect to psi (roll).
+     * Sanitizes the Euler angles if need be.
+     * @param xyz The matrix to be rotated in XYZ coordinates (double[3][n] though!).
+     * @param eulers The Euler angles. (phi, omega, psi)
+     * @param dphi The derivative of the rotated coordinates w.r.t. phi.
+     * @param domega The derivative of the rotated coordinates w.r.t. omega.
+     * @param dpsi The derivative of the rotated coordinates w.r.t. psi.
+     */
+    public static void rotateXYZ_dphi_domega_dpsi(final double[][] xyz, final double[] eulers,
+            final double[][] dphi, final double[][] domega, final double[][] dpsi) {
+        
+        assert(xyz.length == 3);
+        assert(dphi.length == 3);
+        assert(dphi[0].length == xyz[0].length);
+        assert(domega.length == 3);
+        assert(domega[0].length == xyz[0].length);
+        assert(dpsi.length == 3);
+        assert(dpsi[0].length == xyz[0].length);
+        assert(eulers.length == 3);
+        
+        // rotate using yaw-pitch-roll notation
+        double phi = eulers[0];
+        double omega = eulers[1];
+        double psi = eulers[2];
+        
+        // first step: sanitize the eulers
+        phi = sanitizePhi(phi);
+        omega = sanitizeOmega(omega);
+        psi = sanitizePsi(psi);
+
+        assert(phi <= Math.PI && phi >= -Math.PI);
+        assert(omega <= 0.5*Math.PI && omega >= -0.5*Math.PI);
+        assert(psi <= Math.PI && psi >= -Math.PI);
+                
+        final double pc = cos(phi);
+        final double oc = cos(omega);
+        final double sc = cos(psi);
+        
+        final double ps = sin(phi);
+        final double os = sin(omega);
+        final double ss = sin(psi);
+        
+        final double rot00Phi = 0.0;
+        final double rot10Phi = pc*os*sc+ps*ss;
+        final double rot20Phi = -ps*os*sc+pc*ss;
+        final double rot01Phi = 0.0;
+        final double rot11Phi = pc*os*ss-ps*sc;
+        final double rot21Phi = -ps*os*ss-pc*sc;
+        final double rot02Phi = 0.0;
+        final double rot12Phi = pc*oc;
+        final double rot22Phi = -ps*oc;
+ 
+        final Matrix3x3 rotMatPhi = new Matrix3x3(rot00Phi, rot01Phi, rot02Phi,
+                rot10Phi, rot11Phi, rot12Phi, rot20Phi, rot21Phi, rot22Phi);
+        
+        // call the matrix multiplication
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMatPhi, xyz, xyz[0].length, dphi);
+        
+        final double rot00Om = -os*sc;
+        final double rot10Om = ps*oc*sc;
+        final double rot20Om = pc*oc*sc;
+        final double rot01Om = -os*ss;
+        final double rot11Om = ps*oc*ss;
+        final double rot21Om = pc*oc*ss;
+        final double rot02Om = -oc;
+        final double rot12Om = -ps*os;
+        final double rot22Om = -pc*os;
+        
+        final Matrix3x3 rotMatOm = new Matrix3x3(rot00Om, rot01Om, rot02Om,
+                rot10Om, rot11Om, rot12Om, rot20Om, rot21Om, rot22Om);
+        
+        // call the matrix multiplication
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMatOm, xyz, xyz[0].length, domega);
+        
+        final double rot00Psi = -oc*ss;
+        final double rot10Psi = -ps*os*ss-pc*sc;
+        final double rot20Psi = -pc*os*ss+ps*sc;
+        final double rot01Psi = oc*sc;
+        final double rot11Psi = ps*os*sc-pc*ss;
+        final double rot21Psi = pc*os*sc+ps*ss;
+        final double rot02Psi = 0.0;
+        final double rot12Psi = 0.0;
+        final double rot22Psi = 0.0;
+        
+        final Matrix3x3 rotMatPsi = new Matrix3x3(rot00Psi, rot01Psi, rot02Psi,
+                rot10Psi, rot11Psi, rot12Psi, rot20Psi, rot21Psi, rot22Psi);
+        
+        // call the matrix multiplication
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMatPsi, xyz, xyz[0].length, dpsi);
     }
     
     public static final double sanitizePhi(final double phi){
@@ -1692,24 +1716,11 @@ public final class CoordTranslation {
             throw new Exception("Kearsley matrix decomposition - minimal eigenvalue is complex, should not happen here.");
         }
         
-        // calculate the rotation matrix
-        final org.ejml.data.DMatrixRMaj rotMat = calculateRotationMatrix(matEigenVec);        
-        final org.ejml.data.DMatrixRMaj unrotCoordsMat = new org.ejml.data.DMatrixRMaj(aligned.getAllXYZCoord());
-
-        final org.ejml.data.DMatrixRMaj rotCoordsMat = new org.ejml.data.DMatrixRMaj(3, cartes.getNoOfAtoms());
-
-        org.ejml.dense.row.CommonOps_DDRM.mult(rotMat, unrotCoordsMat, rotCoordsMat);
-
-        final double[][] xyzAligned = aligned.getAllXYZCoord();
-        final int startX = rotCoordsMat.getIndex(0,0);
-        final int startY = rotCoordsMat.getIndex(1,0);
-        final int startZ = rotCoordsMat.getIndex(2,0);
-
-        final int noAtoms = aligned.getNoOfAtoms();
-        final double[] rotCoordsMatData = rotCoordsMat.getData();
-        System.arraycopy(rotCoordsMatData, startX, xyzAligned[0], 0, noAtoms);
-        System.arraycopy(rotCoordsMatData, startY, xyzAligned[1], 0, noAtoms);
-        System.arraycopy(rotCoordsMatData, startZ, xyzAligned[2], 0, noAtoms);
+        // calculate the rotation matrix        
+        final Matrix3x3 rotMat = calculateRotationMatrix(matEigenVec);
+        final double[][] alignedXYZ = aligned.getAllXYZCoord();
+        final double[][] alignedXYZCop = aligned.getAllXYZCoordsCopy();
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rotMat, alignedXYZCop, alignedXYZ[0].length, alignedXYZ);
 
         final double rmsd = Math.sqrt(minEigenValue/Math.min(refCartes[0].length,cartes.getNoOfAtoms()));
         
@@ -2105,9 +2116,7 @@ public final class CoordTranslation {
      * @param rot The minimum [3,3] rotation matrix, changed on exit.
      * @return The rotation matrix.
      */
-    private static org.ejml.data.DMatrixRMaj calculateRotationMatrix(final org.ejml.data.DMatrixRMaj eigen) {
-        
-        final org.ejml.data.DMatrixRMaj rot = new org.ejml.data.DMatrixRMaj(3,3);
+    private static Matrix3x3 calculateRotationMatrix(final org.ejml.data.DMatrixRMaj eigen) {
         
         final double q1 = eigen.get(0,0);
         final double q2 = eigen.get(1,0);
@@ -2115,25 +2124,19 @@ public final class CoordTranslation {
         final double q4 = eigen.get(3,0);
         
         final double rot00 = q1*q1 + q2*q2 - q3*q3 - q4*q4;
-        rot.unsafe_set(0, 0, rot00);
         final double rot01 = 2 * (q2*q3 + q1*q4);
-        rot.unsafe_set(0, 1, rot01);
         final double rot02 = 2 * (q2*q4 - q1*q3);
-        rot.unsafe_set(0, 2, rot02);
 
         final double rot10 = 2 * (q2*q3 - q1*q4);
-        rot.unsafe_set(1, 0, rot10);
         final double rot11 = q1*q1 + q3*q3 - q2*q2 - q4*q4;
-        rot.unsafe_set(1, 1, rot11);
         final double rot12 = 2 * (q3*q4 + q1*q2);
-        rot.unsafe_set(1, 2, rot12);        
 
         final double rot20 = 2 * (q2*q4 + q1*q3);
-        rot.unsafe_set(2, 0, rot20);
         final double rot21 = 2 * (q3*q4 - q1*q2);
-        rot.unsafe_set(2, 1, rot21);
         final double rot22 = q1*q1 + q4*q4 - q2*q2 - q3*q3;
-        rot.unsafe_set(2, 2, rot22);
+        
+        final Matrix3x3 rot = new Matrix3x3(rot00,rot01,rot02,rot10,rot11,rot12,
+            rot20,rot21,rot22);
         
         return rot;
     }

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,17 +44,16 @@ import org.ogolem.generic.GenericBackend;
 /**
  * Turns a Cartesian backend into a rigid body one.
  * @author Johannes Dieterich
- * @version 2015-03-28
+ * @version 2020-02-09
  */
 public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     
-    private static final long serialVersionUID = (long) 20150218;
+    private static final long serialVersionUID = (long) 20200209;
     private static final boolean DEBUG = false;
     
     private final CartesianFullBackend back;
     
     private final double[] euler = new double[3];
-    private final double[][] rotMat = new double[3][3];
 
     private Geometry cache;
     private CartesianCoordinates cartes;
@@ -65,7 +64,6 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     private List<double[][][]> rotatedCache;
     private double[][] coms;
     private double[][] comDisplacementCache;
-    private double[] matMultCache;
     
     private Gradient gradObj;
 
@@ -110,7 +108,6 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         
         // basically, we rotate the cartesian backup coordinates so that the Euler parameters can be zero'd
         final int mols = cache.getNumberOfIndieParticles();
-        final double[][] rotmat = new double[3][3];
         final double[] eulers = new double[3];
         for(int mol = 0; mol < mols; mol++){
             eulers[0] = coordinates[6*mol+3];
@@ -118,7 +115,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
             eulers[2] = coordinates[6*mol+5];
             
             final double[][] xyz = cartesBackup.get(mol).getAllXYZCoord();
-            final double[][] rotated = CoordTranslation.rotateXYZ(xyz, eulers, rotmat);
+            final double[][] rotated = CoordTranslation.rotateXYZ(xyz, eulers);
             cartesBackup.get(mol).setAllXYZ(rotated);
             
             coordinates[6*mol+3] = 0.0;
@@ -183,7 +180,6 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
             coords[mol*6+5] = euler[2];
         }
         
-        this.matMultCache = new double[maxAtPerMol];
         this.cartes = cache.getCartesiansWithEnvironment();
         this.xyz1D = new double[cache.getNumberOfAtoms()*3];
         
@@ -208,7 +204,6 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
          * with a copy.
          */
         final int mols = individual.getNumberOfIndieParticles();
-        final double[][] rotmat = new double[3][3];
         for(int mol = 0; mol < mols; mol++){
             final Molecule m = individual.getMoleculeAtPosition(mol);
             final double[] com = m.getExternalCenterOfMass();
@@ -224,7 +219,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
             
             final double[][] xyz = cartesBackup.get(mol).getAllXYZCoord();
             final double[] realEulers = new double[]{coordinates[6*mol+3],coordinates[6*mol+4],coordinates[6*mol+5]};
-            final double[][] rotated = CoordTranslation.rotateXYZ(xyz, realEulers, rotmat);
+            final double[][] rotated = CoordTranslation.rotateXYZ(xyz, realEulers);
             
             // something interesting can happen here. as the backend may add dummies (or whatever) atoms,
             // we can get an cartesian set LONGER than what the individual has. hence, this will end up as
@@ -332,7 +327,6 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         }
         
         final double[] eulers = new double[3];
-        final double[][] rotMat = new double[3][3];
         int off = 0;
         for(int mol = 0; mol < cartesians.size(); mol++){
             final double[][] molXYZ = cartesBackup.get(mol).getAllXYZCoord();
@@ -361,46 +355,30 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
             
             final double[][][] thisRotCache = rotatedCache.get(mol);
             final double[][] molXYZ_dPhi = thisRotCache[0];
-            CoordTranslation.rotateXYZ_dphi(molXYZ, eulers, rotMat, molXYZ_dPhi, matMultCache);
             final double[][] molXYZ_dOmega = thisRotCache[1];
-            CoordTranslation.rotateXYZ_domega(molXYZ, eulers, rotMat,molXYZ_dOmega, matMultCache);
             final double[][] molXYZ_dPsi = thisRotCache[2];
-            CoordTranslation.rotateXYZ_dpsi(molXYZ, eulers, rotMat,molXYZ_dPsi, matMultCache);
+            CoordTranslation.rotateXYZ_dphi_domega_dpsi(molXYZ, eulers, molXYZ_dPhi, molXYZ_dOmega, molXYZ_dPsi);
             
-            /* NOTE TO MYSELF:
-             * molXYZ: must be correct (energy is right, transl gradient is right)
-             * molGrad: likely be right (transl. gradient is right, unrotated Euler is right, phi is right)
-             * order of rotateYXZ_dXXX calls does not influence result
-             * first or second mol has non-zero Euler: does not matter
-             * changing the rotation matrix and its derivative to another yaw pitch roll definition does not change anything
-             * all points to the culprit being with the second and third Euler but it simply cannot be
-             * or: cartesBackup gets somehow manipulated in such a fashion that it only destroys two Euler gradient elements. nothign else...
-             */
-                        
+            // rotational parts:
             // according to bernd, this is NOT a matrix multiplication but an elementwise multiplication, i.e., a dot product
+            // translational part: simple summation of the UNMODIFIED gradient elements
             double gradCoordPhi = 0.0;
             double gradCoordOmega = 0.0;
             double gradCoordPsi = 0.0;
             for(int coord = 0; coord < 3; coord++){
+                double gradCoord = 0.0;
                 for(int atom = 0; atom < noAtomsInMol; atom++){
                     final double gradE = gradXYZ[coord][off+atom];
                     gradCoordPhi += gradE*molXYZ_dPhi[coord][atom];
                     gradCoordOmega += gradE*molXYZ_dOmega[coord][atom];
                     gradCoordPsi += gradE*molXYZ_dPsi[coord][atom];
+                    gradCoord += gradE;
                 }
+                gradient[6*mol+coord] = gradCoord;
             }
             gradient[6*mol+3] = gradCoordPhi;
             gradient[6*mol+4] = gradCoordOmega;
             gradient[6*mol+5] = gradCoordPsi;
-                        
-            // translational part: simple summation of the UNMODIFIED gradient elements
-            for(int coord = 0; coord < 3; coord++){
-                double gradCoord = 0.0;
-                for(int atom = 0; atom < noAtomsInMol; atom++){
-                    gradCoord += gradXYZ[coord][off+atom];
-                }
-                gradient[6*mol+coord] = gradCoord;
-            }
             
             off += noAtomsInMol;
         }
@@ -450,7 +428,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
             euler[1] = currCoords[mol*6+4];
             euler[2] = currCoords[mol*6+5];
             final double[][] rotated = rotatedCoordsCache.set(mol, cartTmp.getAllXYZCoord()); // replace the cache object
-            CoordTranslation.rotateXYZ(cartesBackup.get(mol).getAllXYZCoord(), euler, rotMat, rotated, matMultCache);
+            CoordTranslation.rotateXYZ(cartesBackup.get(mol).getAllXYZCoord(), euler, rotated);
             cartTmp.setAllXYZ(rotated);
             
             // copy cartesian coordinates to xyz1D

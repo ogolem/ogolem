@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,18 +46,17 @@ import org.ogolem.generic.genericpool.NicheComputer;
  * most likely not useful for much else (according to BXH).
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2015-05-27
+ * @version 2020-02-09
  */
 class LJProjNicheComp implements NicheComputer<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140107;
+    private static final long serialVersionUID = (long) 20200209;
     public static final double defXIncr = Math.toRadians(10.0);
     public static final double defYIncr = Math.toRadians(10.0);
     public static final double defGridIncr = 2.0*Constants.ANGTOBOHR;
     public static final int defBinStart = 0;
     public static final int defBinWidth = 1;
 
-    private final double[][] scr = new double[3][3];
     private final double xIncr;
     private final double yIncr;
     private final double gridIncr;
@@ -165,7 +164,7 @@ class LJProjNicheComp implements NicheComputer<Molecule,Geometry> {
                 }
                 
                 // rotate by the incr one further
-                CoordTranslation.rotateXYZAroundX(xyz, yIncr, rotated, scr);
+                CoordTranslation.rotateXYZAroundX(xyz, yIncr, rotated);
                 
                 // copy rotated over
                 System.arraycopy(rotated[0], 0, xyz[0], 0, noAtoms);
@@ -176,7 +175,7 @@ class LJProjNicheComp implements NicheComputer<Molecule,Geometry> {
             }
             
             // rotate one incr further (using the stored xyz coordinates)
-            CoordTranslation.rotateXYZAroundX(xyzSave, xIncr, rotated, scr);
+            CoordTranslation.rotateXYZAroundX(xyzSave, xIncr, rotated);
             
             // copy rotated over
             System.arraycopy(rotated[0], 0, xyz[0], 0, noAtoms);

@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,12 +50,12 @@ import org.slf4j.LoggerFactory;
 /**
  * This describes a full molecules consisting of atoms and further information.
  * @author Johannes Dieterich
- * @version 2015-12-19
+ * @version 2020-02-09
  */
 public class Molecule extends ContinuousProblem<Double> {
 
     // serialVersion so that serialization works flawlessly
-    private static final long serialVersionUID = (long) 20151219;
+    private static final long serialVersionUID = (long) 20200209;
     private static final Logger l = LoggerFactory.getLogger(Molecule.class);
 
     // String ID of the molecule
@@ -1075,9 +1076,7 @@ public class Molecule extends ContinuousProblem<Double> {
         }
         
         // first rotate
-        final double[][] rot = new double[3][3];
-        final double[] cache = new double[3];
-        CoordTranslation.rotateXYZ(refXYZ, extOrient, rot, result, cache);
+        CoordTranslation.rotateXYZ(refXYZ, extOrient, result);
         
         // then translate
         for(int coord = 0; coord < 3; coord++){
@@ -1085,5 +1084,5 @@ public class Molecule extends ContinuousProblem<Double> {
                 result[coord][at] += extCOM[coord];
             }
         }
-    }    
+    }
 }
