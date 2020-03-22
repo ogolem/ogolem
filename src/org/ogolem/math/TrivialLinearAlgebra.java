@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ package org.ogolem.math;
 /**
  * Performs some really trivial linear algebra.
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-03-02
  */
 public class TrivialLinearAlgebra {
     
@@ -50,7 +50,7 @@ public class TrivialLinearAlgebra {
      * over to the method.
      * @param matrixA
      * @param matrixB
-     * @param res 
+     * @param res overridden on exit
      */
     public static void matMult(final double[][] matrixA, final double[][] matrixB,
             final double[][] res){
@@ -67,7 +67,7 @@ public class TrivialLinearAlgebra {
      * over to the method.
      * @param matrixA
      * @param matrixB
-     * @param res 
+     * @param res overridden on exit
      * @param m 
      * @param n 
      * @param s 
@@ -75,51 +75,37 @@ public class TrivialLinearAlgebra {
     public static void matMult(final double[][] matrixA, final double[][] matrixB,
             final double[][] res, final int m, final int n, final int s){
     
-        final double[] cache = new double[n]; // this is obviously responsible for some mem footprint
-        matMult(matrixA, matrixB, res, m, n, s, cache);
-    }
-        
-    /**
-     * Multiplications of two matrices where the resulting matrices is handed
-     * over to the method.
-     * @param matrixA
-     * @param matrixB
-     * @param res 
-     * @param m 
-     * @param n 
-     * @param s 
-     * @param cache
-     */
-    public static void matMult(final double[][] matrixA, final double[][] matrixB,
-            final double[][] res, final int m, final int n, final int s,
-            final double[] cache){
-        
         assert(res.length >= m);
         assert(res[0].length >= s);
         assert(matrixA.length >= m);
         assert(matrixA[0].length >= n);
         assert(matrixB.length >= n);
         assert(matrixB[0].length >= s);
-        assert(cache.length >= n);
 
-        for (int j = 0; j < s; j++) {
-            for (int k = 0; k < n; k++) {cache[k] = matrixB[k][j];}
-            for (int i = 0; i < m; i++) {
-
-		final double[] rowA = matrixA[i];
-		
-                double d = 0.0;
-                for (int k = 0; k < n; k++) {d += rowA[k] * cache[k];}
-                
-		res[i][j] = d;
+        // in BLAS notation: M = m, N = s, K = n
+        // we hence want to loop in order M=m (index i), K=n (index l), N=s (index j)
+        
+        for (int i = 0; i < m; i++) {
+            
+            final double[] rowRes = res[i];
+            // zero the result
+            for (int j = 0; j < s; j++) {
+                rowRes[j] = 0.0;
+            }
+            
+            for (int l = 0; l < n; l++) {
+                final double scalA = matrixA[i][l];
+                final double[] rowB = matrixB[l];
+                for (int j = 0; j < s; j++) {
+                    rowRes[j] += scalA * rowB[j];
+                }
             }
         }
     }
-    
+        
     public static void matMult(final double[][] matrixA, final double[][] matrixB,
             final double[][] res, final int m, final int n, final int s,
-            final int offAX, final int offAY, final int offBX, final int offBY,
-            final double[] cache){
+            final int offAX, final int offAY, final int offBX, final int offBY){
         
         assert(res.length >= m);
         assert(res[0].length >= s);
@@ -127,18 +113,21 @@ public class TrivialLinearAlgebra {
         assert(matrixA[0].length >= n);
         assert(matrixB.length >= n);
         assert(matrixB[0].length >= s);
-        assert(cache.length >= m);
 
-        for (int j = 0; j < s; j++) {
-            for (int k = 0; k < n; k++) cache[k] = matrixB[k+offBX][j+offBY];
-            for (int i = 0; i < m; i++) {
-
-		final double[] rowA = matrixA[i+offAX]; 
-		
-                double d = 0.0;
-                for (int k = 0; k < n; k++) d += rowA[k+offAY] * cache[k];
-                
-		res[i][j] = d;
+        for (int i = 0; i < m; i++) {
+            
+            final double[] rowRes = res[i];
+            // zero the result
+            for (int j = 0; j < s; j++) {
+                rowRes[j] = 0.0;
+            }
+            
+            for (int l = 0; l < n; l++) {
+                final double scalA = matrixA[i+offAX][l+offAY];
+                final double[] rowB = matrixB[l+offBX];
+                for (int j = 0; j < s; j++) {
+                    rowRes[j] += scalA * rowB[j+offBY];
+                }
             }
         }
     }

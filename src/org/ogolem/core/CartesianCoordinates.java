@@ -723,7 +723,7 @@ public class CartesianCoordinates implements StructuralData, Cloneable {
         rot[2][2] = pc*oc;
  
         // call the matrix multiplication
-        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, scr, 3, 3, lengthXYZ, 0, 0, 0, offXYZ, cache);        
+        org.ogolem.math.TrivialLinearAlgebra.matMult(rot, xyz, scr, 3, 3, lengthXYZ, 0, 0, 0, offXYZ);        
     }
     
     public double[] calculateMoleculeCOM(final int molID){
