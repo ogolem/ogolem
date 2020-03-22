@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,12 +44,12 @@ package org.ogolem.core;
  * heterogeneous clusters. Besides, as described by the Backend interface, it
  * depends on a 1D array of coordinates for calculation.
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2020-02-01
  */
-class LennardJonesFF implements CartesianFullBackend {
+public class LennardJonesFF implements CartesianFullBackend {
 
     // the ID
-    private static final long serialVersionUID = (long) 20130407;
+    private static final long serialVersionUID = (long) 20200201;
     
     private final boolean cache;
     private double eps;
@@ -105,7 +105,7 @@ class LennardJonesFF implements CartesianFullBackend {
         final double dSeamSquared = dSeam * dSeam;
 
         // more constants... needed for cutting off the potential
-        final double t = dSigma/dSeam;
+        final double t = 1.0/0.64;
         final double tSq = t*t;
         final double t6 = tSq*tSq*tSq;
         final double t12 = t6*t6;
@@ -114,16 +114,15 @@ class LennardJonesFF implements CartesianFullBackend {
 
         // get the squared distances between all atoms
         double dPotEnergyAdded = 0.0;
-        final double[] xyz1 = new double[3];
         for (int i = 0; i < iNoOfAtoms - 1; i++) {
-            xyz1[0] = xyz1D[i];
-            xyz1[1] = xyz1D[i+iNoOfAtoms];
-            xyz1[2] = xyz1D[i+2*iNoOfAtoms];
+            final double x0 = xyz1D[i];
+            final double y0 = xyz1D[i+iNoOfAtoms];
+            final double z0 = xyz1D[i+2*iNoOfAtoms];
             for (int j = i + 1; j < iNoOfAtoms; j++) {
                 // calculate pair distance
-                final double dDistX = xyz1[0] - xyz1D[j];
-                final double dDistY = xyz1[1] - xyz1D[j+iNoOfAtoms];
-                final double dDistZ = xyz1[2] - xyz1D[j+2*iNoOfAtoms];
+                final double dDistX = x0 - xyz1D[j];
+                final double dDistY = y0 - xyz1D[j+iNoOfAtoms];
+                final double dDistZ = z0 - xyz1D[j+2*iNoOfAtoms];
                 final double dDistSquared = dDistX * dDistX + dDistY * dDistY + dDistZ * dDistZ;
                 if (dDistSquared > dSeamSquared) {
                     final double dInvRPow2 = dSigma * dSigma / dDistSquared;
@@ -195,26 +194,28 @@ class LennardJonesFF implements CartesianFullBackend {
         final double dSeam = 0.64 * dSigma;
 
         // more constants... needed for cutting off the potential
-        final double t = dSigma/dSeam;
+        final double t = 1.0/0.64;
         final double tSq = t*t;
         final double t6 = tSq*tSq*tSq;
         final double t12 = t6*t6;
         final double dConst1 = (4.0 * (t12 - t6) - 10000.0) / dSeam;
         final double dConst2 = 10000.0;
 
-
         // calculate all pair distances
         double dPotEnergyAdded = 0.0;
-        final double[] xyz1 = new double[3];
         for (int i = 0; i < (iNoOfAtoms - 1); i++) {
-            xyz1[0] = xyz1D[i];
-            xyz1[1] = xyz1D[i+iNoOfAtoms];
-            xyz1[2] = xyz1D[i+2*iNoOfAtoms];
+            
+            final double x0 = xyz1D[i];
+            final double y0 = xyz1D[i+iNoOfAtoms];
+            final double z0 = xyz1D[i+2*iNoOfAtoms];
+            
             for (int j = (i + 1); j < iNoOfAtoms; j++) {
-                final double dDistX = xyz1[0] - xyz1D[j];
-                final double dDistY = xyz1[1] - xyz1D[j+iNoOfAtoms];
-                final double dDistZ = xyz1[2] - xyz1D[j+2*iNoOfAtoms];
+                
+                final double dDistX = x0 - xyz1D[j];
+                final double dDistY = y0 - xyz1D[j+iNoOfAtoms];
+                final double dDistZ = z0 - xyz1D[j+2*iNoOfAtoms];
                 final double dDistSquared = dDistX * dDistX + dDistY * dDistY + dDistZ * dDistZ;
+                
                 final double dDist = Math.sqrt(dDistSquared);
                 final double dDistInv = 1.0 / dDist;
                 // divide the distances in all three dimensions by the total distance to cover for the coordinate system
