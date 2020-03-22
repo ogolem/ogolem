@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,7 +41,7 @@ package org.ogolem.math;
 /**
  * Performs some really trivial linear algebra.
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2020-02-09
  */
 public class TrivialLinearAlgebra {
     
@@ -157,6 +158,62 @@ public class TrivialLinearAlgebra {
         matMult(matrixA, matrixB, matrixC, m, matrixA[0].length, s);
         
         return matrixC;
+    }
+    
+    public static void matMult(final Matrix3x3 matrixA, final double[][] matrixB, final int s, final double[][] res){
+        
+        assert(matrixA != null);
+        assert(matrixB != null);
+        assert(res != null);
+        assert(s >= 0);
+        assert(matrixB.length == 3);
+        assert(res.length == 3);
+        assert(matrixB[0].length >= s);
+        assert(matrixB[1].length >= s);
+        assert(matrixB[2].length >= s);
+        assert(res[0].length >= s);
+        assert(res[1].length >= s);
+        assert(res[2].length >= s);
+        
+        final double[] res0 = res[0];
+        final double[] res1 = res[1];
+        final double[] res2 = res[2];
+        
+        for(int j = 0; j < s; j++){
+            
+            final double b0j = matrixB[0][j];
+            final double res00j = matrixA.a00 * b0j;
+            final double res10j = matrixA.a10 * b0j;
+            final double res20j = matrixA.a20 * b0j;
+            
+            res0[j] = res00j;
+            res1[j] = res10j;
+            res2[j] = res20j;
+        }
+        
+        for(int j = 0; j < s; j++){
+            
+            final double b1j = matrixB[1][j];
+            final double res01j = matrixA.a01 * b1j;
+            final double res11j = matrixA.a11 * b1j;
+            final double res21j = matrixA.a21 * b1j;
+            
+            res0[j] += res01j;
+            res1[j] += res11j;
+            res2[j] += res21j;
+        }
+        
+        for(int j = 0; j < s; j++){
+            
+            final double b2j = matrixB[2][j];
+            final double res02j = matrixA.a02 * b2j;
+            final double res12j = matrixA.a12 * b2j;
+            final double res22j = matrixA.a22 * b2j;
+            
+            res0[j] += res02j;
+            res1[j] += res12j;
+            res2[j] += res22j;
+        }
     }
     
     /**

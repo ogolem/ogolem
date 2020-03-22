@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2015, J. M. Dieterich
-              2019, J. M. Dieterich and B. Hartke
+              2019-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.util.List;
-import org.apache.commons.math3.util.FastMath;
 import static org.ogolem.core.Constants.ANGTOBOHR;
 import static org.ogolem.core.Constants.BOHRTOANG;
 import org.ogolem.math.GenericLookup;
@@ -48,12 +47,12 @@ import org.ogolem.math.GenericLookup;
  * Provides the TIP3P force field for an simple (and very biased) description of water clusters.
  * Numerical data from http://www1.lsbu.ac.uk/water/water_models.html and wiki
  * @author Johannes Dieterich
- * @version 2019-12-28
+ * @version 2020-02-08
  */
 public class TIP3PForceField implements RigidBodyBackend {
 
     // the ID
-    private static final long serialVersionUID = (long) 20150108;
+    private static final long serialVersionUID = (long) 20200208;
     private static final boolean DEBUG = false;
     
     // the LJ cutoff in bohr
@@ -80,10 +79,7 @@ public class TIP3PForceField implements RigidBodyBackend {
 
     private static final double ANTICOLDEND = 0.0; // 4.0 bohr
     private final TIPnPHelpers.AntiColdFusionFunction anticold;
-    private final GenericLookup anticoldMed;
-    
-    private final double[][] xyz1 = new double[3][3];
-    private final double[][] xyz2 = new double[3][3];
+    private final GenericLookup anticoldMed;    
     
     public TIP3PForceField(){
         // use standard TIP3P parameters
@@ -198,11 +194,16 @@ public class TIP3PForceField implements RigidBodyBackend {
             final CartesianCoordinates c1 = cartes.get(mol1);
             final double[] com1 = coms[mol1];
             final double[][] xyz1O = c1.getAllXYZCoord();
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 3; j++){
-                    xyz1[i][j] = xyz1O[i][j] + com1[i];
-                }
-            }
+            
+            final double o1X = xyz1O[0][0] + com1[0];
+            final double o1Y = xyz1O[1][0] + com1[1];
+            final double o1Z = xyz1O[2][0] + com1[2];
+            final double h11X = xyz1O[0][1] + com1[0];
+            final double h11Y = xyz1O[1][1] + com1[1];
+            final double h11Z = xyz1O[2][1] + com1[2];
+            final double h12X = xyz1O[0][2] + com1[0];
+            final double h12Y = xyz1O[1][2] + com1[1];
+            final double h12Z = xyz1O[2][2] + com1[2];
             
             for(int mol2 = mol1+1; mol2 < cartes.size(); mol2++){
                 
@@ -210,77 +211,82 @@ public class TIP3PForceField implements RigidBodyBackend {
                 final double[] com2 = coms[mol2];
                 final CartesianCoordinates c2 = cartes.get(mol2);
                 final double[][] xyz2O = c2.getAllXYZCoord();
-                for(int i = 0; i < 3; i++){
-                    for(int j = 0; j < 3; j++){
-                        xyz2[i][j] = xyz2O[i][j] + com2[i];
-                    }
-                }
+                
+                final double o2X = xyz2O[0][0] + com2[0];
+                final double o2Y = xyz2O[1][0] + com2[1];
+                final double o2Z = xyz2O[2][0] + com2[2];
+                final double h21X = xyz2O[0][1] + com2[0];
+                final double h21Y = xyz2O[1][1] + com2[1];
+                final double h21Z = xyz2O[2][1] + com2[2];
+                final double h22X = xyz2O[0][2] + com2[0];
+                final double h22Y = xyz2O[1][2] + com2[1];
+                final double h22Z = xyz2O[2][2] + com2[2];
                                 
                 // XXX cutoff for the electrostatics
                 // for very large clusters, it may pay off to just compute the diff between the COMs and based on that cut off at e.g. 40 Angstrom
                 
                 // get some distance diffs
-                final double diffOOx = xyz1[0][0] - xyz2[0][0];
-                final double diffOOy = xyz1[1][0] - xyz2[1][0];
-                final double diffOOz = xyz1[2][0] - xyz2[2][0];
+                final double diffOOx = o1X - o2X;
+                final double diffOOy = o1Y - o2Y;
+                final double diffOOz = o1Z - o2Z;
                 final double distOOSq = diffOOx*diffOOx + diffOOy*diffOOy + diffOOz*diffOOz;
-                final double distOO = FastMath.sqrt(distOOSq);
+                final double distOO = Math.sqrt(distOOSq);
                 if(distOO <= ANTICOLDEND){energy += anticoldMed.inter(distOO);}
                 
-                final double diffH1H1x = xyz1[0][1] - xyz2[0][1];
-                final double diffH1H1y = xyz1[1][1] - xyz2[1][1];
-                final double diffH1H1z = xyz1[2][1] - xyz2[2][1];
+                final double diffH1H1x = h11X - h21X;
+                final double diffH1H1y = h11Y - h21Y;
+                final double diffH1H1z = h11Z - h21Z;
                 final double distH1H1Sq = diffH1H1x*diffH1H1x + diffH1H1y*diffH1H1y + diffH1H1z*diffH1H1z;
-                final double distH1H1 = FastMath.sqrt(distH1H1Sq);
+                final double distH1H1 = Math.sqrt(distH1H1Sq);
                 if(distH1H1 <= ANTICOLDEND){energy += anticoldMed.inter(distH1H1);}
                 
-                final double diffH2H2x = xyz1[0][2] - xyz2[0][2];
-                final double diffH2H2y = xyz1[1][2] - xyz2[1][2];
-                final double diffH2H2z = xyz1[2][2] - xyz2[2][2];
+                final double diffH2H2x = h12X - h22X;
+                final double diffH2H2y = h12Y - h22Y;
+                final double diffH2H2z = h12Z - h22Z;
                 final double distH2H2Sq = diffH2H2x*diffH2H2x + diffH2H2y*diffH2H2y + diffH2H2z*diffH2H2z;
-                final double distH2H2 = FastMath.sqrt(distH2H2Sq);
+                final double distH2H2 = Math.sqrt(distH2H2Sq);
                 if(distH2H2 <= ANTICOLDEND){energy += anticoldMed.inter(distH2H2);}
                 
-                final double diffH1H2x = xyz1[0][1] - xyz2[0][2];
-                final double diffH1H2y = xyz1[1][1] - xyz2[1][2];
-                final double diffH1H2z = xyz1[2][1] - xyz2[2][2];
+                final double diffH1H2x = h11X - h22X;
+                final double diffH1H2y = h11Y - h22Y;
+                final double diffH1H2z = h11Z - h22Z;
                 final double distH1H2Sq = diffH1H2x*diffH1H2x + diffH1H2y*diffH1H2y + diffH1H2z*diffH1H2z;
-                final double distH1H2 = FastMath.sqrt(distH1H2Sq);
+                final double distH1H2 = Math.sqrt(distH1H2Sq);
                 if(distH1H2 <= ANTICOLDEND){energy += anticoldMed.inter(distH1H2);}
                 
-                final double diffH2H1x = xyz1[0][2] - xyz2[0][1];
-                final double diffH2H1y = xyz1[1][2] - xyz2[1][1];
-                final double diffH2H1z = xyz1[2][2] - xyz2[2][1];
+                final double diffH2H1x = h12X - h21X;
+                final double diffH2H1y = h12Y - h21Y;
+                final double diffH2H1z = h12Z - h21Z;
                 final double distH2H1Sq = diffH2H1x*diffH2H1x + diffH2H1y*diffH2H1y + diffH2H1z*diffH2H1z;
-                final double distH2H1 = FastMath.sqrt(distH2H1Sq);
+                final double distH2H1 = Math.sqrt(distH2H1Sq);
                 if(distH2H1 <= ANTICOLDEND){energy += anticoldMed.inter(distH2H1);}
                 
-                final double diffOH1x = xyz1[0][0] - xyz2[0][1];
-                final double diffOH1y = xyz1[1][0] - xyz2[1][1];
-                final double diffOH1z = xyz1[2][0] - xyz2[2][1];
+                final double diffOH1x = o1X - h21X;
+                final double diffOH1y = o1Y - h21Y;
+                final double diffOH1z = o1Z - h21Z;
                 final double distOH1Sq = diffOH1x*diffOH1x + diffOH1y*diffOH1y + diffOH1z*diffOH1z;
-                final double distOH1 = FastMath.sqrt(distOH1Sq);
+                final double distOH1 = Math.sqrt(distOH1Sq);
                 if(distOH1 <= ANTICOLDEND){energy += anticoldMed.inter(distOH1);}
                 
-                final double diffOH2x = xyz1[0][0] - xyz2[0][2];
-                final double diffOH2y = xyz1[1][0] - xyz2[1][2];
-                final double diffOH2z = xyz1[2][0] - xyz2[2][2];
+                final double diffOH2x = o1X - h22X;
+                final double diffOH2y = o1Y - h22Y;
+                final double diffOH2z = o1Z - h22Z;
                 final double distOH2Sq = diffOH2x*diffOH2x + diffOH2y*diffOH2y + diffOH2z*diffOH2z;
-                final double distOH2 = FastMath.sqrt(distOH2Sq);
+                final double distOH2 = Math.sqrt(distOH2Sq);
                 if(distOH2 <= ANTICOLDEND){energy += anticoldMed.inter(distOH2);}
                 
-                final double diffH1Ox = xyz1[0][1] - xyz2[0][0];
-                final double diffH1Oy = xyz1[1][1] - xyz2[1][0];
-                final double diffH1Oz = xyz1[2][1] - xyz2[2][0];
+                final double diffH1Ox = h11X - o2X;
+                final double diffH1Oy = h11Y - o2Y;
+                final double diffH1Oz = h11Z - o2Z;
                 final double distH1OSq = diffH1Ox*diffH1Ox + diffH1Oy*diffH1Oy + diffH1Oz*diffH1Oz;
-                final double distH1O = FastMath.sqrt(distH1OSq);
+                final double distH1O = Math.sqrt(distH1OSq);
                 if(distH1O <= ANTICOLDEND){energy += anticoldMed.inter(distH1O);}
                 
-                final double diffH2Ox = xyz1[0][2] - xyz2[0][0];
-                final double diffH2Oy = xyz1[1][2] - xyz2[1][0];
-                final double diffH2Oz = xyz1[2][2] - xyz2[2][0];
+                final double diffH2Ox = h12X - o2X;
+                final double diffH2Oy = h12Y - o2Y;
+                final double diffH2Oz = h12Z - o2Z;
                 final double distH2OSq = diffH2Ox*diffH2Ox + diffH2Oy*diffH2Oy + diffH2Oz*diffH2Oz;
-                final double distH2O = FastMath.sqrt(distH2OSq);
+                final double distH2O = Math.sqrt(distH2OSq);
                 if(distH2O <= ANTICOLDEND){energy += anticoldMed.inter(distH2O);}
                 
                 // now compute the actual interaction energies
@@ -325,11 +331,16 @@ public class TIP3PForceField implements RigidBodyBackend {
             final CartesianCoordinates c1 = cartes.get(mol1);
             final double[] com1 = coms[mol1];
             final double[][] xyz1O = c1.getAllXYZCoord();
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 3; j++){
-                    xyz1[i][j] = xyz1O[i][j] + com1[i];
-                }
-            }
+            
+            final double o1X = xyz1O[0][0] + com1[0];
+            final double o1Y = xyz1O[1][0] + com1[1];
+            final double o1Z = xyz1O[2][0] + com1[2];
+            final double h11X = xyz1O[0][1] + com1[0];
+            final double h11Y = xyz1O[1][1] + com1[1];
+            final double h11Z = xyz1O[2][1] + com1[2];
+            final double h12X = xyz1O[0][2] + com1[0];
+            final double h12Y = xyz1O[1][2] + com1[1];
+            final double h12Z = xyz1O[2][2] + com1[2];
                         
             final double[][] gradMol1 = gradient.get(mol1);
             
@@ -339,11 +350,16 @@ public class TIP3PForceField implements RigidBodyBackend {
                 final double[] com2 = coms[mol2];
                 final CartesianCoordinates c2 = cartes.get(mol2);
                 final double[][] xyz2O = c2.getAllXYZCoord();
-                for(int i = 0; i < 3; i++){
-                    for(int j = 0; j < 3; j++){
-                        xyz2[i][j] = xyz2O[i][j] + com2[i];
-                    }
-                }
+                
+                final double o2X = xyz2O[0][0] + com2[0];
+                final double o2Y = xyz2O[1][0] + com2[1];
+                final double o2Z = xyz2O[2][0] + com2[2];
+                final double h21X = xyz2O[0][1] + com2[0];
+                final double h21Y = xyz2O[1][1] + com2[1];
+                final double h21Z = xyz2O[2][1] + com2[2];
+                final double h22X = xyz2O[0][2] + com2[0];
+                final double h22Y = xyz2O[1][2] + com2[1];
+                final double h22Z = xyz2O[2][2] + com2[2];
                 
                 final double[][] gradMol2 = gradient.get(mol2);
                                 
@@ -351,67 +367,67 @@ public class TIP3PForceField implements RigidBodyBackend {
                 // for very large clusters, it may pay off to just compute the diff between the COMs and based on that cut off at e.g. 40 Angstrom
                 
                 // get some distance diffs
-                final double diffOOx = xyz1[0][0] - xyz2[0][0];
-                final double diffOOy = xyz1[1][0] - xyz2[1][0];
-                final double diffOOz = xyz1[2][0] - xyz2[2][0];
+                final double diffOOx = o1X - o2X;
+                final double diffOOy = o1Y - o2Y;
+                final double diffOOz = o1Z - o2Z;
                 final double distOOSq = diffOOx*diffOOx + diffOOy*diffOOy + diffOOz*diffOOz;
-                final double distOO = FastMath.sqrt(distOOSq);
+                final double distOO = Math.sqrt(distOOSq);
                 if(distOO <= ANTICOLDEND){energy += anticoldMed.inter(distOO);}
                 
-                final double diffH1H1x = xyz1[0][1] - xyz2[0][1];
-                final double diffH1H1y = xyz1[1][1] - xyz2[1][1];
-                final double diffH1H1z = xyz1[2][1] - xyz2[2][1];
+                final double diffH1H1x = h11X - h21X;
+                final double diffH1H1y = h11Y - h21Y;
+                final double diffH1H1z = h11Z - h21Z;
                 final double distH1H1Sq = diffH1H1x*diffH1H1x + diffH1H1y*diffH1H1y + diffH1H1z*diffH1H1z;
-                final double distH1H1 = FastMath.sqrt(distH1H1Sq);
+                final double distH1H1 = Math.sqrt(distH1H1Sq);
                 if(distH1H1 <= ANTICOLDEND){energy += anticoldMed.inter(distH1H1);}
                 
-                final double diffH2H2x = xyz1[0][2] - xyz2[0][2];
-                final double diffH2H2y = xyz1[1][2] - xyz2[1][2];
-                final double diffH2H2z = xyz1[2][2] - xyz2[2][2];
+                final double diffH2H2x = h12X - h22X;
+                final double diffH2H2y = h12Y - h22Y;
+                final double diffH2H2z = h12Z - h22Z;
                 final double distH2H2Sq = diffH2H2x*diffH2H2x + diffH2H2y*diffH2H2y + diffH2H2z*diffH2H2z;
-                final double distH2H2 = FastMath.sqrt(distH2H2Sq);
+                final double distH2H2 = Math.sqrt(distH2H2Sq);
                 if(distH2H2 <= ANTICOLDEND){energy += anticoldMed.inter(distH2H2);}
                 
-                final double diffH1H2x = xyz1[0][1] - xyz2[0][2];
-                final double diffH1H2y = xyz1[1][1] - xyz2[1][2];
-                final double diffH1H2z = xyz1[2][1] - xyz2[2][2];
+                final double diffH1H2x = h11X - h22X;
+                final double diffH1H2y = h11Y - h22Y;
+                final double diffH1H2z = h11Z - h22Z;
                 final double distH1H2Sq = diffH1H2x*diffH1H2x + diffH1H2y*diffH1H2y + diffH1H2z*diffH1H2z;
-                final double distH1H2 = FastMath.sqrt(distH1H2Sq);
+                final double distH1H2 = Math.sqrt(distH1H2Sq);
                 if(distH1H2 <= ANTICOLDEND){energy += anticoldMed.inter(distH1H2);}
                 
-                final double diffH2H1x = xyz1[0][2] - xyz2[0][1];
-                final double diffH2H1y = xyz1[1][2] - xyz2[1][1];
-                final double diffH2H1z = xyz1[2][2] - xyz2[2][1];
+                final double diffH2H1x = h12X - h21X;
+                final double diffH2H1y = h12Y - h21Y;
+                final double diffH2H1z = h12Z - h21Z;
                 final double distH2H1Sq = diffH2H1x*diffH2H1x + diffH2H1y*diffH2H1y + diffH2H1z*diffH2H1z;
-                final double distH2H1 = FastMath.sqrt(distH2H1Sq);
+                final double distH2H1 = Math.sqrt(distH2H1Sq);
                 if(distH2H1 <= ANTICOLDEND){energy += anticoldMed.inter(distH2H1);}
                 
-                final double diffOH1x = xyz1[0][0] - xyz2[0][1];
-                final double diffOH1y = xyz1[1][0] - xyz2[1][1];
-                final double diffOH1z = xyz1[2][0] - xyz2[2][1];
+                final double diffOH1x = o1X - h21X;
+                final double diffOH1y = o1Y - h21Y;
+                final double diffOH1z = o1Z - h21Z;
                 final double distOH1Sq = diffOH1x*diffOH1x + diffOH1y*diffOH1y + diffOH1z*diffOH1z;
-                final double distOH1 = FastMath.sqrt(distOH1Sq);
+                final double distOH1 = Math.sqrt(distOH1Sq);
                 if(distOH1 <= ANTICOLDEND){energy += anticoldMed.inter(distOH1);}
                 
-                final double diffOH2x = xyz1[0][0] - xyz2[0][2];
-                final double diffOH2y = xyz1[1][0] - xyz2[1][2];
-                final double diffOH2z = xyz1[2][0] - xyz2[2][2];
+                final double diffOH2x = o1X - h22X;
+                final double diffOH2y = o1Y - h22Y;
+                final double diffOH2z = o1Z - h22Z;
                 final double distOH2Sq = diffOH2x*diffOH2x + diffOH2y*diffOH2y + diffOH2z*diffOH2z;
-                final double distOH2 = FastMath.sqrt(distOH2Sq);
+                final double distOH2 = Math.sqrt(distOH2Sq);
                 if(distOH2 <= ANTICOLDEND){energy += anticoldMed.inter(distOH2);}
                 
-                final double diffH1Ox = xyz1[0][1] - xyz2[0][0];
-                final double diffH1Oy = xyz1[1][1] - xyz2[1][0];
-                final double diffH1Oz = xyz1[2][1] - xyz2[2][0];
+                final double diffH1Ox = h11X - o2X;
+                final double diffH1Oy = h11Y - o2Y;
+                final double diffH1Oz = h11Z - o2Z;
                 final double distH1OSq = diffH1Ox*diffH1Ox + diffH1Oy*diffH1Oy + diffH1Oz*diffH1Oz;
-                final double distH1O = FastMath.sqrt(distH1OSq);
+                final double distH1O = Math.sqrt(distH1OSq);
                 if(distH1O <= ANTICOLDEND){energy += anticoldMed.inter(distH1O);}
                 
-                final double diffH2Ox = xyz1[0][2] - xyz2[0][0];
-                final double diffH2Oy = xyz1[1][2] - xyz2[1][0];
-                final double diffH2Oz = xyz1[2][2] - xyz2[2][0];
+                final double diffH2Ox = h12X - o2X;
+                final double diffH2Oy = h12Y - o2Y;
+                final double diffH2Oz = h12Z - o2Z;
                 final double distH2OSq = diffH2Ox*diffH2Ox + diffH2Oy*diffH2Oy + diffH2Oz*diffH2Oz;
-                final double distH2O = FastMath.sqrt(distH2OSq);
+                final double distH2O = Math.sqrt(distH2OSq);
                 if(distH2O <= ANTICOLDEND){energy += anticoldMed.inter(distH2O);}
                 
                 // now compute the actual interaction energies

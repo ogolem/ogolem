@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,13 +54,13 @@ import org.ogolem.helpers.Tuple;
 /**
  * A sphere-based phenotype cut.
  * @author Johannes Dieterich
- * @version 2015-12-03
+ * @version 2020-02-09
  */
 public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,Geometry> {
 
     public static enum CUTTYPE {FULLRANDOM, GAUSSDISTRIBUTED, INVERTEDGAUSSDISTRIBUTED};
     
-    private static final long serialVersionUID = (long) 20141201;
+    private static final long serialVersionUID = (long) 20200209;
     private static final boolean DEBUG = false;
     private final boolean intermediateSanityChecks;
     private final Random r;
@@ -856,7 +856,6 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
         private final double[][] origCOMs;
         private final double[][] bounds;
         private final double[][] comOrig;
-        private final double[][] rotMat;
         private final double[][] transResult;
         private final double[] euler = new double[3];
         private int iter = 0;
@@ -876,7 +875,6 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
             this.eparts = new double[g.getNumberOfIndieParticles()];
             this.point = new double[6];
             this.bounds = bounds;
-            this.rotMat = new double[3][3];
             this.transResult = new double[3][noOuters];
             this.doCD = doCD;
             this.doDD = doDD;
@@ -904,7 +902,7 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
             euler[2] = point[2];
             
             // update the geometry 
-            final double[][] rotResult = CoordTranslation.rotateXYZ(transResult, euler, rotMat);
+            final double[][] rotResult = CoordTranslation.rotateXYZ(transResult, euler);
             for(int i = 0; i < noOuters; i++){
                 final int whichMol = outerIDs.get(i);
                 final double[] com = g.getCOM(whichMol);

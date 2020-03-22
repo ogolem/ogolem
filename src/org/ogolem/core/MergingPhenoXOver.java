@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,11 @@ import org.ogolem.helpers.Tuple;
  * a backend. Original implementation in some version of phenix, this is an independent
  * rewrite though, never seen the original code (so all bugs are mine, all ideas are Bernds).
  * @author Johannes Dieterich
- * @version 2015-11-17
+ * @version 2020-02-09
  */
 public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
    
-    private static final long serialVersionUID = (long) 20150801;
+    private static final long serialVersionUID = (long) 20200209;
     private static final boolean DEBUG = false;
     
     private final boolean doCDDD;
@@ -711,10 +711,8 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         private final double[] eparts;
         private final double[] point;
         private final double[][] bounds;
-        private final double[] rotCache;
         private final double[][] rotResult;
         private final double[][] transResult;
-        private final double[][] rotMat;        
         private final CartesianCoordinates lastCartes;
         private final int[] starts;
         private final double[] trans;
@@ -740,8 +738,6 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
             this.eparts = new double[stub.getNumberOfIndieParticles()];
             this.point = (use6D) ? new double[6] : new double[2];
             this.bounds = bounds;
-            this.rotMat = new double[3][3];
-            this.rotCache = new double[3];          
             this.lastCartes = stub.getCartesians();
             this.rotResult = new double[3][lastCartes.getNoOfAtoms()];
             this.transResult = new double[3][lastCartes.getNoOfAtoms()];  
@@ -782,13 +778,13 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
                 rot[2] = point[5];
             
                 // merge
-                geomMerger(half1, trans, rot, upIDs, transResult, rotResult, rotMat, rotCache, starts, lastCartes);
+                geomMerger(half1, trans, rot, upIDs, transResult, rotResult, starts, lastCartes);
             } else {
                 final double translation = point[0];
                 final double rotation = point[1];
                 
                 // merge
-                geomMerger(half1, translation, rotation, upIDs, transResult, rotResult, rotMat, rotCache, starts, lastCartes);
+                geomMerger(half1, translation, rotation, upIDs, transResult, rotResult, starts, lastCartes);
             }
                         
             iter++;
@@ -838,8 +834,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         
         private static void geomMerger(final CartesianCoordinates half1,
                 final double[] translations, final double[] rotations, List<Integer> upIDs,
-                final double[][] transResult, final double[][] rotResult, final double[][] rotMat,
-                final double[] rotCache, final int[] starts,
+                final double[][] transResult, final double[][] rotResult, final int[] starts,
                 final CartesianCoordinates fullCluster){
 
             
@@ -872,7 +867,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
             }
             
             // then do the rotation
-            CoordTranslation.rotateXYZ(xyz1, rotations, rotMat, rotResult, rotCache);
+            CoordTranslation.rotateXYZ(xyz1, rotations, rotResult);
             if(DEBUG){
                 final CartesianCoordinates cUp = new CartesianCoordinates(half1);
                 cUp.setAllXYZ(rotResult);
@@ -913,9 +908,8 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         
         private static void geomMerger(final CartesianCoordinates half1,
                 final double translation, final double rotation, List<Integer> upIDs,
-                final double[][] transResult, final double[][] rotResult, final double[][] rotMat,
-                final double[] rotCache, final int[] starts,
-                final CartesianCoordinates fullCluster){
+                final double[][] transResult, final double[][] rotResult,
+                final int[] starts, final CartesianCoordinates fullCluster){
 
 
             if(DEBUG){
@@ -945,7 +939,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
             }
 
             // then do the rotation
-            CoordTranslation.rotateXYZAroundZ(xyz1, rotation, rotResult, rotMat, rotCache);
+            CoordTranslation.rotateXYZAroundZ(xyz1, rotation, rotResult);
             if(DEBUG){
                 final CartesianCoordinates cUp = new CartesianCoordinates(half1);
                 cUp.setAllXYZ(rotResult);
