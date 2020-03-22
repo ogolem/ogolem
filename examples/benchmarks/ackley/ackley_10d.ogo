@@ -13,6 +13,7 @@ PopulationSize=1000
 ParamThreshLocOptParam=1e-4
 ParamThreshLocOptGradient=1e-4
 ParameterLocOpt=lbfgs:backend=alldefault
+AcceptableFitness=1e-6
 <REFERENCE>
 <ENERGY>
 0.0

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,12 +47,12 @@ import org.slf4j.LoggerFactory;
 /**
  * A factory for the generic global optimization algorithms.
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-02-12
  */
 public abstract class GenericGlobalOptimizationFactory<E, T extends Optimizable<E>> implements Serializable {
     
-    private static final long serialVersionUID = (long) 20140729;
-    private static final Logger log = LoggerFactory.getLogger(GenericGlobalOptimizationFactory.class);
+    private static final long serialVersionUID = (long) 20200212;
+    private static final Logger LOG = LoggerFactory.getLogger(GenericGlobalOptimizationFactory.class);
     
     protected final long totalSteps;
     
@@ -104,7 +104,7 @@ public abstract class GenericGlobalOptimizationFactory<E, T extends Optimizable<
             return special;
         }
         
-        log.info("No special crossover found, trying generic ones.");
+        LOG.debug("No special crossover found, trying generic ones.");
         
         if(xOverString.equalsIgnoreCase("nocrossover") || xOverString.equalsIgnoreCase("nocrossover:")
                 || xOverString.equalsIgnoreCase("noxover") || xOverString.equalsIgnoreCase("noxover:")){
@@ -178,7 +178,7 @@ public abstract class GenericGlobalOptimizationFactory<E, T extends Optimizable<
             return special;
         }
         
-        log.info("No special mutation found for " + mutString +  ", trying generic ones.");
+        LOG.debug("No special mutation found for " + mutString +  ", trying generic ones.");
         
         if(mutString.equalsIgnoreCase("nomutation") || mutString.equalsIgnoreCase("nomutation:")){
             return new NoMutation<>();

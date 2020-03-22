@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -65,23 +65,13 @@ import org.ogolem.md.MDConfig;
 /**
  * All configuration data needed for the program to run is in this class. It is
  * reusable for the "constructor madness". Default values are provided.
- * Of course this is a singleton.
  * @author Johannes Dieterich
- * @version 2015-11-16
+ * @version 2020-02-12
  */
 public class GlobalConfig implements Configuration<Molecule,Geometry> {
 
-    private static final GlobalConfig globConf = new GlobalConfig();
-
-    private GlobalConfig() {
-    }
-
-    public static GlobalConfig getReference() {
-        return globConf;
-    }
-
     // the ID
-    private static final long serialVersionUID = (long) 20150406;
+    private static final long serialVersionUID = (long) 20200212;
 
     // the pool size: PoolSize=
     int poolSize = 100;
