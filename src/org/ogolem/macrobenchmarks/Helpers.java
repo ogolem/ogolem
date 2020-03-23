@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,44 +34,61 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.macrobenchmarks;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The base class for a scalar property
+ * Some helpers solely for the macrobenchmarks
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-02-12
  */
-public abstract class ScalarProperty implements Property {
+class Helpers {
     
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
-    }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
-    }
-    
-    @Override
-    public double signedDifference(final Property p){
+    private static final Logger LOG = LoggerFactory.getLogger(Helpers.class);    
+    private static final boolean DEBUG = false;
+
+    static int executeJavaProcess(final String workDir, final String[] args) throws Exception {
         
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
+        final String javaHome = System.getProperty("java.home");
+        final String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
+        final String pathToOurJar = new File(System.getProperty("java.class.path")).getAbsolutePath();
+ 
+        if(DEBUG){
+            final Properties p = System.getProperties();
+            p.list(System.out);
+        }
+
+        final List<String> command = new ArrayList<>();
+        command.add(javaBin);
+        command.add("-ea");
+        command.add("-jar");
+        command.add(pathToOurJar);
+        
+        for(final String arg : args){
+            command.add(arg);
+        }
+        
+        LOG.debug("Executing " + javaBin + " with jar " + pathToOurJar);
+        
+        final ProcessBuilder builder = new ProcessBuilder(command);
+        final Process proc = builder.directory(new File(workDir)).redirectOutput(new File(workDir + File.separator + "bench.out")).start();
+        proc.waitFor();
+        
+        return proc.exitValue();
     }
     
-    @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
+    static class Rank0Filter implements FilenameFilter {
+
+        @Override
+        public boolean accept(File arg0, String arg1) {
+            return (arg1.startsWith("rank0individual"));
+        }
     }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
 }

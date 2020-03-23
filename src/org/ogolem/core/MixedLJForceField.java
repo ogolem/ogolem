@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,12 +42,12 @@ package org.ogolem.core;
  * This provides a backend for mixed atom type Lennard-Jones calculations.
  * Uses Lorentz-Berthelot combination rules.
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2020-02-01
  */
-class MixedLJForceField implements CartesianFullBackend {
+public class MixedLJForceField implements CartesianFullBackend {
     
     // the ID
-    private static final long serialVersionUID = (long) 20101108;
+    private static final long serialVersionUID = (long) 20200201;
 
     @Override
     public MixedLJForceField clone(){
@@ -68,23 +68,35 @@ class MixedLJForceField implements CartesianFullBackend {
         // zero the partial contributions
         for(int i = 0; i < energyparts.length; i++) energyparts[i] = 0.0;
 
+        // some cutoff constants
+        final double t1 = 1.0/0.64;
+        final double t1Sq = t1*t1;
+        final double t1Hex = t1Sq*t1Sq*t1Sq;
+        final double t112 = t1Hex*t1Hex;
+        
+        // get all LJ parameters in O(N)
+        final double[] eps = new double[iNoOfAtoms];
+        final double[] sig = new double[iNoOfAtoms];
+        for (int i = 0; i < iNoOfAtoms; i++) {
+            eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
+            sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
+        }
+        
         // get the squared distances between all atoms
         double dPotEnergyAdded = 0.0;
-        final double[] xyz1 = new double[3];
         for (int i = 0; i < iNoOfAtoms - 1; i++) {
 
-            // LJ parameters, set one. getting it here is of course faster
-            final double dEpsilon1 = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
-            final double dSigma1 = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
-            xyz1[0] = xyz1D[i];
-            xyz1[1] = xyz1D[i+iNoOfAtoms];
-            xyz1[2] = xyz1D[i+2*iNoOfAtoms];
+            final double dEpsilon1 = eps[i];
+            final double dSigma1 = sig[i];
+            final double x0 = xyz1D[i];
+            final double y0 = xyz1D[i+iNoOfAtoms];
+            final double z0 = xyz1D[i+2*iNoOfAtoms];
 
             for (int j = i + 1; j < iNoOfAtoms; j++) {
 
                 // the Lennard-Jones parameters, set two
-                final double dEpsilon2 = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[j]);
-                final double dSigma2 = AtomicProperties.giveLennardJonesSigma(saAtomTypes[j]);
+                final double dEpsilon2 = eps[j];
+                final double dSigma2 = sig[j];
                 
                 final double dEpsilon = Math.sqrt(dEpsilon1 * dEpsilon2);
                 final double dSigma = 0.5 * (dSigma1 + dSigma2);
@@ -93,18 +105,9 @@ class MixedLJForceField implements CartesianFullBackend {
                 final double dSeam = 0.64 * dSigma;
                 final double dSeamSquared = dSeam * dSeam;
 
-                // more constants... needed for cutting of the potential
-                final double invSeam = 1.0/dSeam;
-                final double t1 = dSigma*invSeam;
-                final double t1Sq = t1*t1;
-                final double t1Hex = t1Sq*t1Sq*t1Sq;
-                final double t112 = t1Hex*t1Hex;
-                final double dConst1 = (4.0 * dEpsilon * (t112 - t1Hex) - 10000.0) *invSeam;
-                final double dConst2 = 10000.0;
-
-                final double dDistX = xyz1[0] - xyz1D[j];
-                final double dDistY = xyz1[1] - xyz1D[j+iNoOfAtoms];
-                final double dDistZ = xyz1[2] - xyz1D[j+2*iNoOfAtoms];
+                final double dDistX = x0 - xyz1D[j];
+                final double dDistY = y0 - xyz1D[j+iNoOfAtoms];
+                final double dDistZ = z0 - xyz1D[j+2*iNoOfAtoms];
                 final double dDistSquared = dDistX * dDistX + dDistY * dDistY + dDistZ * dDistZ;
                 if (dDistSquared > dSeamSquared) {
                     final double dInvRPow2 = dSigma * dSigma / dDistSquared;
@@ -121,6 +124,12 @@ class MixedLJForceField implements CartesianFullBackend {
                     dPotEnergyAdded += tmp;
                 } else {
                     //System.out.println("Atoms are too close together");
+                    
+                    // more constants... needed for cutting of the potential
+                    final double invSeam = 1.0/dSeam;
+                    final double dConst1 = (4.0 * dEpsilon * (t112 - t1Hex) - 10000.0) *invSeam;
+                    final double dConst2 = 10000.0;
+                    
                     final double dDist = Math.sqrt(dDistSquared);
                     final double tmp = dConst1 * dDist + dConst2;
                     energyparts[i] += tmp;
@@ -151,23 +160,36 @@ class MixedLJForceField implements CartesianFullBackend {
         gradient.zeroGradient();
         final double[][] daGradientMat = gradient.getTotalGradient();
 
+        // some cutoff constants
+        final double t1 = 1.0/0.64;
+        final double t1Sq = t1*t1;
+        final double t1Hex = t1Sq*t1Sq*t1Sq;
+        final double t112 = t1Hex*t1Hex;
+        
+        // get all LJ parameters in O(N)
+        final double[] eps = new double[iNoOfAtoms];
+        final double[] sig = new double[iNoOfAtoms];
+        for (int i = 0; i < iNoOfAtoms; i++) {
+            eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
+            sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
+        }
+        
         // calculate all pair distances
         double dPotEnergyAdded = 0.0;
-        final double[] xyz1 = new double[3];
         for (int i = 0; i < (iNoOfAtoms - 1); i++) {
             
             // LJ parameters, set one. getting it here is of course faster
-            final double dEpsilon1 = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
-            final double dSigma1 = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
-            xyz1[0] = xyz1D[i];
-            xyz1[1] = xyz1D[i+iNoOfAtoms];
-            xyz1[2] = xyz1D[i+2*iNoOfAtoms];
+            final double dEpsilon1 = eps[i];
+            final double dSigma1 = sig[i];
+            final double x0 = xyz1D[i];
+            final double y0 = xyz1D[i+iNoOfAtoms];
+            final double z0 = xyz1D[i+2*iNoOfAtoms];
 
             for (int j = (i + 1); j < iNoOfAtoms; j++) {
 
                 // the Lennard-Jones parameters, set two
-                final double dEpsilon2 = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[j]);
-                final double dSigma2 = AtomicProperties.giveLennardJonesSigma(saAtomTypes[j]);
+                final double dEpsilon2 = eps[j];
+                final double dSigma2 = sig[j];
 
                 final double dEpsilon = Math.sqrt(dEpsilon1 * dEpsilon2);
                 final double dSigma = 0.5 * (dSigma1 + dSigma2);
@@ -175,18 +197,10 @@ class MixedLJForceField implements CartesianFullBackend {
                 // the cutoff distance
                 final double dSeam = 0.64 * dSigma;
                 final double dSeamSquared = dSeam * dSeam;
-
-                // more constants... needed for cutting of the potential
-                final double t = dSigma/dSeam;
-                final double tSq = t*t;
-                final double t6 = tSq*tSq*tSq;
-                final double t12 = t6*t6;
-                final double dConst1 = (4.0 * dEpsilon * (t12 - t6) - 10000.0) / dSeam;
-                final double dConst2 = 10000.0;
                 
-                final double dDistX = xyz1[0] - xyz1D[j];
-                final double dDistY = xyz1[1] - xyz1D[j+iNoOfAtoms];
-                final double dDistZ = xyz1[2] - xyz1D[j+2*iNoOfAtoms];
+                final double dDistX = x0 - xyz1D[j];
+                final double dDistY = y0 - xyz1D[j+iNoOfAtoms];
+                final double dDistZ = z0 - xyz1D[j+2*iNoOfAtoms];
                 final double dDistSquared = dDistX * dDistX + dDistY * dDistY + dDistZ * dDistZ;
 
                 final double dDist = Math.sqrt(dDistSquared);
@@ -215,6 +229,11 @@ class MixedLJForceField implements CartesianFullBackend {
                     dTemp = -48.0 * dEpsilon * dInvRPow12 * dDistInv + 24.0 * dEpsilon * dInvRPow6 * dDistInv;
                 } else {
                     if(GlobalConfig.DEBUGLEVEL > 0) System.err.println("WARNING: LJ gradient: Atoms too close together, we take the cutoff potential.");
+                    
+                    // more constants... needed for cutting of the potential
+                    final double dConst1 = (4.0 * dEpsilon * (t112 - t1Hex) - 10000.0) / dSeam;
+                    final double dConst2 = 10000.0;
+                    
                     final double tmp = dConst1 * dDist + dConst2;
                     energyparts[i] += tmp;
                     energyparts[j] += tmp;

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,44 +34,51 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.microbenchmarks;
+
+import org.ogolem.core.BondInfo;
+import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.Gradient;
+import org.ogolem.core.LennardJonesFF;
+import org.ogolem.core.SimpleBondInfo;
 
 /**
- * The base class for a scalar property
+ * Benchmarks gradient calculation in the Lennard-Jones FF for Ar55.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-02-01
  */
-public abstract class ScalarProperty implements Property {
+class LJFFGradientBench implements SingleMicroBenchmark {
     
-    private static final long serialVersionUID = (long) 20171215;
+    private final CartesianCoordinates lj55;
+    private final BondInfo bonds55;
+    private final LennardJonesFF ljFF;
+    private final double[] energyparts;
+    private final Gradient grad;
+    private final double[] xyz1D;
     
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
-    }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
-    }
-    
-    @Override
-    public double signedDifference(final Property p){
+    LJFFGradientBench(){
         
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
+        this.lj55 = CartesianCoordinatesLibrary.getAr55GlobMin();
+        this.bonds55 = new SimpleBondInfo(55);
+        this.ljFF = new LennardJonesFF(true);
+        this.energyparts = new double[55];
+        this.grad = new Gradient(3, 55);
+        this.xyz1D = lj55.getAll1DCartes();
     }
     
     @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
+    public String name() {
+        return "Ar55 LJ gradient bench";
     }
     
-    protected abstract boolean ensureCorrectProperty(final Property p);
+    @Override
+    public double runSingle() throws Exception {
+        
+        ljFF.gradientCalculation(-1, 0, xyz1D,
+                lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), lj55.getAllAtomsPerMol(),
+                energyparts, lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(),
+                bonds55, grad);
+        
+        return grad.getTotalEnergy();
+    }
 }

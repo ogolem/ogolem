@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * Benchmarked functionalities should be micro - hence fast to benchmark and
  * fundamental.
  * @author Johannes Dieterich
- * @version 2020-02-21
+ * @version 2020-03-22
  */
 public class MainMicroBenchmarks {
     
@@ -84,7 +84,7 @@ public class MainMicroBenchmarks {
         final AligningBench alignBench = new AligningBench();
         runOne(alignBench, 1000);
 
-	// run angle benchmark
+        // run angle benchmark
         final AngleBench angleBench = new AngleBench();
         runOne(angleBench, 10000);
         
@@ -96,11 +96,41 @@ public class MainMicroBenchmarks {
         final DihedralBench dihedralBench = new DihedralBench();
         runOne(dihedralBench, 10000);
         
+        // run matrix multiplication benchmarks
+        final MatMultBenchmark matMultBench = new MatMultBenchmark(3, 3, 3);
+        runOne(matMultBench, 20000);
+        final MatMultBenchmark matMultBench0 = new MatMultBenchmark(3, 55, 3);
+        runOne(matMultBench0, 10000);
+        final MatMultBenchmark matMultBench1 = new MatMultBenchmark(3, 1000, 3);
+        runOne(matMultBench1, 1000);
+        final MatMultBenchmark matMultBench2 = new MatMultBenchmark(256, 256, 256);
+        runOne(matMultBench2, 1);
+
+        // run specialized 3x3 matrix multiplication benchmarks
+        final Mat3x3MultBenchmark mat3x3MultBench = new Mat3x3MultBenchmark(3);
+        runOne(mat3x3MultBench, 20000);
+        final Mat3x3MultBenchmark mat3x3MultBench0 = new Mat3x3MultBenchmark(55);
+        runOne(mat3x3MultBench0, 10000);
+        final Mat3x3MultBenchmark mat3x3MultBench1 = new Mat3x3MultBenchmark(1000);
+        runOne(mat3x3MultBench1, 1000);
+        
         // run a Norway packing mutation benchmark
         final NorwayPackingLJBench norwayLJ38Bench = new NorwayPackingLJBench(38);
-        runOne(norwayLJ38Bench, 10);
+        runOne(norwayLJ38Bench, 5);
         final NorwayPackingLJBench norwayLJ55Bench = new NorwayPackingLJBench(55);
-        runOne(norwayLJ55Bench, 10);
+        runOne(norwayLJ55Bench, 2);
+
+	// run LJ benchmarks
+        final LJFFEnergyBench ljEnergyBench = new LJFFEnergyBench();
+        runOne(ljEnergyBench, 100);
+        final LJFFGradientBench ljGradientBench = new LJFFGradientBench();
+        runOne(ljGradientBench, 100);
+        
+        // run mixed LJ benchmarks
+        final MixedLJFFEnergyBench mixedljEnergyBench = new MixedLJFFEnergyBench();
+        runOne(mixedljEnergyBench, 100);
+        final MixedLJFFGradientBench mixedljGradientBench = new MixedLJFFGradientBench();
+        runOne(mixedljGradientBench, 100);
         
         // run TIP3P benchmarks
         final TIP3PEnergyBench tip3pEBench = new TIP3PEnergyBench();
@@ -114,7 +144,7 @@ public class MainMicroBenchmarks {
         final TIP4PGradientBench tip4pGBench = new TIP4PGradientBench();
         runOne(tip4pGBench, 10);
 
-	// run small water TTM3F benchmark
+        // run small water TTM3F benchmark
         final WaterTTM3FSmallBenchmark ttm3fSmall = new WaterTTM3FSmallBenchmark();
         runOne(ttm3fSmall, 10);
         

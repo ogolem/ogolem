@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,44 +34,21 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.macrobenchmarks;
 
 /**
- * The base class for a scalar property
- * @author Johannes Dieterich
- * @version 2017-12-15
+ * Interface to run a single benchmark
+ * @author Johannes M Dieterich
+ * @version 2020-02-12
  */
-public abstract class ScalarProperty implements Property {
+interface BenchmarkRunner {
     
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
-    }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
-    }
-    
-    @Override
-    public double signedDifference(final Property p){
-        
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
-    }
-    
-    @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
-    }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
+    /**
+     * Run a single benchmark
+     * @param csvLine csv formatted line containing the benchmark info
+     * @param noThreads number of threads to be used for this benchmark
+     * @return true if successful, false otherwise (allowed to spit errors)
+     * @throws exception if anything goes wrong
+     */
+    boolean runBenchmark(final String csvLine, final int noThreads) throws Exception ;
 }

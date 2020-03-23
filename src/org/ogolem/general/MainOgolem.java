@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2019, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ package org.ogolem.general;
 /**
  * The unified entry point to the OGOLEM framework.
  * @author Johannes Dieterich
- * @version 2019-12-29
+ * @version 2020-02-12
  */
 public class MainOgolem {
 
@@ -94,6 +94,8 @@ public class MainOgolem {
             org.ogolem.lionbench.MainLion.main(strippedArgs);
 	} else if(args[0].equalsIgnoreCase("--ljrefs")){
             org.ogolem.ljreferences.MainLJRefs.main(strippedArgs);
+        } else if(args[0].equalsIgnoreCase("--macrobenchmarks")){
+            org.ogolem.macrobenchmarks.MainMacroBenchmarks.run(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--md")){
             org.ogolem.md.MainMolecularDynamics.run(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--microbenchmarks")){

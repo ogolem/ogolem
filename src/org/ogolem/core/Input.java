@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ import org.ogolem.md.MDConfig;
  * This invokes the IOHandler and checks the resulting array of Strings for
  * configuration options and configures a GlobalConfig object.
  * @author Johannes Dieterich
- * @version 2015-09-03
+ * @version 2020-02-12
  */
 public final class Input {
 
@@ -89,7 +89,7 @@ public final class Input {
     public static GlobalConfig configureFromBlock(final String[] configInput, final String inputPath, final boolean failOnMissingGeom)
         throws InitIOException, CastException, Exception {
         
-        final GlobalConfig globConf = GlobalConfig.getReference();
+        final GlobalConfig globConf = new GlobalConfig();
 
         final Tuple<String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputPath);
         final String outputFolder = dirs.getObject1();

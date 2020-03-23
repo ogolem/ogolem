@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,44 +34,59 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.microbenchmarks;
+
+import java.util.Random;
 
 /**
- * The base class for a scalar property
+ * Benchmark our internal, trivial matrix multiplication routine.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-03-01
  */
-public abstract class ScalarProperty implements Property {
+class MatMultBenchmark implements SingleMicroBenchmark {
+
+    private final int m;
+    private final int n;
+    private final int k;
     
-    private static final long serialVersionUID = (long) 20171215;
+    private final double[][] matA;
+    private final double[][] matB;
+    private final double[][] matC;
     
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
-    }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
-    }
-    
-    @Override
-    public double signedDifference(final Property p){
+    MatMultBenchmark(final int m, final int n, final int k){
+        assert(m > 0);
+        assert(n > 0);
+        assert(k > 0);
+        this.m = m;
+        this.n = n;
+        this.k = k;
         
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
+        final Random r = new Random(42);
+        this.matA = new double[m][k];
+        this.matB = new double[k][n];
+        this.matC = new double[m][n];
+        
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < k; j++){
+                matA[i][j] = r.nextDouble();
+            }
+        }
+        
+        for(int i = 0; i < k; i++){
+            for(int j = 0; j < n; j++){
+                matB[i][j] = r.nextDouble();
+            }
+        }
     }
     
     @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
+    public double runSingle() throws Exception {
+        org.ogolem.math.TrivialLinearAlgebra.matMult(matA, matB, matC);
+        return matC[0][0];
     }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
+
+    @Override
+    public String name() {
+        return "matrix multiplication benchmark for sizes " + m + " / " + n + " / " + k;
+    }
 }

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,12 +56,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2015-08-01
+ * @version 2020-02-12
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140727;
-    private static final Logger log = LoggerFactory.getLogger(GlobOptAlgoFactory.class);
+    private static final long serialVersionUID = (long) 20200212;
+    private static final Logger LOG = LoggerFactory.getLogger(GlobOptAlgoFactory.class);
     private final GenericGlobalOptimizationFactory<Double,Molecule> molecularFactory;
     private final GenericFitnessFunction<Molecule,Geometry> fitness;
     private final GlobalConfig globConf;
@@ -98,7 +98,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
     @Override
     public GenericGlobalOptimization<Molecule,Geometry> translateToGlobOpt(final String globOptString) throws Exception {
         
-        log.info("Trying to parse: " + globOptString + " as global optimization for cluster.");
+        LOG.debug("Trying to parse: " + globOptString + " as global optimization for cluster.");
         if(globOptString.startsWith("multiple{")){
             // parse mutliple global optimizations
             try{
@@ -181,18 +181,18 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             final double perc = Double.parseDouble(percString);
             allProbs.add(perc/100);
             
-            log.info("Parsed " + perc + " %.");
+            LOG.debug("Parsed " + perc + " %.");
             
             final int bracIndex = w.indexOf("]");
             
             final String thisGlobOpt = w.substring(percIndex+2,bracIndex).trim();
-            log.debug("Parsing: " + thisGlobOpt + " as global optimization string.");
+            LOG.debug("Parsing: " + thisGlobOpt + " as global optimization string.");
             final GenericGlobalOptimization<Molecule,Geometry> thisOpt = this.translateToGlobOpt(thisGlobOpt);
             allOpts.add(thisOpt);
             
             // store the rest
             w = w.substring(bracIndex+1).trim();
-            log.debug("Leftover global optimization definition is " + w);
+            LOG.debug("Leftover global optimization definition is " + w);
             
             // check if there is more
             if(w.isEmpty() || !w.contains("]")){cont = false;}
@@ -204,7 +204,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
     @Override
     protected GenericCrossover<Molecule,Geometry> specializedXOver(final String xOverString) throws Exception {
 
-        log.info("working on crossover string " + xOverString);
+        LOG.debug("working on crossover string " + xOverString);
         
         if(xOverString.startsWith("germany:")){
             final String[] tokens = tokenizeThirdLevel(xOverString.substring(8));
@@ -545,7 +545,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
     @Override
     public GenericMutation<Molecule,Geometry> specializedMutation(final String mutString) throws Exception {
         
-        log.info("Working on mutation string " + mutString);
+        LOG.debug("Working on mutation string " + mutString);
         
         if(mutString.startsWith("germany:")){
             

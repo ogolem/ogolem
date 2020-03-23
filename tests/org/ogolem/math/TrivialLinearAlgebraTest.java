@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,44 +34,55 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.math;
+
+import contrib.jama.Matrix;
+import java.util.Random;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * The base class for a scalar property
+ * Tests for trivial linear algebra
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-03-01
  */
-public abstract class ScalarProperty implements Property {
+public class TrivialLinearAlgebraTest {
     
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
-    }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
-    }
-    
-    @Override
-    public double signedDifference(final Property p){
+    @Test
+    public void testMatMult() {
+        System.out.println("matMult");
         
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
+        final Matrix matA = new Matrix(3,3);
+        final Matrix matB = new Matrix(3,1000);
+        
+        final Random r = new Random(42);
+        
+        final double[][] matADat = matA.getArray();
+        final double[][] matBDat = matB.getArray();
+        
+        for(int i = 0; i < matADat.length; i++){
+            for(int j = 0; j < matADat[i].length; j++){
+                matADat[i][j] = r.nextDouble();
+            }
+        }
+        
+        for(int i = 0; i < matBDat.length; i++){
+            for(int j = 0; j < matBDat[i].length; j++){
+                matBDat[i][j] = r.nextDouble();
+            }
+        }
+        
+        // Jama reference path
+        final Matrix matC = matA.times(matB);
+        final double[][] matCDat = matC.getArray();
+        
+        // our implementation
+        final double[][] matCOurDat = TrivialLinearAlgebra.matMult(matADat, matBDat);
+        
+        assertEquals(matCDat.length, matCOurDat.length);
+        
+        for(int i = 0; i < matCOurDat.length; i++){
+            assertArrayEquals(matCDat[i], matCOurDat[i], 1e-20);
+        }
     }
-    
-    @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
-    }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
 }

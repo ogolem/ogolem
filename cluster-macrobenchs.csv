@@ -1,0 +1,5 @@
+# cluster structure benchmarks
+# LJ38
+examples/clusteropt/ar38 , ar38_sweden.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
+# LJ55
+examples/clusteropt/ar55 , ar55_sweden.ogo , -0.10594240135321474, globmin.xyz , 1e-6 , 1e-4

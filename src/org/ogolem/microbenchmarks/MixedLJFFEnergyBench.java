@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,44 +34,48 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.properties;
+package org.ogolem.microbenchmarks;
+
+import org.ogolem.core.BondInfo;
+import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.core.MixedLJForceField;
+import org.ogolem.core.SimpleBondInfo;
 
 /**
- * The base class for a scalar property
+ * Benchmarks energy calculation in the mixed Lennard-Jones FF for Ar55.
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-02-01
  */
-public abstract class ScalarProperty implements Property {
+class MixedLJFFEnergyBench implements SingleMicroBenchmark {
+
+    private final CartesianCoordinates lj55;
+    private final BondInfo bonds55;
+    private final MixedLJForceField ljFF;
+    private final double[] energyparts;
+    private final double[] xyz1D;
     
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
-    }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
-    }
-    
-    @Override
-    public double signedDifference(final Property p){
+    MixedLJFFEnergyBench(){
         
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
+        this.lj55 = CartesianCoordinatesLibrary.getAr55GlobMin();
+        this.bonds55 = new SimpleBondInfo(55);
+        this.ljFF = new MixedLJForceField();
+        this.energyparts = new double[55];
+        this.xyz1D = lj55.getAll1DCartes();
     }
     
     @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
+    public String name() {
+        return "Ar55 mixed LJ energy bench";
     }
     
-    protected abstract boolean ensureCorrectProperty(final Property p);
+    @Override
+    public double runSingle() throws Exception {
+        
+        final double e55 = ljFF.energyCalculation(-1, 0, xyz1D,
+                lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), lj55.getAllAtomsPerMol(),
+                energyparts, lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(),
+                bonds55);
+        
+        return e55;
+    }
 }
