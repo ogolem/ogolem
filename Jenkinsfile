@@ -38,7 +38,6 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'build/libs/ogolem-snapshot.jar', fingerprint: true
             archiveArtifacts artifacts: 'manual/manual.pdf', fingerprint: true
-            archiveArtifacts artifacts: 'microbenchmark_results.txt', fingerprint: true
         }
     }
 }
