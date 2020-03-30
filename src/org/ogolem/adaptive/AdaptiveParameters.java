@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import org.ogolem.generic.ContinuousProblem;
  * cache is not thread-safe. Therefore in a multi-threaded environment, it is
  * absolutely required to generate a copy of this class for each thread.
  * @author Johannes Dieterich
- * @version 2015-10-28
+ * @version 2020-03-21
  */
 public class AdaptiveParameters extends ContinuousProblem<Double> {
 
@@ -419,7 +419,11 @@ public class AdaptiveParameters extends ContinuousProblem<Double> {
         return params;
     }
 
-    int getAmountOfParametersForKey(final String key){
+    public int getAmountOfParametersForKey(final String key){
+        
+        assert(key != null);
+        assert(!key.isEmpty());
+        
         return hashPosition.get(key)[0];
     }
 

@@ -44,7 +44,7 @@ package org.ogolem.core;
  * heterogeneous clusters. Besides, as described by the Backend interface, it
  * depends on a 1D array of coordinates for calculation.
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-03-21
  */
 public class LennardJonesFF implements CartesianFullBackend {
 
@@ -192,6 +192,7 @@ public class LennardJonesFF implements CartesianFullBackend {
 
         // the cutoff distance
         final double dSeam = 0.64 * dSigma;
+        final double dSeamSquared = dSeam*dSeam;
 
         // more constants... needed for cutting off the potential
         final double t = 1.0/0.64;
@@ -209,6 +210,10 @@ public class LennardJonesFF implements CartesianFullBackend {
             final double y0 = xyz1D[i+iNoOfAtoms];
             final double z0 = xyz1D[i+2*iNoOfAtoms];
             
+            double gradXI = daGradientMat[0][i];
+            double gradYI = daGradientMat[1][i];
+            double gradZI = daGradientMat[2][i];
+            
             for (int j = (i + 1); j < iNoOfAtoms; j++) {
                 
                 final double dDistX = x0 - xyz1D[j];
@@ -225,7 +230,7 @@ public class LennardJonesFF implements CartesianFullBackend {
 
 
                 double dTemp;
-                if (dDist > dSeam) {
+                if (dDistSquared > dSeamSquared) {
                     final double dInvRPow2 = dSigma * dSigma / dDistSquared;
                     final double dInvRPow6 = dInvRPow2 * dInvRPow2 * dInvRPow2;
                     final double dInvRPow12 = dInvRPow6 * dInvRPow6;
@@ -248,13 +253,18 @@ public class LennardJonesFF implements CartesianFullBackend {
                     dPotEnergyAdded += tmp;
                     dTemp = dConst1;
                 }
-                daGradientMat[0][i] += dTemp * dDivProdX;
+                
+                gradXI += dTemp * dDivProdX;
                 daGradientMat[0][j] -= dTemp * dDivProdX;
-                daGradientMat[1][i] += dTemp * dDivProdY;
+                gradYI += dTemp * dDivProdY;
                 daGradientMat[1][j] -= dTemp * dDivProdY;
-                daGradientMat[2][i] += dTemp * dDivProdZ;
+                gradZI += dTemp * dDivProdZ;
                 daGradientMat[2][j] -= dTemp * dDivProdZ;
             }
+            
+            daGradientMat[0][i] = gradXI;
+            daGradientMat[1][i] = gradYI;
+            daGradientMat[2][i] = gradZI;
         }
         
         gradient.setTotalEnergy(dPotEnergyAdded);
