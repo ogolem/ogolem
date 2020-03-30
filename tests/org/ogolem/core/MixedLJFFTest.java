@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-03-21
  */
 public class MixedLJFFTest {
     
@@ -183,13 +183,13 @@ public class MixedLJFFTest {
                 lj38.getAllAtomTypes(), lj38.getAllAtomNumbers(), atsPerMol38, new double[38],
                 lj38.getNoOfAtoms(), lj38.getAllCharges(), lj38.getAllSpins(), bonds38);
         
-        assertEquals(e38, ENERGYLJ38, NUMACC);
+        assertEquals(ENERGYLJ38, e38, NUMACC);
         
         final double e55 = ljFF.energyCalculation(-1, 0, lj55.getAll1DCartes(),
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), atsPerMol55, new double[55],
                 lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55);
         
-        assertEquals(e55, ENERGYLJ55, NUMACC);
+        assertEquals(ENERGYLJ55, e55, NUMACC);
     }
     
     @Test
@@ -228,7 +228,7 @@ public class MixedLJFFTest {
                 lj38.getNoOfAtoms(), lj38.getAllCharges(), lj38.getAllSpins(), bonds38,
                 grad38);
         
-        assertEquals(grad38.getTotalEnergy(), ENERGYLJ38, NUMACC);
+        assertEquals(ENERGYLJ38, grad38.getTotalEnergy(), NUMACC);
         
         final double[][] gradient38 = grad38.getTotalGradient();
         
@@ -237,7 +237,7 @@ public class MixedLJFFTest {
             for(int j = 0; j < 38; j++) gradTot38 += gradient38[i][j];
         }
         
-        assertEquals(gradTot38, 0.0, NUMACC);
+        assertEquals(0.0, gradTot38, NUMACC);
         
         final Gradient grad55 = new Gradient(3, 55);
         ljFF.gradientCalculation(-1, 0, lj55.getAll1DCartes(),
@@ -245,7 +245,7 @@ public class MixedLJFFTest {
                 lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55,
                 grad55);
         
-        assertEquals(grad55.getTotalEnergy(), ENERGYLJ55, NUMACC);
+        assertEquals(ENERGYLJ55, grad55.getTotalEnergy(), NUMACC);
         
         final double[][] gradient55 = grad55.getTotalGradient();
         
@@ -254,6 +254,6 @@ public class MixedLJFFTest {
             for(int j = 0; j < 55; j++) gradTot55 += gradient55[i][j];
         }
         
-        assertEquals(gradTot55, 0.0, NUMACC);
+        assertEquals(0.0, gradTot55, NUMACC);
     }    
 }

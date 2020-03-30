@@ -42,7 +42,7 @@ package org.ogolem.core;
  * This provides a backend for mixed atom type Lennard-Jones calculations.
  * Uses Lorentz-Berthelot combination rules.
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-03-21
  */
 public class MixedLJForceField implements CartesianFullBackend {
     
@@ -185,6 +185,10 @@ public class MixedLJForceField implements CartesianFullBackend {
             final double y0 = xyz1D[i+iNoOfAtoms];
             final double z0 = xyz1D[i+2*iNoOfAtoms];
 
+            double gradXI = daGradientMat[0][i];
+            double gradYI = daGradientMat[1][i];
+            double gradZI = daGradientMat[2][i];
+            
             for (int j = (i + 1); j < iNoOfAtoms; j++) {
 
                 // the Lennard-Jones parameters, set two
@@ -240,13 +244,17 @@ public class MixedLJForceField implements CartesianFullBackend {
                     dPotEnergyAdded += tmp;
                     dTemp = dConst1;
                 }
-                daGradientMat[0][i] += dTemp * dDivProdX;
+                gradXI += dTemp * dDivProdX;
                 daGradientMat[0][j] -= dTemp * dDivProdX;
-                daGradientMat[1][i] += dTemp * dDivProdY;
+                gradYI += dTemp * dDivProdY;
                 daGradientMat[1][j] -= dTemp * dDivProdY;
-                daGradientMat[2][i] += dTemp * dDivProdZ;
+                gradZI += dTemp * dDivProdZ;
                 daGradientMat[2][j] -= dTemp * dDivProdZ;
             }
+            
+            daGradientMat[0][i] = gradXI;
+            daGradientMat[1][i] = gradYI;
+            daGradientMat[2][i] = gradZI;
         }
         
         gradient.setTotalEnergy(dPotEnergyAdded);

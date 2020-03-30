@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,13 +41,13 @@ package org.ogolem.math;
 /**
  * A collection of fast (and therefore inaccurate!) functions.
  * @author Johannes Dieterich
- * @version 2013-03-27
+ * @version 2020-03-21
  */
 public class FastFunctions {
-    
+
     // avoid instantiation
     private FastFunctions(){}
-    
+
     /**
      * From: http://martin.ankerl.com/2007/02/11/optimized-exponential-functions-for-java/
      * See: Nical N. Schraudolph "A Fast, Compact Approximation of the exponential function"
@@ -59,7 +60,7 @@ public class FastFunctions {
         final long tmp = (long) (1512775 * x + 1072632447);
         return Double.longBitsToDouble(tmp << 32);
     }
-    
+
     public static double fastExp2(final double val) {
         final long tmp = (long) (1512775 * val) + (1072693248 - 60801);
         return Double.longBitsToDouble(tmp << 32);
@@ -75,12 +76,12 @@ public class FastFunctions {
                                                      // 64 / 186 = 1/2.90625
         return Double.longBitsToDouble((tmp - error) << 32);
 }
-    
+
     /**
      * Approximated exp(x) through lim_{n\rightarrow\infty}(1+\dfrac{1}{n})^n
      * with n=128. Bernoulli approximation.
      * @param x
-     * @return the approximated exp(x) 
+     * @return the approximated exp(x)
      */
     public static double lim128Exp(final double x) {
         double y = 1d + x / 128d;
@@ -88,12 +89,12 @@ public class FastFunctions {
         y *= y; y *= y; y *= y;
         return y;
     }
-    
+
     /**
      * Approximated exp(x) through lim_{n\rightarrow\infty}(1+\dfrac{1}{n})^n
      * with n=256. Bernoulli approximation.
      * @param x
-     * @return the approximated exp(x) 
+     * @return the approximated exp(x)
      */
     public static double lim256Exp(final double x) {
         double y = 1d + x / 256d;
@@ -101,12 +102,12 @@ public class FastFunctions {
         y *= y; y *= y; y *= y; y *= y;
         return y;
     }
-    
+
     /**
      * Approximated exp(x) through lim_{n\rightarrow\infty}(1+\dfrac{1}{n})^n
      * with n=512. Bernoulli approximation.
      * @param x
-     * @return the approximated exp(x) 
+     * @return the approximated exp(x)
      */
     public static double lim512Exp(final double x) {
         double y = 1d + x / 512d;
@@ -129,12 +130,12 @@ public class FastFunctions {
         y *= y; y *= y;
         return y;
     }
-    
+
        /**
      * Approximated exp(x) through lim_{n\rightarrow\infty}(1+\dfrac{1}{n})^n
      * with n=2048. Bernoulli approximation.
      * @param x
-     * @return the approximated exp(x) 
+     * @return the approximated exp(x)
      */
     public static double lim2048Exp(final double x) {
         double y = 1d + x / 2048d;
@@ -143,7 +144,7 @@ public class FastFunctions {
         y *= y; y *= y; y *= y;
         return y;
     }
-    
+
        /**
      * Approximated exp(x) through lim_{n\rightarrow\infty}(1+\dfrac{1}{n})^n
      * with n=4096. Bernoulli approximation.
@@ -154,28 +155,67 @@ public class FastFunctions {
         double y = 1d + x / 4096d;
         y *= y; y *= y; y *= y; y *= y;
         y *= y; y *= y; y *= y; y *= y;
-        y *= y; y *= y; y *= y; y *= y; 
+        y *= y; y *= y; y *= y; y *= y;
         return y;
     }
-    
+
     /**
      * Returns the square of a double.
      * @param x the value to be squared
      * @return the square
      */
-    public static double sq(final double x){
+    public static final double sq(final double x){
         return x*x;
     }
-    
+
     /**
-     * Fast pow() call for integer exponents doing some fancy operations (found
-     * on the internet).
+     * Fast pow() call for integer exponents doing some fancy operations (based
+     * on guava [APL2] but optimized beyond that).
      * @param base the base
      * @param exp the exponent
      * @return base to the power of exp
      */
-    public static double pow (final double base, final int exp){
-        assert(exp >= 0); // the below is not capable to check for oddness for negative numbers according to findbugs.
-        return exp==0?1:sq(pow(base,exp/2))*(exp%2==1?base:1);
+    public static final double pow(final double base, final int exp) {
+
+        // some common cases for LJ
+        switch (exp) {
+            case 0:
+                return 1;
+            case 1:
+                return base;
+            case 2:
+                return sq(base);
+            case 3:
+                return sq(base) * base;
+            case 4:
+                return sq(sq(base));
+            case 5:
+                return sq(sq(base)) * base;
+            case 6:
+                final double sqb = sq(base);
+                return sqb * sqb * sqb;
+            case 12:
+                final double b2 = sq(base);
+                final double b4 = sq(b2);
+                return b4 * b4 * b4;
+
+        }
+
+        // generic case
+        int y = exp;
+        double x = base;
+        for (double accum = 1;; y >>>= 1) {
+            switch (y) {
+                case 0:
+                    return accum;
+                case 1:
+                    return accum * x;
+                default:
+                    if ((y & 1) != 0) {
+                        accum *= x; // odd exp
+                    }
+                    x *= x;
+            }
+        }
     }
 }

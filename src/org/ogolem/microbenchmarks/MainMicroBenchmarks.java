@@ -95,8 +95,8 @@ public class MainMicroBenchmarks {
         // run dihedral benchmark
         final DihedralBench dihedralBench = new DihedralBench();
         runOne(dihedralBench, 10000);
-        
-        // run matrix multiplication benchmarks
+
+	// run matrix multiplication benchmarks
         final MatMultBenchmark matMultBench = new MatMultBenchmark(3, 3, 3);
         runOne(matMultBench, 20000);
         final MatMultBenchmark matMultBench0 = new MatMultBenchmark(3, 55, 3);
@@ -113,14 +113,14 @@ public class MainMicroBenchmarks {
         runOne(mat3x3MultBench0, 10000);
         final Mat3x3MultBenchmark mat3x3MultBench1 = new Mat3x3MultBenchmark(1000);
         runOne(mat3x3MultBench1, 1000);
-        
+
         // run a Norway packing mutation benchmark
         final NorwayPackingLJBench norwayLJ38Bench = new NorwayPackingLJBench(38);
         runOne(norwayLJ38Bench, 5);
         final NorwayPackingLJBench norwayLJ55Bench = new NorwayPackingLJBench(55);
         runOne(norwayLJ55Bench, 2);
-
-	// run LJ benchmarks
+        
+        // run LJ benchmarks
         final LJFFEnergyBench ljEnergyBench = new LJFFEnergyBench();
         runOne(ljEnergyBench, 100);
         final LJFFGradientBench ljGradientBench = new LJFFGradientBench();
@@ -132,7 +132,13 @@ public class MainMicroBenchmarks {
         final MixedLJFFGradientBench mixedljGradientBench = new MixedLJFFGradientBench();
         runOne(mixedljGradientBench, 100);
         
-        // run TIP3P benchmarks
+        // run adaptive LJ benchmarks
+        final AdaptiveLJFFEnergyBench adaptiveljEnergyBench = new AdaptiveLJFFEnergyBench();
+        runOne(adaptiveljEnergyBench, 100);
+        final AdaptiveLJFFGradientBench adaptiveljGradientBench = new AdaptiveLJFFGradientBench();
+        runOne(adaptiveljGradientBench, 100);
+
+	// run TIP3P benchmarks
         final TIP3PEnergyBench tip3pEBench = new TIP3PEnergyBench();
         runOne(tip3pEBench, 10);
         final TIP3PGradientBench tip3pGBench = new TIP3PGradientBench();
@@ -144,7 +150,7 @@ public class MainMicroBenchmarks {
         final TIP4PGradientBench tip4pGBench = new TIP4PGradientBench();
         runOne(tip4pGBench, 10);
 
-        // run small water TTM3F benchmark
+	// run small water TTM3F benchmark
         final WaterTTM3FSmallBenchmark ttm3fSmall = new WaterTTM3FSmallBenchmark();
         runOne(ttm3fSmall, 10);
         

@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -53,14 +53,14 @@ import static org.ogolem.math.FastFunctions.pow;
  * 6/12 Terms but also more, depending on the users wish. Initial code to use a 
  * Stillinger-Weber-Gong potential for three body terms (untested and buggy).
  * @author Johannes Dieterich
- * @version 2016-02-19
+ * @version 2020-03-21
  */
 public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
 
     //XXX implement Horner scheme for the pow() calls
     
     // the ID
-    private static final long serialVersionUID = (long) 20150727;
+    private static final long serialVersionUID = (long) 20200321;
     private static final boolean DEBUG = false;
 
     private final boolean easyMix;
@@ -79,11 +79,9 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
     private final boolean use3Body;
     
     private final boolean useCaching;
-    private double[] radiiCache;
     private int[] paramOffsetCache;
     private int[] paramOffsetCache2b1;
     private int[][] paramOffsetCache3b;
-    private double[][] daXYZ;
     //TODO debug 3body 
     //TODO allow coord gradient to be w/o 2body contrib
     
@@ -107,6 +105,10 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             final double closeCutBlow, final double distCutBlow,
             final boolean useCache, final boolean discard2Body){
 
+        assert(startPot > 0);
+        assert(endPot >= startPot);
+        assert(potIncr >= 0);
+        
         this.machPrec = Machine.calcMachinePrecision();
         this.easyMix = easyLBMix;
         this.startPot = startPot;
@@ -144,9 +146,6 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
         if(orig.paramOffsetCache != null){this.paramOffsetCache = orig.paramOffsetCache.clone();}
         else {this.paramOffsetCache = null;}
 
-        if(orig.radiiCache != null){this.radiiCache = orig.radiiCache.clone();}
-        else {this.radiiCache = null;}
-
         if(orig.paramOffsetCache2b1 != null){this.paramOffsetCache2b1 = orig.paramOffsetCache2b1.clone();}
         else {this.paramOffsetCache2b1 = null;}
 
@@ -171,39 +170,27 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             final String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins,
             final BondInfo bonds, final Gradient gradient){
 
-        if(useCaching && radiiCache == null){
+        if(useCaching && paramOffsetCache == null){
             // initialize caches
             initializeCaches(params, saAtomTypes, use3Body);
         }
 
-        // put the 1D coordinates into 3D ones
-        if(daXYZ == null || !useCaching){daXYZ = new double[3][iNoOfAtoms];}
-        System.arraycopy(daXYZ1D, 0, daXYZ[0], 0, iNoOfAtoms);
-        System.arraycopy(daXYZ1D, iNoOfAtoms, daXYZ[1], 0, iNoOfAtoms);
-        System.arraycopy(daXYZ1D, iNoOfAtoms * 2, daXYZ[2], 0, iNoOfAtoms);
-
-        final Gradient analyticalGrad = new Gradient();
-
         // the matrix for the gradient
         gradient.zeroGradient();
-        final double[][] daGradientMat = gradient.getTotalGradient();
+        final double[][] gradientMat = gradient.getTotalGradient();
 
+        // get in O(N)
+        final double[] radii = new double[iNoOfAtoms];
+        for (int i = 0; i < iNoOfAtoms; i++) {
+            radii[i] = AtomicProperties.giveRadius(atomNos[i]);
+        }
+        
         double[] daFirstParams = null;
         double[] daSecParams;
         double[] daParams = params.getAllParamters();
-        int offset = 0;
         int counter = -1;
 
-        /*
-         * we calculate the interatomic distances now, since we possibly need them twice and we can
-         * affort the memory (TM).
-         * gets filled in during the LJ loops :-)
-         */
-        final double[][] daDistMat = new double[iNoOfAtoms][iNoOfAtoms];
-        final double[][] daXXR = new double[iNoOfAtoms][iNoOfAtoms];
-        final double[][] daYYR = new double[iNoOfAtoms][iNoOfAtoms];
-        final double[][] daZZR = new double[iNoOfAtoms][iNoOfAtoms];
-
+        double twoBodyEnergy = 0.0;
         for(int i = 0; i < iNoOfAtoms-1; i++){
             if(easyMix){
                 // first part of parameters
@@ -211,37 +198,42 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                 if(daFirstParams == null){continue;}
             }
 
-            double dRadius1;
-            if(useCaching){dRadius1 = radiiCache[i];}
-            else {dRadius1 = AtomicProperties.giveRadius(saAtomTypes[i]);}
+            final double rad1 = radii[i];
 
+            final double xi = daXYZ1D[i];
+            final double yi = daXYZ1D[iNoOfAtoms+i];
+            final double zi = daXYZ1D[2*iNoOfAtoms+i];
+            
+            double gradXI = gradientMat[0][i];
+            double gradYI = gradientMat[1][i];
+            double gradZI = gradientMat[2][i];
+            
             for(int j = i+1; j < iNoOfAtoms; j++){
 
                 counter++;
 
-                double dRadius2;
-                if(useCaching){dRadius2 = radiiCache[j];}
-                else {dRadius2 = AtomicProperties.giveRadius(saAtomTypes[j]);}
+                final double rad2 = radii[j];
 
                 // check whether one should use a cutoff
-                final double dDistX = daXYZ[0][i] - daXYZ[0][j];
-                final double dDistY = daXYZ[1][i] - daXYZ[1][j];
-                final double dDistZ = daXYZ[2][i] - daXYZ[2][j];
+                final double dDistX = xi - daXYZ1D[j];
+                final double dDistY = yi - daXYZ1D[iNoOfAtoms+j];
+                final double dDistZ = zi - daXYZ1D[2*iNoOfAtoms+j];
                 final double dDist = Math.sqrt(dDistX * dDistX + dDistY * dDistY + dDistZ * dDistZ);
-                final double dAddedRadii = dRadius1 + dRadius2;
+                final double dAddedRadii = rad1 + rad2;
                 if(dDist < (closeCutBlow * dAddedRadii)){
                     // use cutoff. speculative... ;-)
-                    daGradientMat[0][i] += FixedValues.NONCONVERGEDGRADIENT;
-                    daGradientMat[0][j] -= FixedValues.NONCONVERGEDGRADIENT;
-                    daGradientMat[1][i] += FixedValues.NONCONVERGEDGRADIENT;
-                    daGradientMat[1][j] -= FixedValues.NONCONVERGEDGRADIENT;
-                    daGradientMat[2][i] += FixedValues.NONCONVERGEDGRADIENT;
-                    daGradientMat[2][j] -= FixedValues.NONCONVERGEDGRADIENT;
+                    gradientMat[0][i] += FixedValues.NONCONVERGEDGRADIENT;
+                    gradientMat[0][j] -= FixedValues.NONCONVERGEDGRADIENT;
+                    gradientMat[1][i] += FixedValues.NONCONVERGEDGRADIENT;
+                    gradientMat[1][j] -= FixedValues.NONCONVERGEDGRADIENT;
+                    gradientMat[2][i] += FixedValues.NONCONVERGEDGRADIENT;
+                    gradientMat[2][j] -= FixedValues.NONCONVERGEDGRADIENT;
                     continue;
                 } else if(dDist > (farCutBlow *dAddedRadii)){
                     continue;
                 }
 
+                int offset = 0;
                 if(easyMix){
                     // second part of parameters
                     daSecParams = params.getParametersForKey(saAtomTypes[j]);
@@ -268,43 +260,37 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                     }
                 }
 
-                daDistMat[i][j] = dDist;
-                daDistMat[j][i] = dDist;
-
-                daXXR[i][j] = dDistX/dDist;
-                daXXR[j][i] = daXXR[i][j];
-                daYYR[i][j] = dDistY/dDist;
-                daYYR[j][i] = daYYR[i][j];
-                daZZR[i][j] = dDistZ/dDist;
-                daZZR[j][i] = daZZR[i][j];
-
                 final double dDistInv = 1.0 / dDist;
                 // divide the distances in all three dimensions by the total distance to cover for the coordinate system
                 final double dDivProdX = dDistX * dDistInv;
                 final double dDivProdY = dDistY * dDistInv;
                 final double dDivProdZ = dDistZ * dDistInv;
 
-                double dTempDeriv = 0.0;
+                final double epsFac = 4 * daParams[offset];
 
-                
-                final double dSigmaFac = 4.0 * daParams[offset];
-                final double distInv = 1.0/dDist;
-
+                // calculate the contributions                
                 int iCounter = offset + 1;
+                double dTempDeriv = 0.0;
                 for (int iPot = startPot; iPot <= endPot; iPot = iPot + potIncr) {
                     final double dSign = Math.signum(daParams[iCounter]);
-                    dTempDeriv += dSigmaFac * dSign * pow(daParams[iCounter], iPot)
-                            * pow(distInv, iPot + 1) * (-iPot);
+                    final double sigTerm = pow((daParams[iCounter] * dDistInv), iPot);
+                    final double twoBodyContr = epsFac * dSign * sigTerm;
+                    twoBodyEnergy += twoBodyContr;
+                    dTempDeriv += twoBodyContr * dDistInv * (-iPot);
                     iCounter++;
                 }
                 
-                daGradientMat[0][i] += dTempDeriv * dDivProdX;
-                daGradientMat[0][j] -= dTempDeriv * dDivProdX;
-                daGradientMat[1][i] += dTempDeriv * dDivProdY;
-                daGradientMat[1][j] -= dTempDeriv * dDivProdY;
-                daGradientMat[2][i] += dTempDeriv * dDivProdZ;
-                daGradientMat[2][j] -= dTempDeriv * dDivProdZ;
+                gradXI += dTempDeriv * dDivProdX;
+                gradientMat[0][j] -= dTempDeriv * dDivProdX;
+                gradYI += dTempDeriv * dDivProdY;
+                gradientMat[1][j] -= dTempDeriv * dDivProdY;
+                gradZI += dTempDeriv * dDivProdZ;
+                gradientMat[2][j] -= dTempDeriv * dDivProdZ;
             }
+            
+            gradientMat[0][i] = gradXI;
+            gradientMat[1][i] = gradYI;
+            gradientMat[2][i] = gradZI;
         }
 
         /*
@@ -313,6 +299,12 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
 
         if(use3Body && saAtomTypes.length > 2){
 
+            // put the 1D coordinates into 3D ones - XXX remove
+            final double[][] daXYZ = new double[3][iNoOfAtoms];
+            System.arraycopy(daXYZ1D, 0, daXYZ[0], 0, iNoOfAtoms);
+            System.arraycopy(daXYZ1D, iNoOfAtoms, daXYZ[1], 0, iNoOfAtoms);
+            System.arraycopy(daXYZ1D, iNoOfAtoms * 2, daXYZ[2], 0, iNoOfAtoms);
+            
             int off2b1;
             int off2b2;
             int off2b3;
@@ -328,10 +320,17 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                     if(!useCaching){off2b1 = posOfKey2sin3(saAtomTypes, k, j, params);}
                     else {off2b1 = paramOffsetCache2b1[c];}
 
+                    final double dDistJKX = daXYZ[0][k] - daXYZ[0][j];
+                    final double dDistJKY = daXYZ[1][k] - daXYZ[1][j];
+                    final double dDistJKZ = daXYZ[2][k] - daXYZ[2][j];
+                    final double dDistJKSq = dDistJKX * dDistJKX + dDistJKY * dDistJKY + dDistJKZ * dDistJKZ;
+                    
+                    final double dDistJK = Math.sqrt(dDistJKSq);
+                    
                     // ok, check whether the distance is above the equilibrium distance for this pair
-                    if(daDistMat[j][k] > daParams[off2b1]){continue;}
+                    if(dDistJK > daParams[off2b1]){continue;}
 
-                    final double dRJKRCC = 1.0 / (daDistMat[k][j]-daParams[off2b1]);
+                    final double dRJKRCC = 1.0 / (dDistJK-daParams[off2b1]);
                     final double dGRJKR = daParams[off2b1+1] * dRJKRCC;
                     final double dFJK = Math.exp(dGRJKR);
 
@@ -348,26 +347,41 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                             off2b2 = paramOffsetCache3b[0][counter];
                             off2b3 = paramOffsetCache3b[1][counter];
                         }
+                        
+                        final double dIJX = daXYZ[0][i]-daXYZ[0][j];
+                        final double dIJY = daXYZ[1][i]-daXYZ[1][j];
+                        final double dIJZ = daXYZ[2][i]-daXYZ[2][j];
+                
+                        final double dDistIJSq = dIJX*dIJX + dIJY*dIJY + dIJZ*dIJZ;
+                        
+                        final double dIKX = daXYZ[0][i]-daXYZ[0][k];
+                        final double dIKY = daXYZ[1][i]-daXYZ[1][k];
+                        final double dIKZ = daXYZ[2][i]-daXYZ[2][k];
+                
+                        final double dDistIKSq = dIKX*dIKX + dIKY*dIKY + dIKZ*dIKZ;
 
                         // ok, check whether the distance is above the equilibrium distance for this pair
-                        if (daDistMat[i][j] > daParams[off2b2]){continue;}
-                        if (daDistMat[i][k] > daParams[off2b3]){continue;}
+                        if (dDistIJSq > daParams[off2b2]*daParams[off2b2]){continue;}
+                        if (dDistIKSq > daParams[off2b3]*daParams[off2b3]){continue;}
 
+                        final double dDistIJ = Math.sqrt(dDistIJSq);
+                        final double dDistIK = Math.sqrt(dDistIKSq);
+                        
                         // finally the real derivative
-                        final double dRIJRCC = 1.0 / (daDistMat[i][j]-daParams[off2b2]);
+                        final double dRIJRCC = 1.0 / (dDistIJ-daParams[off2b2]);
                         final double dGRIJR = daParams[off2b2+1] * dRIJRCC;
                         final double dFIJ = Math.exp(dGRIJR);
 
-                        final double dRIKRCC = 1.0 / (daDistMat[i][k]-daParams[off2b3]);
+                        final double dRIKRCC = 1.0 / (dDistIK-daParams[off2b3]);
                         final double dGRIKR = daParams[off2b3+1] * dRIKRCC;
                         final double dFIK = Math.exp(dGRIKR);
 
-                        final double dCTIJK = (daDistMat[i][j]*daDistMat[i][j]+daDistMat[j][k]*daDistMat[j][k]
-                                - daDistMat[i][k]*daDistMat[i][k])/(2.0*daDistMat[i][j]*daDistMat[j][k]);
-                        final double dCTIKJ = (daDistMat[i][k]*daDistMat[i][k]+daDistMat[j][k]*daDistMat[j][k]
-                                - daDistMat[i][j]*daDistMat[i][j])/(2.0*daDistMat[i][k]*daDistMat[j][k]);
-                        final double dCTJIK = (daDistMat[i][j]*daDistMat[i][j]+daDistMat[i][k]*daDistMat[i][k]
-                                - daDistMat[j][k]*daDistMat[j][k])/(2.0*daDistMat[i][j]*daDistMat[i][k]);
+                        final double dCTIJK = (dDistIJSq+dDistJKSq
+                                - dDistIKSq)/(2.0*dDistIJ*dDistJK);
+                        final double dCTIKJ = (dDistIKSq+dDistJKSq
+                                - dDistIJSq)/(2.0*dDistIK*dDistJK);
+                        final double dCTJIK = (dDistIJSq+dDistIKSq
+                                - dDistJKSq)/(2.0*dDistIJ*dDistIK);
 
                         final double dXJIK = dCTJIK + 1.0/3.0;
                         final double dXJIK2 = dXJIK*dXJIK;
@@ -390,15 +404,15 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                         final double dV31 = dFIJ*dFIK*dXJIK2*dYJIK2;
                         final double dV32 = dFIJ*dFJK*dXIJK2*dYIJK2;
                         final double dV33 = dFIK*dFJK*dXIKJ2*dYIKJ2;
-
+                        
                         final double dPJIK = daParams[off3b+2]*dFIJ*dFIK*2.0*dXJIK*(dYJIK2+dYJIK)
-                                *daDistMat[j][k]/daDistMat[i][j]/daDistMat[i][k];
+                                *dDistJK/dDistIJ/dDistIK;
 
                         final double dPIJK = daParams[off3b+2]*dFIJ*dFJK*2.0*dXIJK*(dYIJK2+dYIJK)
-                                *daDistMat[i][k]/daDistMat[i][j]/daDistMat[j][k];
+                                *dDistIK/dDistIJ/dDistJK;
 
                         final double dPIKJ = daParams[off3b+2]*dFIK*dFJK*2.0*dXIKJ*(dYIKJ2+dYIKJ)
-                                *daDistMat[i][j]/daDistMat[i][k]/daDistMat[j][k];
+                                *dDistIJ/dDistIK/dDistJK;
 
                         final double dDJIKIJ = -daParams[off3b+2]*dV31*dGRIJR*dRIJRCC+dPJIK*dCTIJK;
                         final double dDJIKIK = -daParams[off3b+2]*dV31*dGRIKR*dRIKRCC+dPJIK*dCTIKJ;
@@ -415,18 +429,18 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                         final double dDSumIJ = dDJIKIJ+dDIJKIJ+dDIKJIJ;
                         final double dDSumIK = dDJIKIK+dDIJKIK+dDIKJIK;
                         final double dDSumJK = dDJIKJK+dDIJKJK+dDJKJJK;
+                        
+                        gradientMat[0][i] += dDSumIJ*dIJX/dDistIJ + dDSumIK*dIKX/dDistIK;
+                        gradientMat[0][j] -= dDSumIJ*dIJX/dDistIJ + dDSumJK*dDistJKX/dDistJK;
+                        gradientMat[0][k] -= dDSumIK*dIKX/dDistIK - dDSumJK*dDistJKX/dDistJK;
 
-                        daGradientMat[0][i] += dDSumIJ*daXXR[i][j] + dDSumIK*daXXR[i][k];
-                        daGradientMat[0][j] -= dDSumIJ*daXXR[i][j] + dDSumJK*daXXR[j][k];
-                        daGradientMat[0][k] -= dDSumIK*daXXR[i][k] - dDSumJK*daXXR[j][k];
+                        gradientMat[1][i] += dDSumIJ*dIJY/dDistIJ + dDSumIK*dIKY/dDistIK;
+                        gradientMat[1][j] -= dDSumIJ*dIJY/dDistIJ + dDSumJK*dDistJKY/dDistJK;
+                        gradientMat[1][k] -= dDSumIK*dIKY/dDistIK - dDSumJK*dDistJKY/dDistJK;
 
-                        daGradientMat[1][i] += dDSumIJ*daYYR[i][j] + dDSumIK*daYYR[i][k];
-                        daGradientMat[1][j] -= dDSumIJ*daYYR[i][j] + dDSumJK*daYYR[j][k];
-                        daGradientMat[1][k] -= dDSumIK*daYYR[i][k] - dDSumJK*daYYR[j][k];
-
-                        daGradientMat[2][i] += dDSumIJ*daZZR[i][j] + dDSumIK*daZZR[i][k];
-                        daGradientMat[2][j] -= dDSumIJ*daZZR[i][j] + dDSumJK*daZZR[j][k];
-                        daGradientMat[2][k] -= dDSumIK*daZZR[i][k] - dDSumJK*daZZR[j][k];
+                        gradientMat[2][i] += dDSumIJ*dIJZ/dDistIJ + dDSumIK*dIKZ/dDistIK;
+                        gradientMat[2][j] -= dDSumIJ*dIJZ/dDistIJ + dDSumJK*dDistJKZ/dDistJK;
+                        gradientMat[2][k] -= dDSumIK*dIKZ/dDistIK - dDSumJK*dDistJKZ/dDistJK;
                         
                         // TODO derivative of SWG term... test it!
                     }
@@ -435,12 +449,16 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
         }
 
 
-        analyticalGrad.setGradientTotal(daGradientMat);
+        gradient.setGradientTotal(gradientMat);
 
-        // one last energy evaluation
-        //XXX remove this!
-        final double dEnergy = energyCalculation(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds);
-        analyticalGrad.setTotalEnergy(dEnergy);
+        if(use3Body && saAtomTypes.length > 2){
+            // one last energy evaluation
+            //XXX remove this!
+            final double dEnergy = energyCalculation(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds);
+            gradient.setTotalEnergy(dEnergy);
+        } else {
+            gradient.setTotalEnergy(twoBodyEnergy);
+        }
 
 
         if(DEBUG){
@@ -451,10 +469,10 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
 
             for(int i = 0; i < daNumGrad.length; i++){
                 for(int j = 0; j < daNumGrad[0].length; j++){
-                    if (Math.abs(daNumGrad[i][j] - daGradientMat[i][j]) >= 1E-5) {
+                    if (Math.abs(daNumGrad[i][j] - gradientMat[i][j]) >= 1E-5) {
                         // we have a noticable difference
                         System.err.println("DEBUG: Analytical vs numerical gradient is: "
-                                + daGradientMat[i][j] + " vs " + daNumGrad[i][j]);
+                                + gradientMat[i][j] + " vs " + daNumGrad[i][j]);
                     } else {
                         System.out.append("DEBUG: Analytical vs numerical gradient was fine. :-)");
                     }
@@ -468,16 +486,214 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             final String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins,
             final BondInfo bonds){
         
-        // this is a fake and just allowed since it is intermediate
-        final int[] iaAtsPerMol = {iNoOfAtoms};
-        final CartesianCoordinates cartes = new CartesianCoordinates(iNoOfAtoms, 1, iaAtsPerMol);
-        cartes.setAllCharges(faCharges);
-        cartes.setAllSpins(iaSpins);
-        cartes.setAllAtomTypes(saAtomTypes);
-        cartes.setAll1DCartes(daXYZ1D, iNoOfAtoms);
+        double dEnergy = 0.0;
+        double d2Body = 0.0;
 
-        final double dEnergy = energyOfStructWithParams(cartes, params, (int) lID, bonds);
-        //XXX this is superstupid! default should be using THIS routine, not the other way round
+        if(DEBUG){
+            for(final String s : saAtomTypes){
+                System.out.println("DEBUG: " + s);
+            }
+        }
+        
+        // get in O(N)
+        final double[] radii = new double[iNoOfAtoms];
+        for (int i = 0; i < iNoOfAtoms; i++) {
+            radii[i] = AtomicProperties.giveRadius(atomNos[i]);
+        }
+
+        double[] daFirstParams = null;
+        double[] daSecParams;
+        double[] daParams = params.getAllParamters();
+        int counter = -1;
+
+        if(useCaching && paramOffsetCache == null){
+            // initialize caches
+            initializeCaches(params, saAtomTypes, use3Body);
+        }
+
+        for(int i = 0; i < iNoOfAtoms-1; i++){
+            if(easyMix){
+                // first part of parameters
+                daFirstParams = params.getParametersForKey(saAtomTypes[i]);
+                if(daFirstParams == null){continue;}
+            }
+
+            final double rad1 = radii[i];
+            
+            final double xi = daXYZ1D[i];
+            final double yi = daXYZ1D[iNoOfAtoms+i];
+            final double zi = daXYZ1D[2*iNoOfAtoms+i];
+
+            for(int j = i+1; j < iNoOfAtoms; j++){
+
+                counter++;
+
+                final double rad2 = radii[j];
+
+                final double dX = xi-daXYZ1D[j];
+                final double dY = yi-daXYZ1D[iNoOfAtoms+j];
+                final double dZ = zi-daXYZ1D[2*iNoOfAtoms+j];
+                
+                final double dDist = Math.sqrt(dX*dX + dY*dY + dZ*dZ);
+
+                // check whether one should use a cutoff
+                final double dAddedRadii = rad1 + rad2;
+
+                if(dDist < (closeCutBlow * dAddedRadii)){
+                    // use cutoff.
+                    d2Body += FixedValues.NONCONVERGEDENERGY;
+                    continue;
+                }  else if(dDist > (farCutBlow * dAddedRadii)){
+                    continue;
+                }
+
+                int offset = 0;
+                if(easyMix){
+                    // second part of parameters
+                    daSecParams = params.getParametersForKey(saAtomTypes[j]);
+                    if(daSecParams == null){continue;}
+                
+                    // mix them
+                    daParams = mixParams(daFirstParams, daSecParams);
+                } else{
+                    if(!useCaching){
+                        String sPair = saAtomTypes[i] + saAtomTypes[j];
+                        daParams = params.getParametersForKey(sPair);
+                        if (daParams == null) {
+                            sPair = saAtomTypes[j] + saAtomTypes[i];
+                            daParams = params.getParametersForKey(sPair);
+                            if (daParams == null) {
+                                // ok this IS a problem
+                                System.err.println("WARNING: We can't find parameters for the pair "
+                                        + saAtomTypes[i] + " and " + saAtomTypes[j] + ".");
+                                continue;
+                            }
+                        }
+                    } else{
+                        offset = paramOffsetCache[counter];
+                    }
+                }
+
+                // calculate the contributions
+                final double epsFac = 4 * daParams[offset];
+                final double distInv = 1.0/dDist;
+                
+                int iCounter = offset + 1;
+                for (int iPot = startPot; iPot <= endPot; iPot = iPot + potIncr) {
+                    final double dSign = Math.signum(daParams[iCounter]);
+                    d2Body += epsFac * dSign * pow((daParams[iCounter] * distInv), iPot);
+                    iCounter++;
+                }
+            }
+        }
+        
+        if(!discard2Body){dEnergy += d2Body;}
+
+        /*
+         * Stillinger-Weber-Gong term
+         */
+        if(use3Body && iNoOfAtoms > 2){
+            
+            // put the 1D coordinates into 3D ones - XXX remove
+            final double[][] daXYZ = new double[3][iNoOfAtoms];
+            System.arraycopy(daXYZ1D, 0, daXYZ[0], 0, iNoOfAtoms);
+            System.arraycopy(daXYZ1D, iNoOfAtoms, daXYZ[1], 0, iNoOfAtoms);
+            System.arraycopy(daXYZ1D, iNoOfAtoms * 2, daXYZ[2], 0, iNoOfAtoms);
+            
+            int off2b1;
+            int off2b2;
+            int off2b3;
+            int off3b;
+            counter = -1;
+            int c = -1;
+            daParams = params.getAllParamters();
+
+            for(int k = 0; k < iNoOfAtoms; k++){
+                for(int j = 0; j < k; j++){
+
+                    c++;
+                    if(!useCaching){off2b1 = posOfKey2sin3(saAtomTypes, k, j, params);}
+                    else {off2b1 = paramOffsetCache2b1[c];}
+
+                    final double dJKX = daXYZ[0][k]-daXYZ[0][j];
+                    final double dJKY = daXYZ[1][k]-daXYZ[1][j];
+                    final double dJKZ = daXYZ[2][k]-daXYZ[2][j];
+                
+                    final double dDistJKSq = dJKX*dJKX + dJKY*dJKY + dJKZ*dJKZ;
+                    final double dDistJK = Math.sqrt(dDistJKSq);
+                    
+                    // ok, check whether the distance is above the equilibrium distance for this pair
+                    if(dDistJK > daParams[off2b1]){continue;}
+
+                    final double dRJKRCC = 1.0 / (Math.sqrt(dDistJKSq)-daParams[off2b1]);
+                    final double dGRJKR = daParams[off2b1+1] * dRJKRCC;
+                    final double dFJK = Math.exp(dGRJKR);
+
+                    for(int i = 0; i < j; i++){
+
+                        counter++;
+
+                        if(!useCaching){
+                            off3b = posOfKey3in3(saAtomTypes, i, j, k, params);
+                            off2b2 = posOfKey2sin3(saAtomTypes, i, j, params);
+                            off2b3 = posOfKey2sin3(saAtomTypes, i, k, params);
+                        } else{
+                            off3b = paramOffsetCache3b[2][counter];
+                            off2b2 = paramOffsetCache3b[0][counter];
+                            off2b3 = paramOffsetCache3b[1][counter];
+                        }
+                        
+                        final double dIJX = daXYZ[0][i]-daXYZ[0][j];
+                        final double dIJY = daXYZ[1][i]-daXYZ[1][j];
+                        final double dIJZ = daXYZ[2][i]-daXYZ[2][j];
+                
+                        final double dDistIJSq = dIJX*dIJX + dIJY*dIJY + dIJZ*dIJZ;
+                        
+                        final double dIKX = daXYZ[0][i]-daXYZ[0][k];
+                        final double dIKY = daXYZ[1][i]-daXYZ[1][k];
+                        final double dIKZ = daXYZ[2][i]-daXYZ[2][k];
+                
+                        final double dDistIKSq = dIKX*dIKX + dIKY*dIKY + dIKZ*dIKZ;
+
+                        // ok, check whether the distance is above the equilibrium distance for this pair
+                        if (dDistIJSq > daParams[off2b2]*daParams[off2b2]){continue;}
+                        if (dDistIKSq > daParams[off2b3]*daParams[off2b3]){continue;}
+                        
+                        final double dDistIJ = Math.sqrt(dDistIJSq);
+                        final double dDistIK = Math.sqrt(dDistIKSq);
+
+                        // now we can finally start to evaluate the contributions
+                        final double dFIJ = Math.exp(daParams[off2b2+1]/(dDistIJ-daParams[off2b2]));
+                        final double dFIK = Math.exp(daParams[off2b3+1]/(dDistIK-daParams[off2b3]));
+
+                        final double dCTIJK = (dDistIJSq+dDistJKSq
+                                - dDistIKSq)/(2.0*dDistIJ*dDistJK);
+                        final double dCTIKJ = (dDistIKSq+dDistJKSq
+                                - dDistIJSq)/(2.0*dDistIK*dDistJK);
+                        final double dCTJIK = (dDistIJSq+dDistIKSq
+                                - dDistJKSq)/(2.0*dDistIJ*dDistIK);
+
+                        final double t1 = dCTJIK + 1.0/3.0;
+                        final double dXJIK = t1*t1;
+                        final double t2 = dCTJIK + daParams[off3b];
+                        final double dYJIK = t2*t2 + daParams[off3b+1];
+
+                        final double t3 = dCTIJK + 1.0/3.0;
+                        final double dXIJK = t3*t3;
+                        final double t4 = dCTIJK + daParams[off3b];
+                        final double dYIJK = t4*t4 + daParams[off3b+1];
+
+                        final double t5 = dCTIKJ + 1.0/3.0;
+                        final double dXIKJ = t5*t5;
+                        final double t6 = dCTIKJ + daParams[off3b];
+                        final double dYIKJ = t6*t6 + daParams[off3b+1];
+
+                        dEnergy += daParams[off3b+2]*(dFIJ*dFIK*dXJIK*dYJIK + dFIJ*dFJK*dXIJK*dYIJK + dFIK*dFJK*dXIKJ*dYIKJ);
+                    }
+                }
+            }
+        }
+
         return dEnergy;
     }
 
@@ -487,7 +703,7 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
 
         final int iNoOfAtoms = cartes.getNoOfAtoms();
         final String[] saAtoms = cartes.getAllAtomTypes();
-        daXYZ = cartes.getAllXYZCoord();
+        final double[][] daXYZ = cartes.getAllXYZCoord();
 
         double dEnergy = 0.0;
         double d2Body = 0.0;
@@ -497,21 +713,20 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                 System.out.println("DEBUG: " + s);
             }
         }
-
-        /*
-         * we calculate the interatomic distances now, since we possibly need them twice and we can
-         * affort the memory (TM).
-         * gets filled in during the LJ loops :-)
-         */
-        final double[][] daDistMat = new double[iNoOfAtoms][iNoOfAtoms];
+        
+        final short[] atomNos = cartes.getAllAtomNumbers();
+        // get in O(N)
+        final double[] radii = new double[iNoOfAtoms];
+        for (int i = 0; i < iNoOfAtoms; i++) {
+            radii[i] = AtomicProperties.giveRadius(atomNos[i]);
+        }
 
         double[] daFirstParams = null;
         double[] daSecParams;
         double[] daParams = params.getAllParamters();
-        int offset = 0;
         int counter = -1;
 
-        if(useCaching && radiiCache == null){
+        if(useCaching && paramOffsetCache == null){
             // initialize caches
             initializeCaches(params, saAtoms, use3Body);
         }
@@ -523,29 +738,26 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                 if(daFirstParams == null){continue;}
             }
 
-            double dRadius1;
-            if(useCaching){dRadius1 = radiiCache[i];}
-            else {dRadius1 = AtomicProperties.giveRadius(saAtoms[i]);}
+            final double rad1 = radii[i];
+            
+            final double xi = daXYZ[0][i];
+            final double yi = daXYZ[1][i];
+            final double zi = daXYZ[2][i];
 
             for(int j = i+1; j < iNoOfAtoms; j++){
 
                 counter++;
 
-                double dRadius2;
-                if(useCaching){dRadius2 = radiiCache[j];}
-                else  {dRadius2 = AtomicProperties.giveRadius(saAtoms[j]);}
+                final double rad2 = radii[j];
 
-                final double dX = daXYZ[0][i]-daXYZ[0][j];
-                final double dY = daXYZ[1][i]-daXYZ[1][j];
-                final double dZ = daXYZ[2][i]-daXYZ[2][j];
+                final double dX = xi-daXYZ[0][j];
+                final double dY = yi-daXYZ[1][j];
+                final double dZ = zi-daXYZ[2][j];
                 
                 final double dDist = Math.sqrt(dX*dX + dY*dY + dZ*dZ);
 
-                daDistMat[i][j] = dDist;
-                daDistMat[j][i] = dDist;
-
                 // check whether one should use a cutoff
-                final double dAddedRadii = dRadius1 + dRadius2;
+                final double dAddedRadii = rad1 + rad2;
 
                 if(dDist < (closeCutBlow * dAddedRadii)){
                     // use cutoff.
@@ -555,7 +767,7 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                     continue;
                 }
 
-
+                int offset = 0;
                 if(easyMix){
                     // second part of parameters
                     daSecParams = params.getParametersForKey(saAtoms[j]);
@@ -583,13 +795,13 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                 }
 
                 // calculate the contributions
-                final double dSigmaFac = 4.0 * daParams[offset];
+                final double epsFac = 4 * daParams[offset];
                 final double distInv = 1.0/dDist;
                 
                 int iCounter = offset + 1;
                 for (int iPot = startPot; iPot <= endPot; iPot = iPot + potIncr) {
                     final double dSign = Math.signum(daParams[iCounter]);
-                    d2Body += dSigmaFac * dSign * pow((daParams[iCounter] * distInv), iPot);
+                    d2Body += epsFac * dSign * pow((daParams[iCounter] * distInv), iPot);
                     iCounter++;
                 }
             }
@@ -616,10 +828,17 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                     if(!useCaching){off2b1 = posOfKey2sin3(saAtoms, k, j, params);}
                     else {off2b1 = paramOffsetCache2b1[c];}
 
+                    final double dJKX = daXYZ[0][k]-daXYZ[0][j];
+                    final double dJKY = daXYZ[1][k]-daXYZ[1][j];
+                    final double dJKZ = daXYZ[2][k]-daXYZ[2][j];
+                
+                    final double dDistJKSq = dJKX*dJKX + dJKY*dJKY + dJKZ*dJKZ;
+                    final double dDistJK = Math.sqrt(dDistJKSq);
+                    
                     // ok, check whether the distance is above the equilibrium distance for this pair
-                    if(daDistMat[j][k] > daParams[off2b1]){continue;}
+                    if(dDistJK > daParams[off2b1]){continue;}
 
-                    final double dRJKRCC = 1.0 / (daDistMat[k][j]-daParams[off2b1]);
+                    final double dRJKRCC = 1.0 / (Math.sqrt(dDistJKSq)-daParams[off2b1]);
                     final double dGRJKR = daParams[off2b1+1] * dRJKRCC;
                     final double dFJK = Math.exp(dGRJKR);
 
@@ -636,21 +855,36 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
                             off2b2 = paramOffsetCache3b[0][counter];
                             off2b3 = paramOffsetCache3b[1][counter];
                         }
+                        
+                        final double dIJX = daXYZ[0][i]-daXYZ[0][j];
+                        final double dIJY = daXYZ[1][i]-daXYZ[1][j];
+                        final double dIJZ = daXYZ[2][i]-daXYZ[2][j];
+                
+                        final double dDistIJSq = dIJX*dIJX + dIJY*dIJY + dIJZ*dIJZ;
+                        
+                        final double dIKX = daXYZ[0][i]-daXYZ[0][k];
+                        final double dIKY = daXYZ[1][i]-daXYZ[1][k];
+                        final double dIKZ = daXYZ[2][i]-daXYZ[2][k];
+                
+                        final double dDistIKSq = dIKX*dIKX + dIKY*dIKY + dIKZ*dIKZ;
 
                         // ok, check whether the distance is above the equilibrium distance for this pair
-                        if (daDistMat[i][j] > daParams[off2b2]){continue;}
-                        if (daDistMat[i][k] > daParams[off2b3]){continue;}
+                        if (dDistIJSq > daParams[off2b2]*daParams[off2b2]){continue;}
+                        if (dDistIKSq > daParams[off2b3]*daParams[off2b3]){continue;}
+                        
+                        final double dDistIJ = Math.sqrt(dDistIJSq);
+                        final double dDistIK = Math.sqrt(dDistIKSq);
 
                         // now we can finally start to evaluate the contributions
-                        final double dFIJ = Math.exp(daParams[off2b2+1]/(daDistMat[i][j]-daParams[off2b2]));
-                        final double dFIK = Math.exp(daParams[off2b3+1]/(daDistMat[i][k]-daParams[off2b3]));
+                        final double dFIJ = Math.exp(daParams[off2b2+1]/(dDistIJ-daParams[off2b2]));
+                        final double dFIK = Math.exp(daParams[off2b3+1]/(dDistIK-daParams[off2b3]));
 
-                        final double dCTIJK = (daDistMat[i][j]*daDistMat[i][j]+daDistMat[j][k]*daDistMat[j][k]
-                                - daDistMat[i][k]*daDistMat[i][k])/(2.0*daDistMat[i][j]*daDistMat[j][k]);
-                        final double dCTIKJ = (daDistMat[i][k]*daDistMat[i][k]+daDistMat[j][k]*daDistMat[j][k]
-                                - daDistMat[i][j]*daDistMat[i][j])/(2.0*daDistMat[i][k]*daDistMat[j][k]);
-                        final double dCTJIK = (daDistMat[i][j]*daDistMat[i][j]+daDistMat[i][k]*daDistMat[i][k]
-                                - daDistMat[j][k]*daDistMat[j][k])/(2.0*daDistMat[i][j]*daDistMat[i][k]);
+                        final double dCTIJK = (dDistIJSq+dDistJKSq
+                                - dDistIKSq)/(2.0*dDistIJ*dDistJK);
+                        final double dCTIKJ = (dDistIKSq+dDistJKSq
+                                - dDistIJSq)/(2.0*dDistIK*dDistJK);
+                        final double dCTJIK = (dDistIJSq+dDistIKSq
+                                - dDistJKSq)/(2.0*dDistIJ*dDistIK);
 
                         final double t1 = dCTJIK + 1.0/3.0;
                         final double dXJIK = t1*t1;
@@ -913,12 +1147,7 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
     private void initializeCaches(final AdaptiveParameters params, final String[] atoms, final boolean use3b){
 
         final int noOfAtoms = atoms.length;
-        this.radiiCache = new double[noOfAtoms];
         this.paramOffsetCache = new int[(noOfAtoms*noOfAtoms-noOfAtoms)/2];
-
-        for(int i = 0; i < noOfAtoms; i++){
-            radiiCache[i] = AtomicProperties.giveRadius(atoms[i]);
-        }
 
         int counter = 0;
         for(int i = 0; i < noOfAtoms -1; i++){
