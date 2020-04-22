@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.ogolem.core.FixedValues;
 import org.ogolem.generic.Optimizable;
 import org.ogolem.io.OutputPrimitives;
@@ -51,15 +53,20 @@ import org.ogolem.io.OutputPrimitives;
 /**
  * A generic genetic pool.
  * @author Johannes Dieterich
- * @version 2016-01-14
+ * @version 2020-04-13
  */
 public class GenericPool<E,T extends Optimizable<E>> implements Serializable, Iterable<GenericPoolEntry<E,T>> {
     
-    private static final long serialVersionUID = (long) 2050803;
+    private static final long serialVersionUID = (long) 20200413;
     private static final boolean DEBUG = false;
     
     // the pool
     private final List<GenericPoolEntry<E,T>> geneticPool;
+
+    // the lock for the pool
+    private final ReentrantReadWriteLock lock;
+    private final Lock roLock;
+    private final Lock rwLock;
     
     // pool configuration
     private final boolean serializeAfterNewBest;
@@ -116,7 +123,12 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         ref = reference;
         
         // the genetic pool
-        geneticPool = Collections.synchronizedList(new ArrayList<>(poolSize));    
+        geneticPool = new ArrayList<>(2*poolSize);
+
+        // lock
+        lock = new ReentrantReadWriteLock();
+        roLock = lock.readLock();
+        rwLock = lock.writeLock();
     }
     
     
@@ -144,17 +156,35 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
     }
     
     public int getCurrentPoolSize(){
-        return Math.min(poolSize, geneticPool.size());
+
+        roLock.lock();
+        int poolS = -1;
+        try {
+            poolS = Math.min(poolSize, geneticPool.size());
+        } finally {
+            roLock.unlock();
+        }
+
+        return poolS;
     }
-    
+
+    /**
+     * NOT threadsafe - will require external read locking if called from a threading context.
+     */    
     public Iterator<GenericPoolEntry<E,T>> getPoolIterator(){
         return geneticPool.iterator();
     }
     
+    /**
+     * NOT threadsafe - will require external read locking if called from a threading context.
+     */
     public List<GenericPoolEntry<E,T>> getAllIndividuals(){
         return Collections.unmodifiableList(geneticPool);
     }
     
+    /**
+     * NOT threadsafe - will require external read locking if called from a threading context.
+     */
     @Override
     public Iterator<GenericPoolEntry<E,T>> iterator(){
         return geneticPool.iterator();
@@ -167,73 +197,142 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
             return null;
         }
 
-        return geneticPool.get(position);
+        roLock.lock();
+        GenericPoolEntry<E,T> entry = null;
+        try {
+            entry = geneticPool.get(position);
+        } finally {
+            roLock.unlock();
+        }
+
+        return entry;
     }
     
     public T getIndividualAtPosition(final int position){
         
         if(position >= geneticPool.size()){throw new RuntimeException("Pool has " + geneticPool.size() + " entries, requested entry " + position + " which does not work.");}
+
+        roLock.lock();
+        T inv = null;
+        try {
+            inv = geneticPool.get(position).getIndividual();
+        } finally {
+            roLock.unlock();
+        }
         
-        return geneticPool.get(position).getIndividual();
+        return inv;
     }
-    
+
     public double getFitnessOfIndividualAtPos(final int position){
         
         if(position >= geneticPool.size()){
             System.err.println("Pool has " + geneticPool.size() + " entries, requested entry " + position + " which does not work. Returning NONCONVERGEDENERGY.");
             return FixedValues.NONCONVERGEDENERGY;
         }
+
+        roLock.lock();
+        double fitness = FixedValues.NONCONVERGEDENERGY;
+        try {
+            fitness = geneticPool.get(position).getFitness();
+        } finally {
+            roLock.unlock();
+        }
         
-        return geneticPool.get(position).getFitness();
+        return fitness;
     }
     
     public Niche getNicheOfIndividualAtPos(final int position){
         
         if(position >= geneticPool.size()){throw new RuntimeException("Pool has " + geneticPool.size() + " entries, requested entry " + position + " which does not work.");}
-        
-        return geneticPool.get(position).getNiche();
+
+        roLock.lock();
+        Niche n = null;
+        try {        
+            n = geneticPool.get(position).getNiche();
+        } finally {
+            roLock.unlock();
+        }
+
+        return n;
     }
     
     public List<String> getFormattedPool(){
-        
+
+        roLock.lock();        
         final List<String> output = new ArrayList<>();
-        int pos = 0;
-        for(final GenericPoolEntry<E,T> entry : geneticPool){
-            final T ind = entry.getIndividual();
-            final long id = ind.getID();
-            final double fit = ind.getFitness();
-            final String s = String.format(Locale.US, "%6d   %10d  %18.10f",pos,id,fit);
-            output.add(s);
-            pos++;
+
+        try {
+            int pos = 0;
+            for(final GenericPoolEntry<E,T> entry : geneticPool){
+                final T ind = entry.getIndividual();
+                final long id = ind.getID();
+                final double fit = ind.getFitness();
+                final String s = String.format(Locale.US, "%6d   %10d  %18.10f",pos,id,fit);
+                output.add(s);
+                pos++;
+            }
+        } finally {
+            roLock.unlock();
         }
         
         return output;
     }
     
     public void removeIndividualAtPos(final int position){
-        if(doNiching){
-            final Niche n = geneticPool.get(position).getNiche();
-            nicher.delete(n);
+
+        rwLock.lock();
+        try {
+            if(doNiching){
+                final Niche n = geneticPool.get(position).getNiche();
+                nicher.delete(n);
+            }
+            geneticPool.remove(position);
+        } finally {
+            rwLock.unlock();
         }
-        geneticPool.remove(position);
     }
     
     public void emptyPool(){
-        if(doNiching){
-            for(int pos = 0; pos < geneticPool.size(); pos++){
-                final GenericPoolEntry<E,T> entry = geneticPool.get(pos);
-                nicher.delete(entry.getNiche());
+
+        rwLock.lock();
+
+        try {
+            if(doNiching){
+                for(int pos = 0; pos < geneticPool.size(); pos++){
+                    final GenericPoolEntry<E,T> entry = geneticPool.get(pos);
+                    nicher.delete(entry.getNiche());
+                }
             }
+            geneticPool.clear();
+        } finally {
+            rwLock.unlock();
         }
-        geneticPool.clear();
     }
     
-    public synchronized boolean addIndividualForced(final T individual, final double fitness){
-        return addIndividualForcedUnsync(individual,null,fitness);
+    public boolean addIndividualForced(final T individual, final double fitness){
+
+        rwLock.lock();
+        boolean success = false;
+	try {
+            success = addIndividualForcedUnsync(individual,null,fitness);
+        } finally {
+            rwLock.unlock();
+        }
+
+        return success;
     }
     
-    public synchronized boolean addIndividualForced(final T individual, final Niche niche, final double fitness){
-        return addIndividualForcedUnsync(individual,niche,fitness);
+    public boolean addIndividualForced(final T individual, final Niche niche, final double fitness){
+
+        rwLock.lock();
+        boolean success = false;
+        try {
+            addIndividualForcedUnsync(individual,niche,fitness);
+        } finally {
+            rwLock.unlock();
+        }
+
+        return success;
     }
     
     /**
@@ -364,13 +463,22 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         return false;
     }
     
-    public synchronized void replacePoolContent(final List<T> newIndividuals){
-        
-        unSyncReplacePoolContent(newIndividuals, null);
+    public void replacePoolContent(final List<T> newIndividuals){
+        rwLock.lock();
+        try { 
+            unSyncReplacePoolContent(newIndividuals, null);
+        } finally {
+            rwLock.unlock();
+        }
     }
     
-    public synchronized void replacePoolContent(final List<T> newIndividuals, final List<Niche> niches){
-        unSyncReplacePoolContent(newIndividuals,niches);
+    public void replacePoolContent(final List<T> newIndividuals, final List<Niche> niches){
+        rwLock.lock();
+        try {
+            unSyncReplacePoolContent(newIndividuals,niches);
+        } finally {
+            rwLock.unlock();
+        }
     }
     
     public void unSyncReplacePoolContent(final List<T> newIndividuals, final List<Niche> niches){
@@ -404,12 +512,28 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         ensureSize(poolSize);
     }
     
-    public synchronized boolean addIndividual(final T individual, final double fitness){
-        return addIndividualUnsync(individual, null, fitness);
+    public boolean addIndividual(final T individual, final double fitness){
+        rwLock.lock();
+        boolean added = false;
+        try {
+            added = addIndividualUnsync(individual, null, fitness);
+        } finally {
+            rwLock.unlock();
+        }
+
+        return added;
     }
     
-    public synchronized boolean addIndividual(final T individual, final Niche niche, final double fitness){
-        return addIndividualUnsync(individual, niche, fitness);
+    public boolean addIndividual(final T individual, final Niche niche, final double fitness){
+        rwLock.lock();
+        boolean added = false;
+        try {
+            added = addIndividualUnsync(individual, niche, fitness);
+        } finally {
+            rwLock.unlock();
+        }
+
+        return added;
     }
 
     /**
@@ -575,24 +699,45 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
     }
     
     public List<T> getParents(){
-        return selector.getParents(this);
+
+        roLock.lock();
+        List<T> parents;
+
+        try {
+            parents = selector.getParents(this);
+        } finally {
+            roLock.unlock();
+        }
+
+        return parents;
     }
-    
+
     public double[] getAllFitnesses(){
-        
+
+        roLock.lock();
         final double[] fs = new double[geneticPool.size()];
-        for(int i = 0; i < geneticPool.size(); i++){
-            fs[i] = geneticPool.get(i).getFitness();
+        try {
+            for(int i = 0; i < geneticPool.size(); i++){
+                fs[i] = geneticPool.get(i).getFitness();
+            }
+        } finally {
+            roLock.unlock();
         }
         
         return fs;
     }
     
     public boolean acceptableFitnessReached(){
-        // I could construct some really weird situation in which this could fail because of a race on geneticPool
-        // short of locking everything inside here, there is not much we can do about this. I am willing to take a
-        // risk
-        return (geneticPool.isEmpty()) ? false : (geneticPool.get(0).getFitness() <= acceptableFitness);
+
+        roLock.lock();
+        boolean done = false;
+        try {
+            done = (geneticPool.isEmpty()) ? false : (geneticPool.get(0).getFitness() <= acceptableFitness);
+        } finally {
+            roLock.unlock();
+        }
+
+        return done;
     }
     
     public T getExample(){
@@ -613,7 +758,10 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         
         return conf;
     }
-    
+
+    /**
+     * NOT threadsafe - will require external read locking if called from a threading context.
+     */ 
     private void microManage(final GenericPoolEntry<E,T> newEntry, final int posAdded, final boolean forced){
         
         assert(newEntry != null);
@@ -635,6 +783,9 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         }
     }
     
+    /**
+     * NOT threadsafe - will require external read locking if called from a threading context.
+     */
     void serializeMe(){
 
         if(beSilent){return;}
@@ -655,6 +806,9 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         }
     }
     
+    /**
+     * NOT threadsafe - will require external read locking if called from a threading context.
+     */
     private void ensureSize(final int allowedSize){
         while(geneticPool.size() > allowedSize){
             if(doNiching){
@@ -664,4 +818,32 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
             geneticPool.remove(geneticPool.size()-1);
         }
     }
+
+   /**
+    * Acquire the read lock of the pool.
+    */
+   public void acquireReadLock(){
+        roLock.lock();
+   }
+
+   /**
+    * Release the read lock of the pool.
+    */
+   public void releaseReadLock(){
+        roLock.unlock();
+   }
+
+   /**
+    * Acquire the write lock of the pool.
+    */
+   public void acquireWriteLock(){
+        rwLock.lock();
+   }
+
+   /**
+    * Release the write lock of the pool.
+    */
+   public void releaseWriteLock(){
+         rwLock.unlock();
+   }
 }
