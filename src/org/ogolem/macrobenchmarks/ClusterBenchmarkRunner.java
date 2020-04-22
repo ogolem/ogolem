@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Run cluster optimization benchmarks.
  * @author Johannes Dieterich
- * @version 2020-02-16
+ * @version 2020-04-19
  */
 class ClusterBenchmarkRunner implements BenchmarkRunner {
 
@@ -82,7 +82,7 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
         
         // let's parse us a GlobalConfig
         final GlobalConfig globConf = Input.ConfigureMe(workDir + File.separator + inputFile, true);
-        final GeometryConfig gc = globConf.geoConfCopy();        
+        final GeometryConfig gc = globConf.geoConfCopy();
         
         LOG.info("Executing benchmark " + inputFile);
         final double startT = System.currentTimeMillis();
@@ -113,6 +113,11 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
             LOG.error("Benchmark energy wrong. Obtained: " + foundE + " vs should be " + energy);
             return false;
         }
+
+        // steps to that individual
+        final String ls0NoFront = ls[0].substring("rank0individual".length());
+        final String ls0NoBack = ls0NoFront.substring(0, ls0NoFront.length()-".xyz".length());
+        final long stepsToIndividual = Long.parseLong(ls0NoBack);
         
         // now the more complex thing - compare structures
         
@@ -149,6 +154,7 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
         
         LOG.info("Benchmark " + inputFile + " PASSED");
         LOG.info("Benchmark " + inputFile + " took: " + (endT-startT)/1000 + " s.");
+        LOG.info("Benchmark " + inputFile + " took: " + stepsToIndividual + " steps.");
         
         return true;
     }

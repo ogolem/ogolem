@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Run adaptive optimization benchmarks.
  * @author Johannes Dieterich
- * @version 2020-02-16
+ * @version 2020-04-19
  */
 class AdaptiveBenchmarkRunner implements BenchmarkRunner  {
 
@@ -108,6 +108,10 @@ class AdaptiveBenchmarkRunner implements BenchmarkRunner  {
             LOG.error("Benchmark fitness wrong. Obtained: " + foundFit + " vs should be " + refFit);
             return false;
         }
+
+         // steps to that individual
+        final String ls0NoFront = ls[0].substring("rank0individual".length());
+        final long stepsToIndividual = Long.parseLong(ls0NoFront);
         
         // now the more complex thing - compare parameter values
         final String[] keys = refSet.getAllKeysCopy();
@@ -136,6 +140,7 @@ class AdaptiveBenchmarkRunner implements BenchmarkRunner  {
         
         LOG.info("Benchmark " + inputFile + " PASSED");
         LOG.info("Benchmark " + inputFile + " took: " + (endT-startT)/1000 + " s.");
+        LOG.info("Benchmark " + inputFile + " took: " + stepsToIndividual + " steps.");
         
         return true;
     }
