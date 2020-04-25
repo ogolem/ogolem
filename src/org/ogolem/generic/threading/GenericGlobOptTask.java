@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic implementation of a global optimization task.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-24
  */
 public class GenericGlobOptTask <E,T extends Optimizable<E>,V extends GenericGlobalOptimization<E,T>> implements TaskFactory<E,T,V>{
     
@@ -121,6 +121,17 @@ public class GenericGlobOptTask <E,T extends Optimizable<E>,V extends GenericGlo
                     assert(child.getID() == taskID);
                     child.setID(taskID); // yes, somewhat superfluous, but in case we run w/o assertation, better be safe than sorry
                     l.debug("Globopt individual " + taskID + " was not null and has fitness " + child.getFitness() + ".");
+                    
+                    final boolean hasChance = pool.hasChanceToBeAdded(child, child.getFitness());
+                    if(!hasChance) {
+                    	l.debug("Individual " + taskID + " has no chance of being added to pool.");
+                        history.addFamily(parents.get(0).getID(),
+                                parents.get(1).getID(), taskID, false,
+                                false, child);
+                        l.debug("Finished with global opt for " + taskID);
+                        return;
+                    }
+                    
                     boolean accepted = false;
                     if(doNiching){
                         final Tuple<Boolean,NicheComputer<E,T>> comp = nicheCompCache.getUnusedEntry();
