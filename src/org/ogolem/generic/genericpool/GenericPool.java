@@ -698,6 +698,48 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
         return false;
     }
     
+    /**
+     * Check whether a given individual has a chance to be added to the pool.
+     * This method only acquires the pool read lock and is able to sift out
+     * some of the individuals prior to needing to acquire the pool write lock
+     * and prior to (optionally) compute a niche for the individual which may
+     * be costly. It DOES NOT guarantee that the individual WILL be added if
+     * addIndividual() is called, it guarantees that it WILL NOT be added.
+     * Hence, if the routine returns FALSE, one must not call addIndividual()
+     * to avoid double counting (this routine does stat IF the individual is
+     * found to have no chance to be added).
+     * @param individual the individual to be evaluated
+     * @param fitness the fitness of said individual
+     * @return true if there is a chance the individual may be added to the pool, false if there is none
+     */
+    public boolean hasChanceToBeAdded(final T individual, final double fitness) {
+    	
+    	
+    	assert(individual != null);
+        assert(!Double.isInfinite(fitness));
+        assert(!Double.isNaN(fitness));
+        
+        boolean hasChance = true;
+        roLock.lock();
+        try {
+        	// only check this if the pool is fully filled
+        	final int currentSize = geneticPool.size();
+        	if(currentSize >= poolSize && fitness >= geneticPool.get(geneticPool.size()-1).getFitness()) {
+        		hasChance = false;
+        	} // fitness out of range
+        } finally {
+        	roLock.unlock();
+        }
+        
+        if(hasChance) return true;
+        
+        // do some statistics (these are assumed to be internally locked)
+        if(writeEveryAdd) {writer.writeIndividual(individual);}
+        stats.registerIndividualNotAdded(individual.getID());
+        
+        return false;
+    }
+    
     public List<T> getParents(){
 
         roLock.lock();
