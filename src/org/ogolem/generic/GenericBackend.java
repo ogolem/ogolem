@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2013-2014, J. M. Dieterich
+Copyright (c) 2013-2020, J. M. Dieterich
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,8 @@ package org.ogolem.generic;
  * A generic interface to be used for energy and gradient evaluations. Demands a
  * continuous problem.
  * @author Johannes Dieterich
- * @version 2014-12-15
+ * @author Dominik Behrens
+ * @version 2020-04-22
  */
 public interface GenericBackend<E,T extends ContinuousProblem<E>> extends GenericFitnessBackend<E,T>{
     
@@ -55,4 +56,46 @@ public interface GenericBackend<E,T extends ContinuousProblem<E>> extends Generi
      * @return the fitness of this individual
      */
     double gradient(final double[] currCoords, final double[] gradient, final int iteration);
+
+    /**
+     * By default, GenericBackends do not provide history functionality (historyRememberPoint,
+     * historyResetToBestPoint, historyGetBestPoint) and will return false here.
+     * However, specific GenericBackends might implement these and will then return true.
+     * @return True whenever the Backend supports history methods.
+     */
+    default boolean supportsHistory() {
+        return false;
+    }
+
+    /**
+     * If this GenericBackend supports history functionality, this method will remember the given values.
+     * @param currGenome The promising current genome to be remembered.
+     * @param gradient The gradient corresponding to the promising genome.
+     * @param value The fitness value for the promising genome.
+     */
+    default void historyRememberPoint(final double[] currGenome, final double[] gradient, final double value) {
+        // This is just a dummy method and will do nothing if no history is implemented.
+    }
+
+    /**
+     * If this GenericBackend supports history functionality, this method will recall a remembered point and input
+     * the remembered data back into the given double arrays. The backend might also do additional internal resets,
+     * if necessary.
+     * @param currGenome The incoming stub double array to be written to. It will be filled with the remembered
+     *                   Genome,
+     * @param gradient The incoming stub double array to be written to. It will be filled with the corresponding
+     *                 remembered gradient.
+     */
+    default void historyResetToBestPoint(final double[] currGenome, final double[] gradient) {
+        // This is just a dummy method and will do nothing if no history is implemented.
+    }
+
+    /**
+     * If this GenericBackend supports history functionality, this method will impart the given individual with the
+     * remembered genome information.
+     * @param individual The individual stub that should be updated with the remembered Information.
+     */
+    default void historyGetBestPoint(T individual) {
+        // This is just a dummy method and will do nothing if no history is implemented.
+    }
 }

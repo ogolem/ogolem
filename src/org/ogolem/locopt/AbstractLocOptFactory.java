@@ -257,6 +257,57 @@ public abstract class AbstractLocOptFactory<E,T extends ContinuousProblem<E>> im
             checkSanityBackend(backend);
             
             return new RNK1MinLocOpt<>(backend,convThresh,convThreshGrad,noIter,maxStep);
+        } else if(input.startsWith("fire:")) {
+
+            final String[] opts = tokenizeSecondLevel(input.substring(5).trim());
+
+            final FIRELocOpt.FireConfig config = new FIRELocOpt.FireConfig();
+            config.iMaxIterations = maxIter;
+            config.dFMax = absConvThreshold;
+
+            GenericBackend<E, T> backend = null;
+            for (final String opt : opts) {
+                if (opt.startsWith("maxiter=")) {
+                    config.iMaxIterations = integerToken(opt, "maxiter=");
+                } else if (opt.startsWith("maxmove=")) {
+                    config.dMaxMove = doubleToken(opt, "maxmove=");
+                } else if (opt.startsWith("fmax=")) {
+                    config.dFMax = doubleToken(opt, "fmax=");
+                } else if (opt.startsWith("dt=")) {
+                    config.dt = doubleToken(opt, "dt=");
+                } else if (opt.startsWith("dtmax=")) {
+                    config.dtMax = doubleToken(opt, "dtmax=");
+                } else if (opt.startsWith("nmin=")) {
+                    config.nMin = integerToken(opt, "nmin=");
+                } else if (opt.startsWith("finc=")) {
+                    config.finc = doubleToken(opt, "finc=");
+                } else if (opt.startsWith("fdec=")) {
+                    config.fdec = doubleToken(opt, "fdec=");
+                } else if (opt.startsWith("astart=")) {
+                    config.astart = doubleToken(opt, "astart=");
+                } else if (opt.startsWith("fa=")) {
+                    config.fa = doubleToken(opt, "fa=");
+                } else if (opt.startsWith("a=")) {
+                    config.a = doubleToken(opt, "a=");
+                } else if (opt.startsWith("backend=")) {
+                    backend = getBackend(opt.substring(8));
+                } else if (opt.startsWith("tryresets=")) {
+                    config.iNoOfMaxResets = integerToken(opt, "tryresets=");
+                } else if (opt.startsWith("maxtrials=")) {
+                    config.iNoOfMaxTrialsUntilResets = integerToken(opt, "maxtrials=");
+                } else if (opt.startsWith("resettostable=")) {
+                    config.doResetToStable = booleanToken(opt, "resettostable=");
+                } else if (opt.startsWith("resettobestpoint=")) {
+                    config.doResetToBestPointSoFar = booleanToken(opt, "resettobestpoint=");
+                } else {
+                    throw new RuntimeException("Unknown option " + opt + " in L-BFGS!");
+                }
+            }
+
+            config.checkSanity(backend);
+            checkSanityBackend(backend);
+
+            return new FIRELocOpt<>(config, backend);
         }
         
         // as a last resort...
