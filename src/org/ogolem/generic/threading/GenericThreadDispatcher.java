@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic thread dispatcher.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2017-03-18
  */
 public class GenericThreadDispatcher<E,T extends Optimizable<E>,V extends Cloneable> {
     
@@ -161,6 +162,8 @@ public class GenericThreadDispatcher<E,T extends Optimizable<E>,V extends Clonea
                     break;
                 }
             }
+            
+            if(pool.acceptableFitnessReached()){break;}
         }
 
         // shut the pool down
