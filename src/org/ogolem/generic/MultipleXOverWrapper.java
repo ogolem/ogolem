@@ -38,8 +38,8 @@ package org.ogolem.generic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
 
 /**
  * Wraps multiple X-overs and assings execution probabilities to them.
@@ -49,7 +49,7 @@ import org.ogolem.helpers.Tuple;
 public class MultipleXOverWrapper<E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
 
     private static final long serialVersionUID = (long) 20140328;
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final List<GenericCrossover<E,T>> xovers;
     private final double[] probabilities;
     private int lastXOver;

@@ -38,7 +38,7 @@ package org.ogolem.generic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
  * Multiple GLOBAL OPTIMIZATIONS wrapped nicely.
@@ -48,7 +48,7 @@ import java.util.Random;
 public class GenericMultipleGlobOpt<E,T extends Optimizable<E>> implements GenericGlobalOptimization<E,T> {
 
     private static final long serialVersionUID = (long) 20140518;
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final List<GenericGlobalOptimization<E,T>> globopts;
     private final double[] probabilities;
     

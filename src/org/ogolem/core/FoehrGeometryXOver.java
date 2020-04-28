@@ -40,13 +40,13 @@ package org.ogolem.core;
 
 import java.util.List;
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A genotype crossover only taking the molecular orientations into account.
  * @author Johannes Dieterich
- * @version 2016-03-22
+ * @version 2016-12-18
  */
 public class FoehrGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     

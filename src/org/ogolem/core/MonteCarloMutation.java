@@ -38,19 +38,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
-import java.util.Random;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * Implements a mutation operator which in essence is only a MC step.
  * @author Johannes Dieterich
- * @version 2016-08-29
+ * @version 2016-12-18
  */
 public class MonteCarloMutation implements Serializable {
     
     private static final long serialVersionUID = (long) 20140327;
     
-    private static final Random random = new Random();
+    private static final Lottery random = Lottery.getInstance();
     
     public static Molecule mutate(final Molecule mol, final int mode, final double maxMove){
         

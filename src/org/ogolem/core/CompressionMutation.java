@@ -38,17 +38,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
  * Compresses the cluster in order to mutate it a bit. Cannot be used with constraints.
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2016-12-18
  */
 public class CompressionMutation implements Serializable {
     
     private static final long serialVersionUID = (long) 20120612;
-    private static final Random random = new Random();
+    private static final Lottery random = Lottery.getInstance();
     
     public static Molecule mutate(final Molecule mol, final double maxCompression){
         

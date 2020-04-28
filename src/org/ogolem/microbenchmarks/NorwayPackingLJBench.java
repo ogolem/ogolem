@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2019, J. M. Dieterich and B. Hartke
+Copyright (c) 2019-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,11 +44,13 @@ import org.ogolem.core.DissociationDetection;
 import org.ogolem.core.Geometry;
 import org.ogolem.core.NorwayGeometryMutation;
 import org.ogolem.core.SimpleBondInfo;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.StandardRNG;
 
 /**
  * Benchmark the Norway packing mutation/init for a LJ cluster.
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-04-25
  */
 class NorwayPackingLJBench implements SingleMicroBenchmark {
 
@@ -63,8 +65,10 @@ class NorwayPackingLJBench implements SingleMicroBenchmark {
     
     NorwayPackingLJBench(final int noLJAtoms){
         
+        Lottery.setGenerator(new StandardRNG(RNGSEED));
+
         this.norway = new NorwayGeometryMutation(CollisionDetection.CDTYPE.SIMPLEPAIRWISE, BLOWCOLL, BLOWDISS,
-            DissociationDetection.DEFAULTDD, NorwayGeometryMutation.MUTMODE.ASCENDING, RNGSEED);
+            DissociationDetection.DEFAULTDD, NorwayGeometryMutation.MUTMODE.ASCENDING);
 
         assert(noLJAtoms > 0);
         this.noLJAtoms = noLJAtoms;

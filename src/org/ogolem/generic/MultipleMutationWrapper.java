@@ -38,7 +38,7 @@ package org.ogolem.generic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
  * Wraps multiple mutations and assings execution probabilities to them.
@@ -48,7 +48,7 @@ import java.util.Random;
 public class MultipleMutationWrapper<E,T extends Optimizable<E>> implements GenericMutation<E,T>{
 
     private static final long serialVersionUID = (long) 20140328;
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final List<GenericMutation<E,T>> mutations;
     private final double[] probabilities;
     

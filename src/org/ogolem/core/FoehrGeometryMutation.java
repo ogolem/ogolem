@@ -39,14 +39,14 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A orientation-based mutation.
  * @author Johannes Dieterich
- * @version 2016-03-22
+ * @version 2016-12-18
  */
 public class FoehrGeometryMutation implements GenericMutation<Molecule,Geometry> {
     
@@ -57,20 +57,20 @@ public class FoehrGeometryMutation implements GenericMutation<Molecule,Geometry>
     
     private static final double INCRMUTSTRENGTH = 0.1; // XXX hard coded, but this seems to be a sane choice (10% of euler interval)
     
-    private final Random r;
+    private final Lottery r;
     private final MODUS mode;
     private final HOWMANY noMutations;
     
     FoehrGeometryMutation(final MODUS mode, final HOWMANY noOfMuts){
         this.mode = mode;
         this.noMutations = noOfMuts;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     FoehrGeometryMutation(final FoehrGeometryMutation orig){
         this.mode = orig.mode;
         this.noMutations = orig.noMutations;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     @Override

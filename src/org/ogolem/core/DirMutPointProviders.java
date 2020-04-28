@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2014, J. M. Dieterich and B. Hartke
+Copyright (c) 2014-2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,16 +43,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import static org.ogolem.core.CoordTranslation.distance;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
 import org.ogolem.math.TrivialLinearAlgebra;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A collection of point providers.
  * @author Johannes Dieterich
- * @version 2014-06-14
+ * @version 2014-06-18
  */
 public class DirMutPointProviders implements Serializable {
     
@@ -138,7 +138,7 @@ public class DirMutPointProviders implements Serializable {
             
             assert(noPoints >= 0);
             
-            provider = new RandomPointProvider(noPoints,maxCOMDiff);
+            provider = new LotteryPointProvider(noPoints,maxCOMDiff);
         } else if(configString.equalsIgnoreCase("waterspecific")){
             
             provider = new WaterSpecificProvider();
@@ -285,7 +285,7 @@ public class DirMutPointProviders implements Serializable {
         
         private static final long serialVersionUID = (long) 20140614;
         
-        private final Random random = new Random();
+        private final Lottery random = Lottery.getInstance();
         private final short mode;
         private List<Integer> changeMols = null;
         
@@ -1193,22 +1193,22 @@ public class DirMutPointProviders implements Serializable {
         }
     }
     
-    static class RandomPointProvider implements PointProvider {
+    static class LotteryPointProvider implements PointProvider {
         
         private static final long serialVersionUID = (long) 20140528;
         private final int noPoints;
         private final double maxMove;
-        private final Random r = new Random();
+        private final Lottery r = Lottery.getInstance();
         private int counter = 0;
         
-        RandomPointProvider(final int noPoints, final double maxCOMDiff){
+        LotteryPointProvider(final int noPoints, final double maxCOMDiff){
             this.maxMove = maxCOMDiff;
             this.noPoints = noPoints;
         }
 
         @Override
         public PointProvider clone() {
-            return new RandomPointProvider(noPoints,maxMove);
+            return new LotteryPointProvider(noPoints,maxMove);
         }
 
         @Override

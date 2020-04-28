@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,14 +38,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.util.List;
-import java.util.Random;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A mutation operator exchanging particles.
  * @author Johannes Dieterich
- * @version 2014-12-02
+ * @version 2016-12-18
  */
 public class XChangeGeometryMutation implements GenericMutation<Molecule,Geometry> {
     
@@ -53,7 +54,7 @@ public class XChangeGeometryMutation implements GenericMutation<Molecule,Geometr
     public static final int SINGLEEXCHANGEMODE = 0;
     public static final int MULTIPLEEXCHANGEMODE = 1;
     
-    private final Random r;
+    private final Lottery r;
     private final double gaussWidth;
     private final int mode;
     
@@ -62,13 +63,13 @@ public class XChangeGeometryMutation implements GenericMutation<Molecule,Geometr
         assert(mode == 1 || mode == 0);
         this.gaussWidth = gaussWidth;
         this.mode = mode;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     XChangeGeometryMutation(final XChangeGeometryMutation orig){
         this.gaussWidth = orig.gaussWidth;
         this.mode = orig.mode;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
 
     @Override

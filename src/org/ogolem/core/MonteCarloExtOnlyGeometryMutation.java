@@ -38,15 +38,15 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A Monte Carlo mutation operator for a Geometry operating only in the external
  * coordinates (i.e., good only for non-flexible small molecules).
  * @author Johannes Dieterich
- * @version 2014-07-13
+ * @version 2016-12-18
  */
 public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecule,Geometry>{
     
@@ -55,7 +55,7 @@ public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecu
     public static final int PARTIALMOVEMODE = 2;
     
     private static final long serialVersionUID = (long) 20140713;
-    private final Random r = new Random();
+    private final Lottery r = Lottery.getInstance();
     private final int mode;
     private final double maxMoveCOM;
     private final double maxMoveEuler;

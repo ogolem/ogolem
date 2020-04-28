@@ -30,11 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import java.util.List;
-import java.util.Random;
 
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * An n-point, generic genotype, real-number-based _intermediate_ crossover operator. A multiple
@@ -50,20 +50,20 @@ import org.ogolem.helpers.Tuple;
  * alleles.
  *
  * @author Mark Dittner
- * @version 2014-07-19
+ * @version 2020-04-25
  */
 class ArcticAdaptiveCrossover implements GenericCrossover<Double, AdaptiveParameters> {
 
-    private static final long serialVersionUID = 20140719L;
+    private static final long serialVersionUID = (long) 20200425;
     private final int noMixing;
     private final boolean bRandomAvg;
-    private final Random rd;
+    private final Lottery rd;
     private final int iOrder;
 
     public ArcticAdaptiveCrossover(final int noMixing, final boolean bRandomAvg, final int order) {
         this.noMixing = noMixing;
         this.bRandomAvg = bRandomAvg;
-        this.rd = new Random();
+        this.rd = Lottery.getInstance();
         this.iOrder = order;
         assert (iOrder >= 1);
     }

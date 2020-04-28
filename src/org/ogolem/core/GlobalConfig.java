@@ -61,17 +61,18 @@ import org.ogolem.generic.threading.GenericGlobOptTask;
 import org.ogolem.generic.threading.GenericInitTask;
 import org.ogolem.generic.threading.TaskFactory;
 import org.ogolem.md.MDConfig;
+import org.ogolem.random.Lottery;
 
 /**
  * All configuration data needed for the program to run is in this class. It is
  * reusable for the "constructor madness". Default values are provided.
  * @author Johannes Dieterich
- * @version 2020-02-12
+ * @version 2020-04-25
  */
 public class GlobalConfig implements Configuration<Molecule,Geometry> {
 
     // the ID
-    private static final long serialVersionUID = (long) 20200212;
+    private static final long serialVersionUID = (long) 20200425;
 
     // the pool size: PoolSize=
     int poolSize = 100;
@@ -658,6 +659,8 @@ public class GlobalConfig implements Configuration<Molecule,Geometry> {
         configData.add("                  GENERAL SETTINGS                    ");
         configData.add("------------------------------------------------------");
         configData.add("");
+        
+        configData.add("random number generator is: " + Lottery.getInstance().getInformation());
 
         configData.add("pool size is " + poolSize);
         

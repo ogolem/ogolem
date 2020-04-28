@@ -38,8 +38,8 @@ package org.ogolem.generic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
 
 /**
  * A chain of crossover operators.
@@ -51,14 +51,14 @@ public class GenericChainedXOver<E,T extends Optimizable<E>> implements GenericC
     private static final long serialVersionUID = (long) 2014054;
     private final List<GenericCrossover<E,T>> xovers;
     private final List<Double> probs;
-    private final Random r;
+    private final Lottery r;
     
     public GenericChainedXOver(final List<GenericCrossover<E,T>> xovers,
             final List<Double> probs){
         assert(xovers.size() == probs.size());
         this.xovers = xovers;
         this.probs = probs;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     public GenericChainedXOver(final GenericChainedXOver<E,T> orig){
@@ -72,7 +72,7 @@ public class GenericChainedXOver<E,T extends Optimizable<E>> implements GenericC
             probs.add(d);
         }
         assert(xovers.size() == probs.size());
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     @Override

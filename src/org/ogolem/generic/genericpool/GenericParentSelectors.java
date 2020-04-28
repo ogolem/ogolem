@@ -40,9 +40,9 @@ package org.ogolem.generic.genericpool;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.generic.Optimizable;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A collection of some simple parent selection algorithms.
@@ -149,7 +149,7 @@ public class GenericParentSelectors {
             assert(0.0 <= stepAt1 && stepAt1 <= 1.0);
             assert(0.0 <= stepAt2 && stepAt2 <= 1.0);
             final int poolSize = pool.getCurrentPoolSize();
-            final Random r = new Random();
+            final Lottery r = Lottery.getInstance();
             // with stepAt=1.0, this really is purely random over the whole pool;
             // with stepAt<1.0, this corresponds to Karl Heinz Hoffmann's favorite selector: a step function
             final int index1 = r.nextInt((int) Math.round(stepAt1 * poolSize));
@@ -186,7 +186,7 @@ public class GenericParentSelectors {
         public List<T> getParents(final GenericPool<E,T> pool){
             
             final int poolSize = pool.getCurrentPoolSize();
-            final Random r = new Random();
+            final Lottery r = Lottery.getInstance();
             final int binSize1, binSize2;
             int niche1 = 0;
             int niche2 = 0;
@@ -324,7 +324,7 @@ public class GenericParentSelectors {
             probs[poolSize-1] = 1.0001; // to get rid of numerical inaccuracies
             
             
-            final Random r = new Random();
+            final Lottery r = Lottery.getInstance();
             
             int index1 = -1;
             if(bothFitness){

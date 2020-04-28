@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,23 +40,23 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import static org.ogolem.core.GlobOptAtomics.findOptimalPlaneHeight;
 import static org.ogolem.core.GlobOptAtomics.randomCuttingPlane;
 import static org.ogolem.core.GlobOptAtomics.randomRotation;
 import org.ogolem.generic.GenericCrossover;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
 
 /**
  * Phenotype algorithm with implicit exchange of atom types. Like Sweden, just different. ;-)
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2020-04-25
  */
 public class LaplandGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200425;
     private static final boolean DEBUG = false;
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final int whichGlobOpt;
 
     LaplandGeometryXOver(final int whichGlobOpt){

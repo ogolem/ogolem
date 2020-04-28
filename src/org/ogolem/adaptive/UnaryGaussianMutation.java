@@ -34,20 +34,21 @@ import java.util.List;
 import java.util.Random;
 
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 
 /**
  * Gaussian-based fluctuations about the current input-value, within constraints.
  *
  * @author Mark Dittner
- * @version 2014-07-18
+ * @version 2020-04-25
  */
 class UnaryGaussianMutation implements GenericMutation<Double, AdaptiveParameters> {
 
     private static final long serialVersionUID = 20140718L;
 
-    private final Random r;
+    private final Lottery r;
     private final SubMode subModus;
     private final Mode mode;
     private final double[] upper;
@@ -57,14 +58,14 @@ class UnaryGaussianMutation implements GenericMutation<Double, AdaptiveParameter
     public UnaryGaussianMutation(final Mode modus, final SubMode subModus, final double gaussShaper, final double[] low, final double[] up) {
         this.gaussShaper = gaussShaper;
         this.lower = low;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
         this.upper = up;
         this.subModus = subModus;
         this.mode = modus;
     }
 
     public UnaryGaussianMutation(final UnaryGaussianMutation orig) {
-        this.r = new Random();
+        this.r = orig.r;
         this.lower = orig.lower.clone();
         this.upper = orig.upper.clone();
         this.gaussShaper = orig.gaussShaper;

@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,14 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import java.util.Random;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A geometry specific mutation genotype style.
  * @author Johannes Dieterich
- * @version 2014-03-28
+ * @version 2020-04-25
  */
 public class GermanyGeometryMutation implements GenericMutation<Molecule,Geometry> {
     
@@ -54,8 +55,8 @@ public class GermanyGeometryMutation implements GenericMutation<Molecule,Geometr
     public static final double DEFAULTHIGHEULER = 1.0;
     public static final double DEFAULTWIDTHEULER = 0.1;
     
-    private static final long serialVersionUID = (long) 20140327;
-    private final Random random = new Random();
+    private static final long serialVersionUID = (long) 20200425;
+    private final Lottery random = Lottery.getInstance();
     private final int whichMolMut;
     private final double lowCOM;
     private final double highCOM;
