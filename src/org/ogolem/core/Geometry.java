@@ -41,16 +41,16 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.generic.ContinuousProblem;
 import org.ogolem.properties.Property;
+import org.ogolem.random.Lottery;
 
 /**
  * This is (most likely) the central thing of the whole program. The geometry.
  * It needs to provide a lot of states, getters and setters
  * as well as methods.
  * @author Johannes Dieterich
- * @version 2016-08-29
+ * @version 2016-12-18
  */
 public class Geometry extends ContinuousProblem<Molecule> {
 	
@@ -457,7 +457,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
         boolean beAggressive = true;
 
         final CollisionDetection collDetect = new CollisionDetection(whichCollisionDetection);
-        final Random random = new Random();
+        final Lottery random = Lottery.getInstance();
         final ArrayList<Molecule> alBackupMoles = new ArrayList<>(noOfIndieParticles);
 
         // initialize it

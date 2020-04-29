@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2010-2013, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,19 +39,19 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
  * Any number of any global optimization algorithms may be used here.
  * @author Johannes Dieterich
- * @version 2013-11-20
+ * @version 2016-12-18
  */
 final class UNGlobOpt implements GlobalOptimization {
 
     private static final long serialVersionUID = (long) 20110606;
     private final int[] percentEnds;
     private final List<GlobalOptimization> globopts;
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
 
     UNGlobOpt(final List<GlobalOptimization> globopts, final List<Integer> percents,
             final GlobalConfig config){

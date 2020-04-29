@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,14 +40,14 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.RandomUtils;
 
 /**
  * Implements the most fundamental crossover: genotype. Used in the "germany"
  * algorithms. It sucks.
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2016-12-18
  */
 public class GermanyGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     

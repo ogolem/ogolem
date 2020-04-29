@@ -41,21 +41,21 @@ package org.ogolem.core;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Random;
 import org.ogolem.generic.ContinuousProblem;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This describes a full molecules consisting of atoms and further information.
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-04-25
  */
 public class Molecule extends ContinuousProblem<Double> {
 
     // serialVersion so that serialization works flawlessly
-    private static final long serialVersionUID = (long) 20200209;
+    private static final long serialVersionUID = (long) 20200425;
     private static final Logger l = LoggerFactory.getLogger(Molecule.class);
 
     // String ID of the molecule
@@ -460,7 +460,7 @@ public class Molecule extends ContinuousProblem<Double> {
      */
     void setRandomCOM(final double[] maxCellSize) {
         
-        final Random random = new Random();
+        final Lottery random = Lottery.getInstance();
         final double[] cell = new double[3];
         cell[0] = (maxCellSize[0]-1)/2;
         cell[1] = (maxCellSize[1]-1)/2;

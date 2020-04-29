@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,12 +39,12 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import static org.ogolem.core.GlobOptAtomics.assignMolecularTypes;
 import static org.ogolem.core.GlobOptAtomics.findOptimalPlaneHeight;
 import static org.ogolem.core.GlobOptAtomics.randomCuttingPlane;
 import org.ogolem.generic.GenericCrossover;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +52,14 @@ import org.slf4j.LoggerFactory;
  * Our basic N-type phenotype X-Over. Does not rotate the input structures.
  * SWEDEN, named in honor of Mr Mats Eriksson, the hardest rocker of them all!
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2020-04-25
  */
 public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140327;
+    private static final long serialVersionUID = (long) 20200425;
     private static final boolean DEBUG = false;
     private static final Logger log = LoggerFactory.getLogger(PhenotypeGeometryXOver.class);
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final int whichGlobOpt;
     
     PhenotypeGeometryXOver(final int whichGlobOpt){

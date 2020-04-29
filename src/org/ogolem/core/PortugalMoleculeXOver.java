@@ -39,8 +39,8 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.RandomUtils;
 
 /**
  * n-Point genotype crossover for molecules.

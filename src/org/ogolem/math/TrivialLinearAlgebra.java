@@ -41,7 +41,7 @@ package org.ogolem.math;
 /**
  * Performs some really trivial linear algebra.
  * @author Johannes Dieterich
- * @version 2020-03-02
+ * @version 2020-04-27
  */
 public class TrivialLinearAlgebra {
     
@@ -216,11 +216,28 @@ public class TrivialLinearAlgebra {
         assert(v1.length == v2.length);
         double d = 0.0;
         for(int i = 0; i < v1.length; i++){
-            d += v1[i]*v2[i];
+        	d = Math.fma(v1[i], v2[i], d);
         }
 
         return d;
     }
+    
+    /**
+     * Calculates the dot product of a vector with itself.
+     * @param n the number of elements to be used
+     * @param v the vector to be used
+     * @return the self dot product
+     */
+    public static double selfDotProduct(final int n, final double[] v) {
+    	
+    	assert(n <= v.length);
+    	double d = 0.0;
+        for(int i = 0; i < n; i++){
+        	d = Math.fma(v[i], v[i], d);
+        }
+
+        return d;
+    }    
     
     /**
      * Calculates the cross product of two arrays with length 3.

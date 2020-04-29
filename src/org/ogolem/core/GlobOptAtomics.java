@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,8 +41,8 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * level, consider moving parts into functions and (as a next solution) into more
  * classes. Ideally a globoptatomics subpackage.
  * @author Johannes Dieterich
- * @version 2014-12-01
+ * @version 2020-04-25
  */
 class GlobOptAtomics {
     
@@ -141,7 +142,7 @@ class GlobOptAtomics {
     }
     
     static double randomCuttingPlane(final int whichMode, final double[][] coms1,
-            final Random random){
+            final Lottery random){
     
         assert(coms1 != null);
         assert(coms1.length == 3);

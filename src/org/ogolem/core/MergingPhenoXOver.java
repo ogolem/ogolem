@@ -42,11 +42,11 @@ import contrib.bobyqa.BOBYQAOptimizer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import static org.ogolem.core.Constants.ANGTOBOHR;
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A more intelligent phenotype merging the cluster parts together using another
@@ -111,7 +111,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         final Geometry gChild2 = new Geometry(mother);
         gChild2.setID(futureID);
         
-        final Random random = new Random();
+        final Lottery random = Lottery.getInstance();
 
          // first get all COMs and put them into matrices/double arrays
         final double[][] motherCOMs = new double[3][gChild1.getNumberOfIndieParticles()];

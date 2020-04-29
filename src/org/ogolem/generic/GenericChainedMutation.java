@@ -38,7 +38,7 @@ package org.ogolem.generic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
  * A chain of mutation operators.
@@ -50,14 +50,14 @@ public class GenericChainedMutation<E, T extends Optimizable<E>> implements Gene
     private static final long serialVersionUID = (long) 2014054;
     private final List<GenericMutation<E,T>> mutations;
     private final List<Double> probs;
-    private final Random r;
+    private final Lottery r;
     
     public GenericChainedMutation(final List<GenericMutation<E,T>> muts,
             final List<Double> probs){
         assert(muts.size() == probs.size());
         this.mutations = muts;
         this.probs = probs;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     public GenericChainedMutation(final GenericChainedMutation<E,T> orig){
@@ -71,7 +71,7 @@ public class GenericChainedMutation<E, T extends Optimizable<E>> implements Gene
             probs.add(d);
         }
         assert(mutations.size() == probs.size());
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     @Override

@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,13 +39,13 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.RandomUtils;
 
 /**
  * The most fundamental genotype operator in the molecule space.
  * @author Johannes Dieterich
- * @version 2013-04-01
+ * @version 2016-12-18
  */
 public class GermanyMoleculeXOver implements GenericCrossover<Double,Molecule>{
     

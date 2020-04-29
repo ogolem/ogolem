@@ -348,7 +348,7 @@ public class LBFGS implements Serializable {
                 w[ispt + i] = -g[i] * diag[i];
             }
 
-            gnorm = Math.sqrt(ddotOpt(n, g));
+            gnorm = Math.sqrt(org.ogolem.math.TrivialLinearAlgebra.selfDotProduct(n, g));
             stp1 = 1 / gnorm;
             ftol = 0.0001;
 
@@ -489,8 +489,8 @@ public class LBFGS implements Serializable {
                 point = 0;
             }
 
-            gnorm = Math.sqrt(ddotOpt(n, g));
-            xnorm = Math.sqrt(ddotOpt(n, x));
+            gnorm = Math.sqrt(org.ogolem.math.TrivialLinearAlgebra.selfDotProduct(n, g));
+            xnorm = Math.sqrt(org.ogolem.math.TrivialLinearAlgebra.selfDotProduct(n, x));
             xnorm = Math.max(1.0, xnorm);
 
             if (gnorm / xnorm <= eps) {
@@ -630,40 +630,11 @@ public class LBFGS implements Serializable {
         
         if(n <= 0 || da == 0) return;
         
-        final int m = n % 4;
-        if (m != 0) {
-            for (int i = 0; i < m; i++) dx[i] += da * dx[ix0 + i];
-
-            if (n < 4) return;
-        }
-
-        int t2 = ix0+m;
-        for (int i = m; i < n; i++) {
-            dx[i] += da * dx[t2];
-            t2++;
+        for(int i = 0; i < n; i++) {
+        	dx[i] = Math.fma(da, dx[ix0+i], dx[i]);
         }
     }
 
-    /** Compute the dot product of two vectors.
-     * Adapted from the subroutine <code>ddot</code> in <code>lbfgs.f</code>.
-     * There could well be faster ways to carry out this operation; this
-     * code is a straight translation from the Fortran.
-     * changed this a bit, not much though (JMD)
-     */
-    private static double ddotOpt(final int n, final double[] dx) {
-
-        // assumptions: ix0 ==  0 && incx == 1 && iy0 == 0 && incy == 1 && dx == dy
-
-        if (n <= 0) return 0.0;
-
-        double d = 0.0;
-        for(int i = 0; i < n; i++){
-            d += dx[i]*dx[i];
-        }
-        
-        return d;
-    }
-    
     /** Compute the dot product of two vectors.
      * Adapted from the subroutine <code>ddot</code> in <code>lbfgs.f</code>.
      * There could well be faster ways to carry out this operation; this
@@ -679,7 +650,7 @@ public class LBFGS implements Serializable {
 
         double d = 0.0;
         for(int i = 0; i < n; i++){
-            d += dx[ix0 + i] * dx[iy0 + i];
+        	d = Math.fma(dx[ix0 + i], dx[iy0 + i], d);
         }
         
         return d;

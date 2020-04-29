@@ -37,8 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic;
 
 import java.util.List;
-import java.util.Random;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A bounded generic mutation.
@@ -51,7 +51,7 @@ public class BoundedGenericMutation<T extends Optimizable<Double>> implements Ge
     public static final int MULTIMUT = 1;
     
     private static final long serialVersionUID = (long) 20131201;
-    private final Random r;
+    private final Lottery r;
     private final int mode;
     private final double[] upper;
     private final double[] lower;
@@ -60,11 +60,11 @@ public class BoundedGenericMutation<T extends Optimizable<Double>> implements Ge
         this.mode = mode;
         this.upper = up;
         this.lower = low;
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     public BoundedGenericMutation(final BoundedGenericMutation<T> orig){
-        this.r = new Random();
+        this.r = Lottery.getInstance();
         this.mode = orig.mode;
         this.upper = orig.upper.clone();
         this.lower = orig.lower.clone();

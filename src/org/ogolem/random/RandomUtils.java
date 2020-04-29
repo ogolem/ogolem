@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,24 +35,23 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.helpers;
+package org.ogolem.random;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.ogolem.core.CoordTranslation;
 
 /**
  * Some helper functions for random numbers.
  * @author Johannes Dieterich
  * @author Mark Dittner
- * @version 2019-11-25
+ * @version 2020-04-25
  */
-public class RandomUtils {
+public final class RandomUtils {
     
     public static final long TRIESTOEMERGENCY=10000l;
     private static final boolean DEBUG = false;
-    private static final Random r = new Random();
+    private static final Lottery r = Lottery.getInstance();
     
     // disallow instantiation
     private RandomUtils(){}

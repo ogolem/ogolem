@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2013, J. M. Dieterich and B. Hartke
+Copyright (c) 2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,64 +34,30 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.generic;
+package org.ogolem.random;
 
-import org.ogolem.random.Lottery;
+import java.io.Serializable;
 
 /**
- * A bounded initializer for continuous problems.
+ * An interface for random number generators.
  * @author Johannes Dieterich
- * @version 2013-12-01
+ * @version 2016-12-18
  */
-public class BoundedInitializer<T extends Optimizable<Double>> implements GenericInitializer<Double,T> {
+public interface RNGenerator extends Serializable {
     
-    private static final long serialVersionUID = (long) 20131201;
-    private final GenericFitnessFunction<Double,T> fitness;
-    private final Lottery r;
-    private final double[] upper;
-    private final double[] lower;
+    String getInformation();
     
-    public BoundedInitializer(final double[] low, final double[] up,
-            final GenericFitnessFunction<Double,T> fitness){
-        this.upper = up;
-        this.lower = low;
-        this.r = Lottery.getInstance();
-        this.fitness = fitness;
-    }
+    boolean nextBoolean();
     
-    public BoundedInitializer(final BoundedInitializer<T> orig){
-        this.lower = orig.lower;
-        this.upper = orig.upper;
-        this.r = Lottery.getInstance();
-        this.fitness = orig.fitness.clone();
-    }
-
-    @Override
-    public BoundedInitializer<T> clone() {
-        return new BoundedInitializer<>(this);
-    }
-
-    @Override
-    public T initialize(final T ref, final long futureID) {
-        
-        @SuppressWarnings("unchecked")
-        final T init = (T) ref.clone();
-        
-        final Double[] params = init.getGenomeCopy();
-        final int dims = params.length;
-        
-        for(int i = 0; i < dims; i++){
-            final double d = r.nextDouble();
-            assert(upper[i] >= lower[i]);
-            params[i] = d*(upper[i]-lower[i])+lower[i];
-        }
-        
-        init.setGenome(params);
-        
-        // evaluate fitness
-        final T evaled = fitness.fitness(init,false);
-        evaled.setID(futureID);
-        
-        return evaled;
-    }
+    double nextDouble();
+    
+    float nextFloat();
+    
+    double nextGaussian();
+    
+    int nextInt();
+    
+    int nextInt(final int n);
+    
+    long nextLong();
 }

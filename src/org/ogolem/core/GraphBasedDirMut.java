@@ -44,18 +44,18 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
-import java.util.Random;
 import org.ogolem.generic.GenericMutation;
 import org.ogolem.math.TrivialLinearAlgebra;
 import static org.ogolem.core.CoordTranslation.distance;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A directed mutation using a graph-based analysis of the cluster in question.
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2016-09-03
+ * @version 2016-12-18
  */
 public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
     
@@ -417,7 +417,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
                     true); // we do normalize
             
             // do something...
-            final Random random = new Random();
+            final Lottery random = Lottery.getInstance();
             guess[0] = (random.nextBoolean()) ? comSec[0] - 2.0*random.nextDouble() :
                     comSec[0] + 2.0*random.nextDouble();
             guess[1] = (random.nextBoolean()) ? comSec[1] - 2.0*random.nextDouble() :

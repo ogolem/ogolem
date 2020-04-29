@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import org.ogolem.adaptive.AdaptiveParameters;
 import static org.ogolem.core.Constants.*;
 import org.ogolem.generic.GenericBackend;
@@ -56,6 +57,9 @@ import org.ogolem.io.InputPrimitives;
 import org.ogolem.io.InquiryPrimitives;
 import org.ogolem.io.ManipulationPrimitives;
 import org.ogolem.md.MDConfig;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RNGenerator;
+import org.ogolem.random.StandardRNG;
 
 /**
  * This invokes the IOHandler and checks the resulting array of Strings for
@@ -107,6 +111,7 @@ public final class Input {
         String initialLocOpt = null;
         String globOptString = "cluster{xover(sweden:cutstyle=1)mutation(germany:)}molecules{xover(germany:)mutation(germany:)}";
         String diversityString = "fitnessbased:1e-6";
+        String rngString = "javarng:autoseed";
         int geomStart = -1;
         int geomEnd = -1;
         boolean hasChargeTag = false;
@@ -340,6 +345,8 @@ public final class Input {
                 } catch(Exception e){
                     System.err.println("Wrong input for PrintGeomsBeforeLocOpt: " + e.toString() + ". Using default.");
                 }
+            } else if (line.startsWith("RandomNumberGenerator=")){
+                rngString = line.substring("RandomNumberGenerator=".length()).trim();
             } else if (line.startsWith("MolecularCoordinateMutation=")) {
                 final String sTemp2 = line.substring(28).trim();
                 switch(sTemp2){
@@ -1395,6 +1402,28 @@ public final class Input {
             
             globConf.backendDefs = backendDefs;
         }
+        
+        /*
+         * SECOND TO LAST THING: INITIALIZE THE RANDOM NUMBER GENERATOR
+         */
+        RNGenerator rng = null;
+        if(rngString.equalsIgnoreCase("javarng:autoseed")){
+            // get seed first
+            final Random r = new Random();
+            final long seed = r.nextLong();
+            rng = new StandardRNG(seed);
+        } else if(rngString.startsWith("javarng:seed=")){
+            final String s = rngString.substring("javarng:seed=".length()).trim();
+            final long seed = Long.parseLong(s);
+            rng = new StandardRNG(seed);
+        } else {
+            throw new RuntimeException("Illegal RNG configured: " + rngString);
+        }
+        
+        System.out.println("INFO: RNG initialized: " + rng.getInformation());
+        
+        Lottery.setGenerator(rng);
+        
 
         /*
          * LAST THINGS: BUILD LOCOPT AND GLOBOPT OBJECTS

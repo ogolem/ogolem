@@ -42,14 +42,14 @@ import contrib.bobyqa.BOBYQAOptimizer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.apache.commons.math3.util.FastMath;
 import static org.ogolem.core.GlobOptAtomics.assignMolecularTypes;
 import static org.ogolem.core.GlobOptAtomics.findOptimalSphereRadius;
 import static org.ogolem.core.GlobOptAtomics.randomRotation;
 import org.ogolem.generic.GenericCrossover;
-import org.ogolem.helpers.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A sphere-based phenotype cut.
@@ -63,7 +63,7 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
     private static final long serialVersionUID = (long) 20200209;
     private static final boolean DEBUG = false;
     private final boolean intermediateSanityChecks;
-    private final Random r;
+    private final Lottery r;
     private final boolean adjustRadius;
     private final CUTTYPE cut;
     private final double gaussWidth;
@@ -82,7 +82,7 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
             final boolean doDD, final double blowFacCD, final double blowFacDD, 
             final CollisionDetectionEngine cd, final CartesianFullBackend back, final OptConfig config,
             final boolean intermediateSanityChecks){
-        this.r = new Random();
+        this.r = Lottery.getInstance();
         this.adjustRadius = adjustRadius;
         this.cut = cut;
         this.gaussWidth = gaussWidth;
@@ -99,7 +99,7 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
     }
     
     SnaefellsjoekullGeometryXOver(final SnaefellsjoekullGeometryXOver orig){
-        this.r = new Random();
+        this.r = Lottery.getInstance();
         this.adjustRadius = orig.adjustRadius;
         this.cut = orig.cut;
         this.gaussWidth = orig.gaussWidth;

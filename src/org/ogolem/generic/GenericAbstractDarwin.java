@@ -38,10 +38,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic;
 
 import java.lang.reflect.Array;
-import java.util.Random;
 import org.ogolem.core.GlobalConfig;
 import org.ogolem.generic.stats.GenericDetailStatistics;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.Lottery;
 
 /**
  * A generic, abstract implementation of a classical GA global optimization.
@@ -56,7 +56,7 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
     protected final GenericSanityCheck<E,T> sanitizer;
     protected final GenericFitnessFunction<E,T> fitness;
     protected final IndividualWriter<T> writer;
-    protected final Random r;
+    protected final Lottery r;
     protected final boolean DEBUG;
     protected final boolean printBeforeFitness;
     protected final int noOfTries;
@@ -68,7 +68,7 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
             final IndividualWriter<T> writer, final double crossPoss, final double mutPoss,
             final boolean printBeforeFitness, final int noOfTries){
         this.DEBUG = (GlobalConfig.DEBUGLEVEL > 0);
-        this.r = new Random();
+        this.r = Lottery.getInstance();
         this.xover = cross;
         this.mutation = mut;
         this.sanitizer = sanity;
@@ -92,7 +92,7 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
         this.noOfTries = orig.noOfTries;
         
         this.DEBUG = (GlobalConfig.DEBUGLEVEL > 0);
-        this.r = new Random();
+        this.r = Lottery.getInstance();
     }
     
     @Override

@@ -39,10 +39,10 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import static org.ogolem.core.GlobOptAtomics.calculateMolecularSizes;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * This is a an "experienced guess" algorithm. Since we
@@ -63,7 +63,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     
     public static enum MUTMODE{ASCENDING,RANDOM,BYSIZE};
     
-    private final Random random;
+    private final Lottery random = Lottery.getInstance();
     private final CollisionDetection colldetect;
     private final double blowColl;
     private final double blowDiss;
@@ -72,29 +72,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     
     //TODO explicit DoF are not initialized
     
-    /**
-     * XXX TODO A strictly temporary workaround until the lottery concept lands 
-     * allowing us to better control the random number generation.
-     */
     public NorwayGeometryMutation(final CollisionDetection.CDTYPE whichCollDetect, final double blowColl, final double blowDiss,
-            final DissociationDetection.DDTYPE whichDissDetect, final MUTMODE mode, final long rngSeed){
-        
-        assert(blowColl >= 0.0);
-        assert(blowDiss >= 0.0);
-        assert(blowDiss >= blowColl);
-        assert(whichCollDetect != null);
-        assert(whichDissDetect != null);
-        assert(mode != null);
-        
-        this.random = new Random(rngSeed);
-        this.colldetect = new CollisionDetection(whichCollDetect);
-        this.blowColl = blowColl;
-        this.blowDiss = blowDiss;
-        this.whichDissDetect = whichDissDetect;
-        this.mode = mode;
-    }
-    
-    NorwayGeometryMutation(final CollisionDetection.CDTYPE whichCollDetect, final double blowColl, final double blowDiss,
             final DissociationDetection.DDTYPE whichDissDetect, final MUTMODE mode){
         
         assert(blowColl >= 0.0);
@@ -104,7 +82,6 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
         assert(whichDissDetect != null);
         assert(mode != null);
         
-        this.random = new Random();
         this.colldetect = new CollisionDetection(whichCollDetect);
         this.blowColl = blowColl;
         this.blowDiss = blowDiss;
@@ -113,7 +90,6 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     }
     
     NorwayGeometryMutation(final NorwayGeometryMutation orig){
-        this.random = new Random();
         this.blowColl = orig.blowColl;
         this.blowDiss = orig.blowDiss;
         this.colldetect = orig.colldetect.clone();

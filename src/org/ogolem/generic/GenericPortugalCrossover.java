@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic;
 
 import java.util.List;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.RandomUtils;
 import org.ogolem.helpers.Tuple;
 
 /**

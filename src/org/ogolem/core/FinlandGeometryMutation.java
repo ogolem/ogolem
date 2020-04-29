@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,10 +39,10 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import static org.ogolem.core.GlobOptAtomics.randomCuttingPlane;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * This is a phenotype-like algorithm. It cuts the clusters and puts them back
@@ -54,17 +54,17 @@ import org.ogolem.helpers.RandomUtils;
  * The molecular mutation is done following to a sauna algorithm stretching ALL bond
  * lengths of flexible molecules. (yeah... not yet...)
  * @author Johannes Dieterich
- * @version 2015-07-20
+ * @version 2020-04-25
  */
 public class FinlandGeometryMutation implements GenericMutation<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200425;
     private static final boolean DEBUG = false;
     private static final double MOVETOUNIVERSE = 100000;
     private static final double ALMOSTUNIVERSE = 90000;
     private static final double FUDGEBLOWFACTOR = 0.95;
     
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final CollisionDetectionEngine colldetect = new AdvancedPairWise(false, new DummyCollisionStrengthComputer());
     private final double blowDiss;
     private final double blowColl;

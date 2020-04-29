@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,9 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.util.List;
-import java.util.Random;
 import org.ogolem.generic.GenericMutation;
-import org.ogolem.helpers.RandomUtils;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RandomUtils;
 
 /**
  * A molecule specific genotype mutation.
@@ -51,7 +52,7 @@ public class GermanyMoleculeMutation implements GenericMutation<Double,Molecule>
     public static final double DEFAULTBONDFACTOR = 0.25;
     
     private static final long serialVersionUID = (long) 20140327;
-    private final Random random = new Random();
+    private final Lottery random = Lottery.getInstance();
     private final boolean beAggressive;
     private final double bondFactor;
     
