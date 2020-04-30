@@ -1268,6 +1268,45 @@ Polak-Ribiere updates. Default: Polak-Ribiere. Optional input.
       \item \texttt{absconvthresh=X.XX} sets the absolute convergence threshold 
 to \texttt{X.XX}. Default: global default. Optional input.
     \end{itemize}
+  \item \texttt{fire:} to use the Fast Inertial Relaxation Engine (FIRE).
+Options are:
+    \begin{itemize}
+      \item \texttt{backend=XXX} uses backend \texttt{XXX} for this
+optimization. Mandatory option. Note that FIRE benefits greatly from backends
+that support history functionality.
+      \item \texttt{maxiter=XXX} sets the maximal number of iterations for this
+local optimization to \texttt{XXX}. Default: global default. Optional input.
+      \item \texttt{fmax=X.X} sets the convergence criterion to \texttt{X.X}.
+Default: global default. Optional input.
+      \item \texttt{maxmove=X.X} sets the maximum movement in one iteration
+to \texttt{X.X}. Default: 0.2. Optional input.
+      \item \texttt{dt=X.X} sets the initial time step size to \texttt{X.X}.
+Default: 0.1. Optional input.
+      \item \texttt{dtmax=X.X} sets the maximum time step size
+to \texttt{X.X}. Default: 1.0. Optional input.
+      \item \texttt{nmin=X} sets the number of steps without step increase
+to \texttt{X}. Default: 5. Optional input.
+      \item \texttt{finc=X.X} sets the factor for time step increase
+to \texttt{X.X}. Default: 1.1. Optional input.
+      \item \texttt{fdec=X.X} sets the factor for time step decrease
+to \texttt{X.X}. Default: 0.5. Optional input.
+      \item \texttt{astart=X.X} sets the starting acceleration mixing factor
+to \texttt{X.X}. Default: 0.1. Optional input.
+      \item \texttt{fa=X.X} sets the factor for acceleration mixing
+increase to \texttt{X.X}. Default: 0.99. Optional input.
+      \item \texttt{a=X.X} sets the initial acceleration mixing factor
+to \texttt{X.X}. Default: 0.1. Optional input.
+      \item \texttt{tryresets=X} sets the maximum number of resets if too
+many trials fail to improve the result to \texttt{X}. Default: 2.
+Optional Input.
+      \item \texttt{maxtrials=X} sets the number of trials without improvement
+before a reset is initiated to \texttt{X}. Default: 20. Optional input.
+      \item \texttt{resettostable=false} turns off resets to stable states.
+Default: true. Optional input.
+      \item \texttt{resettobestpoint=true} turns on resets to remembered
+points in history. Requires a backend that supports history functionality.
+Default: false. Optional input.
+    \end{itemize}
   \item \texttt{flemin:} to use NUMAL's flemin optimization. Options:
     \begin{itemize}
       \item \texttt{backend=XXX} uses backend \texttt{XXX} for this 
