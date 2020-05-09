@@ -2490,6 +2490,24 @@ crossover. Valid options:
     \item \texttt{nocuts=X} sets the number of genotype cuts to \texttt{X}. 
 Default: 1.
   \end{itemize}
+  \item \texttt{arctic:} a genotype mixing-recombination, i.e., new 
+  parameter values are created from the parents' genome by some averaging 
+  procedures instead of swapping the currently available ones:
+  \begin{itemize}
+    \item \texttt{nomix=} sets the number of mixing points, i.e., the 
+    number of mixed parameters. 
+    Default: 1.
+    \item \texttt{random} as boolean switch enables some randomness 
+    of mixing: default is false and this means that a new child parameter value is 
+    the exact arithmetic mean of the parameter value of the parents. 
+    \item \texttt{order=} sets the order $r$ in $0.5 \pm (0.5 \cdot w^r)$ with 
+    a random weight $w \in [0, 1]$ (only for enabled option \texttt{random}) 
+    between the parameter value of the one and the other parent during the mixing.
+    So, a higher order leads to a dominance of the arithmetic mean, whereas a lower 
+    order lets, e.g., a random one of the parents dominate (the average calculation
+    between the parameter values is more biased towards one randomly picked parent). 
+    Default is 1 (the lowest possible value).
+  \end{itemize}
   \item \texttt{noxover:} disables crossover operations.
   \item \texttt{multiple:} uses multiple crossover operators. Syntax identical 
 to the one described in Section \ref{sec:geomglobopt}.
@@ -2514,7 +2532,25 @@ Possible mutation choices are:
   \item \texttt{germany:} a basic genotype mutation. Valid options:
   \begin{itemize}
     \item \texttt{mode=} sets the strength of the mutation. Valid input: 
-\texttt{all} or \texttt{one}. Default: \texttt{one}.
+  \texttt{all} or \texttt{one}. Default: \texttt{one}.
+  \end{itemize}
+  \item \texttt{arctic:} A unary mutation operator that mutates certain 
+  parameters in the neighborhood of their current values within a 
+  Gaussian distribution.
+  \begin{itemize}
+    \item \texttt{mode=} can be set to \texttt{one}, \texttt{multi} and \texttt{all}. 
+    Then exactly one, many (random list) or really all parameters are mutated. 
+    Default is \texttt{one}.
+    \item \texttt{submode=} can be set to \texttt{current} or 
+    \texttt{bound}. The first one uses the current value of 
+    each single parameter as the center of a Gaussian distribution, 
+    the second option uses the mean value of the max./min. boundaries.
+    Default is \texttt{current}.
+    \item \texttt{shape=} standard deviation of the Gaussian probability 
+    distribution. For example, if one wants to have a type of ``hillclimbing''
+    around the current parameter values, a small \texttt{shape} (again 
+    scaled to [0,1]) together with the \texttt{current} submode shall be used. 
+    Default: 0.3.
   \end{itemize}
   \item \texttt{nomutation:} disables mutation operations.
   \item \texttt{multiple:} uses multiple mutation operators. Syntax identical 
