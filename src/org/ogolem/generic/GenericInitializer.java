@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,12 @@ import java.io.Serializable;
 /**
  * Interface for a generic initializer.
  * @author Johannes Dieterich
- * @version 2013-11-23
+ * @version 2020-04-29
  */
-public interface GenericInitializer<E,T extends Optimizable<E>> extends Serializable, Cloneable{
+public interface GenericInitializer<E,T extends Optimizable<E>> extends Serializable, Copyable{
    
-    GenericInitializer<E,T> clone();
+	@Override
+    GenericInitializer<E,T> copy();
     
     T initialize(final T ref, final long futureID);
     

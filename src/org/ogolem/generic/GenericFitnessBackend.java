@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,14 +43,14 @@ package org.ogolem.generic;
  * nature yet, we strongly suspect this to be the case and may change this in
  * the future.
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2020-04-29
  */
 public interface GenericFitnessBackend<E,T extends Optimizable<E>> extends GenericFitnessFunction<E,T> {
     
     public enum BOUNDSTYPE{NONE, SOME, ALL};
     
     @Override
-    public GenericFitnessBackend<E,T> clone();
+    public GenericFitnessBackend<E,T> copy();
     
     /**
      * Returns the number of active, i.e., to be optimized, coordinates in this

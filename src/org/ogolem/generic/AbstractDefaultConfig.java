@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,13 +49,13 @@ import org.ogolem.generic.threading.TaskFactory;
  * An abstract default config. Essentially, a bare-bones starting point if you
  * want to solve your own optimization problem using the ogolem kernels.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  * @param <E> the optimizable quantity, e.g., Double or Molecule
  * @param <T> the actual optimizable class
  */
 public abstract class AbstractDefaultConfig<E,T extends Optimizable<E>> implements Configuration<E,T>{
     
-    private static final long serialVersionUID = (long) 20140830;
+    private static final long serialVersionUID = (long) 20200429;
     
     /**
      * where to find the seeding individuals. Also works as an identifier whether
@@ -181,7 +181,7 @@ public abstract class AbstractDefaultConfig<E,T extends Optimizable<E>> implemen
     @SuppressWarnings("unchecked")
     @Override
     public T getExample() throws Exception {
-        return (T) example.clone();
+        return (T) example.copy();
     }
 
     @Override

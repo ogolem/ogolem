@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-                2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,11 @@ import org.ogolem.generic.GenericBackend;
 /**
  * A basic harmonic function, y = a*(x-x0)**2 + b
  * @author Johannes Dieterich
- * @version 2015-03-28
+ * @version 2020-04-29
  */
 public class HarmonicFunction implements GenericBackend<Double,BasicOptimizableType>{
     
-    private static final long serialVersionUID = (long) 20150328;
+    private static final long serialVersionUID = (long) 20200429;
     private final double x0;
     private final double a;
     private final double b;
@@ -71,7 +71,7 @@ public class HarmonicFunction implements GenericBackend<Double,BasicOptimizableT
     }
     
     @Override
-    public HarmonicFunction clone() {
+    public HarmonicFunction copy() {
         return new HarmonicFunction(a,x0,b,boundUp,boundLow);
     }
 
@@ -122,7 +122,7 @@ public class HarmonicFunction implements GenericBackend<Double,BasicOptimizableT
 
     @Override
     public BasicOptimizableType fitness(BasicOptimizableType individual, boolean forceOneEval) {
-        final double[] actCoord = getActiveCoordinates((BasicOptimizableType) individual.clone());
+        final double[] actCoord = getActiveCoordinates((BasicOptimizableType) individual.copy());
         final double fitness = fitness(actCoord,1);
         
         individual.setFitness(fitness);

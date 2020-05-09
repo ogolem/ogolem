@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015-2019, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,11 +47,11 @@ import org.ogolem.generic.genericpool.NicheComputer;
  * based on water molecules where atoms are defined as OHH in the input.
  * Ignores other building blocks/molecules.
  * @author Johannes Dieterich
- * @version 2019-12-29
+ * @version 2020-04-29
  */
 public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140107;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     private final double maxDistOH;
     private final double maxDistOO;
@@ -70,7 +70,7 @@ public class HydrogenBondNicheComp implements NicheComputer<Molecule,Geometry>{
     }
     
     @Override
-    public HydrogenBondNicheComp clone(){
+    public HydrogenBondNicheComp copy(){
         return new HydrogenBondNicheComp(this);
     }
     

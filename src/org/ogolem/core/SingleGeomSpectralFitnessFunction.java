@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ import org.ogolem.spectral.FullSpectrum;
  * A fitness function to locopt a geometry and subsequently obtain the fitness
  * value from a spectral fit against a reference.
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-04-29
  */
 public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction<Molecule,Geometry>{
 
@@ -74,7 +74,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
      */
     private final static double PREFAC = Math.PI*2*2.99792458E-2;
     
-    private static final long serialVersionUID = (long) 20150227;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     
     private final GenericFitnessFunction<Molecule,Geometry> opter;
@@ -162,7 +162,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
     }
     
     SingleGeomSpectralFitnessFunction(final SingleGeomSpectralFitnessFunction orig){
-        this.opter = orig.opter.clone();
+        this.opter = orig.opter.copy();
         this.corrFrames = orig.corrFrames;
         this.corrFramesPerBlock = orig.corrFramesPerBlock;
         this.corrGap = orig.corrGap;
@@ -192,7 +192,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
     }
     
     @Override
-    public GenericFitnessFunction<Molecule, Geometry> clone() {
+    public GenericFitnessFunction<Molecule, Geometry> copy() {
         return new SingleGeomSpectralFitnessFunction(this);
     }
 
@@ -360,7 +360,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
     
     private static class Coefficient extends ContinuousProblem<Double>{
 
-        private static final long serialVersionUID = (long) 20150227;
+        private static final long serialVersionUID = (long) 20200429;
         private double coefficient;
         
         Coefficient(){
@@ -372,7 +372,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
         }
         
         @Override
-        public ContinuousProblem<Double> clone() {
+        public ContinuousProblem<Double> copy() {
             return new Coefficient(this);
         }
 
@@ -398,7 +398,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
     
     private static class FitnessFunction implements GenericBackend<Double,Coefficient>{
         
-        private static final long serialVersionUID = (long) 20150227;
+        private static final long serialVersionUID = (long) 20200429;
         
         private final FullSpectrum ref;
         private final FullSpectrum fit;
@@ -417,7 +417,7 @@ public class SingleGeomSpectralFitnessFunction implements GenericFitnessFunction
         }
 
         @Override
-        public GenericBackend<Double, Coefficient> clone() {
+        public GenericBackend<Double, Coefficient> copy() {
             return new FitnessFunction(this);
         }
 

@@ -46,7 +46,7 @@ import org.ogolem.generic.genericpool.NicheComputer;
  * most likely not useful for much else (according to BXH).
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2020-02-09
+ * @version 2020-04-29
  */
 class LJProjNicheComp implements NicheComputer<Molecule,Geometry> {
     
@@ -90,7 +90,7 @@ class LJProjNicheComp implements NicheComputer<Molecule,Geometry> {
     }
     
     @Override
-    public LJProjNicheComp clone(){
+    public LJProjNicheComp copy(){
         return new LJProjNicheComp(this);
     }
     

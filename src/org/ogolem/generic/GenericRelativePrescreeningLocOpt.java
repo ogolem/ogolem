@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,11 +47,11 @@ import org.slf4j.LoggerFactory;
  * environments or b) in environments where the pool is being propagated to the clients
  * (regularly).
  * @author Johannes Dieterich
- * @version 2016-01-14
+ * @version 2020-04-29
  */
 public class GenericRelativePrescreeningLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E,T>{
     
-    private static final long serialVersionUID = (long) 20131124;
+    private static final long serialVersionUID = (long) 20200429;
     private static final Logger l = LoggerFactory.getLogger(GenericRelativePrescreeningLocOpt.class);
     protected final GenericAbstractLocOpt<E,T> locopt;
     protected final GenericPool<E,T> pool;
@@ -68,13 +68,13 @@ public class GenericRelativePrescreeningLocOpt <E,T extends ContinuousProblem<E>
     
     public GenericRelativePrescreeningLocOpt(final GenericRelativePrescreeningLocOpt<E,T> orig){
         super(orig);
-        this.locopt = orig.locopt.clone();
+        this.locopt = orig.locopt.copy();
         this.maxPerc = orig.maxPerc;
         this.pool = orig.pool; // is a singleton!
     }
     
     @Override
-    public GenericRelativePrescreeningLocOpt<E,T> clone(){
+    public GenericRelativePrescreeningLocOpt<E,T> copy(){
         return new GenericRelativePrescreeningLocOpt<>(this);
     }
     
@@ -88,7 +88,7 @@ public class GenericRelativePrescreeningLocOpt <E,T extends ContinuousProblem<E>
         
         // one shot
         @SuppressWarnings("unchecked")
-        final double[] genome = back.getActiveCoordinates((T) individual.clone());
+        final double[] genome = back.getActiveCoordinates((T) individual.copy());
         final double e = back.fitness(genome, 0);
         
         final double currBest = pool.getFitnessOfIndividualAtPos(0);

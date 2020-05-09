@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ import org.ogolem.properties.Energy;
 /**
  * The main class of the adaptive package designed to do a paramterization.
  * @author Johannes Dieterich
- * @version 2016-07-20
+ * @version 2020-04-29
  */
 public class MainOgoAdaptive {
 
@@ -192,7 +192,7 @@ public class MainOgoAdaptive {
                 params = gate.createInitialParameterStub(adapConf.getAllReferenceGeoms(), sMethod);
             }
         }
-        adapConf.paramExample = params.clone();
+        adapConf.paramExample = params.copy();
 
         // let's first check wether there is any borders file
         final String sBorderFile = configFile.substring(0,configFile.lastIndexOf(".")) + "-borders.aux";

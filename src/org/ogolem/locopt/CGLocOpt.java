@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,11 +57,11 @@ import org.ogolem.locopt.apachehelpers.MultivariateToGradientProvider;
 /**
  * Interface to apache commons implementation of CG.
  * @author Johannes Dieterich
- * @version 2015-01-11
+ * @version 2020-04-29
  */
 public class CGLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E,T> {
 
-    private static final long serialVersionUID = (long) 20140907;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     private final boolean useFletcherReevesUpdate;
     private final double absThresh;
@@ -89,7 +90,7 @@ public class CGLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstract
     }
     
     @Override
-    public CGLocOpt<E,T> clone() {
+    public CGLocOpt<E,T> copy() {
         return new CGLocOpt<>(this);
     }
 
@@ -102,7 +103,7 @@ public class CGLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstract
     protected T optimize(final T individual) {
 
         @SuppressWarnings("unchecked")
-        final T work = (T) individual.clone();
+        final T work = (T) individual.copy();
         final MultivariateToEnergyProvider<E,T> provE = new MultivariateToEnergyProvider<>(back, work);
         final MultivariateToGradientProvider<E,T> provG = new MultivariateToGradientProvider<>(back, work);
         
@@ -139,12 +140,12 @@ public class CGLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstract
             // apparently it likes to set this to null internally, nice one...
             if(currP == null){
                 @SuppressWarnings("unchecked")
-                final T res = (T) individual.clone();
+                final T res = (T) individual.copy();
                 res.setFitness(FixedValues.NONCONVERGEDENERGY);
                 return res;
             } else {
                 @SuppressWarnings("unchecked")
-                final T res = (T) individual.clone();
+                final T res = (T) individual.copy();
                 res.setFitness(currE);
                 back.updateActiveCoordinates(res, currP);
                 
@@ -160,7 +161,7 @@ public class CGLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstract
         final double[] p = result.getPoint();
                 
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         res.setFitness(e);
         back.updateActiveCoordinates(res, p);
         

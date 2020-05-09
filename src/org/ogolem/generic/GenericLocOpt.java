@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +45,7 @@ package org.ogolem.generic;
 public interface GenericLocOpt<E,T extends ContinuousProblem<E>> extends GenericFitnessFunction<E,T>{
     
     @Override
-    public GenericLocOpt<E,T> clone();
+    public GenericLocOpt<E,T> copy();
     
     public GenericFitnessBackend<E,T> getFitnessBackend();
     

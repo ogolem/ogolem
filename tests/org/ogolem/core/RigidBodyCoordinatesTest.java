@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014-2015, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import static org.ogolem.core.Constants.ANGTOBOHR;
 /**
  *
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2020-04-29
  */
 public class RigidBodyCoordinatesTest {
     
@@ -194,8 +194,8 @@ public class RigidBodyCoordinatesTest {
         System.out.println("fitness");
 
         // make sure that w2 and w20 have the right energy
-        final double[] extCoord2 = rigidW2TIP4P.getActiveCoordinates(gWater2.clone());
-        final double[] extCoord20 = rigidW20TIP4P.getActiveCoordinates(gWater20.clone());
+        final double[] extCoord2 = rigidW2TIP4P.getActiveCoordinates(gWater2.copy());
+        final double[] extCoord20 = rigidW20TIP4P.getActiveCoordinates(gWater20.copy());
         
         final double e2 = rigidW2TIP4P.fitness(extCoord2, 0);
         final double e20 = rigidW20TIP4P.fitness(extCoord20, 0);
@@ -217,8 +217,8 @@ public class RigidBodyCoordinatesTest {
         
         // make sure that w2 and w20 have the right energy
 
-        final double e2 = rigidW2TIP4P.fitness(gWater2.clone(), true).getFitness();
-        final double e20 = rigidW20TIP4P.fitness(gWater20.clone(), true).getFitness();
+        final double e2 = rigidW2TIP4P.fitness(gWater2.copy(), true).getFitness();
+        final double e20 = rigidW20TIP4P.fitness(gWater20.copy(), true).getFitness();
         
         // from DJW
         final double expResult2 = -0.009936231756023471;
@@ -236,9 +236,9 @@ public class RigidBodyCoordinatesTest {
         System.out.println("gradient");
 
         // make sure that w2 and w20 have the right energy and gradient
-        final double[] extCoord2 = rigidW2TIP4P.getActiveCoordinates(gWater2.clone());
-        final double[] extCoord2Dis = rigidW2DisTIP4P.getActiveCoordinates(gWater2Distorted.clone());
-        final double[] extCoord20 = rigidW20TIP4P.getActiveCoordinates(gWater20.clone());
+        final double[] extCoord2 = rigidW2TIP4P.getActiveCoordinates(gWater2.copy());
+        final double[] extCoord2Dis = rigidW2DisTIP4P.getActiveCoordinates(gWater2Distorted.copy());
+        final double[] extCoord20 = rigidW20TIP4P.getActiveCoordinates(gWater20.copy());
         
         final double[] grad2W = new double[6*2];
         final double[] grad2WDis = new double[6*2];
@@ -295,9 +295,9 @@ public class RigidBodyCoordinatesTest {
         System.out.println("numerical gradients");
 
         // make sure that w2 and w20 have the right energy and gradient
-        final double[] extCoord2 = rigidW2TIP4P.getActiveCoordinates(gWater2.clone());
-        final double[] extCoord2Dis = rigidW2DisTIP4P.getActiveCoordinates(gWater2Distorted.clone());
-        final double[] extCoord20 = rigidW20TIP4P.getActiveCoordinates(gWater20.clone());
+        final double[] extCoord2 = rigidW2TIP4P.getActiveCoordinates(gWater2.copy());
+        final double[] extCoord2Dis = rigidW2DisTIP4P.getActiveCoordinates(gWater2Distorted.copy());
+        final double[] extCoord20 = rigidW20TIP4P.getActiveCoordinates(gWater20.copy());
         
         final double[] grad2W = new double[6*2];
         final double[] grad2WDis = new double[6*2];
@@ -395,7 +395,7 @@ public class RigidBodyCoordinatesTest {
         System.out.println("numerical gradients (stepped)");
 
         // make sure that w2 and w20 have the right energy and gradient
-        final double[] extCoord2Dis = rigidW2DisTIP4P.getActiveCoordinates(gWater2Distorted.clone());
+        final double[] extCoord2Dis = rigidW2DisTIP4P.getActiveCoordinates(gWater2Distorted.copy());
         
         final double[] grad2WDis = new double[6*2];
         final double[] grad2WDisAna = new double[6*2];
@@ -597,7 +597,7 @@ public class RigidBodyCoordinatesTest {
         System.out.println("numerical gradients TIP3P (stepped)");
 
         // make sure that w2 and w20 have the right energy and gradient
-        final double[] extCoord2Dis = rigidW2DisTIP3P.getActiveCoordinates(gWater2Distorted.clone());
+        final double[] extCoord2Dis = rigidW2DisTIP3P.getActiveCoordinates(gWater2Distorted.copy());
         
         final double[] grad2WDis = new double[6*2];
         final double[] grad2WDisAna = new double[6*2];

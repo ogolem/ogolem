@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2014-2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2014-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ import contrib.bobyqa.BOBYQAOptimizer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.ogolem.generic.Copyable;
 import org.ogolem.generic.GenericFitnessBackend;
 import org.ogolem.generic.GenericLocOpt;
 import org.ogolem.helpers.Tuple;
@@ -48,16 +49,17 @@ import org.ogolem.helpers.Tuple;
 /**
  * A collection of optimization strategies for GDM.
  * @author Johannes Dieterich
- * @version 2015-07-18
+ * @version 2020-04-29
  */
 public class DirMutOptStrategies implements Serializable {
     
     private static final boolean DEBUG = false;
-    private static final long serialVersionUID = (long) 20140526;
+    private static final long serialVersionUID = (long) 20200429;
     
-    static interface PointOptStrategy extends Cloneable, Serializable {
+    static interface PointOptStrategy extends Copyable, Serializable {
         
-        public PointOptStrategy clone();
+    	@Override
+        PointOptStrategy copy();
         
         String getMyID();
         
@@ -116,7 +118,7 @@ public class DirMutOptStrategies implements Serializable {
         private static final long serialVersionUID = (long) 20140526;
         
         @Override
-        public PointOptStrategy clone() {
+        public PointOptStrategy copy() {
             return new FullOptimization();
         }
 
@@ -153,7 +155,7 @@ public class DirMutOptStrategies implements Serializable {
         }
         
         @Override
-        public PointOptStrategy clone() {
+        public PointOptStrategy copy() {
             return new EulerOnlyOptimization(this.bobConf, this.collDetect.clone(), this.blowColl, this.fullyRelaxed);
         }
 
@@ -206,11 +208,11 @@ public class DirMutOptStrategies implements Serializable {
             
             if (currBestE >= FixedValues.NONCONVERGEDENERGY) {
                 System.out.println("INFO: Could not find any place that was collision free and had a reasonable energy. Complaining.");
-                return new Tuple<>(FixedValues.NONCONVERGEDENERGY, geom.clone());
+                return new Tuple<>(FixedValues.NONCONVERGEDENERGY, geom.copy());
             }
 
             // work is already setup properly, except for the energy :-)
-            final Geometry res = adap.getCurrentGeom().clone();
+            final Geometry res = adap.getCurrentGeom().copy();
             res.setFitness(currBestE);
             
             return new Tuple<>(res.getFitness(),res);
@@ -239,7 +241,7 @@ public class DirMutOptStrategies implements Serializable {
         }
 
         @Override
-        public PointOptStrategy clone() {
+        public PointOptStrategy copy() {
             return new RigidBodyOptimization(this.halfDiff, this.bobConf,
                 this.collDetect.clone(), this.blowColl, this.fullyRelaxed);
         }
@@ -312,11 +314,11 @@ public class DirMutOptStrategies implements Serializable {
             
             if (currBestE >= FixedValues.NONCONVERGEDENERGY) {
                 System.out.println("INFO: Could not find any place that was collision free and had a reasonable energy. Complaining.");
-                return new Tuple<>(FixedValues.NONCONVERGEDENERGY, geom.clone());
+                return new Tuple<>(FixedValues.NONCONVERGEDENERGY, geom.copy());
             }
 
             // work is already setup properly, except for the energy :-)
-            final Geometry res = adap.getCurrentGeom().clone();
+            final Geometry res = adap.getCurrentGeom().copy();
             res.setFitness(currBestE);
             
             return new Tuple<>(res.getFitness(),res);
@@ -400,7 +402,7 @@ public class DirMutOptStrategies implements Serializable {
                 
                 return e;
             } else {
-                final double[] coords = back.getActiveCoordinates(work.clone());
+                final double[] coords = back.getActiveCoordinates(work.copy());
                 final double e = back.fitness(coords, cIter);
                 if(DEBUG){System.out.println("DEBUG: new energy is " + e);}
                 
@@ -430,7 +432,7 @@ public class DirMutOptStrategies implements Serializable {
         }
 
         @Override
-        public PointOptStrategy clone() {
+        public PointOptStrategy copy() {
             return new EnergyOnlyEvaluator();
         }
 
@@ -461,7 +463,7 @@ public class DirMutOptStrategies implements Serializable {
                     }
                     
                     // clone() is necessary as object is potentially mutable
-                    final double[] currCoords = back.getActiveCoordinates(geom.clone());
+                    final double[] currCoords = back.getActiveCoordinates(geom.copy());
                     coordsCache = currCoords;
                     evalCounter++;
                     final double e = back.fitness(currCoords, evalCounter);

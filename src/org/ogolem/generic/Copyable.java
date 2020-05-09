@@ -1,6 +1,5 @@
 /**
-Copyright (c) 2013, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,45 +37,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic;
 
 /**
- * A simple generic darwin implementation.
+ * Mark an object as copyable without descending into the hell of special clone behavior.
  * @author Johannes Dieterich
  * @version 2020-04-29
  */
-public class SimpleGenericDarwin<E,T extends Optimizable<E>> extends GenericAbstractDarwin<E,T>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    
-    public SimpleGenericDarwin(final GenericCrossover<E,T> cross, final GenericMutation<E,T> mut,
-            final GenericSanityCheck<E,T> sanity, final GenericFitnessFunction<E,T> fitness,
-            final IndividualWriter<T> writer, final double crossPoss, final double mutPoss,
-            final boolean printBeforeFitness, final int noOfTries){
-        super(cross, mut, sanity, fitness, writer, crossPoss, mutPoss,
-            printBeforeFitness, noOfTries);
-    }
-    
-    public SimpleGenericDarwin(final SimpleGenericDarwin<E,T> orig){
-        super(orig);
-    }
-    
-    @Override
-    public SimpleGenericDarwin<E,T> copy(){
-        return new SimpleGenericDarwin<>(this);
-    }
-    
-    @Override
-    public String getMyID(){
-        return "simple darwin using: "
-                + "\n\txover    " + xover.getMyID()
-                + "\n\tmutation " + mutation.getMyID()
-                + "\n\tfitness  " + fitness.getMyID();
-    }
-    
-    @Override
-    public void postXOver(final T individual1, final T individual2, final long futureID){}
-    
-    @Override
-    public void postMutation(final T individual){}
-    
-    @Override
-    public void runAfterEachTry(){}
+public interface Copyable {
+	
+	/**
+	 * Returns a copy of itself. Must not throw Exceptions unless catastrophic condition exists.
+	 * Is assumed to complete.
+	 * @return a copy of itself, depth of it dictated by object needs
+	 */
+	Copyable copy();
 }

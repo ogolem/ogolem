@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -53,12 +53,12 @@ import org.ogolem.properties.Property;
 /**
  * Provides global optimization of MOPAC parameters.
  * @author Johannes Dieterich
- * @version 2016-09-02
+ * @version 2020-04-29
  */
 public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Newton{
 
     // the ID
-    private static final long serialVersionUID = (long) 20101108;
+    private static final long serialVersionUID = (long) 20200429;
 
     private static long noOfGeomLocalOpts = (long) 0;
     private static long noOfMolLocalOpts = (long) 0;
@@ -96,7 +96,7 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
         this.azoBenzene = orig.azoBenzene;
         this.doSanityCheck = orig.doSanityCheck;
         this.blowBonds = orig.blowBonds;
-        this.parameters = (orig.parameters == null) ? null : orig.parameters.clone();
+        this.parameters = (orig.parameters == null) ? null : orig.parameters.copy();
     }
 
     @Override

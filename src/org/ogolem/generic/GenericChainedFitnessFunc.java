@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,11 +43,11 @@ import java.util.List;
 /**
  * A generic chain of fitness functions.
  * @author Johannes Dieterich
- * @version 2014-12-20
+ * @version 2020-04-29
  */
 public class GenericChainedFitnessFunc<E,T extends Optimizable<E>> implements GenericFitnessFunction<E,T> {
     
-    private static final long serialVersionUID = (long) 20141220;
+    private static final long serialVersionUID = (long) 20200429;
 
     private final List<GenericFitnessFunction<E,T>> functions;
     private final double cutoff;
@@ -61,13 +62,13 @@ public class GenericChainedFitnessFunc<E,T extends Optimizable<E>> implements Ge
         if(orig.functions.isEmpty()){throw new RuntimeException("Wrong input for chained fitness function.");}
         this.functions = new ArrayList<>();
         orig.functions.forEach((function) -> {
-            this.functions.add(function.clone());
+            this.functions.add(function.copy());
         });
         this.cutoff = orig.cutoff;
     }
     
     @Override
-    public GenericChainedFitnessFunc<E, T> clone() {
+    public GenericChainedFitnessFunc<E, T> copy() {
         return new GenericChainedFitnessFunc<>(this);
     }
 

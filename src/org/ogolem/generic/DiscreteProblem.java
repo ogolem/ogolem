@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2012-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,14 +41,14 @@ package org.ogolem.generic;
 /**
  * An abstract implementation of a discrete problem.
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-04-29
  */
 public abstract class DiscreteProblem<E> extends AbstractProblem<E> {
     
-    private static final long serialVersionUID = (long) 20140327;
+    private static final long serialVersionUID = (long) 20200429;
     
     @Override
-    public abstract DiscreteProblem<E> clone();
+    public abstract DiscreteProblem<E> copy();
     
     @Override
     public final boolean isDiscreteProblem(){

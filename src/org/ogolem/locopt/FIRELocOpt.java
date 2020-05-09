@@ -65,13 +65,13 @@ import org.ogolem.generic.GenericBackend;
  *
  * @author Mark Dittner
  * @author Dominik Behrens
- * @version 2020-04-27
+ * @version 2020-04-29
  */
 public class FIRELocOpt<E, T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E, T> {
 
     private final static boolean DEBUG = false;
 
-    private static final long serialVersionUID = (long) 20200427;
+    private static final long serialVersionUID = (long) 20200429;
 
     // FIRE parameters
     final private double dt;
@@ -142,7 +142,7 @@ public class FIRELocOpt<E, T extends ContinuousProblem<E>> extends GenericAbstra
     }
 
     @Override
-    public FIRELocOpt<E, T> clone() {
+    public FIRELocOpt<E, T> copy() {
         return new FIRELocOpt<>(this);
     }
 
@@ -153,7 +153,7 @@ public class FIRELocOpt<E, T extends ContinuousProblem<E>> extends GenericAbstra
 
     @Override
     protected T optimize(T individual) {
-        @SuppressWarnings("unchecked") final T work = (T) individual.clone();
+        @SuppressWarnings("unchecked") final T work = (T) individual.copy();
         final int dims = back.numberOfActiveCoordinates(work);
         final double[] p = back.getActiveCoordinates(work).clone();
 
@@ -299,7 +299,7 @@ public class FIRELocOpt<E, T extends ContinuousProblem<E>> extends GenericAbstra
                         + ". Best measure: " + currentBest.currentQualityMeasure + " of iteration: " +
                         currentBest.iteration);
 
-                @SuppressWarnings("unchecked") final T res = (T) individual.clone();
+                @SuppressWarnings("unchecked") final T res = (T) individual.copy();
                 res.setFitness(currentBest.dEnergy);
                 back.historyGetBestPoint(res);
 
@@ -309,7 +309,7 @@ public class FIRELocOpt<E, T extends ContinuousProblem<E>> extends GenericAbstra
             }
         }
 
-        @SuppressWarnings("unchecked") final T res = (T) individual.clone();
+        @SuppressWarnings("unchecked") final T res = (T) individual.copy();
         res.setFitness(lastE);
         back.updateActiveCoordinates(res, p);
 

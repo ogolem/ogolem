@@ -1,6 +1,7 @@
 /**
-Copyright (c) 2010     , J. M. Dieterich and B. Hartke
+Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,16 +39,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.helpers;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 
 /**
  * A 3D Tupel.
  * @author Johannes Dieterich
- * @version 2014-07-10
+ * @version 2020-04-29
  */
-public class Tuple3D<E,T,V> extends Tuple<E,T> implements Serializable, Cloneable {
+public class Tuple3D<E,T,V> extends Tuple<E,T> implements Serializable {
 
-    private static final long serialVersionUID = (long) 20110314;
+    private static final long serialVersionUID = (long) 20200429;
 
     protected V object3;
 
@@ -56,29 +56,6 @@ public class Tuple3D<E,T,V> extends Tuple<E,T> implements Serializable, Cloneabl
         object3 = ob3;
     }
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public Tuple3D<E,T,V> clone() throws CloneNotSupportedException {
-        
-        try {
-            final Class<?> cE = object1.getClass();
-	    final Method cloneE = cE.getDeclaredMethod("clone");
-	    final Object clE = cloneE.invoke(object1, new Object[]{});
-            
-            final Class<?> cT = object2.getClass();
-	    final Method cloneT = cT.getDeclaredMethod("clone");
-	    final Object clT = cloneT.invoke(object2, new Object[]{});
-            
-            final Class<?> cV = object3.getClass();
-	    final Method cloneV = cV.getDeclaredMethod("clone");
-	    final Object clV = cloneV.invoke(object3, new Object[]{});
-            
-            return new Tuple3D<>((E) clE, (T) clT, (V) clV);
-        } catch (Throwable t){
-            throw new CloneNotSupportedException(t.toString());
-        }
-    }
-
     public V getObject3(){
         return object3;
     }

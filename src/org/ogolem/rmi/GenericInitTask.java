@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,11 +45,11 @@ import org.ogolem.generic.Optimizable;
 /**
  * A generic init task.
  * @author Johannes Dieterich
- * @version 2014-04-02
+ * @version 2020-04-29
  */
 public class GenericInitTask<E, T extends Optimizable<E>> implements Task<T>{
     
-    private static final long serialVersionUID = (long) 20140402;
+    private static final long serialVersionUID = (long) 20200429;
     private final GenericInitializer<E,T> initer;
     private final long newID;
     private final T start;
@@ -76,7 +77,7 @@ public class GenericInitTask<E, T extends Optimizable<E>> implements Task<T>{
     @Override
     public Result<T> getDummyAnswer(final int onClient) {
         
-        final T clone = (T) start.clone();
+        final T clone = (T) start.copy();
         clone.setFitness(FixedValues.NONCONVERGEDENERGY);
         clone.setID(newID);
         

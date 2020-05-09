@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,20 +37,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic;
 
-import java.lang.reflect.Array;
 import org.ogolem.core.GlobalConfig;
 import org.ogolem.generic.stats.GenericDetailStatistics;
 import org.ogolem.helpers.Tuple;
 import org.ogolem.random.Lottery;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A generic, abstract implementation of a classical GA global optimization.
  * @author Johannes Dieterich
- * @version 2015-11-15
+ * @version 2020-04-29
  */
 public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implements GenericDarwin<E,T> {
     
-    private static final long serialVersionUID = (long) 20140330;
+    private static final long serialVersionUID = (long) 20200429;
     protected final GenericCrossover<E,T> xover;
     protected final GenericMutation<E,T> mutation;
     protected final GenericSanityCheck<E,T> sanitizer;
@@ -84,7 +85,7 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
         this.xover = orig.xover.clone();
         this.mutation = orig.mutation.clone();
         this.sanitizer = orig.sanitizer.clone();
-        this.fitness = orig.fitness.clone();
+        this.fitness = orig.fitness.copy();
         this.writer = orig.writer.clone();
         this.crossPoss = orig.crossPoss;
         this.mutPoss = orig.mutPoss;
@@ -96,7 +97,7 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
     }
     
     @Override
-    public abstract GenericAbstractDarwin<E,T> clone();
+    public abstract GenericAbstractDarwin<E,T> copy();
     
     @Override
     public abstract String getMyID();
@@ -106,7 +107,7 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
     public T globalOptimization(final long futureID, final T mother, final T father){
         
         @SuppressWarnings("unchecked")
-        final T[] gs = (T[]) Array.newInstance(mother.getClass(), 2);
+        final List<T> gs = new ArrayList<>(2);
         int off = 0;
         for (int tryc = 0; tryc < noOfTries; tryc++) {
             
@@ -123,8 +124,8 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
                 child1 = childGeoms.getObject1();
                 child2 = childGeoms.getObject2();
             } else {
-                child1 = (T) mother.clone();
-                child2 = (T) father.clone();
+                child1 = (T) mother.copy();
+                child2 = (T) father.copy();
             }
             
             // set numbers
@@ -199,21 +200,21 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
             if(whereStart){
                 // first check one then two
                 if(child1 != null && off < 2){
-                    gs[off] = child1;
+                    gs.add(child1);
                     off++;
                 }
                 if(child2 != null && off < 2){
-                    gs[off] = child2;
+                    gs.add(child2);
                     off++;
                 }
             } else{
                 // first check two then one
                 if(child2 != null && off < 2){
-                    gs[off] = child2;
+                    gs.add(child2);
                     off++;
                 }
                 if(child1 != null && off < 2){
-                    gs[off] = child1;
+                    gs.add(child1);
                     off++;
                 }
             }
@@ -225,16 +226,11 @@ public abstract class GenericAbstractDarwin<E,T extends Optimizable<E>> implemen
             runAfterEachTry();
         }
         
-        
-        if(gs[0] == null && gs[1] != null) return gs[1];
-        else if(gs[0] != null && gs[1] == null) return gs[0];
-        else if(gs[0] == null && gs[1] == null) return null;
-        else if(gs[0] != null && gs[1] != null){
-            final T candidate = (gs[0].getFitness() <= gs[1].getFitness()) ? gs[0] : gs[1];
+        if(gs.isEmpty()) return null;
+        else if(gs.size() == 1) return gs.get(0);
+        else {
+        	final T candidate = (gs.get(0).getFitness() <= gs.get(1).getFitness()) ? gs.get(0) : gs.get(1);
             return candidate;
-        } else {
-            System.err.println("ERROR: Unknown case in the " + getMyID() + " GlobOpt!");
-            return null;
         }
     }
     

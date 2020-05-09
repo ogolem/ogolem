@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,11 +39,11 @@ package org.ogolem.generic;
 /**
  * A non-locopt local optimization, i.e., a single point.
  * @author Johannes Dieterich
- * @version 2015-04-04
+ * @version 2020-04-29
  */
 public class GenericNoLocOpt<E,T extends ContinuousProblem<E>> implements GenericLocOpt<E,T> {
 
-    private static final long serialVersionUID = (long) 20150404;
+    private static final long serialVersionUID = (long) 20200429;
 
     private final GenericFitnessBackend<E,T> backend;
     
@@ -52,11 +52,11 @@ public class GenericNoLocOpt<E,T extends ContinuousProblem<E>> implements Generi
     }
     
     GenericNoLocOpt(final GenericNoLocOpt<E,T> orig){
-        this.backend = orig.backend.clone();
+        this.backend = orig.backend.copy();
     }
     
     @Override
-    public GenericLocOpt<E, T> clone() {
+    public GenericLocOpt<E, T> copy() {
         return new GenericNoLocOpt<>(this);
     }
     

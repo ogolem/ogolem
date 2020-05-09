@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,11 +47,11 @@ import org.ogolem.generic.IndividualWriter;
 /**
  * A generified (or de-generified?) Darwin implementation based off GenericAbstractDarwin.
  * @author Johannes Dieterich
- * @version 2014-05-02
+ * @version 2020-04-29
  */
 public class GenericParameterDarwin extends GenericAbstractDarwin<Double,AdaptiveParameters> {
     
-    private static final long serialVersionUID = (long) 20140502;
+    private static final long serialVersionUID = (long) 20200429;
 
     GenericParameterDarwin(final GenericCrossover<Double,AdaptiveParameters> cross, final GenericMutation<Double,AdaptiveParameters> mut,
             final GenericSanityCheck<Double,AdaptiveParameters> sanity, final GenericFitnessFunction<Double,AdaptiveParameters> fitness,
@@ -65,7 +66,7 @@ public class GenericParameterDarwin extends GenericAbstractDarwin<Double,Adaptiv
     }
     
     @Override
-    public GenericParameterDarwin clone() {
+    public GenericParameterDarwin copy() {
         return new GenericParameterDarwin(this);
     }
 

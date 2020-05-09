@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,11 +45,11 @@ import org.ogolem.generic.genericpool.NicheComputer;
 /**
  * Chains multiple niche computations together.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  */
 class ChainedNicheComp implements NicheComputer<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140107;
+    private static final long serialVersionUID = (long) 20200429;
     private final List<NicheComputer<Molecule,Geometry>> nicheComps;
     
     ChainedNicheComp(final List<NicheComputer<Molecule,Geometry>> nicheComps){
@@ -59,12 +59,12 @@ class ChainedNicheComp implements NicheComputer<Molecule,Geometry> {
     private ChainedNicheComp(final ChainedNicheComp orig){
         this.nicheComps = new ArrayList<>();
         orig.nicheComps.forEach((nicher) -> {
-            nicheComps.add(nicher.clone());
+            nicheComps.add(nicher.copy());
         });
     }
     
     @Override
-    public ChainedNicheComp clone(){
+    public ChainedNicheComp copy(){
         return new ChainedNicheComp(this);
     }
     

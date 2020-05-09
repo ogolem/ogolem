@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
-                2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,11 +50,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * A generic BOBYQA interface.
  * @author Johannes Dieterich
- * @version 2014-03-28
+ * @version 2020-04-29
  */
 public class BOBYQALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstractGradFreeLocOpt<E,T> {
     
-    private static final long serialVersionUID = (long) 20150328;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     private final int maxIter;
     private final double initialTrustRadius;
@@ -85,7 +85,7 @@ public class BOBYQALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
     }
     
     @Override
-    public BOBYQALocOpt<E,T> clone() {
+    public BOBYQALocOpt<E,T> copy() {
         return new BOBYQALocOpt<>(this);
     }
 
@@ -98,7 +98,7 @@ public class BOBYQALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
     protected T optimize(final T individual) {
         
         @SuppressWarnings("unchecked")
-        final T clone = (T) individual.clone();
+        final T clone = (T) individual.copy();
         
         // first build the Adapter
         final double[] optCoords = back.getActiveCoordinates(clone);
@@ -129,7 +129,7 @@ public class BOBYQALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
         adap.denormalizeToBounds(borders, t.getObject2(), g);
         
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         res.setFitness(t.getObject1());
         back.updateActiveCoordinates(res, g);
         

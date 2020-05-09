@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic.threading;
 
+import org.ogolem.generic.Copyable;
 import org.ogolem.generic.Optimizable;
 import org.ogolem.generic.generichistory.GenericHistory;
 import org.ogolem.generic.genericpool.GenericPool;
@@ -45,9 +46,9 @@ import org.ogolem.generic.genericpool.NicheComputer;
 /**
  * An interface describing how we want to create more tasks.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  */
-public interface TaskFactory<E,T extends Optimizable<E>,V extends Cloneable> {
+public interface TaskFactory<E,T extends Optimizable<E>,V extends Copyable> {
     
     Runnable createTask(final GenericPool<E,T> pool, final GenericHistory<E,T> history,
             final V refStuff, final boolean useCache, final ObjectCache<V> cache,

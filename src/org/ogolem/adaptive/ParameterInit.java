@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +44,11 @@ import org.ogolem.generic.GenericInitializer;
 /**
  * An adapter from the generic to ParameterInit. One day remove..
  * @author Johannes Dieterich
- * @version 2014-05-02
+ * @version 2020-04-29
  */
 public class ParameterInit implements GenericInitializer<Double,AdaptiveParameters>{
     
-    private static final long serialVersionUID = (long) 20140502;
+    private static final long serialVersionUID = (long) 20200429;
     private final Random random = new Random();
     private final GenericFitnessFunction<Double,AdaptiveParameters> fitness;
     private final double[] lower;
@@ -63,11 +64,11 @@ public class ParameterInit implements GenericInitializer<Double,AdaptiveParamete
     ParameterInit(final ParameterInit orig){
         this.upper = orig.upper.clone();
         this.lower = orig.lower.clone();
-        this.fitness = orig.fitness.clone();
+        this.fitness = orig.fitness.copy();
     }
 
     @Override
-    public GenericInitializer<Double, AdaptiveParameters> clone() {
+    public GenericInitializer<Double, AdaptiveParameters> copy() {
         return new ParameterInit(this);
     }
 

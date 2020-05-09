@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2012, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic.genericpool;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 import org.ogolem.generic.Optimizable;
 
 /**
  * Computes a niche.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  */
-public interface NicheComputer<E,T extends Optimizable<E>> extends Serializable, Cloneable {
+public interface NicheComputer<E,T extends Optimizable<E>> extends Serializable, Copyable {
     
-    NicheComputer<E,T> clone();
+	@Override
+    NicheComputer<E,T> copy();
     
     Niche computeNiche(final T individual);
 }

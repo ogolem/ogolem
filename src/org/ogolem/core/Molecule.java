@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This describes a full molecules consisting of atoms and further information.
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2020-04-29
  */
 public class Molecule extends ContinuousProblem<Double> {
 
@@ -249,7 +249,7 @@ public class Molecule extends ContinuousProblem<Double> {
     }
     
     @Override
-    public Molecule clone(){
+    public Molecule copy(){
         return new Molecule(this);
     }
 

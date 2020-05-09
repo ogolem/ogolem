@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich and B. Hartke
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +44,11 @@ import org.ogolem.helpers.Tuple;
  * A generic genotype crossover using real numbers (you can't get much easier
  * than that).
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2020-04-29
  */
 public class GenericGermanyCrossover <E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
     
-    private static final long serialVersionUID = (long) 20131122;
+    private static final long serialVersionUID = (long) 20200429;
     private final double gaussWidth;
     
     public GenericGermanyCrossover(final double gaussWidth){
@@ -68,9 +69,9 @@ public class GenericGermanyCrossover <E,T extends Optimizable<E>> implements Gen
     public Tuple<T,T> crossover(final T mother, final T father, final long futureID){
         
         @SuppressWarnings("unchecked")
-        final T child1 = (T) mother.clone();
+        final T child1 = (T) mother.copy();
         @SuppressWarnings("unchecked")
-        final T child2 = (T) father.clone();
+        final T child2 = (T) father.copy();
         final E[] genomeChild1 = child1.getGenomeCopy();
         final E[] genomeChild2 = child2.getGenomeCopy();
         

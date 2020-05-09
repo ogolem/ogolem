@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,11 +43,11 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
  * An abstract implementation for a local optimization for continuous problems
  * for gradient-free local optimizations.
  * @author Johannes Dieterich
- * @version 2014-12-15
+ * @version 2020-04-29
  */
 public abstract class GenericAbstractGradFreeLocOpt<E,T extends ContinuousProblem<E>> implements GenericLocOpt<E,T>{
     
-    private static final long serialVersionUID = (long) 20131124;
+    private static final long serialVersionUID = (long) 20200429;
     protected final GenericFitnessBackend<E,T> back;
     
     public GenericAbstractGradFreeLocOpt(final GenericFitnessBackend<E,T> back){
@@ -54,11 +55,11 @@ public abstract class GenericAbstractGradFreeLocOpt<E,T extends ContinuousProble
     }
     
     protected GenericAbstractGradFreeLocOpt(final GenericAbstractGradFreeLocOpt<E,T> orig){
-        this.back = orig.back.clone();
+        this.back = orig.back.copy();
     }
     
     @Override
-    public abstract GenericAbstractGradFreeLocOpt<E,T> clone();
+    public abstract GenericAbstractGradFreeLocOpt<E,T> copy();
     
     @Override
     public T fitness(final T individual, final boolean forceOneEval){     

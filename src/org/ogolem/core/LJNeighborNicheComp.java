@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015-2019, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,11 +52,11 @@ import org.ogolem.helpers.IndexSort;
  * icosahedral, decahedral, tetrahedral, and fcc,
  * based on the neighborhoods of selected or all atoms
  * @author Bernd Hartke
- * @version 2019-12-29
+ * @version 2020-04-29
  */
 class LJNeighborNicheComp implements NicheComputer<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140107;
+    private static final long serialVersionUID = (long) 20200429;
     public static final int defWidth = 20;
     public static final String defMode = "StandardTypes";
     
@@ -76,7 +76,7 @@ class LJNeighborNicheComp implements NicheComputer<Molecule,Geometry> {
     }
     
     @Override
-    public LJNeighborNicheComp clone(){
+    public LJNeighborNicheComp copy(){
         return new LJNeighborNicheComp(this);
     }
     

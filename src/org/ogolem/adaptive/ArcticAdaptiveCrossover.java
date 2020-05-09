@@ -50,7 +50,7 @@ import org.ogolem.random.RandomUtils;
  * alleles.
  *
  * @author Mark Dittner
- * @version 2020-04-25
+ * @version 2020-04-29
  */
 class ArcticAdaptiveCrossover implements GenericCrossover<Double, AdaptiveParameters> {
 
@@ -82,8 +82,8 @@ class ArcticAdaptiveCrossover implements GenericCrossover<Double, AdaptiveParame
     public Tuple<AdaptiveParameters, AdaptiveParameters> crossover(AdaptiveParameters mother,
             AdaptiveParameters father, long futureID) {
 
-        final AdaptiveParameters child1 = mother.clone();
-        final AdaptiveParameters child2 = father.clone();
+        final AdaptiveParameters child1 = mother.copy();
+        final AdaptiveParameters child2 = father.copy();
         final Double[] genomeChild1 = child1.getGenomeCopy();
         final Double[] genomeChild2 = child2.getGenomeCopy();
 

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.ogolem.generic.Configuration;
+import org.ogolem.generic.Copyable;
 import org.ogolem.generic.GenericGlobalOptimization;
 import org.ogolem.generic.GenericInitializer;
 import org.ogolem.generic.Optimizable;
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The actual backend for the threading RMI client.
  * @author Johannes Dieterich
- * @version 2016-04-14
+ * @version 2020-04-29
  */
 class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
     
@@ -361,7 +362,7 @@ class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
         return false;
     }
     
-    private <V extends Cloneable> void doXXX(final int threads, final TaskFactory<E,T,V> tasker, final ObjectCache<V> cache,
+    private <V extends Copyable> void doXXX(final int threads, final TaskFactory<E,T,V> tasker, final ObjectCache<V> cache,
             final List<Task<T>> initTasks){
 
         // start thread pool
@@ -398,7 +399,7 @@ class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
         }
     }
     
-    private <V extends Cloneable> void doXXX(final int threads, final TaskFactory<E,T,V> tasker, final ObjectCache<V> cache,
+    private <V extends Copyable> void doXXX(final int threads, final TaskFactory<E,T,V> tasker, final ObjectCache<V> cache,
             final int offset, final int chunkSize){
 
         assert(chunkSize > 0);
@@ -463,12 +464,12 @@ class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
                     }
                 } else if(!useCache && !DEBUG){
                     l.debug("Trying to use new object as helper for global opt...");
-                    final GenericGlobalOptimization<U,W> helpers = cache.getOriginalEntry().clone();
+                    final GenericGlobalOptimization<U,W> helpers = cache.getOriginalEntry().copy();
                     runme(helpers,pool,history,taskID, isInit);
                 } else{
                     try{
                         l.debug("Trying to use new object as helper for global opt (try/catch)...");
-                        final GenericGlobalOptimization<U,W> helpers = cache.getOriginalEntry().clone();
+                        final GenericGlobalOptimization<U,W> helpers = cache.getOriginalEntry().copy();
                         runme(helpers,pool,history,taskID, isInit);
                     } catch(Throwable t){
                         t.printStackTrace(System.err);

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,11 @@ import org.ogolem.generic.GenericBackend;
  * A ranged fitness function. E.g., it can be used to optimize only a subset
  * of parameters.
  * @author Johannes Dieterich
- * @version 2015-04-04
+ * @version 2020-04-29
  */
 class RangedFitFuncToBackend  implements GenericBackend<Double,AdaptiveParameters> {
 
-    private static final long serialVersionUID = (long) 20150404;
+    private static final long serialVersionUID = (long) 2020429;
     
     private final GenericFitnessFunction fitfunc;
     private final boolean normParams;
@@ -90,7 +90,7 @@ class RangedFitFuncToBackend  implements GenericBackend<Double,AdaptiveParameter
     }
     
     @Override
-    public GenericBackend<Double, AdaptiveParameters> clone() {
+    public GenericBackend<Double, AdaptiveParameters> copy() {
         return new RangedFitFuncToBackend(this);
     }
     
@@ -161,7 +161,7 @@ class RangedFitFuncToBackend  implements GenericBackend<Double,AdaptiveParameter
         
         final double fit = fitfunc.evaluateFitness(individual);
         
-        final AdaptiveParameters copy = individual.clone();
+        final AdaptiveParameters copy = individual.copy();
         copy.setFitness(fit);
         
         return copy;

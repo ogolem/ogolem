@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +45,7 @@ import org.ogolem.generic.Optimizable;
 /**
  * A generic seeding task.
  * @author Johannes Dieterich
- * @version 2014-04-02
+ * @version 2020-04-29
  */
 public class GenericSeedTask <E, T extends Optimizable<E>> implements Task<T>{
     
@@ -85,7 +86,7 @@ public class GenericSeedTask <E, T extends Optimizable<E>> implements Task<T>{
     @Override
     public Result<T> getDummyAnswer(final int onClient) {
         
-        final T clone = (T) start.clone();
+        final T clone = (T) start.copy();
         clone.setFitness(FixedValues.NONCONVERGEDENERGY);
         clone.setID(newID);
         

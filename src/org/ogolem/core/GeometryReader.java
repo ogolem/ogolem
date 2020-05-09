@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,15 +44,15 @@ import org.ogolem.io.InputPrimitives;
 /**
  * Individual reader implementation for geometries.
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2020-04-29
  */
 public class GeometryReader implements IndividualReader<Geometry>{
 
-    private static final long serialVersionUID = (long) 20140403;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     
     @Override
-    public GeometryReader clone() {
+    public GeometryReader copy() {
         return new GeometryReader();
     }
 

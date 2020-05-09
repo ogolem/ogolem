@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,11 +49,11 @@ import org.ogolem.locopt.numalhelpers.NumalGradientWrapper;
 /**
  * An interface to NUMAL's RNK1Min algorithm.
  * @author Johannes Dieterich
- * @version 2014-12-16
+ * @version 2020-04-29
  */
 public class RNK1MinLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E,T> {
 
-    private static final long serialVersionUID = (long) 20141215;
+    private static final long serialVersionUID = (long) 20200429;
     private final double machPrec;
     private final int maxIter;
     private final double convThresh;
@@ -79,7 +80,7 @@ public class RNK1MinLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbst
     }
     
     @Override
-    public RNK1MinLocOpt<E, T> clone() {
+    public RNK1MinLocOpt<E, T> copy() {
         return new RNK1MinLocOpt<>(this);
     }
     
@@ -92,7 +93,7 @@ public class RNK1MinLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbst
     protected T optimize(final T individual) {
         
         @SuppressWarnings("unchecked")
-        final T work = (T) individual.clone();
+        final T work = (T) individual.copy();
         final int dims = back.numberOfActiveCoordinates(work);
         final double[] start = back.getActiveCoordinates(work).clone();
         
@@ -136,7 +137,7 @@ public class RNK1MinLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbst
         System.arraycopy(numalParams, 1, start, 0, dims);
         
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         res.setFitness(fitness);
         back.updateActiveCoordinates(res, start);
         

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,11 +45,11 @@ import org.ogolem.generic.genericpool.NicheComputer;
  * clusters. Routine similar to the one implemented in Phenix and described in
  * B. Hartke, Z. Phys. Chem., 214, 1251 (2000).
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  */
 public class WaterAngleNicheComp implements NicheComputer<Molecule,Geometry> {
 
-    private static final long serialVersionUID = (long) 20140107;
+    private static final long serialVersionUID = (long) 20200429;
     private final static double ANGLOW = Math.toRadians(80.0);
     private final static double ANGHIGH = Math.toRadians(100.0);
     private final static double PLOW = 50.0;
@@ -68,7 +68,7 @@ public class WaterAngleNicheComp implements NicheComputer<Molecule,Geometry> {
     }
     
     @Override
-    public WaterAngleNicheComp clone(){
+    public WaterAngleNicheComp copy(){
         return new WaterAngleNicheComp(this);
     }
     

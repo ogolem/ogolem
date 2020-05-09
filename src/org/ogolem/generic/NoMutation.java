@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,11 +40,11 @@ package org.ogolem.generic;
 /**
  * A not-mutation. Essentially just a copy machine.
  * @author Johannes Dieterich
- * @version 2014-03-29
+ * @version 2020-04-29
  */
 public class NoMutation<E, T extends Optimizable<E>> implements GenericMutation<E,T>{
 
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200429;
     
     @Override
     public GenericMutation<E, T> clone() {
@@ -59,7 +60,7 @@ public class NoMutation<E, T extends Optimizable<E>> implements GenericMutation<
     @Override
     public T mutate(final T orig) {
         
-        final T copy = (T) orig.clone();
+        final T copy = (T) orig.copy();
         return copy;
     }
     

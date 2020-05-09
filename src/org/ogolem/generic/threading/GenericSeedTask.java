@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ import org.ogolem.generic.generichistory.GenericHistory;
 import org.ogolem.generic.genericpool.GenericPool;
 import org.ogolem.generic.genericpool.Niche;
 import org.ogolem.generic.genericpool.NicheComputer;
+import org.ogolem.helpers.CopyableTuple;
 import org.ogolem.helpers.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +58,9 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic implementation of an initialization task.
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  */
-public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<E,T,Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>>>{
+public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<E,T,CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>>>{
     
     private static final Logger l = LoggerFactory.getLogger(GenericSeedTask.class);
     private final boolean DEBUG = (GlobalConfig.DEBUGLEVEL > 0);
@@ -85,8 +86,8 @@ public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<
     @SuppressWarnings("unchecked")
     @Override
     public Runnable createTask(final GenericPool<E,T> pool, final GenericHistory<E,T> history,
-            final Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>> refStuff, final boolean useCache,
-            final ObjectCache<Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> cache, 
+            final CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>> refStuff, final boolean useCache,
+            final ObjectCache<CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> cache, 
             final boolean doNiching, final NicheComputer<E,T> nicheComp,
             final ObjectCache<NicheComputer<E,T>> nicheCompCache, final long taskID) {
     
@@ -99,7 +100,7 @@ public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<
                 
                 if(useCache && !DEBUG){
                     l.debug("Trying to use cached object as helper for initializing...");
-                    final Tuple<Boolean,Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> stuff = cache.getUnusedEntry();
+                    final Tuple<Boolean,CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> stuff = cache.getUnusedEntry();
                     final Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>> cached = stuff.getObject2();
                     runme(cached,pool,taskID);
                     l.debug("Returning helper for initializing to cache...");
@@ -108,7 +109,7 @@ public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<
                     l.debug("Trying to use new object as helper for initializing...");
                     Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>> helpers = null;
                     try{
-                        helpers = cache.getOriginalEntry().clone();
+                        helpers = cache.getOriginalEntry().copy();
                     } catch(Exception e){
                         System.err.println("Exception in cloneing reader and fitness function.");
                         e.printStackTrace(System.err);
@@ -119,7 +120,7 @@ public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<
                 } else{
                     try{
                         l.debug("Trying to use new object as helper for initializing (try/catch)...");
-                        final Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>> helpers = cache.getOriginalEntry().clone();
+                        final Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>> helpers = cache.getOriginalEntry().copy();
                         runme(helpers,pool,taskID);
                     } catch(Throwable t){
                         t.printStackTrace(System.err);
@@ -143,7 +144,7 @@ public class GenericSeedTask<E,T extends Optimizable<E>> implements TaskFactory<
                 l.info("Seed " + thisSeed + " used for individual " + taskID);
                 
                 // read
-                final T work = (T) pool.getExample().clone();
+                final T work = (T) pool.getExample().copy();
                 try{
                     helper.getObject1().populateIndividualFromFile(work, thisSeed);
                 } catch(Exception e){

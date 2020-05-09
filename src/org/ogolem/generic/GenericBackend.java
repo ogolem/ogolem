@@ -1,5 +1,6 @@
 /**
-Copyright (c) 2013-2020, J. M. Dieterich
+Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,12 +42,12 @@ package org.ogolem.generic;
  * continuous problem.
  * @author Johannes Dieterich
  * @author Dominik Behrens
- * @version 2020-04-22
+ * @version 2020-04-29
  */
 public interface GenericBackend<E,T extends ContinuousProblem<E>> extends GenericFitnessBackend<E,T>{
     
     @Override
-    public GenericBackend<E,T> clone();
+    public GenericBackend<E,T> copy();
         
     /**
      * Calculates the fitness and gradient of this individual. getActiveCoordinates(T) must be called prior the first call to this routine!

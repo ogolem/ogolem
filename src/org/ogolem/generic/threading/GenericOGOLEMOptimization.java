@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@ import org.ogolem.generic.IndividualWriter;
 import org.ogolem.generic.genericpool.NicheComputer;
 import org.ogolem.generic.stats.GenericDetailStatistics;
 import org.ogolem.helpers.Fortune;
+import org.ogolem.helpers.CopyableTuple;
 import org.ogolem.helpers.Tuple;
 import org.ogolem.io.OutputPrimitives;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A fully generic, shared-memory global optimization manager.
  * @author Johannes Dieterich
- * @version 2016-10-26
+ * @version 2020-04-29
  */
 public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
     
@@ -134,7 +135,7 @@ public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
         final GenericGlobalOptimization<E,T> globopt;
         ObjectCache<GenericInitializer<E,T>> initCache = null;
         ObjectCache<GenericGlobalOptimization<E,T>> globCache = null;
-        ObjectCache<Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> fitFuncCache = null;
+        ObjectCache<CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> fitFuncCache = null;
         TaskFactory<E,T,GenericInitializer<E,T>> initTasks = null;
         TaskFactory<E,T,GenericGlobalOptimization<E,T>> globTasks = null;
         int noGlobSteps = -1;
@@ -149,7 +150,7 @@ public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
             fitness = config.getFitnessFunction();
             initCache = new ObjectCache<>(noThreads,initializer);
             globCache = new ObjectCache<>(noThreads,globopt);
-            final Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>> tup = new Tuple<>(reader,fitness);
+            final CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>> tup = new CopyableTuple<>(reader,fitness);
             fitFuncCache = new ObjectCache<>(noThreads,tup);
             enableDetailedStats = config.wantsDetailedStats();
         } catch(final Exception e){
@@ -177,7 +178,7 @@ public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
         int noSeeded = 0;
         if(seedFolder != null && !seedFolder.isEmpty()){
             // apparently we do want to use them
-            TaskFactory<E,T,Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> seedTasks = null;
+            TaskFactory<E,T,CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> seedTasks = null;
             try{
                 seedTasks = new GenericSeedTask<>(seedFolder);
             } catch(Exception e){
@@ -186,7 +187,7 @@ public class GenericOGOLEMOptimization<E,T extends Optimizable<E>> {
                 System.exit(-20);
             }
             assert(seedTasks != null);
-            final GenericThreadDispatcher<E,T,Tuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> initSMPPool
+            final GenericThreadDispatcher<E,T,CopyableTuple<IndividualReader<T>,GenericFitnessFunction<E,T>>> initSMPPool
                     = new GenericThreadDispatcher<>(noThreads, pool,history,fitFuncCache,0,Math.min(GenericSeedTask.getNoOfSeeds(),
                             poolConfig.getPoolSize()),seedTasks,subsToWait,doNiching,nicheComp);
             initSMPPool.doAllTasks();

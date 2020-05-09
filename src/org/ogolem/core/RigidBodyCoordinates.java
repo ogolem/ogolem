@@ -44,7 +44,7 @@ import org.ogolem.generic.GenericBackend;
 /**
  * A coordinate set for rigid body optimizations.
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-04-29
  */
 public class RigidBodyCoordinates implements CoordinateRepresentation {
     
@@ -52,7 +52,7 @@ public class RigidBodyCoordinates implements CoordinateRepresentation {
     
     public static final double MAXMOVECOMCOORD = 10.0; // in bohr
     
-    private static final long serialVersionUID = (long) 20200209;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
 
     private final RigidBodyBackend backend;
@@ -81,7 +81,7 @@ public class RigidBodyCoordinates implements CoordinateRepresentation {
     }
     
     @Override
-    public GenericBackend<Molecule, Geometry> clone() {
+    public GenericBackend<Molecule, Geometry> copy() {
         return new RigidBodyCoordinates(this);
     }
     
@@ -109,7 +109,7 @@ public class RigidBodyCoordinates implements CoordinateRepresentation {
     public double[] getActiveCoordinates(final Geometry individual) {
         
         final int mols = individual.getNumberOfIndieParticles();
-        this.cache = individual;//.clone();
+        this.cache = individual;//.copy();
         this.coms = new double[mols][3];
         this.comDisplacementCache = new double[mols][];
         this.cartesBackup = new ArrayList<>(individual.getNumberOfIndieParticles());
@@ -240,7 +240,7 @@ public class RigidBodyCoordinates implements CoordinateRepresentation {
     public double fitness(final double[] currCoords, final int iteration) {
         
         if(DEBUG){
-            final Geometry scr = cache.clone();
+            final Geometry scr = cache.copy();
             updateActiveCoordinates(scr,currCoords);
             final String[] cart = scr.makePrintableAbsoluteCoord(true);
             System.out.println("DEBUG: AT ENERGY EVALUTION " + iteration);
@@ -256,7 +256,7 @@ public class RigidBodyCoordinates implements CoordinateRepresentation {
     @Override
     public Geometry fitness(final Geometry individual, final boolean forceOneEval) {
         
-        final double[] optCoord = getActiveCoordinates(individual.clone());
+        final double[] optCoord = getActiveCoordinates(individual.copy());
         final double e = fitness(optCoord, 0);
         
         individual.setFitness(e);
@@ -273,7 +273,7 @@ public class RigidBodyCoordinates implements CoordinateRepresentation {
         }
         
         if(DEBUG){
-            final Geometry scr = cache.clone();
+            final Geometry scr = cache.copy();
             updateActiveCoordinates(scr,currCoords);
             final String[] cart = scr.makePrintableAbsoluteCoord(true);
             System.out.println("DEBUG: AT GRADIENT EVALUTION " + iteration);
