@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,11 @@ import org.ogolem.core.FixedValues;
 /**
  * An abstract simple implementation of optimizable.
  * @author Johannes Dieterich
- * @version 2014-05-02
+ * @version 2020-04-29
  */
 public abstract class AbstractProblem<E> implements Optimizable<E> {
     
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200429;
     protected long myID = -1;
     protected long fatherID = -1;
     protected long motherID = -1;
@@ -62,7 +63,7 @@ public abstract class AbstractProblem<E> implements Optimizable<E> {
     }
     
     @Override
-    public abstract AbstractProblem<E> clone();
+    public abstract AbstractProblem<E> copy();
 
     @Override
     public long getID(){

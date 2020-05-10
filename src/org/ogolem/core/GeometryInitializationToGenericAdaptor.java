@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ import org.ogolem.generic.GenericInitializer;
 /**
  * An adaptor from the old interface to the generic one. Hopefully temporary...
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-04-29
  */
 public class GeometryInitializationToGenericAdaptor implements GenericInitializer<Molecule, Geometry> {
     
-    private static final long serialVersionUID = (long) 20140330;
+    private static final long serialVersionUID = (long) 20200429;
     private final GenericFitnessFunction<Molecule,Geometry> fitness;
     private final GeometryInitialization init;
     private final CollisionDetection.CDTYPE whichCollDetect;
@@ -81,11 +81,11 @@ public class GeometryInitializationToGenericAdaptor implements GenericInitialize
         this.molecularCD = orig.molecularCD;
         this.whichCollDetect = orig.whichCollDetect;
         this.whichDissDetect = orig.whichDissDetect;
-        this.fitness = orig.fitness.clone();
+        this.fitness = orig.fitness.copy();
     }
     
     @Override
-    public GenericInitializer<Molecule, Geometry> clone() {
+    public GenericInitializer<Molecule, Geometry> copy() {
         return new GeometryInitializationToGenericAdaptor(this);
     }
 

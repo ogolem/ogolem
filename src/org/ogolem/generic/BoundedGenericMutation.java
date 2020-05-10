@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich and B. Hartke
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,14 +44,14 @@ import org.ogolem.random.RandomUtils;
 /**
  * A bounded generic mutation.
  * @author Johannes Dieterich
- * @version 2013-12-04
+ * @version 2020-04-29
  */
 public class BoundedGenericMutation<T extends Optimizable<Double>> implements GenericMutation<Double,T>{
     
     public static final int SINGLEMUT = 0;
     public static final int MULTIMUT = 1;
     
-    private static final long serialVersionUID = (long) 20131201;
+    private static final long serialVersionUID = (long) 20200429;
     private final Lottery r;
     private final int mode;
     private final double[] upper;
@@ -84,7 +85,7 @@ public class BoundedGenericMutation<T extends Optimizable<Double>> implements Ge
     public T mutate(final T orig) {
         
         @SuppressWarnings("unchecked")
-        final T mut = (T) orig.clone();
+        final T mut = (T) orig.copy();
         
         final Double[] params = mut.getGenomeCopy();
         final int dims = params.length;

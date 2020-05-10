@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The actual working core of the dimerizer.
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-04-29
  */
 class DimerizerCore {
     
@@ -62,7 +62,7 @@ class DimerizerCore {
         final CollisionDetectionEngine cd = new CollisionDetection(CollisionDetection.CDTYPE.SIMPLEPAIRWISE);
         
         // setup XYZ constraints on the first atom of each of the molecules.
-        final Geometry work = geom.clone();
+        final Geometry work = geom.copy();
         final boolean[][] constr1 = work.getMoleculeAtPosition(0).getConstraints();
         constr1[0][0] = true;
         constr1[1][0] = true;
@@ -99,7 +99,7 @@ class DimerizerCore {
             final CollisionDetectionEngine cd, final double blowFac, final long counter){
             
         // create one just for us
-        final Geometry ggg = geom.clone();
+        final Geometry ggg = geom.copy();
         
         // rotate, translate
         final double[] com2 = ggg.getCOM(1);

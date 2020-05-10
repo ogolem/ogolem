@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic implementation of a global optimization task.
  * @author Johannes Dieterich
- * @version 2020-04-24
+ * @version 2020-04-29
  */
 public class GenericGlobOptTask <E,T extends Optimizable<E>,V extends GenericGlobalOptimization<E,T>> implements TaskFactory<E,T,V>{
     
@@ -87,12 +87,12 @@ public class GenericGlobOptTask <E,T extends Optimizable<E>,V extends GenericGlo
                     }
                 } else if(!useCache && !DEBUG){
                     l.debug("Trying to use new object as helper for global opt...");
-                    final V helpers = (V) cache.getOriginalEntry().clone();
+                    final V helpers = (V) cache.getOriginalEntry().copy();
                     runme(helpers,pool,history,taskID);
                 } else{
                     try{
                         l.debug("Trying to use new object as helper for global opt (try/catch)...");
-                        final V helpers = (V) cache.getOriginalEntry().clone();
+                        final V helpers = (V) cache.getOriginalEntry().copy();
                         runme(helpers,pool,history,taskID);
                     } catch(Throwable t){
                         t.printStackTrace(System.err);

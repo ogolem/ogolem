@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * A no crossover, essentially a double copy machine.
  * @author Johannes Dieterich
- * @version 2014-03-29
+ * @version 2020-04-29
  */
 public class NoCrossover<E, T extends Optimizable<E>> implements GenericCrossover<E,T> {
 
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200429;
     
     @Override
     public GenericCrossover<E, T> clone() {
@@ -61,9 +62,9 @@ public class NoCrossover<E, T extends Optimizable<E>> implements GenericCrossove
     @SuppressWarnings("unchecked")
     public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
         
-        final T child1 = (T) mother.clone();
+        final T child1 = (T) mother.copy();
         child1.setID(futureID);
-        final T child2 = (T) father.clone();
+        final T child2 = (T) father.copy();
         child2.setID(futureID);
         return new Tuple<>(child1,child2);
     }

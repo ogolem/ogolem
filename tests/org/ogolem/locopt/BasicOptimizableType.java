@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,11 @@ import org.ogolem.generic.ContinuousProblem;
 /**
  * A basic optimizable type. Basically a wrapper for a double[].
  * @author Johannes Dieterich
- * @version 2014-12-15
+ * @version 2020-04-29
  */
 public class BasicOptimizableType extends ContinuousProblem<Double>{
     
-    private static final long serialVersionUID = (long) 20141215;
+    private static final long serialVersionUID = (long) 20200429;
     private double[] genome;
 
     BasicOptimizableType(final double[] genome){
@@ -53,7 +54,7 @@ public class BasicOptimizableType extends ContinuousProblem<Double>{
     }
     
     @Override
-    public ContinuousProblem<Double> clone() {
+    public ContinuousProblem<Double> copy() {
         return new BasicOptimizableType(genome.clone());
     }
 

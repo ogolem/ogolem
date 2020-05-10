@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +44,11 @@ import org.ogolem.random.Lottery;
 /**
  * Multiple GLOBAL OPTIMIZATIONS wrapped nicely.
  * @author Johannes Dieterich
- * @version 2014-05-18
+ * @version 2020-04-29
  */
 public class GenericMultipleGlobOpt<E,T extends Optimizable<E>> implements GenericGlobalOptimization<E,T> {
 
-    private static final long serialVersionUID = (long) 20140518;
+    private static final long serialVersionUID = (long) 20200429;
     private final Lottery random = Lottery.getInstance();
     private final List<GenericGlobalOptimization<E,T>> globopts;
     private final double[] probabilities;
@@ -75,12 +76,12 @@ public class GenericMultipleGlobOpt<E,T extends Optimizable<E>> implements Gener
         this.probabilities = orig.probabilities.clone();
         this.globopts = new ArrayList<>(orig.globopts.size());
         orig.globopts.forEach((opt) -> {
-            this.globopts.add(opt.clone());
+            this.globopts.add(opt.copy());
         });
     }
     
     @Override
-    public GenericGlobalOptimization<E, T> clone() {
+    public GenericGlobalOptimization<E, T> copy() {
         return new GenericMultipleGlobOpt<>(this);
     }
 

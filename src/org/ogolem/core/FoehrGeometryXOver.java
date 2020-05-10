@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2015, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,11 @@ import org.ogolem.random.RandomUtils;
 /**
  * A genotype crossover only taking the molecular orientations into account.
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-04-29
  */
 public class FoehrGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20150217;
+    private static final long serialVersionUID = (long) 20200429;
     
     private final int noCuts;
     
@@ -88,8 +88,8 @@ public class FoehrGeometryXOver implements GenericCrossover<Molecule,Geometry>{
         // get cutting points
         final List<Integer> cutPoints = RandomUtils.listOfPoints(noCuts, mother.getNumberOfIndieParticles());
         
-        final Geometry gChild1 = mother.clone();
-        final Geometry gChild2 = father.clone();
+        final Geometry gChild1 = mother.copy();
+        final Geometry gChild2 = father.copy();
         gChild1.setID(futureID);
         gChild2.setID(futureID);
                 

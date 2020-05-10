@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,11 +49,11 @@ import org.ogolem.locopt.numalhelpers.NumalGradientWrapper;
 /**
  * An adapter to Flemin from the NUMAL package.
  * @author Johannes Dieterich
- * @version 2014-12-15
+ * @version 2020-04-29
  */
 public class FleminLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E,T> {
     
-    private static final long serialVersionUID = (long) 20141215;
+    private static final long serialVersionUID = (long) 20200429;
     private final double machPrec;
     private final int maxIter;
     private final double convThresh;
@@ -83,7 +84,7 @@ public class FleminLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
     }
     
     @Override
-    public FleminLocOpt<E,T> clone() {
+    public FleminLocOpt<E,T> copy() {
         return new FleminLocOpt<>(this);
     }
 
@@ -96,7 +97,7 @@ public class FleminLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
     protected T optimize(final T individual) {
         
         @SuppressWarnings("unchecked")
-        final T work = (T) individual.clone();
+        final T work = (T) individual.copy();
         final int dims = back.numberOfActiveCoordinates(work);
         final double[] start = back.getActiveCoordinates(work).clone();
         
@@ -140,7 +141,7 @@ public class FleminLocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
         System.arraycopy(numalParams, 1, start, 0, dims);
         
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         res.setFitness(fitness);
         back.updateActiveCoordinates(res, start);
         

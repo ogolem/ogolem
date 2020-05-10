@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-                2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,11 @@ package org.ogolem.generic;
 /**
  * A basic wrapper for interface translation
  * @author Johannes Dieterich
- * @version 2015-03-28
+ * @version 2020-04-29
  */
 public class GenericFitnessFunctionBackendWrapper<T extends Optimizable<Double>> implements GenericFitnessBackend<Double,T> {
 
-    private static final long serialVersionUID = (long) 20141217;
+    private static final long serialVersionUID = (long) 20200429;
     private final GenericFitnessFunction<Double,T> func;
     private final double[] lower;
     private final double[] upper;
@@ -63,13 +63,13 @@ public class GenericFitnessFunctionBackendWrapper<T extends Optimizable<Double>>
     }
     
     public GenericFitnessFunctionBackendWrapper(final GenericFitnessFunctionBackendWrapper<T> orig){
-        this.func = orig.func.clone();
+        this.func = orig.func.copy();
         this.lower = (orig.lower == null) ? null : orig.lower.clone();
         this.upper = (orig.upper == null) ? null : orig.upper.clone();
     }
     
     @Override
-    public GenericFitnessFunctionBackendWrapper<T> clone() {
+    public GenericFitnessFunctionBackendWrapper<T> copy() {
         return new GenericFitnessFunctionBackendWrapper<>(this);
     }
 

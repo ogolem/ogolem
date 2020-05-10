@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2013, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2010     , J. M. Dieterich and B. Hartke
+              2010-2014, J. M. Dieterich
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,49 +34,22 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-package org.ogolem.generic;
-
-/**
- * A simple generic darwin implementation.
- * @author Johannes Dieterich
- * @version 2020-04-29
  */
-public class SimpleGenericDarwin<E,T extends Optimizable<E>> extends GenericAbstractDarwin<E,T>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    
-    public SimpleGenericDarwin(final GenericCrossover<E,T> cross, final GenericMutation<E,T> mut,
-            final GenericSanityCheck<E,T> sanity, final GenericFitnessFunction<E,T> fitness,
-            final IndividualWriter<T> writer, final double crossPoss, final double mutPoss,
-            final boolean printBeforeFitness, final int noOfTries){
-        super(cross, mut, sanity, fitness, writer, crossPoss, mutPoss,
-            printBeforeFitness, noOfTries);
-    }
-    
-    public SimpleGenericDarwin(final SimpleGenericDarwin<E,T> orig){
-        super(orig);
-    }
-    
-    @Override
-    public SimpleGenericDarwin<E,T> copy(){
-        return new SimpleGenericDarwin<>(this);
-    }
-    
-    @Override
-    public String getMyID(){
-        return "simple darwin using: "
-                + "\n\txover    " + xover.getMyID()
-                + "\n\tmutation " + mutation.getMyID()
-                + "\n\tfitness  " + fitness.getMyID();
-    }
-    
-    @Override
-    public void postXOver(final T individual1, final T individual2, final long futureID){}
-    
-    @Override
-    public void postMutation(final T individual){}
-    
-    @Override
-    public void runAfterEachTry(){}
+package org.ogolem.helpers;
+
+import org.ogolem.generic.Copyable;
+
+public class CopyableTuple<T extends Copyable, V extends Copyable> extends Tuple<T,V> implements Copyable {
+
+	private static final long serialVersionUID = (long) 20200429;
+	
+	public CopyableTuple(T obj1, V obj2){
+		super(obj1, obj2);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public CopyableTuple<T,V> copy(){
+		return new CopyableTuple<T,V>((T) object1.copy(), (V) object2.copy());
+	}
 }

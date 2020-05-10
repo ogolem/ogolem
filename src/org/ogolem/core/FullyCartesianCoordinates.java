@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-                2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
 /**
  * A simple adapter for the geometry to gradient/energy provider.
  * @author Johannes Dieterich
- * @version 2015-11-17
+ * @version 2020-04-29
  */
 public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20150104;
+    private static final long serialVersionUID = (long) 20200429;
     
     public static final double MAXINCREMENTBOUNDS = 10.0; // in bohr
     
@@ -72,7 +72,7 @@ public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geomet
     }
     
     @Override
-    public FullyCartesianCoordinates clone(){
+    public FullyCartesianCoordinates copy(){
         return new FullyCartesianCoordinates(this);
     }
     

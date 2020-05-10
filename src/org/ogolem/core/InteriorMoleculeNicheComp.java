@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ import org.ogolem.generic.genericpool.NicheComputer;
 /**
  * Nicher working based on the number of interior molecules
  * @author Johannes Dieterich
- * @version 2015-05-26
+ * @version 2020-04-29
  */
 class InteriorMoleculeNicheComp implements NicheComputer<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140107;
+    private static final long serialVersionUID = (long) 20200429;
     private final static boolean DEBUG = true;
     private final SurfaceDetectionEngine surfer;
     
@@ -60,7 +60,7 @@ class InteriorMoleculeNicheComp implements NicheComputer<Molecule,Geometry>{
     }
     
     @Override
-    public InteriorMoleculeNicheComp clone(){
+    public InteriorMoleculeNicheComp copy(){
         return new InteriorMoleculeNicheComp(this);
     }
     

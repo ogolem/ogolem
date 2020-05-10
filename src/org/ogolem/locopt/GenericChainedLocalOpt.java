@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +44,11 @@ import java.util.List;
 /**
  * A generic chain of fitness functions.
  * @author Johannes Dieterich
- * @version 2015-01-10
+ * @version 2020-04-29
  */
 public class GenericChainedLocalOpt<E,T extends ContinuousProblem<E>> implements GenericLocOpt<E,T> {
     
-    private static final long serialVersionUID = (long) 20141220;
+    private static final long serialVersionUID = (long) 20200429;
 
     private final List<GenericLocOpt<E,T>> functions;
     private final double cutoff;
@@ -62,13 +63,13 @@ public class GenericChainedLocalOpt<E,T extends ContinuousProblem<E>> implements
         if(orig.functions.isEmpty()){throw new RuntimeException("Wrong input for chained fitness function.");}
         this.functions = new ArrayList<>();
         orig.functions.forEach((function) -> {
-            this.functions.add(function.clone());
+            this.functions.add(function.copy());
         });
         this.cutoff = orig.cutoff;
     }
     
     @Override
-    public GenericChainedLocalOpt<E, T> clone() {
+    public GenericChainedLocalOpt<E, T> copy() {
         return new GenericChainedLocalOpt<>(this);
     }
 

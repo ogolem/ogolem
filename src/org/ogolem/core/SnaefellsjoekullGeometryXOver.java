@@ -42,7 +42,6 @@ import contrib.bobyqa.BOBYQAOptimizer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.math3.util.FastMath;
 import static org.ogolem.core.GlobOptAtomics.assignMolecularTypes;
 import static org.ogolem.core.GlobOptAtomics.findOptimalSphereRadius;
 import static org.ogolem.core.GlobOptAtomics.randomRotation;
@@ -54,7 +53,7 @@ import org.ogolem.random.RandomUtils;
 /**
  * A sphere-based phenotype cut.
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-04-29
  */
 public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,Geometry> {
 
@@ -157,8 +156,8 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
         /*
          * create work geometries and rotate them
          */
-        final Geometry gChild2 = mother.clone();
-        final Geometry gChild1 = father.clone();
+        final Geometry gChild2 = mother.copy();
+        final Geometry gChild1 = father.copy();
         final CartesianCoordinates cartesMother = gChild2.getCartesians();
         final CartesianCoordinates cartesFather = gChild1.getCartesians();
 
@@ -234,8 +233,8 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
                 fatherCOMs[j][i] = tmpF[j];
             }
             
-            motherCOMDists[i] = FastMath.sqrt(tmpM[0]*tmpM[0]+tmpM[1]*tmpM[1]+tmpM[2]*tmpM[2]);
-            fatherCOMDists[i] = FastMath.sqrt(tmpF[0]*tmpF[0]+tmpF[1]*tmpF[1]+tmpF[2]*tmpF[2]);
+            motherCOMDists[i] = Math.sqrt(tmpM[0]*tmpM[0]+tmpM[1]*tmpM[1]+tmpM[2]*tmpM[2]);
+            fatherCOMDists[i] = Math.sqrt(tmpF[0]*tmpF[0]+tmpF[1]*tmpF[1]+tmpF[2]*tmpF[2]);
             maxCOMDistMom = Math.max(maxCOMDistMom, motherCOMDists[i]);
         }
         
@@ -498,7 +497,7 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
             for(int j = 0; j < 3; j++){
                 motherCOMs[j][i] = tmp1[j];
             }
-            motherCOMDists[i] = FastMath.sqrt(tmp1[0]*tmp1[0]+tmp1[1]*tmp1[1]+tmp1[2]*tmp1[2]);
+            motherCOMDists[i] = Math.sqrt(tmp1[0]*tmp1[0]+tmp1[1]*tmp1[1]+tmp1[2]*tmp1[2]);
         }
 
         // first always null the ArrayLists

@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,11 +48,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * A generic interface to the NEWUOA local optimization.
  * @author Johannes Dieterich
- * @version 2014-12-15
+ * @version 2020-04-29
  */
 public class NEWUOALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstractGradFreeLocOpt<E,T> {
 
-    private static final long serialVersionUID = (long) 20141215;
+    private static final long serialVersionUID = (long) 20200429;
     private final NEWUOAOptimizer opt;
 
     /**
@@ -73,7 +74,7 @@ public class NEWUOALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
     }
     
     @Override
-    public NEWUOALocOpt<E,T> clone() {
+    public NEWUOALocOpt<E,T> copy() {
         return new NEWUOALocOpt<>(this);
     }
     
@@ -89,7 +90,7 @@ public class NEWUOALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
         // first build the Adapter
         final int dims = back.numberOfActiveCoordinates(individual);
         @SuppressWarnings("unchecked")
-        final T work = (T) individual.clone();
+        final T work = (T) individual.copy();
         final double[] guess = back.getActiveCoordinates(work);
         final NEWUOALocOpt.Adapter<E,T> adap = new NEWUOALocOpt.Adapter<>(back);
         
@@ -97,7 +98,7 @@ public class NEWUOALocOpt<E,T extends ContinuousProblem<E>> extends GenericAbstr
         final Tuple<Double,double[]> t = opt.doOptimize(dims,guess, adap);        
 
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         res.setFitness(t.getObject1());
         back.updateActiveCoordinates(res, guess);
         

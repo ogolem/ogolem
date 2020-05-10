@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,11 +48,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * A generified (or de-generified?) Darwin implementation based off GenericAbstractDarwin.
  * @author Johannes Dieterich
- * @version 2014-03-29
+ * @version 2020-04-29
  */
 public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140329;
+    private static final long serialVersionUID = (long) 20200429;
     private final GenericCrossover<Double,Molecule> molXOver;
     private final GenericMutation<Double,Molecule> molMutation;
     private final double molXOverProb;
@@ -81,7 +82,7 @@ public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geomet
     }
     
     @Override
-    public GenericGeometryDarwin clone() {
+    public GenericGeometryDarwin copy() {
         return new GenericGeometryDarwin(this);
     }
 

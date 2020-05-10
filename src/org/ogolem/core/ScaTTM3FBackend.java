@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@ package org.ogolem.core;
 
 import java.io.File;
 import java.util.Locale;
-import org.apache.commons.math3.util.FastMath;
 import static org.ogolem.core.Constants.*;
 import org.ogolem.io.OutputPrimitives;
 import org.ogolem.properties.DipoleMoment;
@@ -48,7 +47,7 @@ import org.ogolem.scaTTM3F.TTM3F;
 /**
  * Calls the Scala-TTM3F force field for highly exact water clusters.
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2020-04-29
  */
 public class ScaTTM3FBackend implements CartesianFullBackend {
     
@@ -194,7 +193,7 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
                         anythingFound = true;
                         
                         // increase energy
-                        final double distInv = FastMath.sqrt(distSq)-CUTDIST;
+                        final double distInv = Math.sqrt(distSq)-CUTDIST;
                         final double divProdX = dX * distInv;
                         final double divProdY = dY * distInv;
                         final double divProdZ = dZ * distInv;
@@ -306,7 +305,7 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
                     
                     if(distSq <= CUTDISTSQ){
                         // increase energy
-                        final double distInv = FastMath.sqrt(distSq)-CUTDIST;
+                        final double distInv = Math.sqrt(distSq)-CUTDIST;
                         e += CUTENERGY*distInv*distInv;
                     }
                 }

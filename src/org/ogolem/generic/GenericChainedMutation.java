@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +44,11 @@ import org.ogolem.random.Lottery;
 /**
  * A chain of mutation operators.
  * @author Johannes Dieterich
- * @version 2014-05-04
+ * @version 2020-04-29
  */
 public class GenericChainedMutation<E, T extends Optimizable<E>> implements GenericMutation<E,T> {
 
-    private static final long serialVersionUID = (long) 2014054;
+    private static final long serialVersionUID = (long) 20200429;
     private final List<GenericMutation<E,T>> mutations;
     private final List<Double> probs;
     private final Lottery r;
@@ -94,7 +95,7 @@ public class GenericChainedMutation<E, T extends Optimizable<E>> implements Gene
     public T mutate(final T orig) {
         
         assert(mutations.size() == probs.size());
-        T mutated = (T) orig.clone();
+        T mutated = (T) orig.copy();
         for(int i = 0; i < mutations.size(); i++){
             if(r.nextDouble() < probs.get(i)){
                 mutated = mutations.get(i).mutate(mutated);

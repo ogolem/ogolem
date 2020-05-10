@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,11 @@ import org.ogolem.random.RandomUtils;
 /**
  * A orientation-based mutation.
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-04-29
  */
 public class FoehrGeometryMutation implements GenericMutation<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20150217;
+    private static final long serialVersionUID = (long) 20200429;
 
     public static enum MODUS {INCREMENT,FULLYRANDOM};
     public static enum HOWMANY {SINGLE, MULTIPLE, MULTIPLEGAUSS, ALL};
@@ -108,7 +108,7 @@ public class FoehrGeometryMutation implements GenericMutation<Molecule,Geometry>
         }
         
         
-        final Geometry mutated = orig.clone();
+        final Geometry mutated = orig.copy();
         for(final int mutMol : mutations){
             
             final Molecule mol = mutated.getMoleculeAtPosition(mutMol);

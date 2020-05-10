@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2012-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,11 +41,11 @@ package org.ogolem.generic;
 /**
  * An abstract implementation of a continuous problem.
  * @author Johannes Dieterich
- * @version 2014-05-02
+ * @version 2020-04-29
  */
 public abstract class ContinuousProblem<E> extends AbstractProblem<E> {
     
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200429;
     
     public ContinuousProblem(){
     }
@@ -54,7 +55,7 @@ public abstract class ContinuousProblem<E> extends AbstractProblem<E> {
     }
     
     @Override
-    public abstract ContinuousProblem<E> clone();
+    public abstract ContinuousProblem<E> copy();
     
     @Override
     public final boolean isDiscreteProblem(){

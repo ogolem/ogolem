@@ -44,11 +44,11 @@ import org.ogolem.generic.GenericBackend;
 /**
  * Turns a Cartesian backend into a rigid body one.
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-04-29
  */
 public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     
-    private static final long serialVersionUID = (long) 20200209;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     
     private final CartesianFullBackend back;
@@ -78,7 +78,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     }
 
     @Override
-    public CartesianToRigidCoordinates clone() {
+    public CartesianToRigidCoordinates copy() {
         return new CartesianToRigidCoordinates(this);
     }
     
@@ -241,7 +241,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     public double fitness(final double[] currCoords, final int iteration) {
 
         if(DEBUG){
-            final Geometry scr = cache.clone();
+            final Geometry scr = cache.copy();
             updateActiveCoordinates(scr,currCoords);
             final String[] cart = scr.makePrintableAbsoluteCoord(true);
             System.out.println("DEBUG: AT ENERGY EVALUTION " + iteration);
@@ -265,7 +265,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     @Override
     public Geometry fitness(final Geometry individual, final boolean forceOneEval) {
         
-        final double[] coords = getActiveCoordinates(individual.clone());
+        final double[] coords = getActiveCoordinates(individual.copy());
         final double e = fitness(coords, 42);
         
         assert(!Double.isInfinite(e));
@@ -287,7 +287,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
          */
         
         if(DEBUG){
-            final Geometry scr = cache.clone();
+            final Geometry scr = cache.copy();
             updateActiveCoordinates(scr,currCoords);
             final String[] cart = scr.makePrintableAbsoluteCoord(true);
             System.out.println("DEBUG: AT GRADIENT EVALUTION " + iteration);

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic implementation of an initialization task.
  * @author Johannes Dieterich
- * @version 2016-10-26
+ * @version 2020-04-29
  */
 public class GenericInitTask<E,T extends Optimizable<E>,V extends GenericInitializer<E,T>> implements TaskFactory<E,T,V>{
     
@@ -85,12 +85,12 @@ public class GenericInitTask<E,T extends Optimizable<E>,V extends GenericInitial
                     stuff.setObject1(false);
                 } else if(!useCache && !DEBUG){
                     l.debug("Trying to use new object as helper for initializing...");
-                    final V helpers = (V) cache.getOriginalEntry().clone();
+                    final V helpers = (V) cache.getOriginalEntry().copy();
                     runme(helpers,pool,taskID);
                 } else{
                     try{
                         l.debug("Trying to use new object as helper for initializing (try/catch)...");
-                        final V helpers = (V) cache.getOriginalEntry().clone();
+                        final V helpers = (V) cache.getOriginalEntry().copy();
                         runme(helpers,pool,taskID);
                     } catch(Throwable t){
                         t.printStackTrace(System.err);

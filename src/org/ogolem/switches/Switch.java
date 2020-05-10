@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +46,7 @@ import org.ogolem.generic.DiscreteProblem;
 /**
  * The actual switch.
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-04-29
  */
 public class Switch extends DiscreteProblem<Color> {
 
@@ -103,7 +104,7 @@ public class Switch extends DiscreteProblem<Color> {
     }
     
     @Override
-    public Switch clone(){
+    public Switch copy(){
         return new Switch(this);
     }
     

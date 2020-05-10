@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2012-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,11 +43,11 @@ import java.io.Serializable;
 /**
  * Defined to unify all possible optimizable problems.
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-04-29
  */
-public interface Optimizable<T extends Object> extends Serializable, Cloneable {
+public interface Optimizable<T extends Object> extends Serializable, Copyable {
 
-    Optimizable<T> clone();
+    Optimizable<T> copy();
     
     boolean isDiscreteProblem();
     

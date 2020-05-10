@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,12 @@ import java.io.Serializable;
 /**
  * An interface for reading stuff from a file.
  * @author Johannes Dieterich
- * @version 2014-04-02
+ * @version 2020-04-29
  */
-public interface IndividualReader<T> extends Serializable, Cloneable {
-    
-    IndividualReader<T> clone();
+public interface IndividualReader<T> extends Serializable, Cloneable, Copyable {
+
+	@Override
+    IndividualReader<T> copy();
     
     void populateIndividualFromFile(final T individual, final String file) throws Exception;
     

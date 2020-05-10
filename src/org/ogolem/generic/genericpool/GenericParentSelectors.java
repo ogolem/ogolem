@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import org.ogolem.random.RandomUtils;
  * A collection of some simple parent selection algorithms.
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2016-01-14
+ * @version 2020-04-29
  */
 public class GenericParentSelectors {
     
@@ -156,8 +156,8 @@ public class GenericParentSelectors {
             final int index2 = r.nextInt((int) Math.round(stepAt2 * poolSize));
             
             final List<T> parents = new LinkedList<>();
-            parents.add((T) pool.getIndividualAtPosition(index1).clone());
-            parents.add((T) pool.getIndividualAtPosition(index2).clone());
+            parents.add((T) pool.getIndividualAtPosition(index1).copy());
+            parents.add((T) pool.getIndividualAtPosition(index2).copy());
             
             return parents;
         }
@@ -205,8 +205,8 @@ public class GenericParentSelectors {
                     if(niche == null){
                         System.err.println("ERROR: No niche info for individual at pool position " + i + ". Returning position 0 twice as parent.");
                         final List<T> parents = new LinkedList<>();
-                        parents.add((T) pool.getIndividualAtPosition(0).clone());
-                        parents.add((T) pool.getIndividualAtPosition(0).clone());
+                        parents.add((T) pool.getIndividualAtPosition(0).copy());
+                        parents.add((T) pool.getIndividualAtPosition(0).copy());
                         
                         return parents;
                     }
@@ -260,11 +260,11 @@ public class GenericParentSelectors {
             
             final List<T> parents = new LinkedList<>();
             if(perNiche){
-                parents.add((T) pool.getIndividualAtPosition(listNicheMemberPositions.get(niche1).get(index1)).clone());
-                parents.add((T) pool.getIndividualAtPosition(listNicheMemberPositions.get(niche2).get(index2)).clone());
+                parents.add((T) pool.getIndividualAtPosition(listNicheMemberPositions.get(niche1).get(index1)).copy());
+                parents.add((T) pool.getIndividualAtPosition(listNicheMemberPositions.get(niche2).get(index2)).copy());
             }else{
-                parents.add((T) pool.getIndividualAtPosition(index1).clone());
-                parents.add((T) pool.getIndividualAtPosition(index2).clone());
+                parents.add((T) pool.getIndividualAtPosition(index1).copy());
+                parents.add((T) pool.getIndividualAtPosition(index2).copy());
             }
             
             return parents;
@@ -344,8 +344,8 @@ public class GenericParentSelectors {
             assert(index2 < poolSize && index2 >= 0);
             
             final List<T> parents = new LinkedList<>();
-            parents.add((T) pool.getIndividualAtPosition(index1).clone());
-            parents.add((T) pool.getIndividualAtPosition(index2).clone());
+            parents.add((T) pool.getIndividualAtPosition(index1).copy());
+            parents.add((T) pool.getIndividualAtPosition(index2).copy());
             
             return parents;
         }

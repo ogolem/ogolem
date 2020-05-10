@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,14 +38,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic.genericpool;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 import org.ogolem.generic.Optimizable;
 
 /**
  * An individual for the generic pool
  * @author Johannes Dieterich
- * @version 2012-02-15
+ * @version 2020-04-29
  */
-public class GenericPoolEntry<E,T extends Optimizable<E>> implements Serializable, Cloneable {
+public class GenericPoolEntry<E,T extends Optimizable<E>> implements Serializable, Copyable {
     
     private static final long serialVersionUID = (long) 20120215;
     
@@ -69,12 +71,12 @@ public class GenericPoolEntry<E,T extends Optimizable<E>> implements Serializabl
     @SuppressWarnings("unchecked")
     GenericPoolEntry(final GenericPoolEntry<E,T> orig){
         this.fitness = orig.fitness;
-        this.individual = (orig.individual == null) ? null : (T) orig.individual.clone();
+        this.individual = (orig.individual == null) ? null : (T) orig.individual.copy();
         this.niche = (orig.niche == null) ? null : orig.niche.clone();
     }
     
     @Override
-    public GenericPoolEntry<E,T> clone(){
+    public GenericPoolEntry<E,T> copy(){
         return new GenericPoolEntry<>(this);
     }
     

@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,14 +40,14 @@ package org.ogolem.generic;
 /**
  * A dummy for the individualreader. Doesn't do anything.
  * @author Johannes Dieterich
- * @version 2014-04-02
+ * @version 2020-04-29
  */
 public class DummyIndividualReader<T> implements IndividualReader<T> {
     
-    private static final long serialVersionUID = (long) 20140403;
+    private static final long serialVersionUID = (long) 20200429;
 
     @Override
-    public IndividualReader<T> clone() {
+    public IndividualReader<T> copy() {
         return new DummyIndividualReader<>();
     }
 

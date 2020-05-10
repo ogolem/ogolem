@@ -42,7 +42,7 @@ import org.ogolem.random.RandomUtils;
  * Gaussian-based fluctuations about the current input-value, within constraints.
  *
  * @author Mark Dittner
- * @version 2020-04-25
+ * @version 2020-04-29
  */
 class UnaryGaussianMutation implements GenericMutation<Double, AdaptiveParameters> {
 
@@ -105,7 +105,7 @@ class UnaryGaussianMutation implements GenericMutation<Double, AdaptiveParameter
     @Override
     public AdaptiveParameters mutate(AdaptiveParameters orig) {
 
-        final AdaptiveParameters mut = orig.clone();
+        final AdaptiveParameters mut = orig.copy();
 
         final Double[] params = mut.getGenomeCopy();
         final int dims = params.length;

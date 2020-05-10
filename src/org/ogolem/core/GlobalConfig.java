@@ -67,7 +67,7 @@ import org.ogolem.random.Lottery;
  * All configuration data needed for the program to run is in this class. It is
  * reusable for the "constructor madness". Default values are provided.
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2020-04-29
  */
 public class GlobalConfig implements Configuration<Molecule,Geometry> {
 
@@ -991,7 +991,7 @@ public class GlobalConfig implements Configuration<Molecule,Geometry> {
     public Newton getRefNewton() {
         
         try{
-            final Newton newton = LocOptFactory.translateLocalOpt(refNewton.clone());
+            final Newton newton = LocOptFactory.translateLocalOpt(refNewton.copy());
             return newton;
         } catch(Exception e){
             e.printStackTrace(System.err);

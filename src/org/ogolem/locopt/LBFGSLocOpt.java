@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2012-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,11 +48,11 @@ import org.ogolem.helpers.Machine;
  * An interface to the slightly adjusted version of the L-BFGS implementation
  * from RISO.
  * @author Johannes Dieterich
- * @version 2015-01-07
+ * @version 2020-04-29
  */
 public class LBFGSLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E,T> {
     
-    private static final long serialVersionUID = (long) 20141216;
+    private static final long serialVersionUID = (long) 20200429;
     private static final boolean DEBUG = false;
     
     private final int maxSteps;
@@ -96,7 +97,7 @@ public class LBFGSLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstr
     }
     
     @Override
-    public LBFGSLocOpt<E, T> clone() {
+    public LBFGSLocOpt<E, T> copy() {
         return new LBFGSLocOpt<>(this);
     }
     
@@ -109,7 +110,7 @@ public class LBFGSLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstr
     protected T optimize(final T individual) {
         
         @SuppressWarnings("unchecked")
-        final T work = (T) individual.clone();
+        final T work = (T) individual.copy();
         final int dims = back.numberOfActiveCoordinates(work);
         final double[] p = back.getActiveCoordinates(work).clone();
         
@@ -194,7 +195,7 @@ public class LBFGSLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstr
         }
 
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         res.setFitness(lastE);
         back.updateActiveCoordinates(res, p);
         

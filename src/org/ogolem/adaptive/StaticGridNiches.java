@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import org.ogolem.generic.genericpool.NicheComputer;
  * N-D grid over the search space.
  * @author Johannes Dieterich
  * @author Mark Dittner
- * @version 2015-05-26
+ * @version 2020-04-29
  */
 final class StaticGridNiches implements NicheComputer<Double,AdaptiveParameters>{
 
@@ -85,7 +85,7 @@ final class StaticGridNiches implements NicheComputer<Double,AdaptiveParameters>
     }
     
     @Override
-    public StaticGridNiches clone(){
+    public StaticGridNiches copy(){
         return new StaticGridNiches(this);
     }
 

@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,11 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
 /**
  * An abstract implementation for a local optimization for continuous problems.
  * @author Johannes Dieterich
- * @version 2015-01-04
+ * @version 2020-04-29
  */
 public abstract class GenericAbstractLocOpt<E,T extends ContinuousProblem<E>> implements GenericLocOpt<E,T>{
     
-    private static final long serialVersionUID = (long) 20131124;
+    private static final long serialVersionUID = (long) 20200429;
     protected final GenericBackend<E,T> back;
     
     public GenericAbstractLocOpt(final GenericBackend<E,T> back){
@@ -53,11 +54,11 @@ public abstract class GenericAbstractLocOpt<E,T extends ContinuousProblem<E>> im
     }
     
     protected GenericAbstractLocOpt(final GenericAbstractLocOpt<E,T> orig){
-        this.back = orig.back.clone();
+        this.back = orig.back.copy();
     }
     
     @Override
-    public abstract GenericAbstractLocOpt<E,T> clone();
+    public abstract GenericAbstractLocOpt<E,T> copy();
     
     @Override
     public T fitness(final T individual, final boolean forceOneEval){     

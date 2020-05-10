@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,11 +49,11 @@ import org.ogolem.locopt.numalhelpers.NumalFitnessWrapper;
 /**
  * An interface to NUMAL's gradient-free Praxis local optimization implementation.
  * @author Johannes Dieterich
- * @version 2016-03-15
+ * @version 2020-04-29
  */
 public class PraxisLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstractGradFreeLocOpt<E,T> {
     
-    private static final long serialVersionUID = (long) 20141215;
+    private static final long serialVersionUID = (long) 20200429;
     private final double machPrec;
     private final int maxIter;
     private final double convThresh;
@@ -88,7 +88,7 @@ public class PraxisLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbst
     }
     
     @Override
-    public PraxisLocOpt<E,T> clone() {
+    public PraxisLocOpt<E,T> copy() {
         return new PraxisLocOpt<>(this);
     }
 
@@ -101,7 +101,7 @@ public class PraxisLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbst
     protected T optimize(final T individual) {
         
         @SuppressWarnings("unchecked")
-        final T work = (T) individual.clone();
+        final T work = (T) individual.copy();
         final int dims = back.numberOfActiveCoordinates(work);
         final double[] start = back.getActiveCoordinates(work).clone();
         
@@ -153,7 +153,7 @@ public class PraxisLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbst
 
         // put the fitness in
         @SuppressWarnings("unchecked")
-        final T res = (T) individual.clone();
+        final T res = (T) individual.copy();
         final double fitness = out[2];
         res.setFitness(fitness);
         back.updateActiveCoordinates(res, start);

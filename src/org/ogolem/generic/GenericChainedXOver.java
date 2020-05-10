@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,11 +45,11 @@ import org.ogolem.random.Lottery;
 /**
  * A chain of crossover operators.
  * @author Johannes Dieterich
- * @version 2014-05-04
+ * @version 2020-04-29
  */
 public class GenericChainedXOver<E,T extends Optimizable<E>> implements GenericCrossover<E,T> {
     
-    private static final long serialVersionUID = (long) 2014054;
+    private static final long serialVersionUID = (long) 20200429;
     private final List<GenericCrossover<E,T>> xovers;
     private final List<Double> probs;
     private final Lottery r;
@@ -95,7 +96,7 @@ public class GenericChainedXOver<E,T extends Optimizable<E>> implements GenericC
     public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
         
         assert(xovers.size() == probs.size());
-        Tuple<T,T> children = new Tuple<>((T) mother.clone(), (T)father.clone());
+        Tuple<T,T> children = new Tuple<>((T) mother.copy(), (T)father.copy());
         for(int  i = 0; i < xovers.size(); i++){
             if(r.nextDouble() < probs.get(i)){
                 children = xovers.get(i).crossover(children.getObject1(), children.getObject2(), futureID);

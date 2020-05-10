@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import org.ogolem.generic.Copyable;
 import org.ogolem.generic.Optimizable;
 import org.ogolem.generic.generichistory.GenericHistory;
 import org.ogolem.generic.genericpool.GenericPool;
@@ -55,9 +56,9 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic thread dispatcher.
  * @author Johannes Dieterich
- * @version 2017-03-18
+ * @version 2020-04-29
  */
-public class GenericThreadDispatcher<E,T extends Optimizable<E>,V extends Cloneable> {
+public class GenericThreadDispatcher<E,T extends Optimizable<E>,V extends Copyable> {
     
     private static final Logger l = LoggerFactory.getLogger(GenericThreadDispatcher.class);
     private final int threads;

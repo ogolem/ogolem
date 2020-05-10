@@ -54,12 +54,12 @@ import org.ogolem.generic.ContinuousProblem;
  * cache is not thread-safe. Therefore in a multi-threaded environment, it is
  * absolutely required to generate a copy of this class for each thread.
  * @author Johannes Dieterich
- * @version 2020-03-21
+ * @version 2020-04-29
  */
 public class AdaptiveParameters extends ContinuousProblem<Double> {
 
     // for serialization purposes
-    private static final long serialVersionUID = (long) 20150730;
+    private static final long serialVersionUID = (long) 20200429;
 
     private final HashMap<String,int[]> hashPosition;
     private final String forMethod;
@@ -291,7 +291,7 @@ public class AdaptiveParameters extends ContinuousProblem<Double> {
     }
     
     @Override
-    public AdaptiveParameters clone(){
+    public AdaptiveParameters copy(){
         return new AdaptiveParameters(this);
     }
 

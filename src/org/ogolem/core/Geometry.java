@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import org.ogolem.random.Lottery;
  * It needs to provide a lot of states, getters and setters
  * as well as methods.
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-04-29
  */
 public class Geometry extends ContinuousProblem<Molecule> {
 	
@@ -61,7 +61,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
      * Whenever something changes in this class, increment the serialVersionUID field.
      * AND: Nasty errors when sucking in old serialized objects may follow otherwise.
      */
-    private static final long serialVersionUID = (long) 20140402;
+    private static final long serialVersionUID = (long) 20200429;
 
     // a boolean saying whether or not it is already locally optimized
     private boolean isLocOptimized = false;
@@ -176,7 +176,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
     }
     
     @Override
-    public Geometry clone(){
+    public Geometry copy(){
         return new Geometry(this);
     }
 
@@ -1045,7 +1045,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
         
         final Molecule[] mols = new Molecule[noOfIndieParticles];
         for(int i = 0; i < molecules.size(); i++){
-            mols[i] = molecules.get(i).clone();
+            mols[i] = molecules.get(i).copy();
         }
         
         return mols;

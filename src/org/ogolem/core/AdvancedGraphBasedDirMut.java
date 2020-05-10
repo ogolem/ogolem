@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2013-2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2013-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,11 @@ import org.ogolem.generic.GenericLocOpt;
  * A directed mutation using a graph-based analysis of the cluster in question.
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2015-07-18
+ * @version 2020-04-29
  */
 public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140906;
+    private static final long serialVersionUID = (long) 20200429;
     
     private final boolean DEBUG;
     private final double blowBonds;
@@ -122,15 +122,15 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
         this.blowBonds = orig.blowBonds;
         this.collDetect = orig.collDetect.clone();
         this.blowColl = orig.blowColl;
-        this.back = orig.back.clone();
-        this.locopt = orig.locopt.clone();
+        this.back = orig.back.copy();
+        this.locopt = orig.locopt.copy();
         this.realCD = orig.realCD;
         this.realDD = orig.realDD;
         this.doLocOpt = orig.doLocOpt;
         this.fullyRelaxed = orig.fullyRelaxed;
         this.doCDFirst = orig.doCDFirst;
         this.pointProv = orig.pointProv.clone();
-        this.pointOpt = orig.pointOpt.clone();
+        this.pointOpt = orig.pointOpt.copy();
         this.markMovedMolsUnmovable = orig.markMovedMolsUnmovable;
         this.noMoved = orig.noMoved;
         this.doCDForEveryTrial = orig.doCDForEveryTrial;
@@ -179,7 +179,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
         final BondInfo bonds = work.getBondInfo();
         
         // get the energy before we manipulate
-        final double[] currCoords = back.getActiveCoordinates(work.clone());
+        final double[] currCoords = back.getActiveCoordinates(work.copy());
         final double eBefore = back.fitness(currCoords, 42);
         
         final List<Integer> movedMols = new ArrayList<>(noMoved);
@@ -401,13 +401,13 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
                         moved, movePartner);
                 if(bestFoundGeom == null){
                     if(DEBUG){System.out.println("DEBUG: Unconditionally making this best found.");}
-                    bestFoundGeom = res.getObject2().clone();
+                    bestFoundGeom = res.getObject2().copy();
                     bestFoundFitness = res.getObject1();
                     continue;
                 }
                 if(res.getObject1() < bestFoundFitness){
                     if(DEBUG){System.out.println("DEBUG: Conditionally making this best found.");}
-                    bestFoundGeom = res.getObject2().clone();
+                    bestFoundGeom = res.getObject2().copy();
                     bestFoundFitness = res.getObject1();
                 }
             }
@@ -417,7 +417,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
             if(bestFoundGeom != null){
             
                 // well, just continue with the best we found :-)
-                final Geometry mutationResult = bestFoundGeom.clone();
+                final Geometry mutationResult = bestFoundGeom.copy();
                 mutationResult.setFitness(bestFoundFitness);
             
                 work = mutationResult;

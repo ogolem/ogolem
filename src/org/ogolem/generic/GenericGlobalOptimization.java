@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,12 @@ import java.io.Serializable;
 /**
  * Interface for all (generic) global optimizations.
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-04-29
  */
-public interface GenericGlobalOptimization<E,T extends Optimizable<E>> extends Serializable, Cloneable {
+public interface GenericGlobalOptimization<E,T extends Optimizable<E>> extends Serializable, Copyable {
     
-    public GenericGlobalOptimization<E,T> clone();
+	@Override
+    GenericGlobalOptimization<E,T> copy();
     
     String getMyID();
     

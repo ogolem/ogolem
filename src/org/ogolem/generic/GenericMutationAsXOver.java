@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * Adaptor to translate turn a mutation into a crossover.
  * @author Johannes Dieterich
- * @version 2014-04-01
+ * @version 2020-04-29
  */
 public class GenericMutationAsXOver<E, T extends Optimizable<E>> implements GenericCrossover<E,T> {
 
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200429;
     private final GenericMutation<E,T> mutation;
     
     public GenericMutationAsXOver(final GenericMutation<E,T> mut){
@@ -70,9 +71,9 @@ public class GenericMutationAsXOver<E, T extends Optimizable<E>> implements Gene
     @Override
     public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
         
-        final T work1 = (T) mother.clone();
+        final T work1 = (T) mother.copy();
         work1.setID(futureID);
-        final T work2 = (T) father.clone();
+        final T work2 = (T) father.copy();
         work2.setID(futureID);
         
         final T child1 = mutation.mutate(work1);

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,15 @@ import org.slf4j.LoggerFactory;
 /**
  * A reader for parameters.
  * @author Johannes Dieterich
- * @version 2017-11-16
+ * @version 2020-04-29
  */
 public class ParameterReader implements IndividualReader<AdaptiveParameters>{
 
-    private static final long serialVersionUID = (long) 20140502;
+    private static final long serialVersionUID = (long) 20200429;
     private static final Logger LOG = LoggerFactory.getLogger(ParameterReader.class);
     
     @Override
-    public IndividualReader<AdaptiveParameters> clone() {
+    public IndividualReader<AdaptiveParameters> copy() {
         return new ParameterReader();
     }
 

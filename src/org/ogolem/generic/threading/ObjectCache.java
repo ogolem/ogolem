@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,19 +37,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic.threading;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.ogolem.generic.Copyable;
 import org.ogolem.helpers.Tuple;
 
 /**
  * A generic object cache. Thread-safe (well, that is the purpose of it).
  * @author Johannes Dieterich
- * @version 2013-11-23
- * @param <T> must be an implementation of Cloneable
+ * @version 2020-04-29
+ * @param <T> must be an implementation of Copyable
  */
-public class ObjectCache<T extends Cloneable> {
+public class ObjectCache<T extends Copyable> {
     
     private static final int MAXTRIES = 1000;
     private final T ref;
@@ -89,10 +90,7 @@ public class ObjectCache<T extends Cloneable> {
     @SuppressWarnings("unchecked")
     private T dirtyClone(final T orig) throws Exception {
         
-        final Class<?> cl = orig.getClass();
-        final Method method = cl.getDeclaredMethod("clone");
-        method.setAccessible(true);
-        final T rtn = (T) method.invoke(orig);
+    	final T rtn = (T) orig.copy();
 
         return rtn;
     }

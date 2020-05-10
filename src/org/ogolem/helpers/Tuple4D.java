@@ -37,16 +37,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.helpers;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 
 /**
  * A 4D tuple.
  * @author Johannes Dieterich
- * @version 2020-01-04
+ * @version 2020-04-29
  */
-public class Tuple4D<E,T,V,W> extends Tuple3D<E,T,V> implements Serializable, Cloneable {
+public class Tuple4D<E,T,V,W> extends Tuple3D<E,T,V> implements Serializable {
     
-    private static final long serialVersionUID = (long) 20140727;
+    private static final long serialVersionUID = (long) 20200429;
 
     private W object4;
 
@@ -55,33 +54,6 @@ public class Tuple4D<E,T,V,W> extends Tuple3D<E,T,V> implements Serializable, Cl
         object4 = ob4;
     }
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public Tuple4D<E,T,V,W> clone() throws CloneNotSupportedException {
-        
-        try {
-            final Class<?> cE = object1.getClass();
-	    final Method cloneE = cE.getDeclaredMethod("clone");
-	    final Object clE = cloneE.invoke(object1, new Object[]{});
-            
-            final Class<?> cT = object2.getClass();
-	    final Method cloneT = cT.getDeclaredMethod("clone");
-	    final Object clT = cloneT.invoke(object2, new Object[]{});
-            
-            final Class<?> cV = object3.getClass();
-	    final Method cloneV = cV.getDeclaredMethod("clone");
-	    final Object clV = cloneV.invoke(object3, new Object[]{});
-                        
-            final Class<?> cW = object4.getClass();
-	    final Method cloneW = cW.getDeclaredMethod("clone");
-	    final Object clW = cloneW.invoke(object4, new Object[]{});
-            
-            return new Tuple4D<>((E) clE, (T) clT, (V) clV, (W) clW);
-        } catch (Throwable t){
-            throw new CloneNotSupportedException(t.toString());
-        }
-    }
-
     public W getObject4(){
         return object4;
     }

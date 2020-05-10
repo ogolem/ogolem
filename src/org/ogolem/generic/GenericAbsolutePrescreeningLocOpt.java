@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-                2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ import org.slf4j.LoggerFactory;
 /**
  * A prescreening local optimization.
  * @author Johannes Dieterich
- * @version 2014-12-14
+ * @version 2020-04-29
  */
 public class GenericAbsolutePrescreeningLocOpt <E,T extends ContinuousProblem<E>> extends GenericAbstractLocOpt<E,T> {
     
-    private static final long serialVersionUID = (long) 20131124;
+    private static final long serialVersionUID = (long) 20200429;
     private static final Logger l = LoggerFactory.getLogger(GenericAbsolutePrescreeningLocOpt.class);
     protected final GenericLocOpt<E,T> locopt;
     protected final double maxFitness;
@@ -61,12 +61,12 @@ public class GenericAbsolutePrescreeningLocOpt <E,T extends ContinuousProblem<E>
     
  public GenericAbsolutePrescreeningLocOpt(final GenericAbsolutePrescreeningLocOpt<E,T> orig){
         super(orig);
-        this.locopt = orig.locopt.clone();
+        this.locopt = orig.locopt.copy();
         this.maxFitness = orig.maxFitness;
     }
     
     @Override
-    public GenericAbstractLocOpt<E, T> clone() {
+    public GenericAbstractLocOpt<E, T> copy() {
         return new GenericAbsolutePrescreeningLocOpt<>(this);
     }
 
@@ -75,7 +75,7 @@ public class GenericAbsolutePrescreeningLocOpt <E,T extends ContinuousProblem<E>
         
         // one shot
         @SuppressWarnings("unchecked")
-        final double[] genome = back.getActiveCoordinates((T) individual.clone());
+        final double[] genome = back.getActiveCoordinates((T) individual.copy());
         final double e = back.fitness(genome, 0);
         
         l.debug("Fitness of one shot is " + e + " compared to " + maxFitness);

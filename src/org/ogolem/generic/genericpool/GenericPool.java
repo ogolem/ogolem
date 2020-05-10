@@ -53,7 +53,7 @@ import org.ogolem.io.OutputPrimitives;
 /**
  * A generic genetic pool.
  * @author Johannes Dieterich
- * @version 2020-04-13
+ * @version 2020-04-29
  */
 public class GenericPool<E,T extends Optimizable<E>> implements Serializable, Iterable<GenericPoolEntry<E,T>> {
     
@@ -607,7 +607,7 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
                 final double posFit = entry.getFitness();
                 if(fitness < posFit){
                 
-                    final GenericPoolEntry<E,T> addEntry = newEntry.clone();
+                    final GenericPoolEntry<E,T> addEntry = newEntry.copy();
                     geneticPool.add(pos, addEntry);
                     
                     nicher.report(niche);
@@ -664,7 +664,7 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
                     final boolean divBack = diversity.areDiverse(newEntry, entry);
                     if(!divBack){
                         // not enough diversity compared to the previous pos individual -> "replace" the other individual, thereby keeping the pool size constant
-                        final GenericPoolEntry<E,T> addEntry = newEntry.clone();
+                        final GenericPoolEntry<E,T> addEntry = newEntry.copy();
                         geneticPool.set(pos, addEntry);
                         // ensure pool size
                         ensureSize(poolSize);
@@ -674,7 +674,7 @@ public class GenericPool<E,T extends Optimizable<E>> implements Serializable, It
                     }
                     
                     // both diversity to the front AND to the back. just add in between.
-                    final GenericPoolEntry<E,T> addEntry = newEntry.clone();
+                    final GenericPoolEntry<E,T> addEntry = newEntry.copy();
                     geneticPool.add(pos, addEntry);
                     
                     // ensure pool size

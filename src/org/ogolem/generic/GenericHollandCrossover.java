@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,11 +42,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * A not-crossing crossover.
  * @author Johannes Dieterich
- * @version 2013-11-24
+ * @version 2020-04-29
  */
 public class GenericHollandCrossover <E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
     
-    private static final long serialVersionUID = (long) 20131124;
+    private static final long serialVersionUID = (long) 20200429;
 
     @Override
     public GenericHollandCrossover<E,T> clone(){
@@ -61,8 +62,8 @@ public class GenericHollandCrossover <E,T extends Optimizable<E>> implements Gen
     @Override
     public Tuple<T,T> crossover(final T mother, final T father, final long futureID){
         
-        final T t1 = (T)mother.clone();
-        final T t2 = (T)father.clone();
+        final T t1 = (T)mother.copy();
+        final T t2 = (T)father.copy();
         t1.setID(futureID);
         t2.setID(futureID);
         

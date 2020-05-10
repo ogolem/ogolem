@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,11 @@ import org.ogolem.generic.GenericBackend;
 /**
  * An adapter from adaptivable to backend.
  * @author Johannes Dieterich
- * @version 2015-03-28
+ * @version 2020-04-29
  */
 final class FitFuncToBackend implements GenericBackend<Double,AdaptiveParameters> {
     
-    private static final long serialVersionUID = (long) 20150323;
+    private static final long serialVersionUID = (long) 2020429;
     
     private final GenericFitnessFunction fitfunc;
     private final boolean normParams;
@@ -71,7 +71,7 @@ final class FitFuncToBackend implements GenericBackend<Double,AdaptiveParameters
     }
     
     @Override
-    public GenericBackend<Double, AdaptiveParameters> clone() {
+    public GenericBackend<Double, AdaptiveParameters> copy() {
         return new FitFuncToBackend(this);
     }
     

@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,11 +49,11 @@ import org.ogolem.helpers.Tuple;
  * Essentially a stripped down version of the AdvGDM so far. Eventually, this will
  * though implement AdvGDM.
  * @author Johannes Dieterich
- * @version 2015-07-19
+ * @version 2020-04-29
  */
 public class PluggableDirMut implements GenericMutation<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140614;
+    private static final long serialVersionUID = (long) 20200429;
 
     private final boolean DEBUG;
     private final double blowBonds;
@@ -116,15 +117,15 @@ public class PluggableDirMut implements GenericMutation<Molecule,Geometry>{
         this.blowBonds = orig.blowBonds;
         this.collDetect = orig.collDetect.clone();
         this.blowColl = orig.blowColl;
-        this.back = orig.back.clone();
-        this.locopt = orig.locopt.clone();
+        this.back = orig.back.copy();
+        this.locopt = orig.locopt.copy();
         this.realCD = orig.realCD;
         this.realDD = orig.realDD;
         this.doLocOpt = orig.doLocOpt;
         this.fullyRelaxed = orig.fullyRelaxed;
         this.doCDFirst = orig.doCDFirst;
         this.pointProv = orig.pointProv.clone();
-        this.pointOpt = orig.pointOpt.clone();
+        this.pointOpt = orig.pointOpt.copy();
         this.markMovedMolsUnmovable = orig.markMovedMolsUnmovable;
         this.noMoved = orig.noMoved;
         this.doCDForEveryTrial = orig.doCDForEveryTrial;
@@ -161,7 +162,7 @@ public class PluggableDirMut implements GenericMutation<Molecule,Geometry>{
         final BondInfo bonds = work.getBondInfo();
         
         // get the energy before we manipulate
-        final double[] currCoords = back.getActiveCoordinates(work.clone());
+        final double[] currCoords = back.getActiveCoordinates(work.copy());
         final double eBefore = back.fitness(currCoords, 42);
         final double[] eparts = new double[work.getNumberOfIndieParticles()];
         
@@ -193,13 +194,13 @@ public class PluggableDirMut implements GenericMutation<Molecule,Geometry>{
                         moved, -1);
                 if(bestFoundGeom == null){
                     if(DEBUG){System.out.println("DEBUG: Unconditionally making this best found.");}
-                    bestFoundGeom = res.getObject2().clone();
+                    bestFoundGeom = res.getObject2().copy();
                     bestFoundFitness = res.getObject1();
                     continue;
                 }
                 if(res.getObject1() < bestFoundFitness){
                     if(DEBUG){System.out.println("DEBUG: Conditionally making this best found.");}
-                    bestFoundGeom = res.getObject2().clone();
+                    bestFoundGeom = res.getObject2().copy();
                     bestFoundFitness = res.getObject1();
                 }
             }
@@ -209,7 +210,7 @@ public class PluggableDirMut implements GenericMutation<Molecule,Geometry>{
             if(bestFoundGeom != null){
             
                 // well, just continue with the best we found :-)
-                final Geometry mutationResult = bestFoundGeom.clone();
+                final Geometry mutationResult = bestFoundGeom.copy();
                 mutationResult.setFitness(bestFoundFitness);
             
                 work = mutationResult;

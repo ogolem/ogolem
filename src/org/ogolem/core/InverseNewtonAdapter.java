@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2015, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,11 @@ import org.ogolem.generic.GenericLocOpt;
  * Translates a generic fitness function based local optimization to the Newton
  * interface.
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2020-04-29
  */
 public class InverseNewtonAdapter implements Newton {
 
-    private static final long serialVersionUID = (long) 20150104;
+    private static final long serialVersionUID = (long) 20200429;
     
     private final GenericLocOpt<Molecule,Geometry> locopt;
     private long countGeomOpts = 0l;
@@ -61,7 +61,7 @@ public class InverseNewtonAdapter implements Newton {
     }
     
     InverseNewtonAdapter(final InverseNewtonAdapter orig){
-        this.locopt = orig.locopt.clone();
+        this.locopt = orig.locopt.copy();
     }
     
     @Override

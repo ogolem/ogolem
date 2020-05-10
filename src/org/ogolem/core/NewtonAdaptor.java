@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,11 +45,11 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
 /**
  * An adaptor to fit the old Newton interface into the new generic world.
  * @author Johannes Dieterich
- * @version 2015-01-04
+ * @version 2020-04-29
  */
 public class NewtonAdaptor implements GenericLocOpt<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140328;
+    private static final long serialVersionUID = (long) 20200429;
     private final Newton newton;
     private int count = 0;
 
@@ -61,7 +62,7 @@ public class NewtonAdaptor implements GenericLocOpt<Molecule,Geometry> {
     }
     
     @Override
-    public NewtonAdaptor clone() {
+    public NewtonAdaptor copy() {
         return new NewtonAdaptor(this);
     }
 
