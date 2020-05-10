@@ -42,11 +42,11 @@ import org.ogolem.random.Lottery;
 /**
  * A bounded initializer for continuous problems.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-09
  */
 public class BoundedInitializer<T extends Optimizable<Double>> implements GenericInitializer<Double,T> {
     
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200509;
     private final GenericFitnessFunction<Double,T> fitness;
     private final Lottery r;
     private final double[] upper;
@@ -94,5 +94,25 @@ public class BoundedInitializer<T extends Optimizable<Double>> implements Generi
         evaled.setID(futureID);
         
         return evaled;
+    }
+
+    @Override
+    public T initializeOnly(T ref, long futureID) {
+
+        @SuppressWarnings("unchecked")
+        final T init = (T) ref.copy();
+
+        final Double[] params = init.getGenomeCopy();
+        final int dims = params.length;
+
+        for(int i = 0; i < dims; i++){
+            final double d = r.nextDouble();
+            assert(upper[i] >= lower[i]);
+            params[i] = d*(upper[i]-lower[i])+lower[i];
+        }
+
+        init.setGenome(params);
+
+        return init;
     }
 }

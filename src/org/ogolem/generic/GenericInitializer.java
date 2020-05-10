@@ -42,13 +42,14 @@ import java.io.Serializable;
 /**
  * Interface for a generic initializer.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-09
  */
 public interface GenericInitializer<E,T extends Optimizable<E>> extends Serializable, Copyable{
    
-	@Override
+    @Override
     GenericInitializer<E,T> copy();
     
     T initialize(final T ref, final long futureID);
     
+    T initializeOnly(final T ref, final long futureID);
 }
