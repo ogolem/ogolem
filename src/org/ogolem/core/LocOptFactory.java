@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ import java.util.HashMap;
 import org.ogolem.adaptive.AdaptiveParameters;
 import org.ogolem.generic.GenericBackend;
 import org.ogolem.generic.GenericLocOpt;
+import org.ogolem.heat.LocalHeatPulses;
 import org.ogolem.interfaces.GenericInterface;
 import org.ogolem.interfaces.OrcaCaller;
 import org.ogolem.locopt.AbstractLocOptFactory;
@@ -47,11 +48,11 @@ import org.ogolem.locopt.AbstractLocOptFactory;
 /**
  * A local optimization factory for the geometry optimizable.
  * @author Johannes Dieterich
- * @version 2015-09-11
+ * @version 2020-04-25
  */
 public class LocOptFactory extends AbstractLocOptFactory<Molecule,Geometry> {
 
-    private static final long serialVersionUID = (long) 20150104;
+    private static final long serialVersionUID = (long) 2020425;
     
     private final GlobalConfig config;
     private final AdaptiveParameters params;
@@ -65,6 +66,85 @@ public class LocOptFactory extends AbstractLocOptFactory<Molecule,Geometry> {
     
     @Override
     protected GenericLocOpt<Molecule, Geometry> buildSpecializedLocalOptimization(final String input) throws Exception {
+
+        if(input.startsWith("localheat:")){
+            final String s = input.substring(10).trim();
+            final int i = s.indexOf(";");
+            // other data 
+            final String s2 = s.substring(0,i);
+            // the locopt info
+            final String s3 = s.substring(i+1);
+            // recursive call 
+            final LocOptFactory factory = new LocOptFactory(config,config.parameters,config.backendDefs); // XXX parameters may not be suitable!
+            final GenericLocOpt<Molecule,Geometry> n = factory.buildLocalOpt(s3);
+            if(n == null){throw new RuntimeException("No Locopt found for " + s3);}
+            
+            final LocalHeatPulses.Configuration heatConfig = new LocalHeatPulses.Configuration();
+            final String[] tokens = s2.split("\\,+");
+            for(int x = 0; x < tokens.length; x++){
+                final String token = tokens[x].trim();
+                if(token.startsWith("choosemode=")){
+                    final String sub = token.substring(11).trim();
+                    switch(sub){ 
+                        case "pick5": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.PICK5; break;
+                        case "10percent": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.PERCENT10; break;
+                        case "upto5": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.UPTO5; break;
+                        case "upto10percent": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.UPTO10PERCENT; break;
+                        case "onsphere": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.ONSPHERE; break;
+                        case "insphere": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.INSPHERE; break;
+                        case "incenter": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.INCENTER; break;
+                        default: throw new RuntimeException("Unknown move mode " + sub + " for local heat pulses.");
+                    }   
+                } else if(token.startsWith("docddd=")){
+                    heatConfig.doCDDD = Boolean.parseBoolean(token.substring(7).trim());
+                } else if(token.startsWith("eqiter=")){
+                    heatConfig.eqIter = Integer.parseInt(token.substring(7).trim());
+                } else if(token.startsWith("iters=")){
+                    heatConfig.iters = Integer.parseInt(token.substring(6).trim());
+                } else if(token.startsWith("movemode=")){
+                    final String sx = token.substring("movemode=".length()).trim();
+                    if(sx.equalsIgnoreCase("coms")){
+                        heatConfig.moveMode = LocalHeatPulses.Configuration.MOVEMODE.MOVECOMS;
+                    } else if(sx.equalsIgnoreCase("cartesian")){
+                        heatConfig.moveMode = LocalHeatPulses.Configuration.MOVEMODE.MOVECARTESIAN;
+                    } else {
+                        throw new RuntimeException("Illegal move mode " + s2 + " for local heat.");
+                    }   
+                } else if(token.startsWith("scalefac=")){
+                    heatConfig.scaleFac = Double.parseDouble(token.substring(9).trim());
+                } else if(token.startsWith("startampl=")){
+                    heatConfig.startAmplitude = Double.parseDouble(token.substring(10).trim());
+                } else if(token.startsWith("temperature=")){
+                    heatConfig.temperature = Double.parseDouble(token.substring(12).trim());
+                } else if(token.startsWith("usemetropolis=")){
+                    heatConfig.useMetropolis = Boolean.parseBoolean(token.substring(14).trim());
+                } else if(token.startsWith("starteuler=")){
+                    heatConfig.startEulerStrength = Double.parseDouble(token.substring(11).trim());
+                } else if(token.startsWith("sigmax=")){
+                    heatConfig.sigmaX = Double.parseDouble(token.substring(7).trim());
+                } else if(token.startsWith("sigmay=")){
+                    heatConfig.sigmaY = Double.parseDouble(token.substring(7).trim());
+                } else if(token.startsWith("sigmaz=")){
+                    heatConfig.sigmaZ = Double.parseDouble(token.substring(7).trim());
+                } else if(token.startsWith("sigma=")){
+                    final double d = Double.parseDouble(token.substring(6).trim());
+                    heatConfig.sigmaX = d;
+                    heatConfig.sigmaY = d;
+                    heatConfig.sigmaZ = d;
+                } else if(token.equalsIgnoreCase("verbose")){
+                    heatConfig.printVerbose = true;
+                } else if(token.startsWith("maxnoprogress=")){
+                    heatConfig.resetAfterNoProgress = true;
+                    heatConfig.resetNoProgressIters = Integer.parseInt(token.substring(14).trim());
+                } else if(token.equalsIgnoreCase("resettorandom")){
+                    heatConfig.resetToRandom = true;
+                } else {
+                    throw new RuntimeException("Unknown option token " + token + " for local heat pulses.");
+                }   
+            }   
+            
+            return new LocalHeatLocOpt(config,n,heatConfig);
+        }
         
         final Newton newton = mapStringToLocOptMethod(input,config);
         if(newton == null){return null;}

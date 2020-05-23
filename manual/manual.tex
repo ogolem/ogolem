@@ -1347,55 +1347,68 @@ the numal.jar to the classpath prior
 to \ogo{} excecution and make use of the optimization algorithms implemented in 
 Numal.
 
-%TODO localheat not included with source yet!
+\subsection{Local heat pulses}
+\label{sec:localheat}
 
-% One of the global optimization algorithms \ogo{} included are local heat 
-% pulses 
-% as originally developed by Arnulf Moebius. The version in \ogo{} is fairly 
-% customized
-% in comparison to the original. You can specify this using: 
-% \texttt{localheat:} followed by the actual local optimization (may be any of 
-% the ones available in \ogo{} and the options for the local heat pulses, 
-% separated by ; so \texttt{localheat:lbfgs:lennardjones;OPTIONS}. The options 
-% are in turn a comma separated list of a variety of options. Please note that 
-% whilst you must have the correct number of commas, you may leave the space in 
-% between them empty and choose the default. We choose this input format to 
-% ensure that users are well aware that this is not a black-box method. The 
-% options are as follows: 
-% \texttt{MODE,doCDDD,eqIter,iters,moveCOMs,scaleFac,startAmpl,temp,useMetro,
-% startEuler,sigmaX,sigmaY,sigmaZ}.
-% \begin{itemize}
-%  \item mode: the mode for the local heat pulses. We support the following 
-% choices: 0 (default) move 5 atoms/COMs, 1: move 10\% of the atoms/COMs, 2: 
-% move 
-% 0 to 5 atoms/COMs, 4: return 0 to 10\% of the atoms/COMs, 10: shoot a pulse
-% into 
-% the cluster and disturb within a 3D Gaussian, 11: shoot a pulse on the 
-% cluster 
-% surface and disturb within a 3D Gaussian.
-% \item doCDDD: if we should check the geometries sanity after perturbation 
-% using
-% CD/DD. Default: false.
-% \item eqIters: the number of equillibration iterations before cooling the
-% amplitudes. Default: 3.
-% \item iters: the number of iterations of the local heat pulses. Default: 10.
-% \item moveCOMs: if the COMs of the building blocks or the atoms should be
-% perturbed. Default: true (move COMs).
-% \item scaleFac: how we scale amplitudes, temperature and euler amplitudes.
-% Default: 0.9.
-% \item startAmpl: what the start amplitude for atom/COM perturbation should be.
-% Default: 2\AA{} in $a_0$.
-% \item temp: if we use a Metropolis criterion, what the start temperature (in
-% Kelvin) should be. Default: 50.
-% \item useMetro: if we use the Metropolis criterion instead of the simplistic
-% criterion. Default: true (use Metropolis).
-% \item startEuler: the initial amplitude for Euler angle perturbation. Default:
-% 0.5.
-% \item sigmaX: the x-width of the 3D Gaussian (if mode 10 or 11). Default: 0.1.
-% \item sigmaY: the y-width of the 3D Gaussian (if mode 10 or 11). Default: 0.1.
-% \item sigmaZ: the z-width of the 3D Gaussian (if mode 10 or 11). Default: 0.1.
-% \end{itemize}
+One of the global optimization algorithms included in \ogo{} are local heat 
+pulses, as originally developed by Arnulf Moebius. The version in \ogo{} is
+fairly customized in comparison to the original, and was described and tested
+in detail \cite{localheat}. Local heat pulses can be used either as a geometry
+mutation (cf.~section \ref{sec:geomglobopt}), or as pre-stage to the actual
+local optimization. In the former case, it will come into effect only with the
+mutation probability (and possibly as one of several mutations); in the latter
+case it will influence every newly generated geometry. Both choices lead to
+the same algorithmic machinery used in the end, hence the options are the same
+(described below). There are quite a few options because the originally
+proposed heat pulses are a full-blown global optimization algorithm in
+themselves, borrowing features from MCM/basin-hopping and simulated annealing.
+The latter features lead to annealing-style options.
 
+You can specify local head pulses as local optimization pre-stage by inserting
+\texttt{localheat:} with its options, followed by the actual local
+optimization (may be any of  
+the ones available in \ogo{}) after a ``;'', in this way:
+\texttt{localheat:OPTIONS;lbfgs:backend=xyz:lennardjones}. The options  
+are keyword=value pairs, from the following list:
+\begin{itemize}
+ \item \texttt{choosemode=} the mode for the local heat pulses. We support
+   the following choices: (default \texttt{pick5})
+   \begin{itemize}
+   \item \texttt{pick5}: move 5 randomly choosen atoms/COMs
+   \item \texttt{upto5}: move 0 to 5 atoms/COMs
+   \item \texttt{10percent}: move 10\% of the atoms/COMs
+   \item \texttt{upto10percent}: move 0\% to 10\% of the atoms/COMs
+   \item \texttt{onsphere}: move atoms/COMs within a 3D-Gaussian centered at a
+     point on a spherical surface enclosing the cluster
+   \item \texttt{insphere}: move atoms/COMs within a 3D-Gaussian centered
+     somewhere inside the whole cluster
+   \item \texttt{incenter}: move atoms/COMs within a 3D-Gaussian around the
+     cluster center
+   \end{itemize}
+\item \texttt{doCDDD=} if we should check the geometry's sanity after
+  heat pulse perturbation, using CD/DD. Default: false.
+\item \texttt{movemode=} \texttt{coms} for moving the COMs of the building
+  blocks, or \texttt{cartesians} for moving atoms. Default: \texttt{coms}
+\item \texttt{iters=} the number of iterative repetitions of the local heat
+  pulses. Default: 10. 
+\item \texttt{eqIters=} the number of equilibration iterations before cooling
+  the movement amplitudes. Of course, we should normally have \texttt{iters}
+  $>$ \texttt{eqIters}. Default: 3.
+\item \texttt{startAmpl=} what the start amplitude for atom/COM
+  perturbation should be. Default: 2\AA{}
+\item \texttt{startEuler=} the initial amplitude for Euler angle
+  perturbation. Default: 0.5.
+\item \texttt{scaleFac=} how we scale amplitudes, temperature and Euler
+  angle amplitudes in annealing-style cooling. Default: 0.9.
+\item \texttt{useMetropolis=} if we use the Metropolis criterion (also allowing
+  energy-upward moves) instead of the
+  simplistic downward-only criterion. Default: true (use Metropolis).
+\item \texttt{temperature=} when we use a Metropolis criterion, what the start
+  temperature (in Kelvin) should be. Default: 50.
+\item \texttt{sigmaX=},\texttt{sigmaY=},\texttt{sigmaZ=}  the x,y,z-width of
+  the 3D Gaussian in the modes \texttt{onsphere}, \texttt{insphere} and
+  \texttt{incenter}. Default: 0.1.  
+\end{itemize}
 
 \section{Internal and external backends}
 As discussed above, all internal local optimizations require a backend 
@@ -1638,6 +1651,8 @@ better position.
   \begin{itemize}
     \item 
   \end{itemize}
+\item \texttt{localheat:} local heat pulses can be selected as local
+  pre-optimization or as mutation, cf.~section \ref{sec:localheat}
 \end{itemize}
 
 To be continued... %TODO
@@ -2490,24 +2505,6 @@ crossover. Valid options:
     \item \texttt{nocuts=X} sets the number of genotype cuts to \texttt{X}. 
 Default: 1.
   \end{itemize}
-  \item \texttt{arctic:} a genotype mixing-recombination, i.e., new 
-  parameter values are created from the parents' genome by some averaging 
-  procedures instead of swapping the currently available ones:
-  \begin{itemize}
-    \item \texttt{nomix=} sets the number of mixing points, i.e., the 
-    number of mixed parameters. 
-    Default: 1.
-    \item \texttt{random} as boolean switch enables some randomness 
-    of mixing: default is false and this means that a new child parameter value is 
-    the exact arithmetic mean of the parameter value of the parents. 
-    \item \texttt{order=} sets the order $r$ in $0.5 \pm (0.5 \cdot w^r)$ with 
-    a random weight $w \in [0, 1]$ (only for enabled option \texttt{random}) 
-    between the parameter value of the one and the other parent during the mixing.
-    So, a higher order leads to a dominance of the arithmetic mean, whereas a lower 
-    order lets, e.g., a random one of the parents dominate (the average calculation
-    between the parameter values is more biased towards one randomly picked parent). 
-    Default is 1 (the lowest possible value).
-  \end{itemize}
   \item \texttt{noxover:} disables crossover operations.
   \item \texttt{multiple:} uses multiple crossover operators. Syntax identical 
 to the one described in Section \ref{sec:geomglobopt}.
@@ -2532,25 +2529,7 @@ Possible mutation choices are:
   \item \texttt{germany:} a basic genotype mutation. Valid options:
   \begin{itemize}
     \item \texttt{mode=} sets the strength of the mutation. Valid input: 
-  \texttt{all} or \texttt{one}. Default: \texttt{one}.
-  \end{itemize}
-  \item \texttt{arctic:} A unary mutation operator that mutates certain 
-  parameters in the neighborhood of their current values within a 
-  Gaussian distribution.
-  \begin{itemize}
-    \item \texttt{mode=} can be set to \texttt{one}, \texttt{multi} and \texttt{all}. 
-    Then exactly one, many (random list) or really all parameters are mutated. 
-    Default is \texttt{one}.
-    \item \texttt{submode=} can be set to \texttt{current} or 
-    \texttt{bound}. The first one uses the current value of 
-    each single parameter as the center of a Gaussian distribution, 
-    the second option uses the mean value of the max./min. boundaries.
-    Default is \texttt{current}.
-    \item \texttt{shape=} standard deviation of the Gaussian probability 
-    distribution. For example, if one wants to have a type of ``hillclimbing''
-    around the current parameter values, a small \texttt{shape} (again 
-    scaled to [0,1]) together with the \texttt{current} submode shall be used. 
-    Default: 0.3.
+\texttt{all} or \texttt{one}. Default: \texttt{one}.
   \end{itemize}
   \item \texttt{nomutation:} disables mutation operations.
   \item \texttt{multiple:} uses multiple mutation operators. Syntax identical 

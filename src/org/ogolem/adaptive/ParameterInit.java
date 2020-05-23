@@ -44,11 +44,11 @@ import org.ogolem.generic.GenericInitializer;
 /**
  * An adapter from the generic to ParameterInit. One day remove..
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-09
  */
 public class ParameterInit implements GenericInitializer<Double,AdaptiveParameters>{
     
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200509;
     private final Random random = new Random();
     private final GenericFitnessFunction<Double,AdaptiveParameters> fitness;
     private final double[] lower;
@@ -90,5 +90,21 @@ public class ParameterInit implements GenericInitializer<Double,AdaptiveParamete
         evaled.setID(futureID);
         
         return evaled;
-    }    
+    }
+
+    @Override
+    public AdaptiveParameters initializeOnly(AdaptiveParameters ref, long futureID) {
+
+        final AdaptiveParameters copy = new AdaptiveParameters(ref);
+        copy.setID(futureID);
+
+        final double[] params = copy.getAllParamters();
+        for(int i = 0; i < params.length; i++){
+            final double d = random.nextDouble();
+            assert(upper[i] >= lower[i]);
+            params[i] = d*(upper[i]-lower[i])+lower[i];
+        }
+
+        return copy;    
+    }
 }

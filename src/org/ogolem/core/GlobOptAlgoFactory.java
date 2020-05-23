@@ -49,6 +49,7 @@ import org.ogolem.generic.GenericMultipleGlobOpt;
 import org.ogolem.generic.GenericMutation;
 import org.ogolem.generic.GenericSanityCheck;
 import org.ogolem.generic.IndividualWriter;
+import org.ogolem.heat.LocalHeatPulses;
 import org.ogolem.helpers.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +57,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2020-02-12
+ * @version 2020-02-25
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20200212;
+    private static final long serialVersionUID = (long) 20200225;
     private static final Logger LOG = LoggerFactory.getLogger(GlobOptAlgoFactory.class);
     private final GenericGlobalOptimizationFactory<Double,Molecule> molecularFactory;
     private final GenericFitnessFunction<Molecule,Geometry> fitness;
@@ -1033,6 +1034,73 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             final SurfaceDetectionEngine engine = new SurfaceDetection(whichSurfDetect);
             
             return new SurfaceDirectedMutation(engine,surfMode,blowColl,globConf.getRefNewton().getBackend(),collDetect);
+        } else if(mutString.startsWith("localheat:")){
+
+            final String[] tokens = tokenizeThirdLevel(mutString.substring("localheat:".length()).trim());
+
+            final LocalHeatPulses.Configuration heatConfig = new LocalHeatPulses.Configuration();
+            CollisionDetection.CDTYPE cdType = globConf.getWhichCollisionEngine();
+            double blowBonds = globConf.blowFacBondDetect;
+            double blowDissoc = globConf.blowFacDissocDetect;
+
+            for(int x = 0; x < tokens.length; x++){
+                final String token = tokens[x].trim();
+                if(token.startsWith("choosemode=")){
+                    final String sub = token.substring(11).trim();
+                    switch(sub){
+                        case "pick5": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.PICK5; break;
+                        case "10percent": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.PERCENT10; break;
+                        case "upto5": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.UPTO5; break;
+                        case "upto10percent": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.UPTO10PERCENT; break;
+                        case "onsphere": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.ONSPHERE; break;
+                        case "insphere": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.INSPHERE; break;
+                        case "incenter": heatConfig.chooseMode = LocalHeatPulses.Configuration.CHOOSEMODE.INCENTER; break;
+                        default: throw new RuntimeException("Unknown move mode " + sub + " for local heat pulses.");
+                    }
+                } else if(token.startsWith("docddd=")){
+                    heatConfig.doCDDD = Boolean.parseBoolean(token.substring(7).trim());
+                } else if(token.startsWith("eqiter=")){
+                    heatConfig.eqIter = Integer.parseInt(token.substring(7).trim());
+                } else if(token.startsWith("iters=")){
+                    heatConfig.iters = Integer.parseInt(token.substring(6).trim());
+                } else if(token.startsWith("movemode=")){
+                    final String s2 = token.substring("movemode=".length()).trim();
+                    if(s2.equalsIgnoreCase("coms")){
+                        heatConfig.moveMode = LocalHeatPulses.Configuration.MOVEMODE.MOVECOMS;
+                    } else if(s2.equalsIgnoreCase("cartesian")){
+                        heatConfig.moveMode = LocalHeatPulses.Configuration.MOVEMODE.MOVECARTESIAN;
+                    } else {
+                        throw new RuntimeException("Illegal move mode " + s2 + " for local heat.");
+                    }
+                } else if(token.startsWith("scalefac=")){
+                    heatConfig.scaleFac = Double.parseDouble(token.substring(9).trim());
+                } else if(token.startsWith("startampl=")){
+                    heatConfig.startAmplitude = Double.parseDouble(token.substring(10).trim());
+                } else if(token.startsWith("temperature=")){
+                    heatConfig.temperature = Double.parseDouble(token.substring(12).trim());
+                } else if(token.startsWith("usemetropolis=")){
+                    heatConfig.useMetropolis = Boolean.parseBoolean(token.substring(14).trim());
+                } else if(token.startsWith("starteuler=")){
+                    heatConfig.startEulerStrength = Double.parseDouble(token.substring(11).trim());
+                } else if(token.startsWith("sigmax=")){
+                    heatConfig.sigmaX = Double.parseDouble(token.substring(7).trim());
+                } else if(token.startsWith("sigmay=")){
+                    heatConfig.sigmaY = Double.parseDouble(token.substring(7).trim());
+                } else if(token.startsWith("sigmaz=")){
+                    heatConfig.sigmaZ = Double.parseDouble(token.substring(7).trim());
+                } else if(token.startsWith("sigma=")){
+                    final double d = Double.parseDouble(token.substring(6).trim());
+                    heatConfig.sigmaX = d;
+                    heatConfig.sigmaY = d;
+                    heatConfig.sigmaZ = d;
+                } else if(token.equalsIgnoreCase("verbose")){
+                    heatConfig.printVerbose = true;
+                } else {
+                    throw new RuntimeException("Unknown option token " + token + " for local heat pulses.");
+                }
+            }
+
+            return new LocalHeatGeometryMutation(fitness,heatConfig,cdType,blowBonds,blowDissoc,globConf.acceptableFitness);
         }
                 
         // no specialized mutation found that would qualify

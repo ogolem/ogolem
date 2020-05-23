@@ -41,7 +41,7 @@ package org.ogolem.general;
 /**
  * The unified entry point to the OGOLEM framework.
  * @author Johannes Dieterich
- * @version 2020-02-12
+ * @version 2020-04-25
  */
 public class MainOgolem {
 
@@ -94,6 +94,8 @@ public class MainOgolem {
             org.ogolem.lionbench.MainLion.main(strippedArgs);
 	} else if(args[0].equalsIgnoreCase("--ljrefs")){
             org.ogolem.ljreferences.MainLJRefs.main(strippedArgs);
+        } else if(args[0].equalsIgnoreCase("--lhp")){
+            org.ogolem.heat.MainLocalHeat.run(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--macrobenchmarks")){
             org.ogolem.macrobenchmarks.MainMacroBenchmarks.run(strippedArgs);
         } else if(args[0].equalsIgnoreCase("--md")){
@@ -178,8 +180,12 @@ public class MainOgolem {
             System.out.println("     for testing and benchmarking OGOLEM");
             System.out.println("   --ljrefs");
             System.out.println("     for ejecting LJ reference structures (deprecated!)");
+            System.out.println("   --lhp");
+            System.out.println("     for using local heat pulses as a global optimization (developer-only!)");
             System.out.println("   --md");
             System.out.println("     for running simple molecular dynamics");
+            System.out.println("   --macrobenchmarks");
+            System.out.println("     for running some macro benchmarks");
             System.out.println("   --microbenchmarks");
             System.out.println("     for running some micro benchmarks");
             System.out.println("   --molecules");

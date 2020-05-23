@@ -43,11 +43,11 @@ import org.ogolem.generic.GenericInitializer;
 /**
  * An adaptor from the old interface to the generic one. Hopefully temporary...
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-09
  */
 public class GeometryInitializationToGenericAdaptor implements GenericInitializer<Molecule, Geometry> {
     
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200509;
     private final GenericFitnessFunction<Molecule,Geometry> fitness;
     private final GeometryInitialization init;
     private final CollisionDetection.CDTYPE whichCollDetect;
@@ -101,5 +101,15 @@ public class GeometryInitializationToGenericAdaptor implements GenericInitialize
         
         return opt;               
     }
-    
+
+    @Override
+    public Geometry initializeOnly(Geometry ref, long futureID) {
+
+        final Geometry initGeom = init.initTheGeometry(ref, whichCollDetect,
+                whichDissDetect, cellSize, blowDiss, blowColl, explDoFRatio,
+                molecularCD);
+        initGeom.setID(futureID);
+
+        return initGeom;
+    }    
 }
