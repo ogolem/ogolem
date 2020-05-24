@@ -295,8 +295,9 @@ H  1.089 1  109.471 2  0.0   3
 
 A bond matrix for the building block may be specified by the user through the
 \texttt{BondMatrix=} keyword. It must only be used following the
-\texttt{MoleculePath=} keyword in both flexible and non-flexible input. The
-path must point to a file containing the bond matrix definition, either as a
+\texttt{MoleculePath=} keyword in both flexible and non-flexible input. This
+path is relative to the location of the \texttt{.ogo} file and must point to
+a file containing the bond matrix definition, either as a
 complete matrix or as a bond list. This input option must be used if the molecule
 does not only contain single bonds or if the automatic bond detection (see output)
 fails to correctly assign bonds. Examples:

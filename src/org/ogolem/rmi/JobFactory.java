@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ import org.ogolem.generic.generichistory.GenericHistory;
 import org.ogolem.generic.genericpool.GenericPool;
 import org.ogolem.generic.genericpool.GenericPoolConfig;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.helpers.Tuple3D;
 import org.ogolem.io.ManipulationPrimitives;
 import org.ogolem.io.OutputPrimitives;
 import org.ogolem.switches.Backbone;
@@ -62,7 +63,7 @@ import org.ogolem.switches.SwitchesInput;
 /**
  * Constructs all jobs from input.
  * @author Johannes Dieterich
- * @version 2016-04-10
+ * @version 2020-04-29
  */
 final class JobFactory {
     
@@ -86,8 +87,8 @@ final class JobFactory {
             final AliveCheck alive, final int myID){
         
         // unconditionally, we will always need an output directory. create it.
-        final Tuple<String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputFile);
-        final String outFolder = dirs.getObject1();
+        final Tuple3D<String,String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputFile);
+        final String outFolder = dirs.getObject2();
         
         try{
             OutputPrimitives.createAFolder(outFolder);

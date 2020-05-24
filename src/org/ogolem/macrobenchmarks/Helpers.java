@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Some helpers solely for the macrobenchmarks
  * @author Johannes Dieterich
- * @version 2020-02-12
+ * @version 2020-04-29
  */
 class Helpers {
     
@@ -78,9 +78,9 @@ class Helpers {
         LOG.debug("Executing " + javaBin + " with jar " + pathToOurJar);
         
         final ProcessBuilder builder = new ProcessBuilder(command);
-        final Process proc = builder.directory(new File(workDir)).redirectOutput(new File(workDir + File.separator + "bench.out")).start();
+        final Process proc = builder.directory(new File(workDir)).redirectOutput(new File(workDir + File.separator + "bench.out")).redirectError(new File(workDir + File.separator + "bench.err")).start();
         proc.waitFor();
-        
+                
         return proc.exitValue();
     }
     

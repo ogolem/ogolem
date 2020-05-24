@@ -53,6 +53,7 @@ import org.ogolem.generic.GenericSanityCheck;
 import org.ogolem.generic.genericpool.GenericPool;
 import org.ogolem.generic.IndividualWriter;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.helpers.Tuple3D;
 import org.ogolem.io.InputPrimitives;
 import org.ogolem.io.InquiryPrimitives;
 import org.ogolem.io.ManipulationPrimitives;
@@ -65,7 +66,7 @@ import org.ogolem.random.StandardRNG;
  * This invokes the IOHandler and checks the resulting array of Strings for
  * configuration options and configures a GlobalConfig object.
  * @author Johannes Dieterich
- * @version 2020-02-12
+ * @version 2020-04-29
  */
 public final class Input {
 
@@ -95,9 +96,10 @@ public final class Input {
         
         final GlobalConfig globConf = new GlobalConfig();
 
-        final Tuple<String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputPath);
-        final String outputFolder = dirs.getObject1();
-        final String baseName = dirs.getObject2();
+        final Tuple3D<String, String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputPath);
+        final String inputDir = dirs.getObject1();
+        final String outputFolder = dirs.getObject2();
+        final String baseName = dirs.getObject3();
         
         final String outputFile = outputFolder + File.separator + baseName + ".out";
         final String logFile = outputFolder + File.separator + baseName + ".log";
@@ -765,7 +767,7 @@ public final class Input {
             for(int molRep = 0; molRep < noReps; molRep++){
             
                 // Configure the Molecules
-                final MoleculeConfig mc = parseMoleculeBlock(molId,molBlock,bondMatrices);
+                final MoleculeConfig mc = parseMoleculeBlock(molId,molBlock,bondMatrices,inputDir);
                 noAtomsTotal += mc.noOfAtoms;
 
                 // fix assertations caused by missing these in toCartesians()
@@ -1474,7 +1476,7 @@ public final class Input {
     }
     
     private static MoleculeConfig parseMoleculeBlock(final int id, final List<String> molBlock,
-            final List<BondInfo> allBondInfos) throws Exception {
+            final List<BondInfo> allBondInfos, final String inputDir) throws Exception {
         
         MoleculeConfig mc = new MoleculeConfig(true);
         mc.iID = id;
@@ -1489,7 +1491,7 @@ public final class Input {
 
             if (molBlock.get(1).startsWith("MoleculePath=")) {
                 // read the zmat from an auxiliary file in
-                final String sPath = molBlock.get(1).substring(13).trim();
+                final String sPath = inputDir + File.separator + molBlock.get(1).substring(13).trim();
 
                 if (sPath.endsWith(".zmat")) {
                     zmat = readZmatFromFile(sPath);
@@ -1617,7 +1619,7 @@ public final class Input {
             // default is set to non-flexible
             if (molBlock.get(0).startsWith("MoleculePath=")) {
                 // read the molecule from an auxiliary file in
-                final String molPath = molBlock.get(0).substring(13).trim();
+                final String molPath = inputDir + File.separator + molBlock.get(0).substring(13).trim();
 
                 CartesianCoordinates cartes;
 
