@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,14 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.helpers.Tuple3D;
 import org.ogolem.io.ManipulationPrimitives;
 import org.ogolem.io.OutputPrimitives;
 
 /**
  * Proxy function for the RMI parallelization.
  * @author Johannes Dieterich
- * @version 2016-04-10
+ * @version 2020-04-28
  */
 public class MainRMIProxy {
 
@@ -203,8 +204,8 @@ public class MainRMIProxy {
         }
         
         // create, if necessary, the output directory
-        final Tuple<String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputFile);
-        final String outFolder = dirs.getObject1();
+        final Tuple3D<String,String,String> dirs = ManipulationPrimitives.outDirAndBaseName(inputFile);
+        final String outFolder = dirs.getObject2();
 
         try {
             ManipulationPrimitives.moveOldFolders(outFolder, 9, System.getProperty("user.dir"));

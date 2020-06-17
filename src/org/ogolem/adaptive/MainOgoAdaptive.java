@@ -53,6 +53,7 @@ import org.ogolem.generic.genericpool.GenericPool;
 import org.ogolem.generic.genericpool.GenericPoolConfig;
 import org.ogolem.generic.threading.GenericOGOLEMOptimization;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.helpers.Tuple3D;
 import org.ogolem.io.ManipulationPrimitives;
 import org.ogolem.io.OutputPrimitives;
 import org.ogolem.properties.Energy;
@@ -95,9 +96,9 @@ public class MainOgoAdaptive {
             noThreads = Runtime.getRuntime().availableProcessors();
         }
         
-        final Tuple<String,String> dirs = ManipulationPrimitives.outDirAndBaseName(configFile);
-        final String outFolder = dirs.getObject1();
-        final String baseName = dirs.getObject2();
+        final Tuple3D<String,String,String> dirs = ManipulationPrimitives.outDirAndBaseName(configFile);
+        final String outFolder = dirs.getObject2();
+        final String baseName = dirs.getObject3();
         
         final String outFile = outFolder + File.separator + baseName + ".out";
         

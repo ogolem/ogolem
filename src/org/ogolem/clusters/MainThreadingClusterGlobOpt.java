@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,13 +52,14 @@ import org.ogolem.generic.generichistory.GenericHistoryConfig;
 import org.ogolem.generic.genericpool.GenericPool;
 import org.ogolem.generic.genericpool.GenericPoolConfig;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.helpers.Tuple3D;
 import org.ogolem.io.ManipulationPrimitives;
 import org.ogolem.io.OutputPrimitives;
 
 /**
  * The entry point for cluster global optimization, threading style.
  * @author Johannes Dieterich
- * @version 2016-04-10
+ * @version 2020-04-29
  */
 public class MainThreadingClusterGlobOpt {
     
@@ -79,9 +80,10 @@ public class MainThreadingClusterGlobOpt {
         }
         final int noThreads = Integer.parseInt(args[1]);
         
-        final Tuple<String,String> dirs = ManipulationPrimitives.outDirAndBaseName(configFile);
-        final String outFolder = dirs.getObject1();
-        final String baseName = dirs.getObject2();
+        final Tuple3D<String,String,String> dirs = ManipulationPrimitives.outDirAndBaseName(configFile);
+        final String inpFolder = dirs.getObject1();
+        final String outFolder = dirs.getObject2();
+        final String baseName = dirs.getObject3();
         
         final String outFile = outFolder + File.separator + baseName + ".out";
         
@@ -109,7 +111,7 @@ public class MainThreadingClusterGlobOpt {
         }
         
         // serialize the globconf for restart purposes
-	final String configBin = outFolder + "-config.bin";
+        final String configBin = outFolder + "-config.bin";
         try{
             OutputPrimitives.writeObjToBinFile(configBin, conf);
         } catch(Exception e){

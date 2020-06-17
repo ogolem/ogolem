@@ -102,7 +102,7 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
         final File outDir = new File(outputDir);
         final String[] ls = outDir.list(new Helpers.Rank0Filter());
         if(ls == null || ls.length != 1){
-            throw new RuntimeException("No rank0 geometry for benchmark " + csvLine + " in " + outputDir);
+            throw new RuntimeException("No singular rank0 geometry for benchmark " + csvLine + " in " + outputDir);
         }
         
         final String rank0 = outputDir + File.separator + ls[0];

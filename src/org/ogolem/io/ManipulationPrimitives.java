@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,17 @@ package org.ogolem.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.ogolem.helpers.Tuple;
+import org.ogolem.helpers.Tuple3D;
 
 /**
  * A set of manipulation primitives.
  * @author Johannes Dieterich
- * @version 2014-10-27
+ * @version 2020-04-29
  */
 public class ManipulationPrimitives {
+	
+	private static final boolean DEBUG = false;
     
     public static void remove(final String path) throws IOException{
         
@@ -94,9 +95,9 @@ public class ManipulationPrimitives {
      */
     public static void moveOldFolders(final String folderName, final int maxFolders,
             final String pathPrefix) throws IOException {
-        
+            	
         System.out.println("Working on " + folderName);
-        
+                
         String fullPath = pathPrefix;
         if (!fullPath.endsWith(System.getProperty("file.separator"))) {
             fullPath += System.getProperty("file.separator");
@@ -112,10 +113,14 @@ public class ManipulationPrimitives {
 
         int i = maxFolders;
         do {
+        	
+        	if(DEBUG) System.out.println("Moving for #" + i  + " and " + fullPath);
+        	
             if (i == maxFolders) {
                 final String sFolderPath = fullPath + "." + i;
                 final File f = new File(sFolderPath);
                 if (f.exists()) {
+                	if(DEBUG) System.out.println("Removing " + sFolderPath);
                     // if folder.$iMax (here: maxFolders) exists, then delete it and its content.
                     remove(sFolderPath);
                 }
@@ -126,6 +131,7 @@ public class ManipulationPrimitives {
                     // move folder away to folder.1
                     final String sFolderNew = fullPath + "." + (i + 1);
                     final File fNew = new File(sFolderNew);
+                    if(DEBUG) System.out.println("Moving " + fullPath + " to " + sFolderNew);
                     if (!f.renameTo(fNew)) {
                         // not successful. can have various reasons according to the documentation.
                         // for example an existing folder of this name makes the moving impossible
@@ -141,6 +147,7 @@ public class ManipulationPrimitives {
                     // move folder to the one higher number
                     final String folderPathNew = fullPath + "." + (i + 1);
                     final File fNew = new File(folderPathNew);
+                    if(DEBUG) System.out.println("Moving " + fullPath + " to " + oldFolderPath);
                     if (!f.renameTo(fNew)) {
                         // not successful.
                         throw new IOException("Moving the old folder from " + oldFolderPath + " to " + folderPathNew + " failed.");
@@ -163,16 +170,34 @@ public class ManipulationPrimitives {
         f.setExecutable(true);
     }
     
-    public static Tuple<String,String> outDirAndBaseName(final String inputFile){
+    /**
+     * Obtains the input directory, output directory, and base name for outputs from the input file name.
+     * @param inputFile
+     * @return a Tuple containing the input directory (absolute path), output directory (relative path), and base name (relative path) in that order.
+     */
+    public static Tuple3D<String, String,String> outDirAndBaseName(final String inputFile){
         
-        final Path inpFilePath = Paths.get(inputFile);
-        final String parentFolder = (inpFilePath.getParent() == null) ? "" : inpFilePath.getParent().toString() + File.separator;
-        final String fileName = inpFilePath.getFileName().toString();
+    	final File f = new File(inputFile);
+    	final String absolutePath = f.getAbsolutePath();
+    	
+    	if(DEBUG) System.out.println("Absolute path" + absolutePath);
+    	
+    	final String parentFolder = Paths.get(absolutePath).getParent().toString();
+        final String fileName = absolutePath;
         final int indexOfSuffix = fileName.indexOf(".ogo");
         
-        final String baseName = fileName.substring(0,indexOfSuffix);
-        final String outFolder = parentFolder + baseName;
+        final String basePath = fileName.substring(0,indexOfSuffix);
+        final String split[] = basePath.split("\\" + File.separator);
+        final String baseName = split[split.length-1]; // last entry is the real base
+        final String outFolder = baseName;//parentFolder + File.separator + baseName;
         
-        return new Tuple<>(outFolder,baseName);
+        if(DEBUG) {
+        	System.out.println("Returning following paths:");
+        	System.out.println("parentFolder " + parentFolder);
+        	System.out.println("outFolder " + outFolder);
+        	System.out.println("baseName " + baseName);
+        }
+        
+        return new Tuple3D<>(parentFolder, outFolder, baseName);
     }
 }

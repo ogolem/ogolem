@@ -5,3 +5,7 @@ examples/clusteropt/ar38 , ar38_sweden.ogo , -0.0659856619926505, globmin.xyz , 
 examples/clusteropt/ar38_fire , ar38_fire.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
 # LJ55
 examples/clusteropt/ar55 , ar55_sweden.ogo , -0.10594240135321474, globmin.xyz , 1e-6 , 1e-4
+# H2O 7 - TIP4P
+examples/clusteropt/w7 , w7_tip4p.ogo , -0.0927719842 , globmin_tip4p.xyz , 1e-6 , 1e-4
+# H2O 7 - TTM3F
+examples/clusteropt/w7 , w7_ttm3f.ogo , -0.091194191 , globmin_ttm3f.xyz , 1e-6 , 1e-4
