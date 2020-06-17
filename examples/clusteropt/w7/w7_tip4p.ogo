@@ -12,7 +12,7 @@ DiversityCheck=percfitnessbased:0.1
 ThreshLocOptGradient=1E-6
 PostSanityCD=true
 PostSanityDD=true
-AcceptableFitness=-0.0927719842
+AcceptableFitness=-0.0927719
 <GEOMETRY>
 NumberOfParticles=7
 <MOLECULE>

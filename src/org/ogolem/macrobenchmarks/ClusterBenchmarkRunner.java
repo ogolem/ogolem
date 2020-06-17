@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Run cluster optimization benchmarks.
  * @author Johannes Dieterich
- * @version 2020-04-19
+ * @version 2020-05-24
  */
 class ClusterBenchmarkRunner implements BenchmarkRunner {
 
@@ -101,8 +101,17 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
         // find the rank0 geometry in that output directory
         final File outDir = new File(outputDir);
         final String[] ls = outDir.list(new Helpers.Rank0Filter());
-        if(ls == null || ls.length != 1){
-            throw new RuntimeException("No singular rank0 geometry for benchmark " + csvLine + " in " + outputDir);
+        if(ls == null){
+            final String[] files = outDir.list();
+            System.out.println("ERROR: didn't find a rank0 - found files:");
+            for(final String file : files){
+                System.err.println(file);
+            }
+            throw new RuntimeException("Null'd filtered output directory for rank0 geometry for benchmark " + csvLine + " in " + outputDir);
+        } else if (ls.length == 0) {
+            throw new RuntimeException("No rank0 geometry for benchmark " + csvLine + " in " + outputDir);
+        } else if (ls.length > 1) {
+            throw new RuntimeException("Multiple rank0 geometry for benchmark " + csvLine + " in " + outputDir);
         }
         
         final String rank0 = outputDir + File.separator + ls[0];
