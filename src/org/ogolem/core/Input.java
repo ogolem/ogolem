@@ -584,7 +584,7 @@ public final class Input {
             } else if(line.startsWith("AdaptiveParameters=")){
                 final String sFile = line.substring(19).trim();
                 try{
-                    final String[] saParams = Input.ReadFile(sFile);
+                    final String[] saParams = Input.ReadFile(inputDir + File.separator + sFile);
                     final org.ogolem.adaptive.AdaptiveParameters params = new org.ogolem.adaptive.AdaptiveParameters(saParams, -1);
                     globConf.parameters = params;
                 } catch(Exception e){
