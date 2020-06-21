@@ -1,0 +1,19 @@
+###OGOLEM###
+<GEOMETRY>
+NumberOfParticles=4
+<MOLECULE>
+MoleculeRepetitions=4
+MoleculePath=pm7s6.xyz
+</MOLECULE>
+</GEOMETRY>
+CellSize=30;30;30
+NumberOfGlobIterations=500
+PoolSize=60
+GeneticRecordsToSerial=1000000
+GeometriesToSerial=100000
+# Turn off CD before LocOpt, we'll repair colliding geometry instead.
+PreSanityCD=false
+PostSanityCD=true
+BlowBondDetect=1.1
+LocOptAlgo=chained:lbfgs:backend=xyz:untangle:sigma=1.2|mopac:custom
+GlobOptAlgo=cluster{xover(multiple:75%sweden:cutstyle=2|25%sweden:cutstyle=1)mutation(multiple:75%montecarlo:mode=some|25%montecarlo:mode=one)}
