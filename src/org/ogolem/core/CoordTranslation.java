@@ -1706,7 +1706,7 @@ public final class CoordTranslation {
                 minEigenValueIndex = i;
             }
         }
-        if(minEigenValueIndex <= 0){
+        if(minEigenValueIndex < 0){
             throw new Exception("Kearsely matrix has no real eigenvalues - this shouldn't happen.");
         }
         

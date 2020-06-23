@@ -71,7 +71,7 @@ public class BackendFactory {
         if(backend.startsWith("xyz:")){
             final CartesianFullBackend cBack = mapStringToBackend(config, backend.substring(4),params,config.outputFolder);
             final FullyCartesianCoordinates cCoords = new FullyCartesianCoordinates(cBack);
-            
+
             return cCoords;
         } else if(backend.startsWith("rigid:")){
             try{
@@ -145,6 +145,33 @@ public class BackendFactory {
                 else if(s.equalsIgnoreCase("nocache")) {back = new UniversalFF(0,false);}
                 else {back = new UniversalFF(0,true);}
             } else {back = new UniversalFF(0,true);}
+        } else if (sBackend.startsWith("untangle:")) {
+            final String s = sBackend.substring(9).trim();
+            double sigma = 1.0;
+            boolean moleculeWise = true;
+            if (s.length() != 0) {
+                final String[] sub = s.split(",");
+                for (String opt: sub) {
+                    if (opt.startsWith("sigma=")) {
+                        try {
+                            sigma = Double.parseDouble(opt.substring(6));
+                            if (sigma <= 0)
+                                throw new RuntimeException("ERROR: Sigma value in untangler must be > 0!");
+                        } catch (Exception e) {
+                            throw new RuntimeException("ERROR: Could not parse untangler sigma value!", e);
+                        }
+                    } else if (opt.startsWith("moleculeWise=")){
+                        try {
+                            moleculeWise = Boolean.parseBoolean(opt.substring(13));
+                        } catch (Exception e) {
+                            throw new RuntimeException("ERROR: Could not parse untangler moleculeWise flag!", e);
+                        }
+                    } else {
+                        throw new RuntimeException("ERROR: Unknown option in untangler: " + opt);
+                    }
+                }
+            }
+            back = new MoleculeUntangler(sigma, moleculeWise);
         } else if(sBackend.equalsIgnoreCase("adaptiveUFF")){
             back = new org.ogolem.adaptive.AdaptiveUFF(false);
         } else if (sBackend.startsWith("adaptiveLJFF")) {
