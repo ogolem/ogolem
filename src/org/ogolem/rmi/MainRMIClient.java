@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2011, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import static org.ogolem.rmi.RMICodes.JOBSTATE.*;
 /**
  * The entry to the client part of OGOLEM's RMI.
  * @author Johannes Dieterich
- * @version 2016-04-05
+ * @version 2020-06-23
  */
 public class MainRMIClient {
 
@@ -101,7 +101,7 @@ public class MainRMIClient {
         
         final String key = "Client speaking, I am here. " + keySuffix;
 
-        // first we try to connect to our master and exchange keys
+        // first we try to connect to our server and exchange keys
         final long waittimeClientMS = 2000; // two seconds.
         RMICommunication<?> comm = null;
         int myID = -1;
@@ -123,10 +123,10 @@ public class MainRMIClient {
                 }
             
                 // exchange keys
-                final Tuple<String,Integer> answer = comm.registerWithMaster(key);
-                if(!answer.getObject1().equalsIgnoreCase("Master speaking, everything fine. " + keySuffix)){
+                final Tuple<String,Integer> answer = comm.registerWithServer(key);
+                if(!answer.getObject1().equalsIgnoreCase("Server speaking, everything fine. " + keySuffix)){
                     // not good, exit (we want to avoid double registration...)
-                    System.err.println("ERROR: Wrong answer from master. Aborting client. Server was " + server + ". Answer was " + answer.getObject1());
+                    System.err.println("ERROR: Wrong answer from server. Aborting client. Server was " + server + ". Answer was " + answer.getObject1());
                     System.exit(27);
                 } else{
                     myID = answer.getObject2();

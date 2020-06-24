@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import org.ogolem.rmi.RMICodes.JOBSTATE;
 /**
  * A generic global optimization job.
  * @author Johannes Dieterich
- * @version 2016-01-21
+ * @version 2020-06-23
  */
 public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
 
@@ -140,7 +140,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                 if(DEBUG){System.out.println("DEBUG: Initial chunk request: " + initTasks.size());}
                 initTasksGotten = initTasks.size();
             } catch(Exception e){
-                System.err.println("ERROR: Exception in initial proxy to master communication.");
+                System.err.println("ERROR: Exception in initial proxy to server communication.");
                 e.printStackTrace(System.err);
                 System.exit(28);
             } finally {
@@ -355,7 +355,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                         final List<T> myPool = new ArrayList<>();
                         int c = 0;
                         int offset = 0;
-                        // always synchronize our top, NEW individuals with the master
+                        // always synchronize our top, NEW individuals with the server
                         while(c < maxStructsExchange && pool.getCurrentPoolSize() > 0 && offset < pool.getCurrentPoolSize()){
                             final T ind = pool.getIndividualAtPosition(offset); // we remove from the top (ignoring known IDs)
                             final long id = ind.getID();
@@ -486,7 +486,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T>{
                     if(doMaxStructsExchange){
                         final List<T> myPool = new ArrayList<>();
                         int c = 0;
-                        // always synchronize our top individuals with the master
+                        // always synchronize our top individuals with the server
                         for(final GenericPoolEntry<E,T> entry : pool.getAllIndividuals()){
                             myPool.add(entry.getIndividual());
                             pool.removeIndividualAtPos(c);

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2011-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import org.ogolem.helpers.Tuple3D;
 /**
  * A list of clients, their state and the work they are supposed to do.
  * @author Johannes Dieterich
- * @version 2016-04-05
+ * @version 2020-06-23
  */
 final class ClientList<T>{
 
@@ -181,7 +181,7 @@ final class ClientList<T>{
                             rmi.returnResultForced(dummy);
                         }
                     } catch(Exception e){
-                        System.err.println("ERROR: Couldn't return dummy result to master. This is a serious problem! " + e.toString());
+                        System.err.println("ERROR: Couldn't return dummy result to server. This is a serious problem! " + e.toString());
                         e.printStackTrace(System.err);
                     }
                 }

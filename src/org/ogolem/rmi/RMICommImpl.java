@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import org.ogolem.rmi.RMICodes.JOBSTATE;
 /**
  * Implements our RMI communication interface.
  * @author Johannes Dieterich
- * @version 2016-01-25
+ * @version 2020-06-23
  */
 public class RMICommImpl<T> implements RMICommunication<T>{
 
@@ -88,7 +88,7 @@ public class RMICommImpl<T> implements RMICommunication<T>{
     }
 
     @Override
-    public Tuple<String,Integer> registerWithMaster(final String key) throws RemoteException{
+    public Tuple<String,Integer> registerWithServer(final String key) throws RemoteException{
 
         if(anyProblem){
             throw new RemoteException("Configuration problem.");
@@ -96,11 +96,11 @@ public class RMICommImpl<T> implements RMICommunication<T>{
         
         // we use the key mainly to make sure that we do not mess up with any other program
         if(key.equalsIgnoreCase("Client speaking, I am here. " + keySuffix)){
-            return new Tuple<>("Master speaking, everything fine. " + keySuffix, list.newClient());
+            return new Tuple<>("Server speaking, everything fine. " + keySuffix, list.newClient());
         } else if(key.startsWith("Client speaking, I am here. ") && !key.equalsIgnoreCase("Client speaking, I am here. " + keySuffix)){
-            return new Tuple<>("Master speaking, you are contacting the wrong server. Contacted server: " + keySuffix,-1);
+            return new Tuple<>("Server speaking, you are contacting the wrong server. Contacted server: " + keySuffix,-1);
         } else {
-            return new Tuple<>("Master speaking, absolutely wrong key.",-1);
+            return new Tuple<>("Server speaking, absolutely wrong key.",-1);
         }
     }
 
