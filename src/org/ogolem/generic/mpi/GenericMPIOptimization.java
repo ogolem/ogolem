@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,9 +52,10 @@ import org.slf4j.LoggerFactory;
 /**
  * A generic class for MPI based parallelization of our optimization problems.
  * Please note: you must call MPI_INIT from OUTSIDE this and decide already,
- * if the process is master or slave!
+ * if the process is queen (rank 0) or drone (rank 1 - N)! Note that the queen
+ * does NOT do any quantum of work herself here.
  * @author Johannes Dieterich
- * @version 2014-04-02
+ * @version 2020-06-23
  */
 public class GenericMPIOptimization<E, T extends Optimizable<E>> {
     
@@ -67,9 +69,9 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
     private GenericMPIOptimization(){}
     
     @SuppressWarnings("unchecked")
-    public static <T> void runAsMaster(final Job<T> job) throws Exception {
+    public static <T> void runAsQueen(final Job<T> job) throws Exception {
         
-        log.debug("Entering generic MPI globopt as master. BRACE YOURSELF BIG TIMES!");
+        log.debug("Entering generic MPI globopt as queen. BRACE YOURSELF BIG TIMES!");
         
         final int noProcs = MPI.COMM_WORLD.Size();
         if(noProcs <= 1){
@@ -79,11 +81,11 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
         /*
          * initial broadcast
          */
-        final char[] initMessage = "Hello from MPI master, all is well!".toCharArray();
+        final char[] initMessage = "Hello from MPI queen, all is well!".toCharArray();
         MPI.COMM_WORLD.Bcast(initMessage, 0, 35, MPI.CHAR, KICKOFF);
         
         /*
-         * fill up all slaves once
+         * fill up all drones once
          */
         int taskCounter = 1;
         for(int proc = 1; proc < noProcs; proc++){
@@ -140,9 +142,9 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
     }
     
     @SuppressWarnings("unchecked")
-    public static <X,Y extends Optimizable<X>> void runAsSlave(final long timeout) throws Exception {
+    public static <X,Y extends Optimizable<X>> void runAsDrone(final long timeout) throws Exception {
         
-        log.debug("Entering generic MPI globopt as slave. BRACE YOURSELF BIG TIMES!");
+        log.debug("Entering generic MPI globopt as drone. BRACE YOURSELF BIG TIMES!");
         
         final int myRank = MPI.COMM_WORLD.Rank();
         
@@ -151,8 +153,8 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
         MPI.COMM_WORLD.Bcast(initMessage, 0, 35, MPI.CHAR, KICKOFF);
         final String sInit = new String(initMessage).trim();
         
-        if(!sInit.equalsIgnoreCase("Hello from MPI master, all is well!")){
-            throw new RuntimeException("Initial message from master was not what " + myRank + "expected. Exiting. Received message: "
+        if(!sInit.equalsIgnoreCase("Hello from MPI queen, all is well!")){
+            throw new RuntimeException("Initial message from queen was not what " + myRank + "expected. Exiting. Received message: "
                 + sInit);
         }
                 
@@ -162,13 +164,13 @@ public class GenericMPIOptimization<E, T extends Optimizable<E>> {
         BigLoop: while((System.currentTimeMillis()-startTime) < timeout ){
             
             
-            // always the same idea: ask the master for a new task
+            // always the same idea: ask the queen for a new task
             final char[] message = new char[50];
             final Status status = MPI.COMM_WORLD.Recv(message, 0, 50, MPI.CHAR, 0, MPI.ANY_TAG);
             
             final int messTag = status.tag;
             if (messTag == EXITDONE || (messTag != WAITFOR && messTag != NEXTTASK)) {
-                log.debug("Master tells me to quit: doing so! Tag was " + messTag);
+                log.debug("Queen tells me to quit: doing so! Tag was " + messTag);
                 break;
             } else if(messTag == WAITFOR) {
                 Thread.sleep(TIMEOUT);

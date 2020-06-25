@@ -238,7 +238,7 @@ class GenericThreadingClientBackend<E,T extends Optimizable<E>> {
             final List<T> myPool = new ArrayList<>();
             int c = 0;
             int offset = 0;
-            // always synchronize our top, NEW individuals with the master            
+            // always synchronize our top, NEW individuals with the server
             while(c < indsToMerge && pool.getCurrentPoolSize() > 0 && offset < pool.getCurrentPoolSize()){
                 final T ind = pool.getIndividualAtPosition(offset); // we remove from the top (ignoring known IDs)
                 final long id = ind.getID();

@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,7 +53,7 @@ import org.ogolem.rmi.GenericGlobOptJob;
  * The entry point for any batch-mode, massively parallel usage of the OGOLEM
  * program suite in cluster global optimization mode.
  * @author Johannes Dieterich
- * @version 2014-04-06
+ * @version 2020-06-23
  */
 public class MainOGOLEM {
 
@@ -122,7 +123,7 @@ public class MainOGOLEM {
         }
 
         if (myRank == 0) {
-            // MPI master
+            // MPI rank 0 == the queen
 			/*
              * "Serial" parts: Setup
              */
@@ -253,9 +254,9 @@ public class MainOGOLEM {
                 final GenericGlobOptJob<Molecule,Geometry> job = new GenericGlobOptJob<>(globConf,
                     pool,history, globConf.getReader(),globConf.getWriter(globConf.outputFolder),
                     globConf.outputFolder,globConf.outputFile);
-                GenericMPIOptimization.runAsMaster(job);
+                GenericMPIOptimization.runAsQueen(job);
             } catch(Exception e){
-                System.err.println("Couldn't run master part of the job.");
+                System.err.println("Couldn't run queen part of the job.");
                 e.printStackTrace(System.err);
                 try {
                     MPI.COMM_WORLD.Abort(42);
@@ -311,9 +312,9 @@ public class MainOGOLEM {
             final long timeout = 30000; // 30 s timeout
 
             try {
-                GenericMPIOptimization.runAsSlave(timeout);
+                GenericMPIOptimization.runAsDrone(timeout);
             } catch (Exception e) {
-                System.err.println("Exception in slave process " + myRank);
+                System.err.println("Exception in drone process " + myRank);
                 e.printStackTrace(System.err);
                 try {
                     MPI.COMM_WORLD.Abort(99);

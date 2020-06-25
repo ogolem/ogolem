@@ -50,7 +50,7 @@ import org.ogolem.io.OutputPrimitives;
 /**
  * Proxy function for the RMI parallelization.
  * @author Johannes Dieterich
- * @version 2020-04-28
+ * @version 2020-06-23
  */
 public class MainRMIProxy {
 
@@ -152,7 +152,7 @@ public class MainRMIProxy {
         
         final String key = "Client speaking, I am here. " + keySuffix;
         
-        // first we try to connect to our master and exchange keys
+        // first we try to connect to our server and exchange keys
         final long waittimeClientMS = 2000; // two seconds.
         RMICommunication<?> serverComm = null;
         int myID = -1;
@@ -174,10 +174,10 @@ public class MainRMIProxy {
                 }
             
                 // exchange keys
-                final Tuple<String,Integer> answer = serverComm.registerWithMaster(key);
-                if(!answer.getObject1().equalsIgnoreCase("Master speaking, everything fine. " + keySuffix)){
+                final Tuple<String,Integer> answer = serverComm.registerWithServer(key);
+                if(!answer.getObject1().equalsIgnoreCase("Server speaking, everything fine. " + keySuffix)){
                     // not good, exit (we want to avoid double registration...)
-                    System.err.println("ERROR: Wrong answer from master.s Aborting client. Server was " + serverName + ". Answer was " + answer.getObject1());
+                    System.err.println("ERROR: Wrong answer from server. Aborting client. Server was " + serverName + ". Answer was " + answer.getObject1());
                     System.exit(27);
                 } else{
                     myID = answer.getObject2();

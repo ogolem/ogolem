@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import org.ogolem.helpers.Tuple3D;
 /**
  * Defines all client-server communication using RMI.
  * @author Johannes Dieterich
- * @version 2016-01-25
+ * @version 2020-06-23
  * @param <T> typically an optimizable
  */
 public interface RMICommunication<T> extends Remote {
@@ -58,7 +58,7 @@ public interface RMICommunication<T> extends Remote {
      * @return A string and an ID for the client.
      * @throws RemoteException
      */
-    public Tuple<String,Integer> registerWithMaster(String sKey) throws RemoteException;
+    public Tuple<String,Integer> registerWithServer(String sKey) throws RemoteException;
 
     /**
      * Get a task. If it doesn't contain anything,
