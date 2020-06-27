@@ -1,6 +1,5 @@
 /**
-Copyright (c) 2010, J. M. Dieterich
-              2016-2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,65 +39,74 @@ package org.ogolem.core;
 import org.ogolem.random.Lottery;
 
 /**
- * Defines an orbit space, i.e., a "shell" of a sphere.
+ * A half-sphere, where the base is always in the x-y plane.
  * @author Johannes Dieterich
  * @version 2020-06-22
  */
-final class OrbitSpace implements AllowedSpace{
-
-    private final static long serialVersionUID = (long) 20200622;
+public class HalfSphereSpace implements AllowedSpace {
+    
+    private static final long serialVersionUID = (long) 20200622;
 
     private final Lottery random;
-
-    private final double lowOrb;
-
-    private final double highOrb;
-
+    
+    private final double radius;
     private final double[] center;
-
-    OrbitSpace(final double[] center, final double lowestOrb, final double highestOrb){
-        this.center = center;
-        this.lowOrb = lowestOrb;
-        this.highOrb = highestOrb;
+    
+    HalfSphereSpace(final double[] middle, final double radius){
+        this.center = middle;
+        this.radius = radius;
         this.random = Lottery.getInstance();
     }
-
+    
+    private HalfSphereSpace(final HalfSphereSpace orig){
+        this.radius = orig.radius;
+        this.center = orig.center;
+        this.random = Lottery.getInstance();
+    }
+    
     @Override
-    public OrbitSpace clone(){
-        
-        final double[] tmp = center.clone();
-
-        return new OrbitSpace(tmp, this.lowOrb, this.highOrb);
+    public HalfSphereSpace clone() {
+        return new HalfSphereSpace(this);
     }
 
     @Override
-    public double[] getPointInSpace(){
-
+    public double[] getPointInSpace() {
+        
         // we need some randoms
         final double[] spherical = new double[3];
         // radius
-        spherical[0] = (highOrb-lowOrb)*random.nextDouble()+lowOrb;
+        spherical[0] = radius * random.nextDouble();
 
         // phi and omega
         spherical[1] = random.nextDouble() * 2.0 * Math.PI;
         spherical[2] = random.nextDouble() * Math.PI;
 
         // translate to cartesian
-        final double[] cartes = new double[3];
-        CoordTranslation.sphericalToCartesianCoord(spherical, cartes);
+        final double[] point = new double[3];
+        CoordTranslation.sphericalToCartesianCoord(spherical, point);
 
-        // move with respect to center
+        // move with respect to middle
         for(int i = 0; i < 3; i++){
-            cartes[i] += center[i];
+            point[i] += center[i];
         }
         
-        assert(isPointInSpace(cartes));
+        // now ensure that it is in the upper half of the sphere
+        if(point[2] < center[2]){
+            final double diff = center[2] - point[2];
+            point[2] = center[2] + diff;
+        }
+        
+        assert(isPointInSpace(point));
 
-        return cartes;
+        return point;
     }
 
     @Override
-    public boolean isPointInSpace(double[] point){
+    public boolean isPointInSpace(final double[] point) {
+
+        if(point[2] < center[2]){
+            return false; // too low
+        }
 
         // move with respect to middle of sphere
         final double x = point[0] - center[0];
@@ -109,6 +117,6 @@ final class OrbitSpace implements AllowedSpace{
         final double r = Math.sqrt(x*x+y*y+z*z);
 
         // check
-        return (r >= lowOrb && r <= highOrb);
-    }
+        return (r <= radius);
+    }    
 }

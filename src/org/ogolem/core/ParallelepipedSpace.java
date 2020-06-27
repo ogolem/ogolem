@@ -1,5 +1,6 @@
 /**
-Copyright (c) 2010     , J. M. Dieterich
+Copyright (c) 2010, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,110 +38,118 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import contrib.jama.*;
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
  * A cuboidal space.
  * @author Johannes Dieterich
- * @version 2010-09-22
+ * @version 2016-12-18
  */
 final class ParallelepipedSpace implements AllowedSpace{
 
     private final static long serialVersionUID = (long) 20100921;
 
-    private final Random random;
+    private final Lottery random;
 
     /**
      * 4 corners required to define the parallelpiped.
      */
-    private final double[][] daCorners;
+    private final double[][] corners;
 
     /**
      * 3 cell vectors.
      */
-    private final double[][] daCellVectors;
+    private final double[][] cellVectors;
 
+    private final Matrix invTrans;
+    
     ParallelepipedSpace(final double[][] corners){
-        this.random = new Random();
-        this.daCorners = corners;
-        this.daCellVectors = new double[3][3];
+        this.random = Lottery.getInstance();
+        this.corners = corners;
+        this.cellVectors = new double[3][3];
 
         for(int j = 0; j < 3; j++){
             for(int i = 0; i < 3; i++){
-                daCellVectors[j][i] = daCorners[j+1][i] - daCorners[0][i];
+                cellVectors[j][i] = this.corners[j+1][i] - this.corners[0][i];
             }
         }
-
+        
+        final Matrix matTrans = new Matrix(3,3);
+        final double[][] trans = matTrans.getArray();
+        trans[0][0] = cellVectors[0][0];
+        trans[1][0] = cellVectors[0][1];
+        trans[2][0] = cellVectors[0][2];
+        trans[0][1] = cellVectors[1][0];
+        trans[1][1] = cellVectors[1][1];
+        trans[2][1] = cellVectors[1][2];
+        trans[0][2] = cellVectors[2][0];
+        trans[1][2] = cellVectors[2][1];
+        trans[2][2] = cellVectors[2][2];
+        
+        invTrans = matTrans.inverse();
+    }
+    
+    private ParallelepipedSpace(final ParallelepipedSpace orig){
+        
+        // easy as that, no deep copies needed since these are read-only fields anyway
+        this.random = Lottery.getInstance();
+        this.corners = orig.corners.clone();
+        this.cellVectors = orig.cellVectors.clone();
+        this.invTrans = orig.invTrans.copy();        
     }
 
     @Override
     public ParallelepipedSpace clone(){
-
-        double[][] daCornersClone = new double[4][3];
-        for(int i = 0; i < 4; i++){
-            daCornersClone[i] = this.daCorners[i].clone();
-        }
-
-        return new ParallelepipedSpace(daCornersClone);
+        return new ParallelepipedSpace(this);
     }
 
     @Override
     public double[] getPointInSpace(){
 
-        double[] daRand = new double[3];
+        final double[] randVec = new double[3];
         for(int i= 0; i < 3; i++){
-            daRand[i] = random.nextDouble();
+             randVec[i] = random.nextDouble();
         }
 
-        double[] daPoint = new double[3];
+        final double[] point = new double[3];
         for(int i = 0; i < 3; i++){
-            daPoint[i] = daRand[0]*daCellVectors[0][i]
-                    + daRand[1]*daCellVectors[1][i]
-                    + daRand[2]*daCellVectors[2][i];
+            point[i] = randVec[0]*cellVectors[0][i]
+                    + randVec[1]*cellVectors[1][i]
+                    + randVec[2]*cellVectors[2][i];
         }
 
         // now we have a point in the "unit cell", we just need to "move it"
         for(int i = 0; i < 3; i++){
-            daPoint[i] += daCorners[0][i];
+            point[i] += corners[0][i];
         }
-
-        return daPoint;
+        
+        assert(isPointInSpace(point));
+        
+        return point;
     }
 
     @Override
-    public boolean isPointInSpace(double[] point){
+    public boolean isPointInSpace(final double[] point){
 
         // move inside of the cell (perhaps)
-        double[] daTempPoint = new double[3];
+        final double[] tmpPoint = new double[3];
         for(int i = 0; i < 3; i++){
-            daTempPoint[i] = point[i] - daCorners[0][i];
+            tmpPoint[i] = point[i] - corners[0][i];
         }
 
         // tranform into the coordinate system of the parallelepiped
-        Matrix matTrans = new Matrix(3,3);
-        double[][] daTrans = matTrans.getArray();
-        daTrans[0][0] = daCellVectors[0][0];
-        daTrans[1][0] = daCellVectors[0][1];
-        daTrans[2][0] = daCellVectors[0][2];
-        daTrans[0][1] = daCellVectors[1][0];
-        daTrans[1][1] = daCellVectors[1][1];
-        daTrans[2][1] = daCellVectors[1][2];
-        daTrans[0][2] = daCellVectors[2][0];
-        daTrans[1][2] = daCellVectors[2][1];
-        daTrans[2][2] = daCellVectors[2][2];
-
-        Matrix matPoint = new Matrix(3,1);
-        double[][] daPoint = matPoint.getArray();
-        daPoint[0][0] = daTempPoint[0];
-        daPoint[1][0] = daTempPoint[1];
-        daPoint[2][0] = daTempPoint[2];
+        final Matrix matPoint = new Matrix(3,1);
+        final double[][] pointArray = matPoint.getArray();
+        pointArray[0][0] = tmpPoint[0];
+        pointArray[1][0] = tmpPoint[1];
+        pointArray[2][0] = tmpPoint[2];
 
         // invert the matrix to achieve the transformation matrix
-        Matrix matTransformed = matTrans.inverse().times(matPoint);
-        double[][] daTransformed = matTransformed.getArray();
+        final Matrix matTransformed = invTrans.times(matPoint);
+        final double[][] transformed = matTransformed.getArray();
 
         for(int i = 0; i < 3; i++){
-            if(daTransformed[i][0] > 1.0){
+            if(transformed[i][0] > 1.0){
                 // outside of our new coordinate system
                 return false;
             }

@@ -66,7 +66,7 @@ import org.ogolem.random.StandardRNG;
  * This invokes the IOHandler and checks the resulting array of Strings for
  * configuration options and configures a GlobalConfig object.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-25
  */
 public final class Input {
 
@@ -1198,7 +1198,7 @@ public final class Input {
                             space = null;
                         }
                     } else if(s2.startsWith("spherespace:")){
-                        final String s3 = s2.substring(12);
+                        final String s3 = s2.substring(12).trim();
                         try{
                             // parse the middle and the radius
                             final String[] sa = s3.split("\\;");
@@ -1215,8 +1215,26 @@ public final class Input {
                             System.err.println("ERROR: Exception occured when trying to set up sphere. " + e.toString());
                             space = null;
                         }
+                    } else if(s2.startsWith("halfspherespace:")){
+                        final String s3 = s2.substring(16).trim();
+                        try{
+                            // parse the middle and the radius
+                            final String[] sa = s3.split("\\;");
+                            final double[] middle = new double[3];
+                            // now comma separated
+                            final String[] sa2 = sa[0].split("\\,");
+                            for(int i = 0; i < 3; i++){
+                                // now comma separated
+                                middle[i] = Double.parseDouble(sa2[i].trim()) * ANGTOBOHR;
+                            }
+                            double radius = Double.parseDouble(sa[1].trim()) * ANGTOBOHR;
+                            space = new HalfSphereSpace(middle,radius);
+                        } catch(Exception e){
+                            System.err.println("ERROR: Exception occured when trying to set up half sphere. " + e.toString());
+                            space = null;
+                        }
                     } else if(s2.startsWith("orbitspace:")){
-                        final String s3 = s2.substring(11);
+                        final String s3 = s2.substring(11).trim();
                         try{
                             // parse the middle and the two orbs
                             final String[] sa = s3.split("\\;");
@@ -1231,7 +1249,7 @@ public final class Input {
                             double highOrb = Double.parseDouble(sa[2].trim()) * ANGTOBOHR;
                             space = new OrbitSpace(middle,lowOrb,highOrb);
                         } catch(Exception e){
-                            System.err.println("ERROR: Exception occured when trying to set up sphere. " + e.toString());
+                            System.err.println("ERROR: Exception occured when trying to set up orbit. " + e.toString());
                             space = null;
                         }
                     } else{

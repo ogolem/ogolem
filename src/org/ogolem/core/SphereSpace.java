@@ -1,5 +1,6 @@
 /**
-Copyright (c) 2010     , J. M. Dieterich
+Copyright (c) 2010, J. M. Dieterich
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,76 +37,75 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import java.util.Random;
+import org.ogolem.random.Lottery;
 
 /**
- * Defines a sperical space.
+ * Defines a spherical space.
  * @author Johannes Dieterich
- * @version 2010-09-22
+ * @version 2020-05-22
  */
 final class SphereSpace implements AllowedSpace{
 
-    private final static long serialVersionUID = (long) 20100922;
+    private final static long serialVersionUID = (long) 20200622;
 
-    private final Random random;
+    private final Lottery random;
 
-    private final double dRadius;
+    private final double radius;
+    private final double[] center;
 
-    private final double[] daMiddle;
-
-    SphereSpace(double[] middle, double radius){
-        this.daMiddle = middle;
-        this.dRadius = radius;
-        this.random = new Random();
+    SphereSpace(final double[] middle, final double radius){
+        this.center = middle;
+        this.radius = radius;
+        this.random = Lottery.getInstance();
     }
 
     @Override
     public SphereSpace clone(){
-        double[] daTemp = daMiddle.clone();
+        double[] daTemp = center.clone();
 
-        return new SphereSpace(daTemp, this.dRadius);
+        return new SphereSpace(daTemp, this.radius);
     }
 
     @Override
     public double[] getPointInSpace(){
 
         // we need some randoms
-        double[][] daSpherical = new double[3][1];
+        final double[] spherical = new double[3];
         // radius
-        daSpherical[0][0] = dRadius * random.nextDouble();
+        spherical[0] = radius * random.nextDouble();
 
         // phi and omega
-        daSpherical[1][0] = random.nextDouble() * 2.0 * Math.PI;
-        daSpherical[2][0] = random.nextDouble() * Math.PI;
+        spherical[1] = random.nextDouble() * 2.0 * Math.PI;
+        spherical[2] = random.nextDouble() * Math.PI;
 
         // translate to cartesian
-        double[][] daCartes = CoordTranslation.sphericalToCartesianCoord(daSpherical);
+        final double[] point = new double[3];
+        CoordTranslation.sphericalToCartesianCoord(spherical, point);
 
         // move with respect to middle
-        double[] daPoint = new double[3];
         for(int i = 0; i < 3; i++){
-            daPoint[i] = daCartes[i][0] + daMiddle[i];
+            point[i] += center[i];
         }
+        
+        assert(isPointInSpace(point));
 
-        return daPoint;
+        return point;
 
     }
 
     @Override
-    public boolean isPointInSpace(double[] point){
-
+    public boolean isPointInSpace(final double[] point){
 
         // move with respect to middle of sphere
-        final double[][] daTemp = new double[3][1];
-        for(int i = 0; i < 3; i++){
-            daTemp[i][0] = point[i] - daMiddle[i];
-        }
+        final double x = point[0] - center[0];
+        final double y = point[1] - center[1];
+        final double z = point[2] - center[2];
 
-        // translate to spherical coords
-        final double[][] daSpherical = CoordTranslation.cartesianToSphericalCoord(daTemp);
+        // calculate only the radius
+        final double r = Math.sqrt(x*x+y*y+z*z);
 
         // check
-        return (daSpherical[0][0] <= dRadius);
+        return (r <= radius);
     }
 
 }

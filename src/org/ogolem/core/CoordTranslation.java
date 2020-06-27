@@ -50,7 +50,7 @@ import static org.ogolem.math.TrivialLinearAlgebra.crossProduct;
  * This class transforms coordinates back and forth from different coordinate
  * systems and object representations.
  * @author Johannes Dieterich
- * @version 2020-02-08
+ * @version 2020-06-22
  */
 public final class CoordTranslation {
 
@@ -1958,39 +1958,41 @@ public final class CoordTranslation {
         final int noOfAtoms = xyz[0].length;
         final double[][] sphericalCoords = new double[3][noOfAtoms];
 
+        final double[] spher = new double[3];
         for (int i = 0; i < noOfAtoms; i++) {
 
             final double x = xyz[0][i];
             final double y = xyz[1][i];
             final double z = xyz[2][i];
 
-            // first the r value
-            sphericalCoords[0][i] = sqrt(x*x + y*y + z*z);
-            // now phi
-            sphericalCoords[1][i] = atan2(y, x);
-            // finally omega
-            sphericalCoords[2][i] = PI / 2 - atan(z / sqrt(x*x + y*y));
+            cartes2Spherical(x, y, z, spher);
+            
+            sphericalCoords[0][i] = spher[0];
+            sphericalCoords[1][i] = spher[1];
+            sphericalCoords[2][i] = spher[2];
         }
 
         return sphericalCoords;
     }
-    
-    //TODO connect this with the upper one
-    static void cartes2Spherical(final double x, final double y, final double z,
+
+    /**
+     * Translates a single set of cartesian coordinates into a set of spherical coordinates.
+     * @param x Cartesian coordinate
+     * @param y Cartesian coordinate
+     * @param z Cartesian coordinate
+     * @param spherical spherical coordinates as a double[]
+     */
+    public static void cartes2Spherical(final double x, final double y, final double z,
             final double[] spher){
 
+    	assert(spher != null);
+    	assert(spher.length >= 3);    	
+    	
+    	// the radius
         spher[0] = sqrt(x*x+y*y+z*z);
-
-        if(x > 0){
-            spher[1] = atan(y/x);
-        } else if(x == 0){
-            spher[1] = signum(y)*PI/2;
-        } else if(x < 0 && y >= 0){
-            spher[1] = atan(y/x) + PI;
-        } else if(x < 0 && y < 0){
-            spher[1] = atan(y/x) - PI;
-        }
-   
+        // phi
+        spher[1] = atan2(y, x);
+        // omega
         spher[2] = acos(z/spher[0]);
     }
 
