@@ -2,6 +2,7 @@
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -62,7 +63,7 @@ import org.ogolem.io.OutputPrimitives;
 /**
  * This calls Orca as a backend for local optimization and dipole calculation.
  * @author Johannes Dieterich
- * @version 2015-09-10
+ * @version 2017-03-03
  */
 public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBackend {
 
@@ -262,10 +263,10 @@ public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBac
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes,
             short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] spins, BondInfo bonds, Gradient grad) {
+            short[] spins, BondInfo bonds, Gradient grad, final boolean hasRigidEnv) {
         
         final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, xyz1D, saAtomTypes, atomNos,
-                atsPerMol, energyparts, iNoOfAtoms, faCharges, spins, bonds, this);
+                atsPerMol, energyparts, iNoOfAtoms, faCharges, spins, bonds, this, hasRigidEnv);
         
         grad.copyDataIn(numGrad);
     }
@@ -273,7 +274,7 @@ public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBac
     @Override
     public double energyCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtoms,
             short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds){
+            short[] iaSpins, final BondInfo bonds, final boolean hasRigidEnv){
         
         final String orcaInput = "orca" + lID + ".inp";
         final String orcaBasis = "orca" + lID;

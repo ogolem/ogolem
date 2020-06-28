@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
-              2010-2016, J. M. Dieterich
+              2010-2014, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -156,10 +157,10 @@ public final class SimpleSeedingInit {
             Environment newEnv = refConf.env.clone();
 
             // initialize
-            newEnv.initializeConnections(cartes);
+            newEnv.initializeConnections(cartes, refConf.bonds);
 
             // put together so that the cartesian contains the env now
-            cartes = newEnv.marryThem(cartes);
+            cartes = newEnv.marryThem(cartes, refConf.bonds).getObject1();
         }
         
 

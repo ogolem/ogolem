@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +49,7 @@ import org.ogolem.core.Gradient;
 /**
  * A morse potential.
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2017-03-03
  */
 public final class AdaptiveMorse extends AbstractAdaptiveBackend{
 
@@ -131,7 +132,7 @@ public final class AdaptiveMorse extends AbstractAdaptiveBackend{
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] daXYZ1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins,
-            final BondInfo bonds, final Gradient gradient){
+            final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv){
 
         final double[][] xyz = new double[3][iNoOfAtoms];
         System.arraycopy(daXYZ1D, 0, xyz[0], 0, iNoOfAtoms);
@@ -149,7 +150,14 @@ public final class AdaptiveMorse extends AbstractAdaptiveBackend{
         double energy = 0.0;
         int offset = 0;
         int counter = -1;
-        for(int i = 0; i < iNoOfAtoms-1; i++){
+        
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
 
             double rad1;
             if(useCaching) {rad1 = radiiCache[i];}
@@ -208,7 +216,7 @@ public final class AdaptiveMorse extends AbstractAdaptiveBackend{
     @Override
     public double energyCalculation(long lID, int iIteration, double[] daXYZ1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins,
-            final BondInfo bonds){
+            final BondInfo bonds, final boolean hasRigidEnv){
 
         // this is a fake and just allowed since it is intermediate
         final int[] iaAtsPerMol = {iNoOfAtoms};
@@ -218,7 +226,7 @@ public final class AdaptiveMorse extends AbstractAdaptiveBackend{
         cartes.setAllAtomTypes(saAtomTypes);
         cartes.setAll1DCartes(daXYZ1D, iNoOfAtoms);
 
-        final double dEnergy = energyOfStructWithParams(cartes, params, (int) lID, bonds);
+        final double dEnergy = energyOfStructWithParams(cartes, params, (int) lID, bonds, hasRigidEnv);
 
         return dEnergy;
     }
@@ -226,6 +234,12 @@ public final class AdaptiveMorse extends AbstractAdaptiveBackend{
     @Override
     public double energyOfStructWithParams(final CartesianCoordinates cartes,
             final AdaptiveParameters params, final int geomID, final BondInfo bonds){
+        return energyOfStructWithParams(cartes, params, geomID, bonds, cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
+    }
+        
+    public double energyOfStructWithParams(final CartesianCoordinates cartes,
+            final AdaptiveParameters params, final int geomID, final BondInfo bonds,
+            final boolean hasRigidEnv){
 
         final int noOfAtoms = cartes.getNoOfAtoms();
         final String[] atoms = cartes.getAllAtomTypes();
@@ -239,7 +253,15 @@ public final class AdaptiveMorse extends AbstractAdaptiveBackend{
         double energy = 0.0;
         int counter = -1;
         int offset = 0;
-        for(int i = 0; i < noOfAtoms-1; i++){
+        
+        final int[] atsPerMol = cartes.getAllAtomsPerMol();
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: noOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
 
             double rad1;
             if(useCaching) {rad1 = radiiCache[i];}

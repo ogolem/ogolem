@@ -1,5 +1,6 @@
 /**
-Copyright (c) 2012-2015, J. M. Dieterich and B. Hartke              
+Copyright (c) 2012-2015, J. M. Dieterich and B. Hartke             
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +47,7 @@ import org.ogolem.helpers.Tuple;
  * Directed mutation.
  * @author Bernd Hartke
  * @author Johannes Dieterich
- * @version 2015-07-20
+ * @version 2017-03-03
  */
 public class DirectedMutation implements GenericMutation<Molecule,Geometry> {
     
@@ -116,7 +117,8 @@ public class DirectedMutation implements GenericMutation<Molecule,Geometry> {
         final CartesianCoordinates c = work.getCartesians();
         final double[] energyParts = new double[c.getNoOfMolecules()];
         final double e = back.energyCalculation(work.getID(), -1, c.getAll1DCartes(), c.getAllAtomTypes(), c.getAllAtomNumbers(), 
-                     c.getAllAtomsPerMol(), energyParts, c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), work.getBondInfo());
+                     c.getAllAtomsPerMol(), energyParts, c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), work.getBondInfo(),
+                     c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
         if(DEBUG){System.out.println("DEBUG: e is " + e);}
         //TODO expand DirectedMutation to do its stuff for n>1 molecules.
         // for the moment, just pretend that we only want to move one molecule...
@@ -376,7 +378,7 @@ public class DirectedMutation implements GenericMutation<Molecule,Geometry> {
             final CartesianCoordinates c = work.getCartesians();
             final double[] xyz1D = c.getAll1DCartes();
             final double e = back.energyCalculation(work.getID(), iter, xyz1D, c.getAllAtomTypes(), c.getAllAtomNumbers(), 
-                     c.getAllAtomsPerMol(), energyParts, numberOfAtoms, c.getAllCharges(), c.getAllSpins(), bonds);
+                     c.getAllAtomsPerMol(), energyParts, numberOfAtoms, c.getAllCharges(), c.getAllSpins(), bonds, c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
             if(DEBUG) {System.out.println("DEBUG:    has energy: " + e);}
             if (e < eBest){
                 eBest = e;

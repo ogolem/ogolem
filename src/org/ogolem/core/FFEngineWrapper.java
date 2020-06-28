@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ package org.ogolem.core;
  * put another C layer in between (the actual wrapper) which will be the one 
  * and only interface to the OGOLEM java code.
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2017-03-03
  */
 class FFEngineWrapper implements CartesianFullBackend, Newton {
 
@@ -104,7 +104,7 @@ class FFEngineWrapper implements CartesianFullBackend, Newton {
     @Override
     public double energyCalculation(long lID, int iIteration, double[] daXYZ1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins,
-            final BondInfo bonds) {
+            final BondInfo bonds, final boolean hasRigidEnv) {
         
         assert(atomNos.length == grad1D.length/3);
         
@@ -124,7 +124,7 @@ class FFEngineWrapper implements CartesianFullBackend, Newton {
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] daXYZ1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins,
-            final BondInfo bonds, final Gradient gradient) {
+            final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv) {
         
         // actually, this might work (despite the name) for molecules as well, depending on the FF backend
         
@@ -179,7 +179,7 @@ class FFEngineWrapper implements CartesianFullBackend, Newton {
         
         if(DEBUG){
             // numerical gradient
-            final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this);
+            final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this, hasRigidEnv);
             // compare
             final double numE = numGrad.getTotalEnergy();
             final double[][] g = numGrad.getTotalGradient();

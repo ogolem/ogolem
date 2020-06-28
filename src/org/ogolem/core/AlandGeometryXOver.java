@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import org.ogolem.helpers.Tuple;
  * Tries to optimize the cutting plane wrt the partial energy contributions.
  * Uses a center of quality approach (see BXH papers for that).
  * @author Johannes Dieterich
- * @version 2016-08-29
+ * @version 2017-03-03
  */
 public class AlandGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     
@@ -155,15 +155,17 @@ public class AlandGeometryXOver implements GenericCrossover<Molecule,Geometry>{
         final double[] ePMother = new double[noMols];
         assert(ePFather.length == ePMother.length);
         
+        final boolean hasRigidEnv = cFather.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
+        
         if(backend == null){throw new RuntimeException("In merging globopt w/ no backend. This is just wrong.");}
         final double eF = backend.energyCalculation(father.getID(), 0, cFather.getAll1DCartes(),
                 cFather.getAllAtomTypes(), cFather.getAllAtomNumbers(), cFather.getAllAtomsPerMol(),
                 ePFather, noAts, cFather.getAllCharges(), cFather.getAllSpins(),
-                father.getBondInfo());
+                father.getBondInfo(), hasRigidEnv);
         final double eM = backend.energyCalculation(mother.getID(), 0, cMother.getAll1DCartes(),
                 cMother.getAllAtomTypes(), cMother.getAllAtomNumbers(), cMother.getAllAtomsPerMol(),
                 ePMother, noAts, cMother.getAllCharges(), cMother.getAllSpins(),
-                mother.getBondInfo());
+                mother.getBondInfo(), hasRigidEnv);
         
         // translate the partial contributions to positive values (only then the CoQ is defined)
         //TODO this might not hold true for all cases. CoQ should be located, where the energy contributions are highest. In the context of negative

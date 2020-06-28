@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Johannes Dieterich
- * @version 2020-03-21
+ * @version 2020-05-25
  */
 public class MixedLJFFTest {
     
@@ -181,13 +181,13 @@ public class MixedLJFFTest {
        
         final double e38 = ljFF.energyCalculation(-1, 0, lj38.getAll1DCartes(),
                 lj38.getAllAtomTypes(), lj38.getAllAtomNumbers(), atsPerMol38, new double[38],
-                lj38.getNoOfAtoms(), lj38.getAllCharges(), lj38.getAllSpins(), bonds38);
+                lj38.getNoOfAtoms(), lj38.getAllCharges(), lj38.getAllSpins(), bonds38, false);
         
         assertEquals(ENERGYLJ38, e38, NUMACC);
         
         final double e55 = ljFF.energyCalculation(-1, 0, lj55.getAll1DCartes(),
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), atsPerMol55, new double[55],
-                lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55);
+                lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55, false);
         
         assertEquals(ENERGYLJ55, e55, NUMACC);
     }
@@ -226,7 +226,7 @@ public class MixedLJFFTest {
         ljFF.gradientCalculation(-1, 0, lj38.getAll1DCartes(),
                 lj38.getAllAtomTypes(), lj38.getAllAtomNumbers(), atsPerMol38, new double[38],
                 lj38.getNoOfAtoms(), lj38.getAllCharges(), lj38.getAllSpins(), bonds38,
-                grad38);
+                grad38, false);
         
         assertEquals(ENERGYLJ38, grad38.getTotalEnergy(), NUMACC);
         
@@ -243,7 +243,7 @@ public class MixedLJFFTest {
         ljFF.gradientCalculation(-1, 0, lj55.getAll1DCartes(),
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), atsPerMol55, new double[55],
                 lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55,
-                grad55);
+                grad55, false);
         
         assertEquals(ENERGYLJ55, grad55.getTotalEnergy(), NUMACC);
         

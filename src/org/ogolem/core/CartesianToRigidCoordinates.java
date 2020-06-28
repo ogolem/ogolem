@@ -44,7 +44,7 @@ import org.ogolem.generic.GenericBackend;
 /**
  * Turns a Cartesian backend into a rigid body one.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-25
  */
 public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     
@@ -64,6 +64,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
     private List<double[][][]> rotatedCache;
     private double[][] coms;
     private double[][] comDisplacementCache;
+    private boolean hasRigidEnv;
     
     private Gradient gradObj;
 
@@ -137,6 +138,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         this.rotatedCache = new ArrayList<>(individual.getNumberOfIndieParticles());
         this.rotatedCoordsCache = new ArrayList<>(individual.getNumberOfIndieParticles());
         this.gradObj = new Gradient(3,cartes.getNoOfAtoms());
+        this.hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
         final double[] coords = new double[mols*6];
         
         // simply copy COM and Euler coordinates
@@ -254,7 +256,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         
         final double e = back.energyCalculation(cache.getID(), iteration, xyz1D, cartes.getAllAtomTypes(),
                 cartes.getAllAtomNumbers(), cartes.getAllAtomsPerMol(), energyparts, cartes.getNoOfAtoms(),
-                cartes.getAllCharges(), cartes.getAllSpins(), cache.getBondInfo());
+                cartes.getAllCharges(), cartes.getAllSpins(), cache.getBondInfo(), hasRigidEnv);
         
         assert(!Double.isInfinite(e));
         assert(!Double.isNaN(e));
@@ -317,7 +319,7 @@ public class CartesianToRigidCoordinates implements CoordinateRepresentation {
         
         back.gradientCalculation(cache.getID(), iteration, xyz1D, cartes.getAllAtomTypes(),
                 cartes.getAllAtomNumbers(), cartes.getAllAtomsPerMol(), energyparts, cartes.getNoOfAtoms(),
-                cartes.getAllCharges(), cartes.getAllSpins(), cache.getBondInfo(), gradObj);
+                cartes.getAllCharges(), cartes.getAllSpins(), cache.getBondInfo(), gradObj, hasRigidEnv);
         final double energy = gradObj.getTotalEnergy();
         final double[][] gradXYZ = gradObj.getTotalGradient();
         

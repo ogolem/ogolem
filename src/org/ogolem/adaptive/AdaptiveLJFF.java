@@ -53,7 +53,7 @@ import static org.ogolem.math.FastFunctions.pow;
  * 6/12 Terms but also more, depending on the users wish. Initial code to use a 
  * Stillinger-Weber-Gong potential for three body terms (untested and buggy).
  * @author Johannes Dieterich
- * @version 2020-03-21
+ * @version 2020-05-25
  */
 public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
 
@@ -168,7 +168,7 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
     @Override
     public void gradientCalculation(final long lID, final int iIteration, final double[] daXYZ1D,
             final String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins,
-            final BondInfo bonds, final Gradient gradient){
+            final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv){
 
         if(useCaching && paramOffsetCache == null){
             // initialize caches
@@ -191,7 +191,14 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
         int counter = -1;
 
         double twoBodyEnergy = 0.0;
-        for(int i = 0; i < iNoOfAtoms-1; i++){
+
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
             if(easyMix){
                 // first part of parameters
                 daFirstParams = params.getParametersForKey(saAtomTypes[i]);
@@ -298,6 +305,8 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
          */
 
         if(use3Body && saAtomTypes.length > 2){
+            
+            // XXXX we do not use hasRigidEnv for 3body!
 
             // put the 1D coordinates into 3D ones - XXX remove
             final double[][] daXYZ = new double[3][iNoOfAtoms];
@@ -454,16 +463,16 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
         if(use3Body && saAtomTypes.length > 2){
             // one last energy evaluation
             //XXX remove this!
-            final double dEnergy = energyCalculation(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds);
+            final double dEnergy = energyCalculation(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, hasRigidEnv);
             gradient.setTotalEnergy(dEnergy);
         } else {
             gradient.setTotalEnergy(twoBodyEnergy);
         }
 
-
         if(DEBUG){
             // calculate a numerical gradient
-            final Gradient numericalGrad = NumericalGradients.numericalGradient(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this);
+            final Gradient numericalGrad = NumericalGradients.numericalGradient(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this,
+                    hasRigidEnv);
 
             final double[][] daNumGrad = numericalGrad.getTotalGradient();
 
@@ -484,7 +493,7 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
     @Override
     public double energyCalculation(final long lID, final int iIteration, final double[] daXYZ1D,
             final String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins,
-            final BondInfo bonds){
+            final BondInfo bonds, final boolean hasRigidEnv){
         
         double dEnergy = 0.0;
         double d2Body = 0.0;
@@ -511,7 +520,13 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             initializeCaches(params, saAtomTypes, use3Body);
         }
 
-        for(int i = 0; i < iNoOfAtoms-1; i++){
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
             if(easyMix){
                 // first part of parameters
                 daFirstParams = params.getParametersForKey(saAtomTypes[i]);
@@ -700,6 +715,12 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
     @Override
     public double energyOfStructWithParams(final CartesianCoordinates cartes,
             final AdaptiveParameters params, final int geomID, final BondInfo bonds){
+        return energyOfStructWithParams(cartes, params, geomID, bonds, cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
+    }
+        
+    public double energyOfStructWithParams(final CartesianCoordinates cartes,
+            final AdaptiveParameters params, final int geomID, final BondInfo bonds,
+            final boolean hasRigidEnv){
 
         final int iNoOfAtoms = cartes.getNoOfAtoms();
         final String[] saAtoms = cartes.getAllAtomTypes();
@@ -731,7 +752,14 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             initializeCaches(params, saAtoms, use3Body);
         }
 
-        for(int i = 0; i < iNoOfAtoms-1; i++){
+        final int[] atsPerMol = cartes.getAllAtomsPerMol();
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
             if(easyMix){
                 // first part of parameters
                 daFirstParams = params.getParametersForKey(saAtoms[i]);
@@ -820,6 +848,8 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
             counter = -1;
             int c = -1;
             daParams = params.getAllParamters();
+            
+            // XXX we do not use hasRigidEnv for 3 body
 
             for(int k = 0; k < iNoOfAtoms; k++){
                 for(int j = 0; j < k; j++){

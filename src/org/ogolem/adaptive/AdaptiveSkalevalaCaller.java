@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,7 +53,7 @@ import org.ogolem.skalevala.Vainamoinen;
 /**
  * Calls the sKalevala in an adaptive manner.
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2017-03-03
  */
 public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
     
@@ -106,7 +107,8 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
     @Override
     public double energyCalculation(final long lID, final int iteration, final double[] xyz1d,
         final String[] atomTypes, final short[] atomNos, final int[] atsPerMol, final double[] energyparts,
-        final int noOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds) {
+        final int noOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds,
+        final boolean hasRigidEnv) {
         
         float fCharge = 0;
         int spin = 0;
@@ -127,7 +129,7 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
     public void gradientCalculation(final long lID, final int iteration, final double[] xyz1d,
         final String[] atomTypes, final short[] atomNos, final int[] atsPerMol, final double[] energyparts,
         final int noOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds,
-        final Gradient gradient) {
+        final Gradient gradient, final boolean hasRigidEnv) {
         
         float fCharge = 0;
         int spin = 0;

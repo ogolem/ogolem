@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import java.util.List;
  * a set of cartesian coordinates. We disallow extension due to a couple of dirty
  * tricks in the code.
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2016-02-19
  */
 public final class Gradient extends AbstractGradient {
 
@@ -144,6 +144,17 @@ public final class Gradient extends AbstractGradient {
         System.arraycopy(local3DGradient[2], 0, gradient, arrayLength * 2, arrayLength);
     }
     
+    public void normalizeGradient(){
+        if(this.functionValue > FixedValues.NONCONVERGEDENERGY){this.functionValue = FixedValues.NONCONVERGEDENERGY;}
+        for(int i = 0; i < local3DGradient.length; i++){
+            for(int j = 0; j < local3DGradient[0].length; j++){
+                if(Double.isNaN(local3DGradient[i][j]) || !Double.isFinite(local3DGradient[i][j])){
+                    local3DGradient[i][j] = FixedValues.NONCONVERGEDGRADIENT;
+                }
+            }
+        }
+    }
+    
     public void markProblem(){
         this.functionValue = FixedValues.NONCONVERGEDENERGY;
         for(int i = 0; i < local3DGradient.length; i++){
@@ -189,5 +200,34 @@ public final class Gradient extends AbstractGradient {
             }
             System.arraycopy(otherGrad.local3DGradient[i], 0, local3DGradient[i], 0, local3DGradient[i].length);
         }
+    }
+    
+    public boolean compare(final Gradient other, final double thresh, final boolean verbose){
+        
+        boolean accu = true;
+        if(Math.abs(other.getFunctionValue() - this.getFunctionValue()) > thresh){
+            if(verbose){System.err.println("Mismatch in energy " + this.getFunctionValue() + " vs " + other.getFunctionValue()); accu = false;}
+            else {return false;}
+        }
+        
+        final double[][] oGradMat = other.getTotalGradient();
+        for(int i = 0; i < local3DGradient.length; i++){
+            for(int j = 0; j < local3DGradient[i].length; j++){
+                
+                final double me = local3DGradient[i][j];
+                final double he = oGradMat[i][j];
+                
+                if(Math.abs(me-he) > thresh){
+                    if(verbose){
+                        System.err.println("Mismatch in gradient " + i + " " + j + ": " + me + " vs " + he);
+                        accu = false;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return accu;
     }
 }

@@ -139,7 +139,7 @@ public final class CoordTranslation {
         if(geom.containsEnvironment() && hasEnvironment){
             // we need to act on this
             final Environment env = geom.getEnvironmentCopy();
-            cartesian = env.marryThem(cartesian);
+            cartesian = env.marryThem(cartesian, geom.getBondInfo()).getObject1();
         }
 
         

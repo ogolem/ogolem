@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2010     , J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import org.ogolem.helpers.Machine;
 /**
  * Implements a GUPTA force field as used by Johnston et al. for cluster optimization.
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2017-03-03
  */
 public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
 
@@ -149,7 +149,7 @@ public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
         
         final double d = energyCalculation((long)-1, 1, cartes.getAll1DCartes(), cartes.getAllAtomTypes(),
                 cartes.getAllAtomNumbers(), cartes.getAllAtomsPerMol(), partsCache, cartes.getNoOfAtoms(), cartes.getAllCharges(),
-                cartes.getAllSpins(), bonds);
+                cartes.getAllSpins(), bonds, cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
         
         this.params = null;
         
@@ -159,7 +159,7 @@ public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
     @Override
     public double energyCalculation(long lID, int iIteration, double[] daXYZ1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds){
+            short[] iaSpins, final BondInfo bonds, final boolean hasRigidEnv){
         
         // zero the partial contributions
         for(int i = 0; i < energyparts.length; i++) {energyparts[i] = 0.0;}
@@ -184,8 +184,15 @@ public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
         int offset = 0;
         double dEnergy = 0.0;
         int counter = -1;
+        
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
         OuterLoop:
-        for(int i = 0 ; i < iNoOfAtoms - 1; i++){
+        for (int i = 0; i < firstLoopAtomNo; i++) {
 
             final double rad1 = AtomicProperties.giveRadius(atomNos[i]);
             xyz1[0] = daXYZ1D[i];
@@ -250,7 +257,7 @@ public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] daXYZ1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds, final Gradient gradient){
+            short[] iaSpins, final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv){
         
         // zero the partial contributions
         for(int i = 0; i < energyparts.length; i++) {energyparts[i] = 0.0;}
@@ -276,7 +283,14 @@ public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
         int counter = -1;
         double energy = 0.0;
         int offset = 0;
-        for(int i = 0; i < iNoOfAtoms -1; i++){
+        
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
 
             final double rad1 = AtomicProperties.giveRadius(atomNos[i]);
             xyz1[0] = daXYZ1D[i];
@@ -356,7 +370,7 @@ public final class AdaptiveGUPTA extends AbstractAdaptiveBackend {
             // compare analytical and numerical gradient
             final Gradient numericalGrad = NumericalGradients.numericalGradient(lID,
                     iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins,
-                    bonds, this);
+                    bonds, this, hasRigidEnv);
 
             final double[][] daNumGrad = numericalGrad.getTotalGradient();
 

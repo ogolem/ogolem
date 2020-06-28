@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich and B. Hartke
-              2016, J. M. Dieterich and B. Hartke
+              2016-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,12 +50,13 @@ import static org.ogolem.core.CoordTranslation.distance;
 import org.ogolem.helpers.Tuple;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
+import static org.ogolem.core.CoordTranslation.distance;
 
 /**
  * A directed mutation using a graph-based analysis of the cluster in question.
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2016-12-18
+ * @version 2017-03-03
  */
 public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
     
@@ -196,7 +197,8 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
         final double[] eparts = new double[c.getNoOfMolecules()];
         final double eBefore = back.energyCalculation(geom.getID(), 42, c.getAll1DCartes(),
                 c.getAllAtomTypes(), c.getAllAtomNumbers(), c.getAllAtomsPerMol(), eparts,
-                c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), bonds);
+                c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), bonds,
+                c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
         
         // create the connectivity matrix for the geometry (so in between molecules)
         // 1) get the full one
@@ -534,7 +536,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
                                         }
                                         final double eCurr = back.energyCalculation(geom.getID(), evalCounter, currC.getAll1DCartes(),
                                                 c.getAllAtomTypes(), c.getAllAtomNumbers(), c.getAllAtomsPerMol(), eparts,
-                                                c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), bonds);
+                                                c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), bonds, c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
                                         evalCounter++;
                                         if (DEBUG) {
                                             System.out.println("DEBUG: Evaluated energy is " + eCurr);
@@ -768,7 +770,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
                                 }
                                 final double eCurr = back.energyCalculation(geom.getID(), evalCounter, currC.getAll1DCartes(),
                                     c.getAllAtomTypes(), c.getAllAtomNumbers(), c.getAllAtomsPerMol(), eparts,
-                                    c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), bonds);
+                                    c.getNoOfAtoms(), c.getAllCharges(), c.getAllSpins(), bonds, c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
                                 evalCounter++;
                                 if(DEBUG){
                                     System.out.println("DEBUG: Evaluated energy is " + eCurr);
@@ -1130,7 +1132,8 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
                 
                 return e;
             } else {
-                final double e =  back.energyCalculation(lID, cIter, xyz1D, atoms, atomNos, atsPerMol, energyParts, noAtoms, charges, spins, work.getBondInfo());
+                final double e =  back.energyCalculation(lID, cIter, xyz1D, atoms, atomNos, atsPerMol, energyParts, noAtoms, charges, spins, work.getBondInfo(),
+                        cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
                 if(VERBOSEDEBUG){System.out.println("DEBUG: new energy is " + e);}
                 
                 return e;

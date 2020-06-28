@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * Creates the fitting environment object based on the data provided.
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2016-02-29
  */
 final class EnvironmentFactory {
 
@@ -68,8 +68,8 @@ final class EnvironmentFactory {
              * SIMPLE ENVIRONMENT
              */
             case SIMPLE:
-                final BondInfo baBonds = createEnvBonding(envCartes, blowFacInitEnvBonds);
-                env = new SimpleEnvironment(envCartes, flexyEnvironment, baBonds.getFullBondMatrix(), listSecAtoms,
+                final BondInfo bonds = createEnvBonding(envCartes, blowFacInitEnvBonds);
+                env = new SimpleEnvironment(envCartes, flexyEnvironment, bonds, listSecAtoms,
                         whichCollDetect,blowColl, referencePoints, space);
                 break;
             /*

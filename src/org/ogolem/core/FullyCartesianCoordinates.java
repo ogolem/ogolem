@@ -43,7 +43,7 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
 /**
  * A simple adapter for the geometry to gradient/energy provider.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-25
  */
 public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geometry> {
     
@@ -62,6 +62,7 @@ public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geomet
     private BondInfo bonds;
     private int[] atsPerMol;
     private double[] energyparts;
+    private boolean hasRigidEnv;
     
     public FullyCartesianCoordinates(final CartesianFullBackend back){
         this.back = back;
@@ -99,6 +100,7 @@ public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geomet
         this.spins = cartes.getAllSpins();
         this.energyparts = new double[individual.getNumberOfIndieParticles()];
         this.grad = new Gradient(3,atomNos.length);
+        this.hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
         
         return cartes.getAll1DCartes();
     }
@@ -125,7 +127,7 @@ public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geomet
         assert(currCoords.length == gradient.length);
         assert(currCoords.length == atoms.length*3);
         
-        back.gradientCalculation(id, iteration, currCoords, atoms, atomNos, atsPerMol, energyparts, atomNos.length, charges, spins, bonds, grad);
+        back.gradientCalculation(id, iteration, currCoords, atoms, atomNos, atsPerMol, energyparts, atomNos.length, charges, spins, bonds, grad, hasRigidEnv);
         grad.getGradientData(gradient);
         
         final double e = grad.getTotalEnergy();
@@ -142,7 +144,7 @@ public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geomet
         GenericDetailStatistics.incrementFitnessEvals();
         assert(currCoords.length == atoms.length*3);
         
-        final double e = back.energyCalculation(id, iteration, currCoords, atoms, atomNos, atsPerMol, energyparts, atoms.length, charges, spins, bonds);
+        final double e = back.energyCalculation(id, iteration, currCoords, atoms, atomNos, atsPerMol, energyparts, atoms.length, charges, spins, bonds, hasRigidEnv);
         
         assert(!Double.isInfinite(e));
         assert(!Double.isNaN(e));
@@ -165,7 +167,7 @@ public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geomet
         }
         final double e = back.energyCalculation(id, 42, c.getAll1DCartes(), c.getAllAtomTypes(),
                 c.getAllAtomNumbers(), c.getAllAtomsPerMol(), eparts, c.getNoOfAtoms(),
-                c.getAllCharges(), c.getAllSpins(), individual.getBondInfo());
+                c.getAllCharges(), c.getAllSpins(), individual.getBondInfo(), c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
         
         assert(!Double.isInfinite(e));
         assert(!Double.isNaN(e));

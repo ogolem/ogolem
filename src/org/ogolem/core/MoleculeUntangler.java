@@ -38,11 +38,11 @@ package org.ogolem.core;
  * with the summed vdW radii of the respective atoms and user-controlled additional width parameter sigma.
  *
  * @author Dominik Behrens
- * @version 2020-06-12
+ * @version 2020-06-22
  */
 public class MoleculeUntangler implements CartesianFullBackend {
 
-    private static final long serialVersionUID = (long) 20200612;
+    private static final long serialVersionUID = (long) 20200622;
 
     private final double sigma;
     private final boolean moleculeWise;
@@ -77,14 +77,14 @@ public class MoleculeUntangler implements CartesianFullBackend {
     @Override
     public double energyCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes, short[] atomNos,
                                     int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-                                    short[] spins, BondInfo bonds) {
+                                    short[] spins, BondInfo bonds, final boolean hasRigidEnv) {
         return calculateAllTerms(iNoOfAtoms, xyz1D, atsPerMol, atomNos, null);
     }
 
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes, short[] atomNos,
                                     int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-                                    short[] spins, BondInfo bonds, Gradient grad) {
+                                    short[] spins, BondInfo bonds, Gradient grad, final boolean hasRigidEnv) {
         calculateAllTerms(iNoOfAtoms, xyz1D, atsPerMol, atomNos, grad);
     }
 

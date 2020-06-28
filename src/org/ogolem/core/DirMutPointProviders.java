@@ -48,6 +48,7 @@ import org.ogolem.helpers.Tuple;
 import org.ogolem.math.TrivialLinearAlgebra;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
+import static org.ogolem.core.CoordTranslation.distance;
 
 /**
  * A collection of point providers.

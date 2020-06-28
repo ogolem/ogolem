@@ -47,7 +47,7 @@ import org.ogolem.scaTTM3F.TTM3F;
 /**
  * Calls the Scala-TTM3F force field for highly exact water clusters.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-25
  */
 public class ScaTTM3FBackend implements CartesianFullBackend {
     
@@ -122,7 +122,7 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes,
             short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds, final Gradient gradient){
+            short[] iaSpins, final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv){
         
         assert(noAts*3 == xyz1D.length);
         count++;
@@ -240,7 +240,7 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
         gradient.setTotalEnergy(e);
         
         if(TESTGRADIENT){
-            final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, xyz1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this);
+            final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, xyz1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this, hasRigidEnv);
             final double[][] num = numGrad.getTotalGradient();
             for(int i = 0; i < noAts; i++){
 		for(int j = 0; j < 3; j++){
@@ -263,7 +263,7 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
     @Override
     public double energyCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes,
             short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds){
+            short[] iaSpins, final BondInfo bonds, final boolean hasRigidEnv){
         
         assert(xyz1D.length == 3*noAts);
         count++;

@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import org.ogolem.io.OutputPrimitives;
  * This calls MOLPRO for energy and/or gradient calculation as well as local optimizations using
  * the famous MOLPRO optimizer.
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2017-03-03
  */
 final class MolproCaller implements CartesianFullBackend, Newton{
 
@@ -167,7 +167,8 @@ final class MolproCaller implements CartesianFullBackend, Newton{
 
     @Override
     public double energyCalculation(long lID, int iIteration, double[] da1DXYZ, String[] saAtomType, short[] atomNos,
-            int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, final BondInfo bonds){
+            int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, final BondInfo bonds,
+            final boolean hasRigidEnv){
         
         String sMolproInput = "molpro"+ lID + "i" + iIteration + "energy.inp";
         float fTotalCharge = 0;
@@ -253,7 +254,7 @@ final class MolproCaller implements CartesianFullBackend, Newton{
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] da1DXYZ, String[] saAtomType, short[] atomNos,
             int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, final BondInfo bonds,
-            final Gradient gradient){
+            final Gradient gradient, final boolean hasRigidEnv){
         
         String sMolproInput = "molpro"+ lID + "i" + iIteration + "grad.inp";
         float fTotalCharge = 0;

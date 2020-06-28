@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2011-2015, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import org.ogolem.helpers.Machine;
 /**
  * Gradients using numerical algorithms.
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-05-25
  */
 public class NumericalGradients {
 
@@ -53,7 +53,7 @@ public class NumericalGradients {
     public static Gradient numericalGradient(final long id, final int iteration, final double[] xyz,
             final String[] atoms, final short[] atomNos, final int[] atsPerMol, final double[] energyparts,
             final int noOfAtoms, final float[] charges, final short[] spins,
-            final BondInfo bonds, CartesianFullBackend backend){
+            final BondInfo bonds, CartesianFullBackend backend, final boolean hasRigidEnv){
 
         // the matrix for the gradient
         final double[][] gradientMat = new double[3][noOfAtoms];
@@ -70,12 +70,12 @@ public class NumericalGradients {
             // first plus it
             xyzCopy[i] += h;
             final double energy1 = backend.energyCalculation(id, iteration, xyzCopy,
-                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
 
             // then minus it (there was the dH left from the step before)
             xyzCopy[i] -=  2*h;
             final double energy2 = backend.energyCalculation(id, iteration, xyzCopy,
-                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
             
             xyzCopy[i] = xyz[i];
 
@@ -94,7 +94,7 @@ public class NumericalGradients {
 
         // now one last energy calculation
         final double totEnergy = backend.energyCalculation(id, iteration, xyzCopy,
-                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
         
         // copy the arrays
         System.arraycopy(gradient1D, 0            , gradientMat[0], 0, noOfAtoms);

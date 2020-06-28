@@ -44,7 +44,7 @@ import org.ogolem.core.SimpleBondInfo;
 /**
  * Benchmarks energy calculation in the mixed Lennard-Jones FF for Ar55.
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-05-25
  */
 class MixedLJFFEnergyBench implements SingleMicroBenchmark {
 
@@ -74,7 +74,7 @@ class MixedLJFFEnergyBench implements SingleMicroBenchmark {
         final double e55 = ljFF.energyCalculation(-1, 0, xyz1D,
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), lj55.getAllAtomsPerMol(),
                 energyparts, lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(),
-                bonds55);
+                bonds55, false);
         
         return e55;
     }
