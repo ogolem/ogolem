@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2016-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,11 +47,11 @@ import java.lang.reflect.Field;
 /**
  * This defines an atom.
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2017-01-29
  */
 class Atom implements Serializable{
 		
-    private static final long serialVersionUID = (long) 20140906;
+    private static final long serialVersionUID = (long) 20170130;
     // which name is it supposed to have?
     private final String sID;
     // which atom number
@@ -84,6 +85,10 @@ class Atom implements Serializable{
         this.atomNo = original.atomNo;
         assert(original.atomNo == AtomicProperties.giveAtomicNumber(sID));
         this.position = original.position.clone();
+    }
+    
+    public Atom clone(){
+        return new Atom(this);
     }
 	
     /*
@@ -134,9 +139,11 @@ class Atom implements Serializable{
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.writeDouble(energyPart);
         oos.writeInt(iID);
-        oos.writeInt(atomNo);
-        oos.writeObject(sID);
-        oos.writeObject(position);
+        oos.writeShort(atomNo);
+        oos.writeUTF(sID);
+        oos.writeDouble(position[0]);
+        oos.writeDouble(position[1]);
+        oos.writeDouble(position[2]);
     }
 
     private void readObject(ObjectInputStream ois) throws IOException,
@@ -152,15 +159,18 @@ class Atom implements Serializable{
         f.set(this, tempID);
         
         final Field f1 = cl.getDeclaredField("atomNo");
-        final int tempNo = ois.readInt();
+        final short tempNo = ois.readShort();
         f1.setAccessible(true);
         f1.set(this, tempNo);
 
         final Field f2 = cl.getDeclaredField("sID");
-        final String tempSID = (String) ois.readObject();
+        final String tempSID = ois.readUTF();
         f2.setAccessible(true);
         f2.set(this, tempSID);
 
-        position = (double[]) ois.readObject();
+        position = new double[3];
+        position[0] = ois.readDouble();
+        position[1] = ois.readDouble();
+        position[2] = ois.readDouble();
     }
 }

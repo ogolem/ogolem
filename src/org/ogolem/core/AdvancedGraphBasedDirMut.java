@@ -1,5 +1,6 @@
 /**
-Copyright (c) 2013-2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2013-2015, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,11 +55,11 @@ import org.ogolem.generic.GenericLocOpt;
  * A directed mutation using a graph-based analysis of the cluster in question.
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2020-04-29
+ * @version 2020-06-27
  */
 public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200627;
     
     private final boolean DEBUG;
     private final double blowBonds;
@@ -76,6 +77,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
     private final boolean markMovedMolsUnmovable;
     private final boolean doCDForEveryTrial;
     private final int noMoved;
+    private final boolean envAware;
     
     /**
      * A GDM constructor.
@@ -88,11 +90,12 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
      * @param doCDFirst do a CD first, AFTER the local optimization (if defined) and the GDM
      * @param provider the point provider (e.g. a grid)
      * @param strategy the strategy what to do on each grid point (e.g. an optimization or only a rigid body opt or...)
+     * @param envAware if an environment is present in the system, should the algorithm be aware of this to compute collisions and bonds?
      */
     public AdvancedGraphBasedDirMut(final AdvancedGraphBasedDirMut.GDMConfiguration config, final CollisionDetectionEngine collDetect,
             final GenericLocOpt<Molecule,Geometry> locopt, final double realCDBlow, final double realDDBlow,
             final boolean doLocOptFirst, final boolean doCDFirst, final PointProvider provider,
-            final PointOptStrategy strategy){
+            final PointOptStrategy strategy, final boolean envAware){
         this.pointProv = provider;
         this.pointOpt = strategy;
         this.DEBUG = (GlobalConfig.DEBUGLEVEL > 1);
@@ -112,6 +115,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
         this.markMovedMolsUnmovable = config.markMovedMolsUnmoveable;
         this.noMoved = config.noOfMolsToMove;
         this.doCDForEveryTrial = config.doCDEveryTrial;
+        this.envAware = envAware;
         
         assert(blowBonds > 0.0);
         assert(blowColl > 0.0);
@@ -134,6 +138,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
         this.markMovedMolsUnmovable = orig.markMovedMolsUnmovable;
         this.noMoved = orig.noMoved;
         this.doCDForEveryTrial = orig.doCDForEveryTrial;
+        this.envAware = orig.envAware;
     }
     
     @Override
@@ -175,8 +180,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
         
         final int noMols = work.getNumberOfIndieParticles();
         final int noAtoms = work.getNumberOfAtoms();
-        
-        final BondInfo bonds = work.getBondInfo();
+        final int noEnvAtoms = (work.containsEnvironment()) ? work.getEnvironment().atomsInEnv() : 0;
         
         // get the energy before we manipulate
         final double[] currCoords = back.getActiveCoordinates(work.copy());
@@ -193,7 +197,8 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
         
             // create the connectivity matrix for the geometry (so in between molecules)
             // 1) get the full one
-            final SimpleBondInfo fullBonds = CoordTranslation.checkForBonds(work, blowBonds);
+            final SimpleBondInfo fullBonds = (work.containsEnvironment() && envAware) ? CoordTranslation.checkForBondsIncludingEnvironment(work, blowBonds)
+                    : CoordTranslation.checkForBonds(work, blowBonds);
             final boolean[][] full = fullBonds.getFullBondMatrix();
         
             if(DEBUG){
@@ -242,7 +247,17 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
                             }
                         }
                     }
+                
+                    if(work.containsEnvironment() && envAware){
+                        // count connections with the environment
+                        for(int x = 0; x < noEnvAtoms; x++){
+                            if(full[at][x+noAtoms]){
+                                connections[i]++;
+                            }
+                        }
+                    }
                 }
+                
                 atCounter += ats;
             }
         
@@ -384,10 +399,54 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
             double bestFoundFitness = Double.MAX_VALUE;
             assert(moveMol >= 0);
             assert(movePartner >= 0);
+            
+            double zUpperEnv = -Double.MAX_VALUE;
+            Environment env = (work.containsEnvironment()) ? work.getEnvironment() : null;
+            if(work.containsEnvironment() && envAware && env.getEnvironmentType() == Environment.ENVIRONMENTTYPE.SURFACE){
+                // this is surface only code: figure out where the upper z-component of the surface is
+                // assumes the surface to be in x-y plane and the cluster on top of it
+                final CartesianCoordinates cW = work.getCartesiansWithEnvironment();
+                final double[][] cartes = cW.getAllXYZCoord();
+                final int atomsInEnv = env.atomsInEnv();
+                final int clusterAtoms = work.getNumberOfAtoms();
+                final int totalAtoms = cartes[0].length;
+                assert(totalAtoms-atomsInEnv == clusterAtoms);
+                int highestEnvAtom = -1;
+                for(int atom = clusterAtoms; atom < totalAtoms; atom++){
+                    if(cartes[2][atom] > zUpperEnv){
+                        zUpperEnv = cartes[2][atom];
+                        highestEnvAtom = atom;
+                    }
+                }
+                
+                // add the atomic radius of that environment atom and some for the moved mols atoms
+                final short atomNoHighestEnv = cW.getAtomNumberOfAtom(highestEnvAtom);
+                final double radiusEnvAtom = AtomicProperties.giveRadius(atomNoHighestEnv);
+                zUpperEnv += radiusEnvAtom;
+                
+                final short[] atomNosMoved = work.getMoleculeAtPosition(moveMol).getAtomNumbers();
+                double avgMolRadius = 0.0;
+                for(int i = 0; i < atomNosMoved.length; i++){
+                    avgMolRadius += AtomicProperties.giveRadius(atomNosMoved[i]);
+                }
+                avgMolRadius /= atomNosMoved.length;
+                
+                // fudge a bit
+                avgMolRadius *= 1.1;
+                
+                zUpperEnv += avgMolRadius;
+            }
+            
             while(pointProv.hasNextPoint()){
                 if(DEBUG){System.out.println("DEBUG: Working on new trial point.");}
                 
                 final int moved = pointProv.putNextPointIn(work, sortedMolsByConn, moveMol, movePartner);
+                if(work.containsEnvironment() && envAware && env.getEnvironmentType() == Environment.ENVIRONMENTTYPE.SURFACE){
+                    // check if COM of new point is in the surface, if so: do not bother
+                    final double zNew = work.getCOM(moved)[2];
+                    if(zNew <= zUpperEnv){continue;}
+                }
+                
                 if(doCDForEveryTrial){
                     final boolean hasColl = CollisionDetection.checkOnlyForCollision(work, blowColl);
                     if(hasColl){

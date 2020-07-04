@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,11 +43,11 @@ import java.util.List;
 /**
  * Creates the fitting environment object based on the data provided.
  * @author Johannes Dieterich
- * @version 2016-02-29
+ * @version 2018-01-04
  */
 final class EnvironmentFactory {
 
-    static enum KIND{SIMPLE};
+    static enum KIND{SIMPLE, LAYERONLY, SURFACE, SIMPLESURFACE};
     
     /**
      * Creates the object.
@@ -68,10 +68,36 @@ final class EnvironmentFactory {
              * SIMPLE ENVIRONMENT
              */
             case SIMPLE:
-                final BondInfo bonds = createEnvBonding(envCartes, blowFacInitEnvBonds);
-                env = new SimpleEnvironment(envCartes, flexyEnvironment, bonds, listSecAtoms,
-                        whichCollDetect,blowColl, referencePoints, space);
+                final BondInfo bonds1 = createEnvBonding(envCartes, blowFacInitEnvBonds);
+                env = new SimpleEnvironment(envCartes, flexyEnvironment, bonds1, listSecAtoms,
+                        whichCollDetect,blowColl, referencePoints, space, SimpleEnvironment.FITMODE.FULLEXTERNAL, Environment.ENVIRONMENTTYPE.CAVITY);
                 break;
+            /*
+             * SURFACE-STYLE ENVIRONMENT (w/o Eulers)
+             */
+            case LAYERONLY:
+                final BondInfo bonds2 = createEnvBonding(envCartes, blowFacInitEnvBonds);
+                env = new SimpleEnvironment(envCartes, flexyEnvironment, bonds2, listSecAtoms,
+                        whichCollDetect,blowColl, referencePoints, space, SimpleEnvironment.FITMODE.LAYERONLY, Environment.ENVIRONMENTTYPE.SURFACE);
+                break;
+            /*
+             * SURFACE-STYLE ENVIRONMENT (w/ Eulers)
+             */
+            case SURFACE:
+                final BondInfo bonds3 = createEnvBonding(envCartes, blowFacInitEnvBonds);
+                env = new SimpleEnvironment(envCartes, flexyEnvironment, bonds3, listSecAtoms,
+                        whichCollDetect,blowColl, referencePoints, space, SimpleEnvironment.FITMODE.FULLEXTERNAL, Environment.ENVIRONMENTTYPE.SURFACE);
+                break;
+                
+            /*
+             * SIMPLE SURFACE ENVIRONMENT (w/ Eulers)
+             */
+            case SIMPLESURFACE:
+                final BondInfo bonds4 = createEnvBonding(envCartes, blowFacInitEnvBonds);
+                env = new SimpleSurface(envCartes, flexyEnvironment, bonds4, listSecAtoms,
+                        whichCollDetect,blowColl, referencePoints, space, SimpleSurface.FITMODE.FULLEXTERNAL);
+                break;
+                
             /*
              * DEFAULT
              */
