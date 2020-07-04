@@ -11,7 +11,7 @@ BackendTag=lj
 Backend=xyz:lennardjones
 </CLUSTERBACKEND>
 CellSize=60;60;60
-NumberOfGlobIterations=19900
+NumberOfGlobIterations=50000
 PoolSize=100
 GeneticRecordsToSerial=1000000
 GeometriesToSerial=100000
