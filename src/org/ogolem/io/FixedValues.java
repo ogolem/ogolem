@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2010, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,13 +40,13 @@ package org.ogolem.io;
 /**
  * Some fixed values for the I/O operations.
  * @author Johannes Dieterich
- * @version 2010-11-08
+ * @version 2020-05-28
  */
 public final class FixedValues {
 
     // disallow instantiation
     private FixedValues(){}
 
-    // 1000 MB. Ought to be enough for the time being. If not, transparently change here.
-    public static final long MAXFILESIZEREADING = 1048576000;
+    // 10 GB. Ought to be enough for the time being. If not, transparently change here.
+    public static final long MAXFILESIZEREADING = 10737418240L; // 10 GB
 }

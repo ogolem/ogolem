@@ -43,6 +43,7 @@ import org.ogolem.generic.GenericLocOpt;
 import org.ogolem.heat.LocalHeatPulses;
 import org.ogolem.interfaces.GenericInterface;
 import org.ogolem.interfaces.OrcaCaller;
+import org.ogolem.interfaces.XTBCaller;
 import org.ogolem.locopt.AbstractLocOptFactory;
 
 /**
@@ -192,8 +193,59 @@ public class LocOptFactory extends AbstractLocOptFactory<Molecule,Geometry> {
         } else if (locOptString.startsWith("dummy")){
             newton = new DummyLocOpt(config);
         } else if (locOptString.startsWith("adf:")){
-            final String inputStub = locOptString.substring(4);
+            final String inputStub = locOptString.substring(4).trim();
             newton = new ADFCaller(config,inputStub);
+        } else if (locOptString.startsWith("xtb:")) {
+            final String inputOpts = locOptString.substring(4).trim();
+            
+            XTBCaller.METHOD meth = XTBCaller.METHOD.GFN2XTB;
+            XTBCaller.OPTLEVEL opt = XTBCaller.OPTLEVEL.NORMAL;
+            boolean setEnvironment = true;
+            String xControlFile = null;
+            
+            final String[] spl = inputOpts.split("\\,");
+            for(final String s : spl) {
+                if(s.trim().startsWith("method=")) {
+            		final String m = s.trim().substring("method=".length()).trim();
+            		if(m.equalsIgnoreCase("gfn-ff")) {
+            			meth = XTBCaller.METHOD.GFNFF;
+            		} else if(m.equalsIgnoreCase("gfn0-xtb")) {
+                        meth = XTBCaller.METHOD.GFN0XTB;
+            		} else if(m.equalsIgnoreCase("gfn1-xtb")) {
+                        meth = XTBCaller.METHOD.GFN1XTB;
+            		} else if(m.equalsIgnoreCase("gfn2-xtb")) {
+                        meth = XTBCaller.METHOD.GFN2XTB;
+            		} else {
+            			throw new RuntimeException("Illegal method " + m + " for XTB caller.");
+            		}
+                } else if(s.trim().startsWith("optlevel=")) {
+            		final String o = s.trim().substring("optlevel=".length()).trim();
+            		if(o.equalsIgnoreCase("crude")) {
+            			opt = XTBCaller.OPTLEVEL.CRUDE;
+            		} else if(o.equalsIgnoreCase("sloppy")) {
+            			opt = XTBCaller.OPTLEVEL.SLOPPY;
+            		} else if(o.equalsIgnoreCase("loose")) {
+            			opt = XTBCaller.OPTLEVEL.LOOSE;
+            		} else if(o.equalsIgnoreCase("normal")) {
+            			opt = XTBCaller.OPTLEVEL.NORMAL;
+            		} else if(o.equalsIgnoreCase("tight")) {
+            			opt = XTBCaller.OPTLEVEL.TIGHT;
+            		} else if(o.equalsIgnoreCase("verytight")) {
+            			opt = XTBCaller.OPTLEVEL.VERYTIGHT;
+            		} else {
+            			throw new RuntimeException("Illegal optimization level " + o + " for XTB caller");
+            		}
+            	} else if(s.trim().equalsIgnoreCase("dontserialize")){
+            	    setEnvironment = false;
+            	} else if(s.trim().startsWith("xcontrol=")) {
+            	    final String x = s.trim().substring("xcontrol=".length()).trim();
+            	    xControlFile = x;
+            	} else {
+            		throw new RuntimeException("Illegal XTB option " + s);
+            	}
+            }
+            
+            newton = new XTBCaller(config, meth, opt, setEnvironment, xControlFile);
         } else if (locOptString.startsWith("molpro:")) {
             String sTemp3 = locOptString.substring(7).trim();
             if (sTemp3.equalsIgnoreCase("am1/vdz") || sTemp3.equalsIgnoreCase("am1")) {
