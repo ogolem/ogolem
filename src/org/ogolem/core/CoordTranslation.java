@@ -50,7 +50,7 @@ import static org.ogolem.math.TrivialLinearAlgebra.crossProduct;
  * This class transforms coordinates back and forth from different coordinate
  * systems and object representations.
  * @author Johannes Dieterich
- * @version 2020-06-22
+ * @version 2020-06-27
  */
 public final class CoordTranslation {
 
@@ -1200,6 +1200,139 @@ public final class CoordTranslation {
             off1 += noAts1;
         }
         
+        return bonds;
+    }
+
+    /**
+     * Checks a geometry for bonds and returns the informations as a SimpleBondInfo.
+     * Does consider a potentially existing environment.
+     * @param cartes The geometry.
+     * @param blowFacBonds factor for bond detection.
+     * @return The bond information as a simple bond info object
+     */
+    static SimpleBondInfo checkForBondsIncludingEnvironment(final Geometry geom, final double blowFacBonds) {
+
+        if(!geom.containsEnvironment()){
+            System.err.println("WARNING: Do not use environment aware bonding information creator w/o an environment present.");
+            return checkForBonds(geom, blowFacBonds);
+        }
+
+        final Environment env = geom.getEnvironment();
+        final CartesianCoordinates envCartes = env.getEnvironmentCartes();
+        final double[][] envXYZ = envCartes.getAllXYZCoord();
+        final short[] atomNosEnv = envCartes.getAllAtomNumbers();
+
+        final int noMols = geom.getNumberOfIndieParticles();
+        final int noAtomsCluster = geom.getNumberOfAtoms();
+        final int noOfAtoms = noAtomsCluster + env.atomsInEnv();
+        final SimpleBondInfo bonds = new SimpleBondInfo(noOfAtoms);
+
+        for (int i = 0; i < noOfAtoms; i++) {
+            // of course between two identical atoms there is a bond. kind of...
+            bonds.setBond(i, i, BondInfo.UNCERTAIN);
+        }
+
+        // inside the environment: unclear
+        for(int i = noAtomsCluster; i < noOfAtoms; i++){
+            for(int j = i; j < noOfAtoms; j++){
+                bonds.setBond(i, j, BondInfo.UNCERTAIN);
+            }
+        }
+
+        final List<double[][]> rotTransXYZ = new ArrayList<>();
+        for(int part = 0; part < noMols; part++){
+            final Molecule mol = geom.getMoleculeAtPosition(part);
+            rotTransXYZ.add(mol.giveRotTransCartesians());
+        }
+
+        int off1 = 0;
+        for(int part1 = 0; part1 < noMols; part1++){
+
+            final Molecule mol1 = geom.getMoleculeAtPosition(part1);
+            final double[][] xyz1 = rotTransXYZ.get(part1);
+            final short[] atomNos1 = mol1.getAtomNumbers();
+            final int noAts1 = mol1.getNumberOfAtoms();
+
+            // inside each molecule:
+            for (int i = 0; i < noAts1 - 1; i++) {
+
+                final double rad1 = AtomicProperties.giveRadius(atomNos1[i]);
+
+                for (int j = i + 1; j < noAts1; j++) {
+                    final double radii = blowFacBonds * (rad1
+                        + AtomicProperties.giveRadius(atomNos1[j]));
+                    final double radiiSq = radii*radii;
+
+                    final double dx = xyz1[0][i] - xyz1[0][j];
+                    final double dy = xyz1[1][i] - xyz1[1][j];
+                    final double dz = xyz1[2][i] - xyz1[2][j];
+
+                    final double distanceSq = dx*dx+dy*dy+dz*dz;
+
+                    if(distanceSq <= radiiSq){
+                        bonds.setBond(off1+i,off1+j, BondInfo.UNCERTAIN);
+                    }
+                }
+            }
+
+
+            // in between molecules
+            int off2 = off1+noAts1;
+            for(int part2 = part1+1; part2 < noMols; part2++){
+
+                final Molecule mol2 = geom.getMoleculeAtPosition(part2);
+                final double[][] xyz2 = rotTransXYZ.get(part2);
+                final short[] atomNos2 = mol2.getAtomNumbers();
+                final int noAts2 = mol2.getNumberOfAtoms();
+
+                for (int i = 0; i < noAts1; i++) {
+
+                    final double rad1 = AtomicProperties.giveRadius(atomNos1[i]);
+
+                    for (int j = 0; j < noAts2; j++) {
+                        final double radii = blowFacBonds * (rad1
+                            + AtomicProperties.giveRadius(atomNos2[j]));
+                        final double radiiSq = radii*radii;
+
+                        final double dx = xyz1[0][i] - xyz2[0][j];
+                        final double dy = xyz1[1][i] - xyz2[1][j];
+                        final double dz = xyz1[2][i] - xyz2[2][j];
+
+                        final double distanceSq = dx*dx+dy*dy+dz*dz;
+
+                        if(distanceSq <= radiiSq){
+                            bonds.setBond(off1+i,off2+j, BondInfo.UNCERTAIN);
+                        }
+                    }
+                }
+
+                off2 += noAts2;
+            }
+
+            // with the environment
+            for(int i = 0; i < noAts1; i++){
+                final double rad1 = AtomicProperties.giveRadius(atomNos1[i]);
+                for(int j = 0; j < envCartes.getNoOfAtoms(); j++){
+
+                    final double rad2 = AtomicProperties.giveRadius(atomNosEnv[j]);
+                    final double radii = blowFacBonds * (rad1 + rad2);
+                    final double radiiSq = radii*radii;
+
+                    final double dx = xyz1[0][i] - envXYZ[0][j];
+                    final double dy = xyz1[1][i] - envXYZ[1][j];
+                    final double dz = xyz1[2][i] - envXYZ[2][j];
+
+                    final double distanceSq = dx*dx+dy*dy+dz*dz;
+
+                    if(distanceSq <= radiiSq){
+                        bonds.setBond(off1+i,noAtomsCluster+j, BondInfo.UNCERTAIN);
+                    }     
+                }
+            }
+
+            off1 += noAts1;
+        }
+
         return bonds;
     }
     

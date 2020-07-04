@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2020-02-25
+ * @version 2020-06-27
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
@@ -829,6 +829,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             boolean doLocOpt = false;
             boolean doCDFirst = false;
             boolean stratFullyRelaxed = false;
+            boolean envAware = true;
             GenericLocOpt<Molecule,Geometry> locopt = globConf.refNewton;
             
             String strategyString = null;
@@ -861,6 +862,8 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                     strategyString = sub;
                 } else if(token.equalsIgnoreCase("strategyfullyrelaxed=")){
                     stratFullyRelaxed = true;
+                } else if(token.equalsIgnoreCase("notenvaware")){
+                    envAware = false;
                 } else {
                     throw new RuntimeException("Unknown token " + token + " in specialized mutation (graphdirmut).");
                 }
@@ -889,7 +892,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             return new AdvancedGraphBasedDirMut(config, collDetect,
                 locopt, globConf.blowFacBondDetect, globConf.blowFacDissocDetect,
                 doLocOpt, doCDFirst, provider,
-                strategy);
+                strategy, envAware);
         } else if(mutString.startsWith("pluggabledm:")){
             
             final Tuple<String,String[]> allOpts = tokenizeThirdLevelWithBraces(mutString.substring(12));

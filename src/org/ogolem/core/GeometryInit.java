@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,13 +41,15 @@ package org.ogolem.core;
 /**
  * A decorator for the geometry initialization routines.
  * @author Johannes Dieterich
- * @version 2015-07-19
+ * @version 2016-04-02
  */
 public final class GeometryInit implements GeometryInitialization{
 
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20160402;
     
-    public static enum INITSTYLE{PACKASCENDING,PACKBYSIZE,PACKRANDOMLY,RANDOMWITHDD,RANDOMWITHOUTDD};
+    public static enum INITSTYLE{PACKASCENDING,PACKBYSIZE,PACKRANDOMLY,
+        LAYERPACKINGASCENDING,LAYERPACKINGBYSIZE,LAYERPACKINGRANDOMLY,
+        RANDOMWITHDD,RANDOMWITHOUTDD};
     public static final INITSTYLE DEFAULTINIT = INITSTYLE.PACKASCENDING;
     
     private final GeometryInitialization init;
@@ -63,6 +65,15 @@ public final class GeometryInit implements GeometryInitialization{
                 break;
             case PACKASCENDING:
                 init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING);
+                break;
+            case LAYERPACKINGBYSIZE:
+                init = new PackingLayerInit(Norway2DGeometryMutation.MUTMODE.BYSIZE);
+                break;
+            case LAYERPACKINGRANDOMLY:
+                init = new PackingLayerInit(Norway2DGeometryMutation.MUTMODE.RANDOM);
+                break;
+            case LAYERPACKINGASCENDING:
+                init = new PackingLayerInit(Norway2DGeometryMutation.MUTMODE.ASCENDING);
                 break;
             case RANDOMWITHDD:
                 init = new RandomizedGeomInit(true);
@@ -97,7 +108,13 @@ public final class GeometryInit implements GeometryInitialization{
         } else if(type.equalsIgnoreCase("packrandomly")){
             return INITSTYLE.PACKRANDOMLY;
         } else if(type.equalsIgnoreCase("packascending")){
-            return INITSTYLE.PACKRANDOMLY;
+            return INITSTYLE.PACKASCENDING;
+        } else if(type.equalsIgnoreCase("packlayerbysize")){
+            return INITSTYLE.LAYERPACKINGBYSIZE;
+        } else if(type.equalsIgnoreCase("packlayerrandomly")){
+            return INITSTYLE.LAYERPACKINGRANDOMLY;
+        } else if(type.equalsIgnoreCase("packlayerascending")){
+            return INITSTYLE.LAYERPACKINGASCENDING;
         } else if(type.equalsIgnoreCase("randomwithdd")){
             return INITSTYLE.RANDOMWITHDD;
         } else if(type.equalsIgnoreCase("randomwithoutdd")){

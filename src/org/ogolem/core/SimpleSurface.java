@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2017, J. M. Dieterich and B. Hartke
+              2015-2018, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,11 +49,11 @@ import org.ogolem.random.RandomUtils;
 /**
  * Holds as the father of all environments for the cluster.
  * @author Johannes Dieterich
- * @version 2017-01-01
+ * @version 2018-01-04
  */
-public final class SimpleEnvironment implements Environment{
+public final class SimpleSurface implements Environment{
 
-    private static final long serialVersionUID = (long) 20170101;
+    private static final long serialVersionUID = (long) 20180104;
     private static final boolean DEBUG = false;
     
     public static enum FITMODE{FULLEXTERNAL, LAYERONLY};
@@ -82,8 +82,6 @@ public final class SimpleEnvironment implements Environment{
     private final double[] eulersToCluster;
     
     private final FITMODE mode;
-    
-    private final ENVIRONMENTTYPE type;
 
     private final AllowedSpace space;
     
@@ -93,10 +91,10 @@ public final class SimpleEnvironment implements Environment{
      * @param flexy
      * @param bonds
      */
-    SimpleEnvironment(final CartesianCoordinates environment, final boolean flexy,
+    SimpleSurface(final CartesianCoordinates environment, final boolean flexy,
             final BondInfo bonds, final List<Integer> secondaryAtoms,
             final CollisionDetection.CDTYPE whichColl, final double collBlow, final Atom[] referenceAtoms,
-            final AllowedSpace allowedSpace, final FITMODE fit, final ENVIRONMENTTYPE type){
+            final AllowedSpace allowedSpace, final FITMODE fit){
         this.cartEnv = environment;
         this.envBonds = bonds;
         this.flexySurface = flexy;
@@ -109,14 +107,13 @@ public final class SimpleEnvironment implements Environment{
         this.space = allowedSpace;
         this.mode = fit;
         this.random = Lottery.getInstance();
-        this.type = type;
     }
 
    /**
     * A standard copy constructor.
     * @param original
     */
-   private SimpleEnvironment(final SimpleEnvironment original){
+   private SimpleSurface(final SimpleSurface original){
         this.cartEnv = new CartesianCoordinates(original.cartEnv);
         this.envBonds = original.envBonds.clone();
         this.distanceCOMs = original.distanceCOMs.clone();
@@ -139,12 +136,11 @@ public final class SimpleEnvironment implements Environment{
         this.space = original.space.clone();
         this.mode = original.mode;
         this.random = Lottery.getInstance();
-        this.type = original.type;
    }
 
     @Override
-    public SimpleEnvironment clone(){
-        return new SimpleEnvironment(this);
+    public SimpleSurface clone(){
+        return new SimpleSurface(this);
     }
 
     @Override
@@ -469,7 +465,7 @@ public final class SimpleEnvironment implements Environment{
 
         final CollisionDetection collDetect = new CollisionDetection(whichCollDetect);
 
-        long emergCounter = 0;
+        int emergCounter = 0;
         boolean hasColl;
         do {
             
@@ -480,7 +476,7 @@ public final class SimpleEnvironment implements Environment{
                 RandomUtils.randomEulers(eulersToCluster);
             }
 
-            // now the distances
+            // now the distances            
             distanceCOMs = space.getPointInSpace();
 
             // check for collisions. DO NOT check for collisions within cluster!
@@ -495,6 +491,52 @@ public final class SimpleEnvironment implements Environment{
                 for(final Collision coll : colls){
                     System.out.println("DEBUG: Collision between " + coll.getAtomOne() + " and " + coll.getAtomTwo());
                 }
+            }
+            
+            if(hasColl){
+                // well, easy enough: we need to move up and since we define the surface to be in z, it's easy enough
+                // let's start with moving 50 au up 
+                double crash = distanceCOMs[2];                
+                distanceCOMs[2] += 50;
+                final CollisionInfo ci = collDetect.checkForCollision(marryThem(clusterCartes, clusterBonds).getObject1(), blowColl,
+                    marryBonds(clusterCartes.getNoOfAtoms(), (clusterCartes.getNoOfAtoms()+cartEnv.getNoOfAtoms())));
+                final boolean co = ci.hasCollision();
+                if(co){
+                    System.err.println("ERROR: Moving points upwards by 50 a.u. not sufficient. That's weird...");
+                    continue;
+                }
+                double noCrash = distanceCOMs[2];
+                
+                boolean ct = false;
+                while(ct && emergCounter < FixedValues.MAXTOEMERGENCY){
+                    
+                    final double nextGuess = (noCrash - crash) /2;
+                    distanceCOMs[2] = nextGuess;
+                    final CollisionInfo cix = collDetect.checkForCollision(marryThem(clusterCartes, clusterBonds).getObject1(), blowColl,
+                        marryBonds(clusterCartes.getNoOfAtoms(), (clusterCartes.getNoOfAtoms()+cartEnv.getNoOfAtoms())));
+                    final boolean cox = cix.hasCollision();
+                    
+                    if(cox){
+                        crash = nextGuess;
+                    } else {
+                        ct = (noCrash - nextGuess > 0); // rather arbitrary but below 1 a.u. seems good enough?
+                        noCrash = nextGuess;
+                    }
+                    
+                    emergCounter++;
+                }
+                
+                if(!ct){
+                    // we found something that works
+                    hasColl = false;
+                }
+            }
+            
+            // check if the point is still in space
+            final boolean isInSpace = space.isPointInSpace(distanceCOMs);
+            if(!isInSpace){
+                System.err.println("ERROR: We found a collision free location of the cluster on the surface but it's not in the allowed space. Maybe it's too small in z?");
+                hasColl = true;
             }
             
         } while (hasColl && emergCounter < FixedValues.MAXTOEMERGENCY);
@@ -674,7 +716,7 @@ public final class SimpleEnvironment implements Environment{
     
     @Override
     public ENVIRONMENTTYPE getEnvironmentType(){
-        return type;
+        return ENVIRONMENTTYPE.SURFACE;
     }
 
     /**
@@ -696,7 +738,7 @@ public final class SimpleEnvironment implements Environment{
 
         for(int i = noClusterAts; i < noTotalAts; i++){
             for(int j = i; j < noTotalAts; j++){
-                if(envBonds.hasBond(i-noClusterAts, noClusterAts)){
+                if(envBonds.hasBond(i-noClusterAts, j-noClusterAts)){
                     final short bond = envBonds.bondType(i-noClusterAts, j-noClusterAts);
                     bondsCompl.setBond(i, j, bond);
                     bondsCompl.setBond(j, i, bond);
@@ -724,7 +766,7 @@ public final class SimpleEnvironment implements Environment{
 
         for(int i = noClusterAts; i < noTotalAts; i++){
             for(int j = i; j < noTotalAts; j++){
-                if(envBonds.hasBond(i-noClusterAts, noClusterAts)){
+                if(envBonds.hasBond(i-noClusterAts, j-noClusterAts)){
                     final short bond = envBonds.bondType(i-noClusterAts, j-noClusterAts);
                     bondsCompl.setBond(i, j, bond);
                     bondsCompl.setBond(j, i, bond);

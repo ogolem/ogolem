@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
-              2010, J. M. Dieterich
-              2016-2017, J. M. Dieterich and B. Hartke
+              2010-2014, J. M. Dieterich
+              2015-2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,46 +38,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import java.io.Serializable;
-import java.util.List;
-import org.ogolem.helpers.Tuple;
-
 /**
- * Defines what all potential types of environments need to be capable of.
+ * Packs the geometry for initialization.
  * @author Johannes Dieterich
- * @version 2017-01-01
+ * @version 2016-04-02
  */
-public interface Environment extends Cloneable, Serializable{
-
-    public static enum ENVIRONMENTTYPE {SURFACE, CAVITY};
+public final class PackingLayerInit implements GeometryInitialization{
     
-    Environment clone();
-
-    boolean doesItFit(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
-
-    Tuple<CartesianCoordinates, BondInfo> marryThem(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
-
-    CartesianCoordinates divorceThem(final CartesianCoordinates completeCartes);
-
-    void initializeConnections(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
-
-    void mutateConnections(final CartesianCoordinates clusterCartes);
-
-    List<Environment> createOffspring(final Environment father);
-
-    List<Integer> whichSecondaryAtoms();
-
-    boolean isEnvironmentRigid();
-
-    double[] returnMyGenom();
-
-    void putGenomIn(double[] genom);
-
-    int atomsInEnv();
+    private static final long serialVersionUID = (long) 20160402;
     
-    void moveCluster(final int direction, final double move);
+    private final Norway2DGeometryMutation.MUTMODE packingMode;
     
-    CartesianCoordinates getEnvironmentCartes();
-    
-    ENVIRONMENTTYPE getEnvironmentType();
+    public PackingLayerInit(final Norway2DGeometryMutation.MUTMODE mode){
+        this.packingMode = mode;
+    }
+
+    @Override
+    public Geometry initTheGeometry(final Geometry geom, final CollisionDetection.CDTYPE whichCollDetect,
+            final DissociationDetection.DDTYPE whichDissocDetect, final double[] cellSize,
+            final double blowDiss, final double blowColl, final float explDoFRatio,
+            final boolean molecularCD){
+
+        final Norway2DGeometryMutation norway = new Norway2DGeometryMutation(whichCollDetect, blowColl, blowDiss,
+            whichDissocDetect,packingMode);
+        
+        final Geometry packed = norway.mutate(geom);
+        
+        return packed;
+    }
 }
