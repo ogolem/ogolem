@@ -148,46 +148,52 @@ public class NumericalGradients extends org.ogolem.core.NumericalGradients {
 
     static Gradient calculateGrad(AdaptiveParameters params,
             AdaptiveInteractionTerm term, Topology refTopo){
+        
+        System.err.println("WARNING: SOMETHING OFF IN THIS METHOD");
 
         final double dMachinePrecision = Machine.calcMachinePrecision();
+        final double machPrecSqrt = Math.sqrt(dMachinePrecision);
 
         final int iNoOfAtoms = refTopo.getNumberOfAtoms();
         final double[][] daGradMatrix = new double[3][iNoOfAtoms];
         final double[][] daXYZ = refTopo.getPositions();
         final String[] saAtoms = refTopo.getAtomNames();
+        
+        // an initial energy calculation
+        Topology topo = new Topology(saAtoms,daXYZ,refTopo.getBonds(), refTopo.getCharges(), refTopo.getSpins(), refTopo.getAtomicNumbers(),
+                        refTopo.get13Contributions(), refTopo.get14Contributions());
+        final double dEnergy = term.partialInteraction(topo, params);
 
-        Topology topo;
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < iNoOfAtoms; j++){
 
-                double dH = 1000 * Math.sqrt(dMachinePrecision) * daXYZ[i][j];
-                if(dH == 0.0) {dH = Math.sqrt(dMachinePrecision);}
+                double dH = 1000 * machPrecSqrt * daXYZ[i][j];
+                if(dH < machPrecSqrt) {dH = machPrecSqrt;}
+             
+                System.out.println(" comp " + i + " atom " + j + " dH " + dH + " " + machPrecSqrt);
+             
+                final double orig = daXYZ[i][j];
                 
                 // add it
-                daXYZ[i][j] += dH;
+                daXYZ[i][j] = orig + dH;
 
                 topo = new Topology(saAtoms,daXYZ,refTopo.getBonds(), refTopo.getCharges(), refTopo.getSpins(), refTopo.getAtomicNumbers(),
                         refTopo.get13Contributions(), refTopo.get14Contributions());
                 final double dEnergy1 = term.partialInteraction(topo, params);
 
                 // substract it
-                daXYZ[i][j] -= 2.0*dH;
+                daXYZ[i][j] =  orig - dH;
                 topo = new Topology(saAtoms,daXYZ,refTopo.getBonds(), refTopo.getCharges(), refTopo.getSpins(), refTopo.getAtomicNumbers(),
                         refTopo.get13Contributions(), refTopo.get14Contributions());
                 final double dEnergy2 = term.partialInteraction(topo, params);
 
                 // correct it
-                daXYZ[i][j] -= dH;
+                daXYZ[i][j] = orig;
 
                 // compute stencil
                 daGradMatrix[i][j] = (dEnergy1 - dEnergy2) / (2.0 * dH);
             }
         }
-
-        // now one last energy calculation
-        topo = new Topology(saAtoms,daXYZ,refTopo.getBonds(), refTopo.getCharges(), refTopo.getSpins(), refTopo.getAtomicNumbers(),
-                        refTopo.get13Contributions(), refTopo.get14Contributions());
-        final double dEnergy = term.partialInteraction(topo, params);
 
         // create Gradient
         final Gradient gradient = new Gradient();

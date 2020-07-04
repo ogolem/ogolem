@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import org.ogolem.qmdff.SimpleEVB2;
 /**
  * A backend constructing factory.
  * @author Johannes Dieterich
- * @version 2015-09-04
+ * @version 2020-05-25
  */
 public class BackendFactory {
     
@@ -73,6 +73,11 @@ public class BackendFactory {
             final FullyCartesianCoordinates cCoords = new FullyCartesianCoordinates(cBack);
 
             return cCoords;
+        } else if(backend.startsWith("environment+xyz:")){
+            final CartesianFullBackend cBack = mapStringToBackend(config, backend.substring(16),params,config.outputFolder);
+            final EnvironmentCartesCoordinates ecCoords = new EnvironmentCartesCoordinates(cBack);
+            
+            return ecCoords;
         } else if(backend.startsWith("rigid:")){
             try{
                 final RigidBodyBackend rBack = mapStringToRigidBackend(backend.substring(6),params);
@@ -174,6 +179,17 @@ public class BackendFactory {
             back = new MoleculeUntangler(sigma, moleculeWise);
         } else if(sBackend.equalsIgnoreCase("adaptiveUFF")){
             back = new org.ogolem.adaptive.AdaptiveUFF(false);
+        } else if(sBackend.startsWith("adaptiveSWGFF")){
+            double blowFacClose = 0.2;
+            if(sBackend.startsWith("adaptiveSWGFF:")){
+                final String s = sBackend.substring("adaptiveSWGFF:".length()).trim();
+                if(s.startsWith("blowfacclose=")){
+                    blowFacClose = Double.parseDouble(s.substring("blowfacclose=".length()).trim());
+                } else {
+                    throw new RuntimeException("Illegal option " + s + " for adaptiveSWGFF.");
+                }
+            }
+            back = new org.ogolem.adaptive.AdaptiveSWGFF(false, params, true, blowFacClose);
         } else if (sBackend.startsWith("adaptiveLJFF")) {
             if (sBackend.endsWith("easy;6,12,6")) {
                 back = new org.ogolem.adaptive.AdaptiveLJFF(false, true, 6, 12, 6, params, false,1.2,20.0,false,false);
@@ -413,6 +429,36 @@ public class BackendFactory {
             if(ffs.isEmpty()){throw new RuntimeException("No force fields for EVB-QMDFF specified.");}
             
             back = new EVBQMDForceField(evb,ffs);
+        } else if(sBackend.startsWith("surfacetopadsorptionbiaser:")) {
+
+            double eIncr = FixedValues.NONCONVERGEDENERGY;
+            double gradIncr = FixedValues.NONCONVERGEDGRADIENT;
+
+            final String[] s2 = sBackend.substring("surfacetopadsorptionbiaser:".length()).trim().split("\\,");
+            for(final String token : s2){
+                if(token.isEmpty()){
+                    continue;
+                } else if(token.startsWith("eincr=")){
+                    eIncr = Double.parseDouble(token.substring(6).trim());
+                } else if(token.startsWith("gradincr=")){
+                    gradIncr = Double.parseDouble(token.substring(9).trim());
+                } else {
+                    throw new RuntimeException("Unknown token " + token + " for surface top adsorption biaser calculation.");
+                }
+            }
+
+            back = new HackySurfaceAdsorptionBiaser(eIncr, gradIncr);
+        } else if(sBackend.startsWith("chainedfullcartesian:")) {
+
+            final String[] s2 = sBackend.substring("chainedfullcartesian:".length()).trim().split("\\|");
+
+            final List<CartesianFullBackend> backends = new ArrayList<>();
+            for(final String token : s2){
+                final CartesianFullBackend singleBack = mapStringToBackend(config, token.trim(), params, outFolder);
+                backends.add(singleBack);
+            }
+
+            back = new ChainedCartesianFullBackend(backends);
         } else if(sBackend.startsWith("tinker:")){
             String sTemp3 = sBackend.substring(7).trim();
             if (sTemp3.equalsIgnoreCase("custom")){

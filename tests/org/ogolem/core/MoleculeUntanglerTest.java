@@ -72,7 +72,7 @@ public class MoleculeUntanglerTest {
         for (int i = 0; i < 3; i++) {
             Gradient grad = new Gradient(3, noOfAtoms);
             instance.gradientCalculation(0, 42, distances[i], null, atomNos, atsPerMol, null, noOfAtoms,
-                    null, null, null, grad);
+                    null, null, null, grad, false);
             assertEquals(energies[i], grad.getTotalEnergy(), 1e-12);
             assertEquals(gradx[i], grad.getGradient()[0], 1e-12);
         }

@@ -44,7 +44,7 @@ import org.ogolem.core.ScaTTM3FBackend;
 /**
  * Tests TTM3F gradient cost with a random water 25 geometry.
  * @author Johannes Dieterich
- * @version 2020-01-02
+ * @version 2020-05-25
  */
 class WaterTTM3FLargeBenchmark implements SingleMicroBenchmark {
     
@@ -81,7 +81,7 @@ class WaterTTM3FLargeBenchmark implements SingleMicroBenchmark {
     @Override
     public double runSingle() throws Exception {
         
-        back.gradientCalculation(1, 1, xyz1D, atoms, atomNos, atsPerMol, energyparts, noAtoms, charges, spins, bonds, gradient);
+        back.gradientCalculation(1, 1, xyz1D, atoms, atomNos, atsPerMol, energyparts, noAtoms, charges, spins, bonds, gradient, false);
         
         return gradient.getTotalEnergy();
     }

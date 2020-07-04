@@ -53,13 +53,13 @@ import org.ogolem.random.RandomUtils;
 /**
  * A sphere-based phenotype cut.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-25
  */
 public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,Geometry> {
 
     public static enum CUTTYPE {FULLRANDOM, GAUSSDISTRIBUTED, INVERTEDGAUSSDISTRIBUTED};
     
-    private static final long serialVersionUID = (long) 20200209;
+    private static final long serialVersionUID = (long) 20200525;
     private static final boolean DEBUG = false;
     private final boolean intermediateSanityChecks;
     private final Lottery r;
@@ -950,7 +950,8 @@ public class SnaefellsjoekullGeometryXOver implements GenericCrossover<Molecule,
             work.getAll1DCartes(xyz1D);            
             final double obj = (back == null) ? 0.0 : back.energyCalculation(g.getID(), iter, xyz1D,
                     work.getAllAtomTypes(), work.getAllAtomNumbers(), work.getAllAtomsPerMol(),
-                    eparts, work.getNoOfAtoms(), work.getAllCharges(), work.getAllSpins(), g.getBondInfo());
+                    eparts, work.getNoOfAtoms(), work.getAllCharges(), work.getAllSpins(), g.getBondInfo(),
+                    work.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
             
             if(DEBUG){
                 System.out.println("DEBUG: At iter " + iter + " COM translation is " + point[3] + " " + point[4] + " " + point[5]);

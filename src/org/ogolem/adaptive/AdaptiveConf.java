@@ -883,6 +883,18 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
                 adapt = new DoubleMorse(false,globConf.getAdaptiveConf().maxDDoubleMorse);
                 sWhichMethod = "doublemorse";
             }
+        } else if(s.startsWith("adaptiveSWGFF")){
+            double blowFacClose = 0.2;
+            if(s.startsWith("adaptiveSWGFF:")){
+                final String t = s.substring("adaptiveSWGFF:".length()).trim();
+                if(s.startsWith("blowfacclose=")){
+                    blowFacClose = Double.parseDouble(t.substring("blowfacclose=".length()).trim());
+                } else {
+                    throw new RuntimeException("Illegal option " + s + " for adaptiveSWGFF.");
+                }
+            }
+            adapt = new org.ogolem.adaptive.AdaptiveSWGFF(false, null, true, blowFacClose);
+            sWhichMethod = "adaptiveSWGFF";
         } else if (s.startsWith("adaptiveLJFF")) {
             if (s.endsWith("easy;6,12,6")) {
                 adapt = new AdaptiveLJFF(true,true,6,12,6,null,false,1.2,20.0,false,false);

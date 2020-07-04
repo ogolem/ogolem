@@ -2,6 +2,7 @@
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +52,7 @@ import org.ogolem.helpers.Machine;
  * Axilrod-Teller terms. It contains an additional energy shift to better reproduce ab-initio
  * reference calculations.
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2017-03-03
  */
 public final class AdaptiveUFF extends AbstractAdaptiveBackend{
 
@@ -98,7 +99,8 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
     @Override
     public void gradientCalculation(final long lID, final int iIteration, final double[] daXYZ1D,
             final String[] saAtomTypes, final short[] atomNos, final int[] atsPerMol, final double[] energyparts, final int iNoOfAtoms,
-            final float[] faCharges, final short[] iaSpins, final BondInfo bonds, final Gradient gradient){
+            final float[] faCharges, final short[] iaSpins, final BondInfo bonds, final Gradient gradient,
+            final boolean hasRigidEnv){
 
         final Gradient analyticalGrad = new Gradient();
 
@@ -112,14 +114,16 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
         // the electrostatic one should then be again fair
         
         // TODO analytical gradient, for the time being numerical
-        final Gradient numericalGrad = NumericalGradients.numericalGradient(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this);
+        final Gradient numericalGrad = NumericalGradients.numericalGradient(lID, iIteration, daXYZ1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this,
+                hasRigidEnv);
         gradient.copyDataIn(numericalGrad);
     }
 
     @Override
     public double energyCalculation(final long lID, final int iIteration, final double[] daXYZ1D,
             final String[] saAtomTypes, final short[] atomNos, final int[] atsPerMol, final double[] energyparts,
-            final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds){
+            final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds,
+            final boolean hasRigidEnv){
 
         // this is a fake and just allowed since it is intermediate
         final int[] iaAtsPerMol = {iNoOfAtoms};
@@ -127,7 +131,7 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
         cartes.setAllCharges(faCharges);
         cartes.setAllSpins(iaSpins);
 
-        final double dEnergy = energyOfStructWithParams(cartes, params, (int) lID, bonds);
+        final double dEnergy = energyOfStructWithParams(cartes, params, (int) lID, bonds, hasRigidEnv);
 
         return dEnergy;
     }
@@ -135,6 +139,12 @@ public final class AdaptiveUFF extends AbstractAdaptiveBackend{
     @Override
     public double energyOfStructWithParams(final CartesianCoordinates cartes,
             final AdaptiveParameters params, final int geomID, final BondInfo bonds){
+        return energyOfStructWithParams(cartes, params, geomID, bonds, cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
+    }
+        
+    public double energyOfStructWithParams(final CartesianCoordinates cartes,
+            final AdaptiveParameters params, final int geomID, final BondInfo bonds,
+            final boolean hasRigidEnv){
 
         final int iNoOfAtoms = cartes.getNoOfAtoms();
 

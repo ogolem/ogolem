@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2011-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ import org.ogolem.math.SinLookup;
  * An adaptivable AMBER-style force field. Please note that this FF ONLY
  * guarantees to work with one system at a time!
  * @author Johannes Dieterich
- * @version 2016-02-24
+ * @version 2017-03-03
  */
 public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
 
@@ -186,7 +186,7 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] xyz1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins,
-            final BondInfo bonds, final Gradient gradient){
+            final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv){
         
         if(xyz == null || !useCaches) xyz = new double[3][iNoOfAtoms];
         System.arraycopy(xyz1D, 0, xyz[0], 0, iNoOfAtoms);
@@ -215,7 +215,7 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
             // numerical gradient to check
             Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, xyz1D,
                 saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins,
-                bonds, this);
+                bonds, this, hasRigidEnv);
         }
         
         gradient.copyDataIn(gradientTmp);
@@ -224,7 +224,7 @@ public class AdaptiveAmberFF extends AbstractAdaptiveBackend {
     @Override
     public double energyCalculation(long lID, int iIteration, double[] xyz1D,
             String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms,
-            float[] faCharges, short[] iaSpins, final BondInfo bonds){
+            float[] faCharges, short[] iaSpins, final BondInfo bonds, final boolean hasRigidEnv){
         
         if(xyz == null || !useCaches) xyz = new double[3][iNoOfAtoms];
         System.arraycopy(xyz1D, 0, xyz[0], 0, iNoOfAtoms);

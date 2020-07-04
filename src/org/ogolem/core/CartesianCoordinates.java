@@ -53,6 +53,8 @@ public class CartesianCoordinates implements StructuralData, Cloneable {
 
     // serialVersion so that serialization works flawlessly
     private static final long serialVersionUID = (long) 2010917;
+    
+    public static enum ENVTYPE {NONE, FLEXY, RIGID};
 
     private final int noOfMols;
     private final int noOfAtoms;
@@ -251,8 +253,14 @@ public class CartesianCoordinates implements StructuralData, Cloneable {
         return (refEnv != null);
     }
 
-    boolean containedEnvIsFlexy(){
-        return ((refEnv == null) ? false : refEnv.isEnvironmentRigid());
+    public ENVTYPE containedEnvType(){
+        if(refEnv == null){return ENVTYPE.NONE;}
+        
+        if(refEnv.isEnvironmentRigid()){
+            return ENVTYPE.RIGID;
+        } else {
+            return ENVTYPE.FLEXY;
+        }
     }
 
     Atom getAtomAtPos(final int at){

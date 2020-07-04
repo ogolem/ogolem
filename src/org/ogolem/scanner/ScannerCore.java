@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +47,7 @@ import org.ogolem.io.OutputPrimitives;
 /**
  * The core of the scanner. Essentially a recursively working algorithm.
  * @author Johannes Dieterich
- * @version 2013-09-23
+ * @version 2017-03-03
  */
 class ScannerCore {
     
@@ -54,6 +55,8 @@ class ScannerCore {
     
     static void scan(final ScannerConfig scanConf, final CartesianCoordinates cartes, final Newton locopt, final String outPrefix,
             final boolean[][] constraints, final boolean isConstricted, final BondInfo bonds){
+        
+        final boolean hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
         
         // while we are there: write out our first geometry
         cartes.updateCartesians();
@@ -65,7 +68,7 @@ class ScannerCore {
                 final double e = back.energyCalculation(0, 0, cartes.getAll1DCartes(),
                         cartes.getAllAtomTypes(), cartes.getAllAtomNumbers(),
                         cartes.getAllAtomsPerMol(), new double[cartes.getNoOfAtoms()],
-                        cartes.getNoOfAtoms(), cartes.getAllCharges(), cartes.getAllSpins(), bonds);
+                        cartes.getNoOfAtoms(), cartes.getAllCharges(), cartes.getAllSpins(), bonds, hasRigidEnv);
                 cartes.setEnergy(e);
             }
         }
@@ -98,6 +101,8 @@ class ScannerCore {
     private static void scanner(final State state, final int myLevel, final ScannerConfig scanConf, final CartesianCoordinates cartes, final Newton locopt, final String outPrefix,
             final boolean[][] constraints, final boolean isConstricted, final BondInfo bonds){
         
+        final boolean hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
+        
         if(myLevel >= scanConf.scanDoFs.size()) {
             // well, it seems we are at the bottom. so write out the geometry and (if wanted) optimize it
             cartes.updateCartesians();
@@ -111,7 +116,7 @@ class ScannerCore {
                     final double e = back.energyCalculation(state.geomID, 0, cartes.getAll1DCartes(),
                             cartes.getAllAtomTypes(), cartes.getAllAtomNumbers(),
                             cartes.getAllAtomsPerMol(), new double[cartes.getNoOfAtoms()],
-                            cartes.getNoOfAtoms(), cartes.getAllCharges(), cartes.getAllSpins(), bonds);
+                            cartes.getNoOfAtoms(), cartes.getAllCharges(), cartes.getAllSpins(), bonds, hasRigidEnv);
                     cartes.setEnergy(e);
                 }
             }

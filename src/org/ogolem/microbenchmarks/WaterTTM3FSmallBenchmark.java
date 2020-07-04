@@ -43,7 +43,7 @@ import org.ogolem.core.ScaTTM3FBackend;
 /**
  * Tests TTM3F energy cost with a random water 10 geometry.
  * @author Johannes Dieterich
- * @version 2020-01-02
+ * @version 2020-05-25
  */
 class WaterTTM3FSmallBenchmark implements SingleMicroBenchmark {
     
@@ -78,7 +78,7 @@ class WaterTTM3FSmallBenchmark implements SingleMicroBenchmark {
     @Override
     public double runSingle() throws Exception {
         
-        return back.energyCalculation(1, 1, xyz1D, atoms, atomNos, atsPerMol, energyparts, noAtoms, charges, spins, bonds);
+        return back.energyCalculation(1, 1, xyz1D, atoms, atomNos, atsPerMol, energyparts, noAtoms, charges, spins, bonds, false);
     }
 
     @Override

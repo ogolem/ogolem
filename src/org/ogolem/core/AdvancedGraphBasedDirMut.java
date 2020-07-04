@@ -433,7 +433,7 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule,Geomet
              */
         } else {
             final double percImprove = (eBefore-work.getFitness())*100/eBefore;
-            System.out.println("INFO: Advanced GDM did find a better configuration: " + String.format("%6.2f", percImprove) + " % better.");
+            System.out.println("INFO: Advanced GDM did find a better configuration: " + String.format("%6.2f", percImprove) + " % better. Initial: " + eBefore + " now: " + work.getFitness());
         }
         
         return work;

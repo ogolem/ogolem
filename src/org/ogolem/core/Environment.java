@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
-              2010     , J. M. Dieterich
+              2010, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,23 +40,24 @@ package org.ogolem.core;
 
 import java.io.Serializable;
 import java.util.List;
+import org.ogolem.helpers.Tuple;
 
 /**
  * Defines what all potential types of environments need to be capable of.
  * @author Johannes Dieterich
- * @version 2010-09-20
+ * @version 2016-02-29
  */
 public interface Environment extends Cloneable, Serializable{
 
     Environment clone();
 
-    boolean doesItFit(final CartesianCoordinates clusterCartes);
+    boolean doesItFit(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
-    CartesianCoordinates marryThem(final CartesianCoordinates clusterCartes);
+    Tuple<CartesianCoordinates, BondInfo> marryThem(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
     CartesianCoordinates divorceThem(final CartesianCoordinates completeCartes);
 
-    void initializeConnections(final CartesianCoordinates clusterCartes);
+    void initializeConnections(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
     void mutateConnections(final CartesianCoordinates clusterCartes);
 

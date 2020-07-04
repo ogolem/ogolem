@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich
                 2015, J. M. Dieterich and B. Hartke
+                2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -65,7 +66,7 @@ import org.ogolem.io.OutputPrimitives;
  * Happy scripting! :-)
  * 
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2017-03-03
  */
 public class GenericInterface extends AbstractLocOpt implements CartesianFullBackend {
     
@@ -183,12 +184,12 @@ public class GenericInterface extends AbstractLocOpt implements CartesianFullBac
     }
 
     @Override
-    public void gradientCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, BondInfo bonds, final Gradient gradient) {
+    public void gradientCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public double energyCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, BondInfo bonds) {
+    public double energyCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes, short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, BondInfo bonds, final boolean hasRigidEnv) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     

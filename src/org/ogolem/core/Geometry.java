@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.ogolem.generic.ContinuousProblem;
+import org.ogolem.helpers.Tuple;
 import org.ogolem.properties.Property;
 import org.ogolem.random.Lottery;
 
@@ -261,6 +262,20 @@ public class Geometry extends ContinuousProblem<Molecule> {
 
         return cartesians;
     }
+    
+    Tuple<CartesianCoordinates,BondInfo> getCartesiansAndBondsWithEnvironment(){
+
+        if(!containsEnvironment()){
+             throw new RuntimeException("You shall not invoke this method on a geometry without an environment in it!");
+        }
+        
+        final CartesianCoordinates cartesians = CoordTranslation.geometryToCartesian(this, false); // not a typo, we DO NOT want to include the env at this point
+        cartesians.setEnergy(fitness);
+        
+        final Tuple<CartesianCoordinates, BondInfo> tup = env.marryThem(cartesians, getBondInfo());
+            
+        return tup;
+    }
 
     Environment getEnvironmentCopy(){
         return env.clone();
@@ -436,13 +451,14 @@ public class Geometry extends ContinuousProblem<Molecule> {
 
     public void initializeEnvironment(){
         if(env != null){
-            env.initializeConnections(getCartesians());
+            env.initializeConnections(getCartesians(), bonds);
         }
     }
 
     public boolean doesFitWithEnvironment(){
         if(env != null){
-            return env.doesItFit(getCartesians());
+            final boolean b = env.doesItFit(getCartesians(), bonds);
+            return b;
         } else {
             return true;
         }

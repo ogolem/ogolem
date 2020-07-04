@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-                2015, J. M. Dieterich and B. Hartke
+              2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +46,7 @@ import org.ogolem.skalevala.Runot;
 /**
  * Calls the sKalevala part of ogolem.
  * @author Johannes Dieterich
- * @version 2015-03-27
+ * @version 2017-03-03
  */
 class SkalevalaCaller implements CartesianFullBackend {
     //TODO debug, extend
@@ -64,7 +65,8 @@ class SkalevalaCaller implements CartesianFullBackend {
     
     @Override
     public double energyCalculation(long lID, int iIteration, double[] daXYZ1D, String[] saAtomTypes, short[] atomNos,
-            int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, final BondInfo bonds) {
+            int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, final BondInfo bonds,
+            final boolean hasRigidEnv) {
         
         // put the 1D coordinates into 3D ones (layout as sKalevala wants)
         final double[][] daXYZ = new double[iNoOfAtoms][3];
@@ -94,7 +96,7 @@ class SkalevalaCaller implements CartesianFullBackend {
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] daXYZ1D, String[] saAtomTypes, short[] atomNos,
             int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges, short[] iaSpins, final BondInfo bonds,
-            final Gradient gradient) {
+            final Gradient gradient, final boolean hasRigidEnv) {
         
         for(int i : atomNos){
             System.out.println("DEBUG: Have " + i);

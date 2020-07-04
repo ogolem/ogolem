@@ -44,7 +44,7 @@ package org.ogolem.core;
  * heterogeneous clusters. Besides, as described by the Backend interface, it
  * depends on a 1D array of coordinates for calculation.
  * @author Johannes Dieterich
- * @version 2020-03-21
+ * @version 2020-05-25
  */
 public class LennardJonesFF implements CartesianFullBackend {
 
@@ -80,7 +80,8 @@ public class LennardJonesFF implements CartesianFullBackend {
     public double energyCalculation(final long lID, final int iIteration,
             final double[] xyz1D, final String[] saAtomTypes, final short[] atomNos,
             final int[] atsPerMol, final double[] energyparts,
-            final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds) {
+            final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds,
+            final boolean hasRigidEnv) {
         
         // zero the partial contributions
         for(int i = 0; i < energyparts.length; i++) energyparts[i] = 0.0;
@@ -114,7 +115,17 @@ public class LennardJonesFF implements CartesianFullBackend {
 
         // get the squared distances between all atoms
         double dPotEnergyAdded = 0.0;
-        for (int i = 0; i < iNoOfAtoms - 1; i++) {
+        
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
+            
+            if(atomNos[i] == 0){continue;} // dummy
+            
             final double x0 = xyz1D[i];
             final double y0 = xyz1D[i+iNoOfAtoms];
             final double z0 = xyz1D[i+2*iNoOfAtoms];
@@ -164,7 +175,7 @@ public class LennardJonesFF implements CartesianFullBackend {
             final double[] xyz1D, final String[] saAtomTypes, final short[] atomNos,
             final int[] atsPerMol, final double[] energyparts,
             final int iNoOfAtoms, final float[] faCharges, final short[] iaSpins, final BondInfo bonds,
-            final Gradient gradient) {
+            final Gradient gradient, final boolean hasRigidEnv) {
         
         // zero the partial contributions
         for(int i = 0; i < energyparts.length; i++) energyparts[i] = 0.0;
@@ -204,7 +215,13 @@ public class LennardJonesFF implements CartesianFullBackend {
 
         // calculate all pair distances
         double dPotEnergyAdded = 0.0;
-        for (int i = 0; i < (iNoOfAtoms - 1); i++) {
+        int lastOffset = 0;
+        for(int i = 0; i < atsPerMol.length-1; i++){
+            lastOffset += atsPerMol[i];
+        }
+        
+        final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
+        for (int i = 0; i < firstLoopAtomNo; i++) {
             
             final double x0 = xyz1D[i];
             final double y0 = xyz1D[i+iNoOfAtoms];

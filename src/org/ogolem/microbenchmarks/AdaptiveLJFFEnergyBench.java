@@ -48,7 +48,7 @@ import org.ogolem.core.SimpleBondInfo;
  * Benchmarks energy calculation of the adaptive LJ FF for a homogeneous LJ55
  * configured as if it were a homogeneous LJ-6-12-6 FF.
  * @author Johannes Dieterich
- * @version 2020-03-21
+ * @version 2020-05-25
  */
 class AdaptiveLJFFEnergyBench implements SingleMicroBenchmark {
     
@@ -105,7 +105,7 @@ class AdaptiveLJFFEnergyBench implements SingleMicroBenchmark {
         final double e55 = ljFF.energyCalculation(-1, 0, xyz1D,
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), lj55.getAllAtomsPerMol(),
                 energyparts, lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(),
-                bonds55);
+                bonds55, false);
         
         return e55;
     }

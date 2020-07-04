@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014-2015, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
 /**
  * An adaptor to fit the old Newton interface into the new generic world.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-05-25
  */
 public class NewtonAdaptor implements GenericLocOpt<Molecule,Geometry> {
     
@@ -92,7 +92,7 @@ public class NewtonAdaptor implements GenericLocOpt<Molecule,Geometry> {
             
             final double e = back.energyCalculation(id, count, cartes.getAll1DCartes(), cartes.getAllAtomTypes(),
                     cartes.getAllAtomNumbers(), cartes.getAllAtomsPerMol(), eparts, cartes.getNoOfAtoms(),
-                    cartes.getAllCharges(), cartes.getAllSpins(), individual.getBondInfo());
+                    cartes.getAllCharges(), cartes.getAllSpins(), individual.getBondInfo(), cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
             individual.setFitness(e);
             
             return individual;

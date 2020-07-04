@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import contrib.atomdroiduff.AtomdroidUFF;
 /**
  * Provides energy and gradient calculated using a very simple UFF approach.
  * @author Johannes Dieterich
- * @version 2016-03-15
+ * @version 2017-03-03
  */
 class UniversalFF implements CartesianFullBackend{
 
@@ -87,7 +87,8 @@ class UniversalFF implements CartesianFullBackend{
 
     @Override
     public double energyCalculation(long lID, int iIteration, double[] daXYZ1D, String[] atoms, short[] atomNos,
-        int[] atsPerMol, double[] energyparts, int noAts, float[] charges, short[] iaSpins, final BondInfo bonds) {
+        int[] atsPerMol, double[] energyparts, int noAts, float[] charges, short[] iaSpins, final BondInfo bonds,
+        final boolean hasRigidEnv) {
         
         if(uff == null|| !useCaching) {initialize(noAts, bonds, atoms, charges, atomNos);}
         
@@ -104,7 +105,7 @@ class UniversalFF implements CartesianFullBackend{
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] daXYZ1D, String[] atoms, short[] atomNos,
         int[] atsPerMol, double[] energyparts, int noAts, float[] charges, short[] iaSpins, final BondInfo bonds,
-        final Gradient gradient) {
+        final Gradient gradient, final boolean hasRigidEnv) {
         
         if(uff == null || !useCaching) {initialize(noAts, bonds, atoms, charges, atomNos);}
         

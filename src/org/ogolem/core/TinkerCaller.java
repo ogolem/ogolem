@@ -2,6 +2,7 @@
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -50,7 +51,7 @@ import org.ogolem.io.OutputPrimitives;
  * Also, Tinker can be used as a backend. But this is highly discouraged for normal application as the calling
  * overhead is significant in comparison to the force field execution time!
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2017-03-03
  */
 class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
     //TODO delete always all files...
@@ -440,15 +441,16 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
     @Override
     public void gradientCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtomTypes,
             short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds, final Gradient gradient){
-        final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, xyz1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this);
+            short[] iaSpins, final BondInfo bonds, final Gradient gradient, final boolean hasRigidEnv){
+        final Gradient numGrad = NumericalGradients.numericalGradient(lID, iIteration, xyz1D, saAtomTypes, atomNos, atsPerMol, energyparts, iNoOfAtoms, faCharges, iaSpins, bonds, this,
+                hasRigidEnv);
         gradient.copyDataIn(numGrad);
     }
 
     @Override
     public double energyCalculation(long lID, int iIteration, double[] xyz1D, String[] saAtoms,
             short[] atomNos, int[] atsPerMol, double[] energyparts, int iNoOfAtoms, float[] faCharges,
-            short[] iaSpins, final BondInfo bonds){
+            short[] iaSpins, final BondInfo bonds, final boolean hasRigidEnv){
         
         
         final String sTinkerBasis = "tinker" + lID + "_" + iIteration;

@@ -77,7 +77,7 @@ class MixedLJFFGradientBench implements SingleMicroBenchmark {
         ljFF.gradientCalculation(-1, 0, xyz1D,
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), lj55.getAllAtomsPerMol(),
                 energyparts, lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(),
-                bonds55, grad);
+                bonds55, grad, false);
         
         return grad.getTotalEnergy();
     }

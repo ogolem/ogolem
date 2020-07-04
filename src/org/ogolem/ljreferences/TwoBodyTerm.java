@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,7 +43,7 @@ import java.text.DecimalFormat;
 /**
  *
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2017-03-03
  */
 final class TwoBodyTerm {
 
@@ -86,7 +87,7 @@ final class TwoBodyTerm {
         // evaluate the two body terms
         final double dEnergyOf2BodyTerms = ljff.energyCalculation((long) -1000,
                 -1, daXYZ1D, cartes.getAllAtomTypes(), cartes.getAllAtomNumbers(), cartes.getAllAtomsPerMol(), new double[3], 3, cartes.getAllCharges(),
-                cartes.getAllSpins(), null);
+                cartes.getAllSpins(), null, false);
 
         if(bPrintGeometry){
 

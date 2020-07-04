@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -88,9 +89,10 @@ public final class NumericalHessianCalculator {
         final double[] energyparts = new double[cartes.getAllAtomsPerMol().length];
 
         final double[][] hessian = new double[noOfAtoms*3][noOfAtoms*3];
+        final boolean hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
         
         final double e = backend.energyCalculation(id, 0, 
-                xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
         
         int iter = 1;
         for(int i = 0; i < noOfAtoms*3; i++){
@@ -101,11 +103,13 @@ public final class NumericalHessianCalculator {
             // simple for i == j
             xyz[i] = coordI + incI;
             final double eP = backend.energyCalculation(id, iter,
-                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                    hasRigidEnv);
             
             xyz[i] = coordI - incI;
             final double eM = backend.energyCalculation(id, iter,
-                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                    hasRigidEnv);
             
             if(DEBUG){
                 System.out.println("DEBUG: " + i + " e  " + eP);
@@ -126,22 +130,26 @@ public final class NumericalHessianCalculator {
                 xyz[i] = coordI + incI;
                 xyz[j] = coordJ + incJ;
                 final double ePP = backend.energyCalculation(id, iter,
-                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                    hasRigidEnv);
                 iter++;
                 
                 xyz[i] = coordI - incI;
                 final double eMP = backend.energyCalculation(id, iter,
-                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                    hasRigidEnv);
                 iter++;
                 
                 xyz[j] = coordJ - incJ;
                 final double eMM = backend.energyCalculation(id, iter,
-                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                    hasRigidEnv);
                 iter++;
                 
                 xyz[i] = coordI + incI;
                 final double ePM = backend.energyCalculation(id, iter,
-                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                    xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                    hasRigidEnv);
                 iter++;
                 
                 if(DEBUG){
@@ -180,12 +188,15 @@ public final class NumericalHessianCalculator {
 
         final double[][] hessian = new double[noOfAtoms*3][noOfAtoms*3];
         
+        final boolean hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
+        
         final double e = backend.energyCalculation(id, 0, 
-                xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds);
+                xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
+                hasRigidEnv);
         
         final Gradient gPlus = new Gradient(3,noOfAtoms);
         final Gradient gMinus = new Gradient(3,noOfAtoms);
-
+        
         int iter = 1;
         for(int i = 0; i < noOfAtoms*3; i++){
             
@@ -196,7 +207,7 @@ public final class NumericalHessianCalculator {
             xyz[i] += incr;
             backend.gradientCalculation(id, iter,
                     xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
-                    gPlus);
+                    gPlus, hasRigidEnv);
             final double[] gradPlus = gPlus.getGradient();
             final double eP = gPlus.getTotalEnergy();
             iter++;
@@ -204,7 +215,7 @@ public final class NumericalHessianCalculator {
             xyz[i] = coord - incr;
             backend.gradientCalculation(id, iter,
                     xyz, atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds,
-                    gMinus);
+                    gMinus, hasRigidEnv);
             final double[] gradMinus = gMinus.getGradient();
             final double eM = gMinus.getTotalEnergy();
             iter++;

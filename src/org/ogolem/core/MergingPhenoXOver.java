@@ -54,7 +54,7 @@ import org.ogolem.random.RandomUtils;
  * a backend. Original implementation in some version of phenix, this is an independent
  * rewrite though, never seen the original code (so all bugs are mine, all ideas are Bernds).
  * @author Johannes Dieterich
- * @version 2020-02-09
+ * @version 2020-05-25
  */
 public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
    
@@ -816,7 +816,8 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
             lastCartes.getAll1DCartes(xyz1D);
             final double obj = (back == null) ? 0.0 : back.energyCalculation(stub.getID(), iter, xyz1D,
                     lastCartes.getAllAtomTypes(), lastCartes.getAllAtomNumbers(), lastCartes.getAllAtomsPerMol(),
-                    eparts, lastCartes.getNoOfAtoms(), lastCartes.getAllCharges(), lastCartes.getAllSpins(), stub.getBondInfo());
+                    eparts, lastCartes.getNoOfAtoms(), lastCartes.getAllCharges(), lastCartes.getAllSpins(), stub.getBondInfo(),
+                    lastCartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
             
             if(DEBUG){
                 System.out.println("DEBUG: At iter " + iter + " translation is " + point[0]);
