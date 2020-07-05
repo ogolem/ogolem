@@ -1182,6 +1182,22 @@ get rid of the above error.
 The Tinker interface in its current state is not suitable for molecule only
 optimizations. This does currently not have any effect on \ogo{}.
 
+\subsection{Interface to xtb}
+The interface to xtb is called through \texttt{LocOptAlgo=xtb:}, followed by a
+sequence of optional keywords adjusting its behavior.
+\begin{itemize}
+\item \texttt{method=}\\ Set the xtb method to be used. Options are: \texttt{gfn-ff},
+\texttt{gfn0-xtb}, \texttt{gfn1-xtb}, \texttt{gfn2-xtb}. Default is GFN2.
+\item \texttt{optlevel=}\\ Set the convergence level of local optimizations in xtb.
+Options are: \texttt{crude}, \texttt{sloppy}, \texttt{loose}, \texttt{normal},
+\texttt{tight}, \texttt{verytigth}. Default is \texttt{normal}.
+\item \texttt{dontserialize}\\Do not set the environment to force xtb to only use
+one thread.
+\item \texttt{xcontrol=}\\Path to an xtb control file to be used for the local
+optimizations. Path is relative to \ogo{} input file location. Default: no
+additional input file is used.
+\end{itemize}
+
 \subsection{Interfacing to \textbf{any} other program (package)}
 Although \ogo{} provides a numerous set of interfaces to programs implementing
 methods ranging from force fields to wavefunction methods, we cannot implement
