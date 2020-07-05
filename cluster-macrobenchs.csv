@@ -13,6 +13,6 @@ examples/clusteropt/w7 , w7_tip4p.ogo , -0.0927719842 , globmin_tip4p.xyz , 1e-6
 # H2O 7 - TTM3F
 examples/clusteropt/w7 , w7_ttm3f.ogo , -0.091194191 , globmin_ttm3f.xyz , 1e-6 , 1e-4
 # Au 10 - GFN1-XTB
-examples/clusteropt/au10 , au10_gfn1_xtb.ogo , -39.8054548 , globmin_gfn1xtb.xyz, 1e-6, 1e-4
+examples/clusteropt/au10 , au10_gfn1_xtb.ogo , -39.8054548 , globmin_gfn1xtb.xyz, 1e-5, 1e-4
 # Si6 - SWGFF
 examples/clusteropt/si6_swg , si6.ogo  , -1.025728, globmin.xyz , 1e-6 , 1e-4
