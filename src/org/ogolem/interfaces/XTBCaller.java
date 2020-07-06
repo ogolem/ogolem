@@ -204,7 +204,6 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
             final Map<String, String> envMap = pb.environment();
             envMap.put("OMP_NUM_THREADS", "1");
             envMap.put("OMP_MAX_ACTIVE_LEVELS", "1");
-            envMap.put("MKL_NUM_THREADS", "1");
         }
 
         final Process proc = pb.start();
