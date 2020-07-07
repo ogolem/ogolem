@@ -8,11 +8,11 @@ Au;0.0;0.0;0.0
 </GEOMETRY>
 CellSize=60;60;60
 NumberOfGlobIterations=99900
-PoolSize=100
+PoolSize=32
 GeneticRecordsToSerial=1000000
 GeometriesToSerial=100000
 AcceptableFitness=-39.8054548
-BlowBondDetect=1.8
+BlowBondDetect=0.9
 BlowFacDissoc=4.0
-LocOptAlgo=xtb:method=gfn1-xtb, optlevel=normal
+LocOptAlgo=xtb:method=gfn1-xtb,optlevel=normal
 GlobOptAlgo=cluster{xover(multiple:75%sweden:cutstyle=2|25%sweden:cutstyle=1)mutation(multiple:75%montecarlo:mode=some|25%montecarlo:mode=one)}
