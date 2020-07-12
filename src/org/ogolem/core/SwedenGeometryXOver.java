@@ -54,12 +54,12 @@ import org.ogolem.helpers.Tuple;
  */
 public class SwedenGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20140327;
+    private static final long serialVersionUID = (long) 20160403;
     private static final boolean DEBUG = false;
     private final PhenotypeGeometryXOver pheno;
-    private final int whichGlobOpt;
+    private final GlobOptAtomics.CUTTINGMODE whichGlobOpt;
     
-    SwedenGeometryXOver(final int whichGlobOpt){
+    SwedenGeometryXOver(final GlobOptAtomics.CUTTINGMODE whichGlobOpt){
         this.pheno = new PhenotypeGeometryXOver(whichGlobOpt);
         this.whichGlobOpt = whichGlobOpt;
     }

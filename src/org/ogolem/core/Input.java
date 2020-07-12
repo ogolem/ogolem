@@ -1136,6 +1136,8 @@ public final class Input {
 
                     if(s2.equalsIgnoreCase("simpleenvironment")){
                         envKind = EnvironmentFactory.KIND.SIMPLE;
+                    } else if(s2.equalsIgnoreCase("layerenvironment")){
+                        envKind = EnvironmentFactory.KIND.LAYERONLY;
                     } else{
                         System.err.println("ERROR: Can't recognize the environmental " +
                                 "choice " + s2 + " using SimpleEnvironment.");

@@ -50,7 +50,7 @@ import org.ogolem.helpers.Tuple;
  */
 public class AlandGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140328;
+    private static final long serialVersionUID = (long) 20160403;
     private static final boolean DEBUG = false;
     private final boolean doMergingGlobOpt;
     private final PhenotypeGeometryXOver pheno;
@@ -60,7 +60,7 @@ public class AlandGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     AlandGeometryXOver(final boolean doMerging, final CartesianFullBackend back,
             final MergingPhenoXOver.MergingPhenoConfig config, final double blowColl,
             final double blowDiss, final CollisionDetectionEngine collDetect, 
-            final int whichGlobOpt, final boolean doCDDD, final boolean doRandomTrans){
+            final GlobOptAtomics.CUTTINGMODE whichGlobOpt, final boolean doCDDD, final boolean doRandomTrans){
         if(!doMerging){
             pheno = new PhenotypeGeometryXOver(whichGlobOpt);
             merger = null;

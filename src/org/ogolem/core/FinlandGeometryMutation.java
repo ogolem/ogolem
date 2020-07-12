@@ -39,8 +39,8 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingPlane;
 import org.ogolem.generic.GenericMutation;
+import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
 
@@ -68,9 +68,9 @@ public class FinlandGeometryMutation implements GenericMutation<Molecule,Geometr
     private final CollisionDetectionEngine colldetect = new AdvancedPairWise(false, new DummyCollisionStrengthComputer());
     private final double blowDiss;
     private final double blowColl;
-    private final int whichGlobOpt;
+    private final GlobOptAtomics.CUTTINGMODE whichGlobOpt;
     
-    FinlandGeometryMutation(final int whichCutType, final double blowDiss, final double blowColl){
+    FinlandGeometryMutation(final GlobOptAtomics.CUTTINGMODE whichCutType, final double blowDiss, final double blowColl){
         this.blowColl = blowColl;
         this.blowDiss = blowDiss;
         this.whichGlobOpt = whichCutType;
@@ -89,7 +89,7 @@ public class FinlandGeometryMutation implements GenericMutation<Molecule,Geometr
 
     @Override
     public String getMyID() {
-        return "FINLAND GEOMETRY MUTATION\n\tcutting type: " + whichGlobOpt;
+        return "FINLAND GEOMETRY MUTATION\n\tcutting type: " + whichGlobOpt.toString();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class FinlandGeometryMutation implements GenericMutation<Molecule,Geometr
          * now we want to take a plane cutting through both
          * 1) which heigth on the z axis?
          */
-        final double planeHeigth = randomCuttingPlane(whichGlobOpt, rotated, random);
+        final double planeHeigth = randomCuttingZPlane(whichGlobOpt, rotated, random);
 
         // check which COMs are above and underneath the plane
         final List<Integer> above = new ArrayList<>(rotated[0].length);
