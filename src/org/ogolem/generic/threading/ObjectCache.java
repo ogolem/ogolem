@@ -84,6 +84,7 @@ public class ObjectCache<T extends Copyable> {
         }
         
         System.err.println("ERROR: No unused entry in cache.");
+        System.err.println("ERROR:  The likeliest cause for this problem is an exception being caused in the parallel region. Please run with a higher DebugLevel to obtain stack traces.");
         throw new RuntimeException("No unused entry in cache.");
     }
     

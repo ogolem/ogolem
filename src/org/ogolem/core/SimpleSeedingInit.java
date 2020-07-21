@@ -40,7 +40,6 @@ package org.ogolem.core;
 
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Use seeding geometries to create an initial geometry.
  * @author Johannes Dieterich
@@ -54,22 +53,30 @@ public final class SimpleSeedingInit {
             final long lID) throws InitIOException, CastException, Exception {
 
         // set the needed things up
-        final int iNoOfMolecules = refConf.noOfParticles;
+        final boolean hasEnv = (refConf.env != null);        
+        
+        final int iNoOfMolecules = (hasEnv) ? refConf.noOfParticles + 1 : refConf.noOfParticles;
         final int[] iaAtsPerMol = new int[iNoOfMolecules];
         final boolean[] baFlexies = new boolean[iNoOfMolecules];
         final boolean[] baConstraints = new boolean[iNoOfMolecules];
-        final String[] sids = new String[iNoOfMolecules];
+        final String[] sids = new String[refConf.noOfParticles];
 
         int iTotNoOfAts = 0;
 
         boolean anyFlexy = false;
-        for(int i = 0; i < iNoOfMolecules; i++){
+        for(int i = 0; i < refConf.noOfParticles; i++){
             iaAtsPerMol[i] = refConf.geomMCs.get(i).noOfAtoms;
             baFlexies[i] = refConf.geomMCs.get(i).flexy;
             baConstraints[i] = refConf.geomMCs.get(i).constricted;
             sids[i] = refConf.geomMCs.get(i).sID;
             if(refConf.geomMCs.get(i).flexy) anyFlexy = true;
             iTotNoOfAts += iaAtsPerMol[i];
+        }
+        
+        if(hasEnv){
+            final int noEnvAtoms = refConf.env.atomsInEnv();
+            iTotNoOfAts += noEnvAtoms;
+            iaAtsPerMol[refConf.noOfParticles] = noEnvAtoms;
         }
 
         final short[] iaSpins = new short[iTotNoOfAts];
@@ -78,7 +85,7 @@ public final class SimpleSeedingInit {
         final List<boolean[][]> allFlexies = new ArrayList<>();
         
         int iCounter = 0;
-        for(int i = 0; i < iNoOfMolecules; i++){
+        for(int i = 0; i < refConf.noOfParticles; i++){
             // first get the relevant arrays
             final float[] faCurrCharges = refConf.geomMCs.get(i).charges;
             final short[] iaCurrSpins =  refConf.geomMCs.get(i).spins;
@@ -155,18 +162,18 @@ public final class SimpleSeedingInit {
         // consider the environment
         if(refConf.env != null){
             Environment newEnv = refConf.env.clone();
-
-            // initialize
-            newEnv.initializeConnections(cartes, refConf.bonds);
-
-            // put together so that the cartesian contains the env now
-            cartes = newEnv.marryThem(cartes, refConf.bonds).getObject1();
+            cartes.setRefEnvironment(newEnv);
         }
         
+        int[] myAtsPerMol = iaAtsPerMol;
+        if(hasEnv){
+            myAtsPerMol = new int[refConf.noOfParticles];
+            System.arraycopy(iaAtsPerMol, 0, myAtsPerMol, 0, refConf.noOfParticles);
+        }
 
         // translate it, this might also fail with an exception
-        final Geometry geom = CoordTranslation.cartesianToGeometry(cartes, iNoOfMolecules,
-                iaAtsPerMol, baFlexies, allFlexies, baConstraints, baConstraintsXYZ, sids, refConf.bonds.clone());
+        final Geometry geom = CoordTranslation.cartesianToGeometry(cartes, refConf.noOfParticles,
+                myAtsPerMol, baFlexies, allFlexies, baConstraints, baConstraintsXYZ, sids, refConf.bonds.clone());
 
         // finally set the ID in
         geom.setID(lID);

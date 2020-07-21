@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import java.util.HashMap;
  * Since these atomic features are accessed quite often, they are all stored in
  * HashMaps along side full arrays to provide a better performance.
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2017-07-08
  */
 public class AtomicProperties {
     
@@ -1016,7 +1016,7 @@ public class AtomicProperties {
             return 0.0001;
         }
     }
-    
+
     /**
      * Give the atom symbol for a given atom number.
      * @param atomNo the atom number. must be between 0 and 112
@@ -1027,11 +1027,33 @@ public class AtomicProperties {
     }
     
     private static void updateEntries(final String upFile) throws Exception {
+        
         final String[] sa = org.ogolem.io.InputPrimitives.readFileIn(upFile);
-        for (final String s : sa) {
+        if(sa.length == 0){
+            throw new RuntimeException("Entries update contains no content.");
+        }
+        
+        boolean beVerbose = false;
+        String[] lines = null;
+        if(sa[0].trim().equalsIgnoreCase("verbose")){
+            System.out.println("INFO: Verbose updates enabled.");
+            beVerbose = true;
+            lines = new String[sa.length-1];
+            for(int i = 0; i < lines.length; i++){
+                lines[i] = sa[i+1];
+            }
+        } else {
+            lines = sa;
+        }
+        
+        assert(lines != null);
+        
+        for (final String s : lines) {
+            if(beVerbose){System.out.println("INFO: Reading line " + s);}
             final String[] sa2 = s.trim().split("\\s+");
             final double d = Double.parseDouble(sa2[2]);
             if (sa2[0].equalsIgnoreCase("WEIGHT")) {
+                if(beVerbose){System.out.println("INFO: Attempting to update weight of " + sa2[1]);}
                 if(weightTable.containsKey(sa2[1])){
                     weightTable.remove(sa2[1]);
                     final int no = numberTable.get(sa2[1]);
@@ -1039,26 +1061,35 @@ public class AtomicProperties {
                         weightArray = new double[no+1];
                     }*/ //XXX we would like to refresh perhaps then...
                     weightArray[no] = d;
+                    if(beVerbose){System.out.println("INFO: Update of weight for atom no " + no + " to " + d + " successfull.");}
                 }
                 weightTable.put(sa2[1], d);
             } else if (sa2[0].equalsIgnoreCase("RADIUS")) {
+                if(beVerbose){System.out.println("INFO: Attempting to update radius of " + sa2[1]);}
                 if(radiusTable.containsKey(sa2[1])){
                     radiusTable.remove(sa2[1]);
                     final int no = numberTable.get(sa2[1]);
                     //XXX same here as above
                     radiusArray[no] = d;
+                    if(beVerbose){System.out.println("INFO: Update of radius for atom no " + no + " to " + d + " successfull.");}
                 }
                 radiusTable.put(sa2[1], d);
             } else if (sa2[0].equalsIgnoreCase("NUMBER")) {
+                if(beVerbose){System.out.println("INFO: Attempting to update number of " + sa2[1]);}
                 final short i = Short.parseShort(sa2[2]);
                 if(numberTable.containsKey(sa2[1]))numberTable.remove(sa2[1]);
                 numberTable.put(sa2[1], i);
+                if(beVerbose){System.out.println("INFO: Update of number for atom " + sa2[1] + " to " + numberTable.get(sa2[1]) + " successfull.");}
             } else if (sa2[0].equalsIgnoreCase("LJSIGMA")) {
+                if(beVerbose){System.out.println("INFO: Attempting to update LJ sigma of " + sa2[1]);}
                 if(ljSigmaTable.containsKey(sa2[1]))ljSigmaTable.remove(sa2[1]);
                 ljSigmaTable.put(sa2[1], d);
+                if(beVerbose){System.out.println("INFO: Update of LJ sigma for atom " + sa2[1] + " to " + ljSigmaTable.get(sa2[1]) + " successfull.");}
             } else if (sa2[0].equalsIgnoreCase("LJEPSILON")) {
+                if(beVerbose){System.out.println("INFO: Attempting to update LJ epsilon of " + sa2[1]);}
                 if(ljEpsilonTable.containsKey(sa2[1]))ljEpsilonTable.remove(sa2[1]);
                 ljEpsilonTable.put(sa2[1], d);
+                if(beVerbose){System.out.println("INFO: Update of LJ epsilon for atom " + sa2[1] + " to " + ljEpsilonTable.get(sa2[1]) + " successfull.");}
             } else {
                 System.err.println("WARNING: Couldn't parse entry " + s + " from atomic.properties file. Continue.");
             }

@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,35 +47,45 @@ import org.ogolem.random.RandomUtils;
  * A Monte Carlo mutation operator for a Geometry operating only in the external
  * coordinates (i.e., good only for non-flexible small molecules).
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2017-04-10
  */
 public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecule,Geometry>{
     
-    public static final int SINGLEMOVEMODE = 0;
-    public static final int ALLMOVEMODE = 1;
-    public static final int PARTIALMOVEMODE = 2;
-    
+    public static enum MOVEMODE{ALL, ONE, SOME, GAUSSIAN};
+        
     private static final long serialVersionUID = (long) 20140713;
+    private static final boolean VERBOSE = false;
+    
     private final Lottery r = Lottery.getInstance();
-    private final int mode;
+    private final MOVEMODE mode;
     private final double maxMoveCOM;
     private final double maxMoveEuler;
+    private final int gaussMax;
+    private final double gaussWidth;
     
-    public MonteCarloExtOnlyGeometryMutation(final int mode, final double maxMoveCOM,
-            final double maxMoveEuler){
+    public MonteCarloExtOnlyGeometryMutation(final MOVEMODE mode, final double maxMoveCOM,
+            final double maxMoveEuler, final int gaussMax, final double gaussWidth){
+        
         assert(maxMoveCOM >= 0.0);
         assert(maxMoveEuler >= 0.0);
         assert(maxMoveEuler <= 1.0);
-        assert(mode == 0 || mode == 1 || mode == 2 || mode == 10 || mode == 11 || mode == 12);
+        assert(mode != null);
+        assert(gaussMax >= 0);
+        assert(gaussWidth > 0.0);
+                
         this.maxMoveCOM = maxMoveCOM;
         this.maxMoveEuler = maxMoveEuler;
         this.mode = mode;
+        this.gaussMax = gaussMax;
+        this.gaussWidth = gaussWidth;
     }
     
     public MonteCarloExtOnlyGeometryMutation(final MonteCarloExtOnlyGeometryMutation orig){
         this.maxMoveCOM = orig.maxMoveCOM;
         this.maxMoveEuler = orig.maxMoveEuler;
         this.mode = orig.mode;
+        this.gaussMax = orig.gaussMax;
+        this.gaussWidth = orig.gaussWidth;
     }
 
     @Override
@@ -85,7 +95,7 @@ public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecu
 
     @Override
     public String getMyID() {
-        return "Monte Carlo (ext only) mutation: \n\tmode: " + mode
+        return "Monte Carlo (ext only) mutation: \n\tmode: " + mode.name()
                 + "\n\tmaxmove (COM): " + maxMoveCOM
                 + "\n\tmaxmove (Euler): " + maxMoveEuler;
     }
@@ -95,21 +105,31 @@ public class MonteCarloExtOnlyGeometryMutation implements GenericMutation<Molecu
         
         final int noMols = orig.getNumberOfIndieParticles();
         
-        List<Integer> moveables;
-        if(mode == SINGLEMOVEMODE){
-            final int which = r.nextInt(noMols);
-            moveables = new ArrayList<>();
-            moveables.add(which);
-        } else if(mode == ALLMOVEMODE){
-            moveables = new ArrayList<>();
-            for(int i = 0; i < noMols; i++){
-                moveables.add(i);
-            }
-        } else if(mode == PARTIALMOVEMODE){
-            final int noPoints = r.nextInt(noMols-1)+1;
-            moveables = RandomUtils.listOfPoints(noPoints, noMols);
-        } else {
-            throw new RuntimeException("Illegal move mode " + mode + " in extonly MC mutation.");
+        List<Integer> moveables = null;
+        switch (mode) {
+            case ONE:
+                final int which = r.nextInt(noMols);
+                moveables = new ArrayList<>();
+                moveables.add(which);
+                break;
+            case ALL:
+                moveables = new ArrayList<>();
+                for(int i = 0; i < noMols; i++){
+                    moveables.add(i);
+                }
+                break;
+            case SOME:
+                final int noPoints = r.nextInt(noMols-1)+1;
+                if(VERBOSE){System.out.println("DEBUG: Moving " + noPoints + " external COMs.");}
+                moveables = RandomUtils.listOfPoints(noPoints, noMols);
+                break;
+            case GAUSSIAN:
+                final int gaussMols = (int) Math.round(RandomUtils.gaussDoubleAroundVal(0, noMols, gaussWidth, gaussMax));
+                if(VERBOSE){System.out.println("DEBUG: Moving " + gaussMols + " external COMs.");}
+                moveables = RandomUtils.listOfPoints(gaussMols, noMols);
+                break;
+            default:
+                throw new RuntimeException("Illegal move mode " + mode.name() + " in extonly MC mutation.");
         }
         
         

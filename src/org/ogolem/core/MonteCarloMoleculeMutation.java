@@ -1,5 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
+              2017, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,28 +42,35 @@ import org.ogolem.generic.GenericMutation;
 /**
  * A Monte Carlo mutation operator for a Molecule.
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2017-04-10
  */
 public class MonteCarloMoleculeMutation implements GenericMutation<Double,Molecule>{
     
-    public static final int SINGLEMOVEMODE = 0;
-    public static final int ALLMOVEMODE = 1;
-    public static final int PARTIALMOVEMODE = 2;
-    
     private static final long serialVersionUID = (long) 20140327;
-    private final int mode;
-    private final double maxMove;
     
-    public MonteCarloMoleculeMutation(final int mode, final double maxMove){
+    private final MonteCarloMutation.MOVEMODE mode;
+    private final double maxMove;
+    private final int gaussMax;
+    private final double gaussWidth;
+    
+    public MonteCarloMoleculeMutation(final MonteCarloMutation.MOVEMODE mode, final double maxMove,
+            final int gaussMax, final double gaussWidth){
+        
         assert(maxMove > 0.0);
-        assert(mode == 0 || mode == 1 || mode == 2);
+        assert(mode != null);
+        assert(gaussWidth > 0.0);
+        
         this.maxMove = maxMove;
         this.mode = mode;
+        this.gaussMax = gaussMax;
+        this.gaussWidth = gaussWidth;
     }
     
     public MonteCarloMoleculeMutation(final MonteCarloMoleculeMutation orig){
         this.maxMove = orig.maxMove;
         this.mode = orig.mode;
+        this.gaussMax = orig.gaussMax;
+        this.gaussWidth = orig.gaussWidth;
     }
     
     @Override
@@ -77,6 +85,6 @@ public class MonteCarloMoleculeMutation implements GenericMutation<Double,Molecu
 
     @Override
     public Molecule mutate(final Molecule orig) {
-        return MonteCarloMutation.mutate(orig, mode, maxMove);
+        return MonteCarloMutation.mutate(orig, mode, maxMove, gaussMax, gaussWidth);
     }
 }

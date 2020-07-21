@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ import java.util.List;
  * a set of cartesian coordinates. We disallow extension due to a couple of dirty
  * tricks in the code.
  * @author Johannes Dieterich
- * @version 2016-02-19
+ * @version 2020-07-19
  */
 public final class Gradient extends AbstractGradient {
 
@@ -167,9 +168,7 @@ public final class Gradient extends AbstractGradient {
     public void zeroGradient(){
         if(local3DGradient == null){System.err.println("WARNING: Attempting zeroing of non-existing gradient storage!"); return;}
         for(int i = 0; i < local3DGradient.length; i++){
-            for(int j = 0; j < local3DGradient[0].length; j++){
-                local3DGradient[i][j] = 0.0;
-            }
+            Arrays.fill(local3DGradient[i], 0.0);
         }
     }
 

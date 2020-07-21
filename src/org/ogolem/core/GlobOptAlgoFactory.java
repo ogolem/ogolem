@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2020-07-03
+ * @version 2020-07-19
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
@@ -633,6 +633,44 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             return new SnaefellsjoekullGeometryXOver(adjustRadius,cut,gaussWidth,doRigidOpt,
                     checkForCollAndInflate, doCD, doDD, blowFacCD, blowFacDD, 
                     cd, globConf.getRefNewton().getBackend(), config, intermediateSanityChecks);
+        } else if(xOverString.startsWith("vinland:")){
+
+            final double blowFac = globConf.blowFacBondDetect;
+
+            final String subXOver = xOverString.substring(8).trim();
+            final String[] major = tokenizeSecondLevel(subXOver);
+
+            final GenericCrossover<Molecule,Geometry> xover = getXOver(major[1].trim());
+
+            final String[] tokens = tokenizeThirdLevel(major[0].trim());
+
+            VinlandGeometryXOver.MOVEMODE mode = VinlandGeometryXOver.MOVEMODE.FULLRANDOM;
+            double movePerStep = VinlandGeometryXOver.DEFAULTINCRBOHR;
+            int maxMoveTries = VinlandGeometryXOver.DEFAULTMAXMOVETRIES;
+            int maxTries = VinlandGeometryXOver.DEFAULTMAXTRIES;
+
+            for(final String token : tokens){
+                if(token.startsWith("mode=")){
+                    final String sub = token.substring("mode=".length()).trim();
+                    if(sub.equalsIgnoreCase("fullrandom")){
+                        mode = VinlandGeometryXOver.MOVEMODE.FULLRANDOM;
+                    } else if(sub.equalsIgnoreCase("surface")){
+                        mode = VinlandGeometryXOver.MOVEMODE.SURFACESTYLE;
+                    } else {
+                        throw new RuntimeException("Illegal choice " + sub + " for move mode in Vinland X-Over.");
+                    }
+                } else if(token.startsWith("moveperstep=")){
+                    movePerStep = doubleToken("moveperstep=", token);
+                } else if(token.startsWith("maxmoves=")){
+                    maxMoveTries = integerToken("maxmoves=", token);
+                } else if(token.startsWith("maxtries=")){
+                    maxTries = integerToken("maxtries=", token);
+                } else {
+                    throw new RuntimeException("Unknown token: " + token + " in Vinland X-Over.");
+                }
+            }
+
+            return new VinlandGeometryXOver(xover, blowFac, mode, movePerStep, maxMoveTries, maxTries);
         } else if(xOverString.startsWith("portugal:")){
             
             final String[] tokens = tokenizeThirdLevel(xOverString.substring(9));
@@ -731,52 +769,66 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
         } else if(mutString.startsWith("montecarlo:")){
             
             final String[] tokens = tokenizeThirdLevel(mutString.substring(11));
-            int mode = MonteCarloMoleculeMutation.SINGLEMOVEMODE;
+            MonteCarloMutation.MOVEMODE mode = MonteCarloMutation.MOVEMODE.ONE;
             double maxMove = 0.2;
+            int maxGauss = globConf.geoConfCopy().noOfParticles/2;
+            double gaussWidth = 1.0;
 
             for (final String token : tokens) {
                 if (token.startsWith("mode=")) {
                     final String s = token.substring(5).trim();
                     if (s.equalsIgnoreCase("all")) {
-                        mode = MonteCarloGeometryMutation.ALLMOVEMODE;
+                        mode = MonteCarloMutation.MOVEMODE.ALL;
                     } else if (s.equalsIgnoreCase("one")) {
-                        mode = MonteCarloGeometryMutation.SINGLEMOVEMODE;
+                        mode = MonteCarloMutation.MOVEMODE.ONE;
                     } else if (s.equalsIgnoreCase("some")) {
-                        mode = MonteCarloGeometryMutation.PARTIALMOVEMODE;
+                        mode = MonteCarloMutation.MOVEMODE.SOME;
+                    } else if (s.equalsIgnoreCase("gaussian")) {
+                        mode = MonteCarloMutation.MOVEMODE.GAUSSIAN;
                     } else if (s.equalsIgnoreCase("molall")) {
-                        mode = MonteCarloGeometryMutation.MOLALLMOVEMODE;
+                        mode = MonteCarloMutation.MOVEMODE.ALLMOL;
                     } else if (s.equalsIgnoreCase("molone")) {
-                        mode = MonteCarloGeometryMutation.MOLSINGLEMOVEMODE;
+                        mode = MonteCarloMutation.MOVEMODE.ONEMOL;
                     } else if (s.equalsIgnoreCase("molsome")) {
-                        mode = MonteCarloGeometryMutation.MOLPARTIALMOVEMODE;
+                        mode = MonteCarloMutation.MOVEMODE.SOMEMOL;
+                    } else if (s.equalsIgnoreCase("molgaussian")) {
+                        mode = MonteCarloMutation.MOVEMODE.GAUSSIANMOL;
                     } else {
                         throw new RuntimeException("Unknown move mode " + mode + " in MC mutation for geometries.");
                     }
                 } else if (token.startsWith("maxmove=")) {
                     maxMove = doubleToken("maxmove=", token);
+                } else if (token.startsWith("gaussmax=")){
+                    maxGauss = integerToken("gaussmax=", token);
+                } else if (token.startsWith("gausswidth=")){
+                    gaussWidth = doubleToken("gausswidth=", token);
                 } else {
                     throw new RuntimeException("Unknown token " + token + " in specialized mutation (MonteCarlo).");
                 }
             }
 
-            return new MonteCarloGeometryMutation(mode, maxMove);
+            return new MonteCarloGeometryMutation(mode, maxMove, maxGauss, gaussWidth);
                 
         } else if(mutString.startsWith("extcoordmc:")){
             
             final String[] tokens = tokenizeThirdLevel(mutString.substring(11));
-            int mode = MonteCarloMoleculeMutation.SINGLEMOVEMODE;
+            MonteCarloExtOnlyGeometryMutation.MOVEMODE mode = MonteCarloExtOnlyGeometryMutation.MOVEMODE.ONE;
             double maxMoveCOM = 0.2; // 0.2 bohr max move
             double maxMoveEuler = 0.2; // 0.2 of all Eulers max
+            int maxGauss = globConf.geoConfCopy().noOfParticles/2;
+            double gaussWidth = 1.0;
 
             for (final String token : tokens) {
                 if (token.startsWith("mode=")) {
                     final String s = token.substring(5).trim();
                     if (s.equalsIgnoreCase("all")) {
-                        mode = MonteCarloExtOnlyGeometryMutation.ALLMOVEMODE;
+                        mode = MonteCarloExtOnlyGeometryMutation.MOVEMODE.ALL;
                     } else if (s.equalsIgnoreCase("one")) {
-                        mode = MonteCarloExtOnlyGeometryMutation.SINGLEMOVEMODE;
+                        mode = MonteCarloExtOnlyGeometryMutation.MOVEMODE.ONE;
                     } else if (s.equalsIgnoreCase("some")) {
-                        mode = MonteCarloExtOnlyGeometryMutation.PARTIALMOVEMODE;
+                        mode = MonteCarloExtOnlyGeometryMutation.MOVEMODE.SOME;
+                    } else if (s.equalsIgnoreCase("gaussian")){
+                        mode = MonteCarloExtOnlyGeometryMutation.MOVEMODE.GAUSSIAN;
                     } else {
                         throw new RuntimeException("Unknown move mode " + mode + " in MC extonly mutation for geometries.");
                     }
@@ -784,12 +836,16 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                     maxMoveCOM = doubleToken("maxmovecom=", token);
                 } else if (token.startsWith("maxmoveeuler=")) {
                     maxMoveEuler = doubleToken("maxmoveeuler=", token);
+                } else if (token.startsWith("gaussmax=")){
+                    maxGauss = integerToken("gaussmax=", token);
+                } else if (token.startsWith("gausswidth=")){
+                    gaussWidth = doubleToken("gausswidth=", token);
                 } else {
                     throw new RuntimeException("Unknown token " + token + " in specialized mutation (ExtCoordMonteCarlo).");
                 }
             }
 
-            return new MonteCarloExtOnlyGeometryMutation(mode, maxMoveCOM, maxMoveEuler);
+            return new MonteCarloExtOnlyGeometryMutation(mode, maxMoveCOM, maxMoveEuler, maxGauss, gaussWidth);
                 
         } else if(mutString.startsWith("2d-extcoordmc:")){
 
@@ -1376,29 +1432,41 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             } else if(mutString.startsWith("montecarlo:")){
                 
                 final String[] tokens = tokenizeThirdLevel(mutString.substring(11));
-                int mode = MonteCarloMoleculeMutation.SINGLEMOVEMODE;
+                MonteCarloMutation.MOVEMODE mode = MonteCarloMutation.MOVEMODE.ONE;
                 double maxMove = 0.2;
+                int gaussMax = -1;
+                double gaussWidth = 1.0;
 
                 for(final String token : tokens){
                     if(token.startsWith("mode=")){
                         final String s = token.substring(5).trim();
                         if(s.equalsIgnoreCase("all")){
-                            mode = MonteCarloMoleculeMutation.ALLMOVEMODE;
+                            mode = MonteCarloMutation.MOVEMODE.ALL;
                         } else if(s.equalsIgnoreCase("one")){
-                            mode = MonteCarloMoleculeMutation.SINGLEMOVEMODE;
+                            mode = MonteCarloMutation.MOVEMODE.ONE;
                         } else if(s.equalsIgnoreCase("some")){
-                            mode = MonteCarloMoleculeMutation.PARTIALMOVEMODE;
+                            mode = MonteCarloMutation.MOVEMODE.SOME;
+                        } else if(s.equalsIgnoreCase("some")){
+                            mode = MonteCarloMutation.MOVEMODE.GAUSSIAN;
                         } else {
                             throw new RuntimeException("Unknown move mode " + mode + " in MC mutation for molecules.");
                         }
                     } else if(token.startsWith("maxmove=")){
                         maxMove = doubleToken("maxmove=",token);
+                    } else if (token.startsWith("gaussmax=")){
+                        gaussMax = integerToken("gaussmax=", token);
+                    } else if (token.startsWith("gausswidth=")){
+                        gaussWidth = doubleToken("gausswidth=", token);
                     } else{
                         throw new RuntimeException("Unknown token " + token + " in specialized mutation (MonteCarlo).");
                     }
                 }
-                
-                return new MonteCarloMoleculeMutation(mode,maxMove);
+
+                if(gaussMax < 0 && mode == MonteCarloMutation.MOVEMODE.GAUSSIAN){
+                    throw new RuntimeException("Must set gaussmax= to positive integer if Gaussian move mode is wanted.");
+                }
+ 
+                return new MonteCarloMoleculeMutation(mode,maxMove, gaussMax, gaussWidth);
             }
 
             // nothing specialized found

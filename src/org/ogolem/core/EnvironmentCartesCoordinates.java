@@ -45,7 +45,7 @@ import org.ogolem.helpers.Tuple;
  * I.e., we keep the environment frozen at all times. Does NOT consider the bounds to
  * the cluster location w.r.t. the environment (yet?).
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-21
  */
 public class EnvironmentCartesCoordinates  implements GenericBackend<Molecule,Geometry> {
     
@@ -209,7 +209,7 @@ public class EnvironmentCartesCoordinates  implements GenericBackend<Molecule,Ge
         if(energyparts != null && energyparts.length == c.getNoOfMolecules()){
             eparts = energyparts;
         } else{
-            eparts = new double[c.getNoOfMolecules()+this.atomsInEnv]; // for the environment
+            eparts = new double[c.getNoOfMolecules()+individual.getEnvironment().atomsInEnv()]; // for the environment
         }
         
         // that one will simply work. :-)

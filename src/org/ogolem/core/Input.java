@@ -66,7 +66,7 @@ import org.ogolem.random.StandardRNG;
  * This invokes the IOHandler and checks the resulting array of Strings for
  * configuration options and configures a GlobalConfig object.
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-12
  */
 public final class Input {
 
@@ -1126,7 +1126,7 @@ public final class Input {
 
                     // try to read the cartes in
                     try{
-                        envCartes = readCartesFromFile(sCartes);
+                        envCartes = readCartesFromFile(inputDir + File.separator + sCartes);
                     } catch(Exception e){
                         System.err.println("ERROR: Unsuccessful parsing of environment cartesians. " + e.toString());
                         envCartes = null;
@@ -1138,6 +1138,10 @@ public final class Input {
                         envKind = EnvironmentFactory.KIND.SIMPLE;
                     } else if(s2.equalsIgnoreCase("layerenvironment")){
                         envKind = EnvironmentFactory.KIND.LAYERONLY;
+                    } else if(s2.equalsIgnoreCase("surface")){
+                        envKind = EnvironmentFactory.KIND.SURFACE;
+                    } else if(s2.equalsIgnoreCase("simplesurface")){
+                        envKind = EnvironmentFactory.KIND.SIMPLESURFACE;
                     } else{
                         System.err.println("ERROR: Can't recognize the environmental " +
                                 "choice " + s2 + " using SimpleEnvironment.");
