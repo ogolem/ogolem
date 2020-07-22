@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import org.ogolem.random.Lottery;
 /**
  * Xovers with an environment: Vinland.
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-07-20
  */
 class VinlandGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     
@@ -54,7 +54,7 @@ class VinlandGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     static final int DEFAULTMAXMOVETRIES = 20; // max: 4 bohr move!
     static final int DEFAULTMAXTRIES = 200;
     
-    private static final long serialVersionUID = (long) 20160403;
+    private static final long serialVersionUID = (long) 20200719;
     private static final boolean DEBUG = false;
     
     private final GenericCrossover<Molecule,Geometry> xover;
@@ -119,15 +119,12 @@ class VinlandGeometryXOver implements GenericCrossover<Molecule,Geometry> {
             if(gTmp1 != null){
                 final CartesianCoordinates c1 = gTmp1.getCartesians();
                 final BondInfo bonds = gTmp1.getBondInfo();
-                final CollisionInfo cI1 = cd.checkForCollision(c1, blowFac, bonds);
-                final boolean hasColl1 = cI1.hasCollision();
+                final boolean hasColl1 = cd.checkOnlyForCollision(c1, blowFac, bonds);
                 if(!hasColl1){
                     if(g1 == null){
                         g1 = gTmp1;
                     } else {
-                        g1 = gTmp1;
-                        // we still could have dissociation, but we do not care...
-                        geomHasCollision = false; // got two now
+                        g2 = gTmp1;
                     }
                 }
             }
@@ -135,17 +132,19 @@ class VinlandGeometryXOver implements GenericCrossover<Molecule,Geometry> {
             if(gTmp2 != null){
                 final CartesianCoordinates c2 = gTmp2.getCartesians();
                 final BondInfo bonds = gTmp2.getBondInfo();
-                final CollisionInfo cI2 = cd.checkForCollision(c2, blowFac, bonds);
-                final boolean hasColl2 = cI2.hasCollision();
+                final boolean hasColl2 = cd.checkOnlyForCollision(c2, blowFac, bonds);
                 if(!hasColl2){
                     if(g2 == null){
                         g2 = gTmp2;
-                    } else {
-                        g2 = gTmp2;
-                        // we still could have dissociation, but we do not care...
-                        geomHasCollision = false; // got two now
+                    } else if (g1 == null) {
+                        g1 = gTmp2;
                     }
                 }
+            }
+            
+            if (g1 != null && g2 != null) {
+                // we still could have dissociation, but we do not care...
+                geomHasCollision = false; // got two now
             }
             
             tries++;
@@ -155,98 +154,15 @@ class VinlandGeometryXOver implements GenericCrossover<Molecule,Geometry> {
             return new Tuple<>(g1,g2); // they may be partially null
         }
         
-        if(g1 != null){
+        if (!g1.containsEnvironment()) return new Tuple<>(g1,g2);
         
-            boolean hasEnvColl = true;
-            int lastColls = 0;
-            int dirMove = -1;
-            boolean positiveMove = true;
-            int myTries = 0;
-            do {
-            
-                final Tuple<CartesianCoordinates, BondInfo> tup = g1.getCartesiansAndBondsWithEnvironment();
-                final CartesianCoordinates c = tup.getObject1();
-                final BondInfo bonds = tup.getObject2();
-                final CollisionInfo cI = cd.checkForCollision(c, blowFac, bonds);
-            
-                final boolean hasColl = cI.hasCollision();
-            
-                if(!hasColl){
-                    // we still could have dissociation, but we do not care...
-                    break;
-                }
-            
-                final List<Collision> colls = cI.getCollisions();
-                final int thisColls = colls.size();
-               
-                switch(mode){
-                    case FULLRANDOM:
-                        if(thisColls > lastColls){
-                            // we do need a new direction
-                            dirMove = rnd.nextInt(3);
-                            positiveMove = rnd.nextBoolean();
-                        } // if not: we are doing fine -> continue in that direction
-                
-                        // let's move the whole cluster a bit
-                        final double move = (positiveMove) ? movePerStep : -movePerStep;
-                        g1.getEnvironment().moveCluster(dirMove, move);
-                        break;
-                    case SURFACESTYLE:
-                        g1.getEnvironment().moveCluster(2, movePerStep); // always in z, always positive
-                        break;
-                }
-            
-                lastColls = thisColls;
-                tries++;
-                myTries++;
-            } while(hasEnvColl && tries < maxTries && myTries < maxMoveTries);
+        final CollisionInfo cI = new MultiCollisionInfo();
+        if(g1 != null){
+        	environmentFitting(g1, cI, tries);
         }
         
         if(g2 != null){
-        
-            boolean hasEnvColl = true;
-            int lastColls = 0;
-            int dirMove = -1;
-            boolean positiveMove = true;
-            int myTries = 0;
-            do {
-            
-                final Tuple<CartesianCoordinates, BondInfo> tup = g2.getCartesiansAndBondsWithEnvironment();
-                final CartesianCoordinates c = tup.getObject1();
-                final BondInfo bonds = tup.getObject2();
-                final CollisionInfo cI = cd.checkForCollision(c, blowFac, bonds);
-            
-                final boolean hasColl = cI.hasCollision();
-            
-                if(!hasColl){
-                    // we still could have dissociation, but we do not care...
-                    break;
-                }
-            
-                final List<Collision> colls = cI.getCollisions();
-                final int thisColls = colls.size();
-               
-                switch(mode){
-                    case FULLRANDOM:
-                        if(thisColls > lastColls){
-                            // we do need a new direction
-                            dirMove = rnd.nextInt(3);
-                            positiveMove = rnd.nextBoolean();
-                        } // if not: we are doing fine -> continue in that direction
-                
-                        // let's move the whole cluster a bit
-                        final double move = (positiveMove) ? movePerStep : -movePerStep;
-                        g2.getEnvironment().moveCluster(dirMove, move);
-                        break;
-                    case SURFACESTYLE:
-                        g2.getEnvironment().moveCluster(2, movePerStep); // always in z, always positive
-                        break;
-                }
-            
-                lastColls = thisColls;
-                tries++;
-                myTries++;
-            } while(hasEnvColl && tries < maxTries && myTries < maxMoveTries);
+        	environmentFitting(g2, cI, tries);
         }
         
         return new Tuple<>(g1,g2);
@@ -255,5 +171,74 @@ class VinlandGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     @Override
     public short hasPriority() {
         return -1;
+    }
+    
+    private void environmentFitting(Geometry g, CollisionInfo cI, int tries) {
+    	
+    	boolean hasEnvColl = true;
+        int lastColls = 0;
+        int dirMove = rnd.nextInt(3);
+        boolean positiveMove = true;
+        int myTries = 0;
+        // only get the bonds once - no need to repeatedly bang on that
+        final Tuple<CartesianCoordinates, BondInfo> tup = g.getCartesiansAndBondsWithEnvironment();
+        final CartesianCoordinates c = tup.getObject1();
+        final double[][] xyz = c.getAllXYZCoord();
+        final BondInfo bonds = tup.getObject2();
+        final int atomsInEnv = c.getAtomsPerMol(c.getNoOfMolecules()-1); // we know that we have an environment and we know the last "molecule" is the environment
+        final int totAtomsWOEnv = c.getNoOfAtoms() - atomsInEnv;
+        
+        final double[] moveVec = new double[3];
+        
+        do {
+        
+            if (mode == MOVEMODE.SURFACESTYLE) {
+            	// use offsets to check only for collisions between environment and cluster. not inside cluster/env
+            	final boolean hasColl = cd.checkOnlyForCollision(c, blowFac, bonds, totAtomsWOEnv, totAtomsWOEnv);
+            	if (!hasColl) break; // we still could have dissociation but we do not care here.
+            	
+            	// move always in z, always positive
+            	for(int i = 0; i < totAtomsWOEnv; i++) {
+            		xyz[2][i] += movePerStep;
+            	}
+            	
+            	moveVec[2] += movePerStep;
+            } else {
+            
+            	cd.checkForCollision(c, blowFac, bonds, cI);
+        
+            	final boolean hasColl = cI.hasCollision();
+            	if(!hasColl){
+            		// we still could have dissociation, but we do not care...
+            		break;
+            	}
+        
+            	final List<Collision> colls = cI.getCollisions();
+            	final int thisColls = colls.size();
+           
+                if(thisColls > lastColls){
+                    // we do need a new direction
+                    dirMove = rnd.nextInt(3);
+                    positiveMove = rnd.nextBoolean();
+                } // if not: we are doing fine -> continue in that direction
+            
+                // let's move the whole cluster a bit
+                final double move = (positiveMove) ? movePerStep : -movePerStep;
+                
+                for(int i = 0; i < totAtomsWOEnv; i++) {
+            		xyz[dirMove][i] += move;
+            	}
+                
+                moveVec[dirMove] += move;
+                lastColls = thisColls;
+            }
+        
+            tries++;
+            myTries++;
+        } while(hasEnvColl && tries < maxTries && myTries < maxMoveTries);
+        
+        g.getEnvironment().moveCluster(0, moveVec[0]);
+        g.getEnvironment().moveCluster(1, moveVec[1]);
+        g.getEnvironment().moveCluster(2, moveVec[2]);
     }
 }
