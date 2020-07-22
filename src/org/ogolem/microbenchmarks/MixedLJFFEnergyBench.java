@@ -44,7 +44,7 @@ import org.ogolem.core.SimpleBondInfo;
 /**
  * Benchmarks energy calculation in the mixed Lennard-Jones FF for Ar55.
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-19
  */
 class MixedLJFFEnergyBench implements SingleMicroBenchmark {
 
@@ -58,7 +58,7 @@ class MixedLJFFEnergyBench implements SingleMicroBenchmark {
         
         this.lj55 = CartesianCoordinatesLibrary.getAr55GlobMin();
         this.bonds55 = new SimpleBondInfo(55);
-        this.ljFF = new MixedLJForceField();
+        this.ljFF = new MixedLJForceField(true);
         this.energyparts = new double[55];
         this.xyz1D = lj55.getAll1DCartes();
     }

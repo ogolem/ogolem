@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-19
  */
 public class MixedLJFFTest {
     
@@ -177,7 +177,7 @@ public class MixedLJFFTest {
         final BondInfo bonds38 = new SimpleBondInfo(38);
         final BondInfo bonds55 = new SimpleBondInfo(55);
         
-        final MixedLJForceField ljFF = new MixedLJForceField();
+        final MixedLJForceField ljFF = new MixedLJForceField(true);
        
         final double e38 = ljFF.energyCalculation(-1, 0, lj38.getAll1DCartes(),
                 lj38.getAllAtomTypes(), lj38.getAllAtomNumbers(), atsPerMol38, new double[38],
@@ -185,11 +185,25 @@ public class MixedLJFFTest {
         
         assertEquals(ENERGYLJ38, e38, NUMACC);
         
-        final double e55 = ljFF.energyCalculation(-1, 0, lj55.getAll1DCartes(),
+        final double e38_2 = ljFF.energyCalculation(-1, 0, lj38.getAll1DCartes(),
+                lj38.getAllAtomTypes(), lj38.getAllAtomNumbers(), atsPerMol38, new double[38],
+                lj38.getNoOfAtoms(), lj38.getAllCharges(), lj38.getAllSpins(), bonds38, false);
+        
+        assertEquals(ENERGYLJ38, e38_2, NUMACC);
+        
+        final MixedLJForceField ljFF2 = new MixedLJForceField(true);
+        
+        final double e55 = ljFF2.energyCalculation(-1, 0, lj55.getAll1DCartes(),
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), atsPerMol55, new double[55],
                 lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55, false);
         
         assertEquals(ENERGYLJ55, e55, NUMACC);
+        
+        final double e55_2 = ljFF2.energyCalculation(-1, 0, lj55.getAll1DCartes(),
+                lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), atsPerMol55, new double[55],
+                lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55, false);
+        
+        assertEquals(ENERGYLJ55, e55_2, NUMACC);
     }
     
     @Test
@@ -220,7 +234,7 @@ public class MixedLJFFTest {
         final BondInfo bonds38 = new SimpleBondInfo(38);
         final BondInfo bonds55 = new SimpleBondInfo(55);
         
-        final MixedLJForceField ljFF = new MixedLJForceField();
+        final MixedLJForceField ljFF = new MixedLJForceField(true);
        
         final Gradient grad38 = new Gradient(3, 38);
         ljFF.gradientCalculation(-1, 0, lj38.getAll1DCartes(),
@@ -239,8 +253,10 @@ public class MixedLJFFTest {
         
         assertEquals(0.0, gradTot38, NUMACC);
         
+        final MixedLJForceField ljFF2 = new MixedLJForceField(true);
+        
         final Gradient grad55 = new Gradient(3, 55);
-        ljFF.gradientCalculation(-1, 0, lj55.getAll1DCartes(),
+        ljFF2.gradientCalculation(-1, 0, lj55.getAll1DCartes(),
                 lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), atsPerMol55, new double[55],
                 lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(), bonds55,
                 grad55, false);

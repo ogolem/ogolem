@@ -53,7 +53,7 @@ import org.ogolem.qmdff.SimpleEVB2;
 /**
  * A backend constructing factory.
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-19
  */
 public class BackendFactory {
     
@@ -120,7 +120,9 @@ public class BackendFactory {
         } else if(sBackend.equalsIgnoreCase("lennardjones,nocache")){
             back = new LennardJonesFF(false);
         } else if(sBackend.equalsIgnoreCase("mixedlj")){
-            back = new MixedLJForceField();
+            back = new MixedLJForceField(true);
+        } else if(sBackend.equalsIgnoreCase("mixedlj,nocache")){
+            back = new MixedLJForceField(false);
         } else if(sBackend.startsWith("native:")){
             final String[] sub = sBackend.substring(7).trim().split("\\,");
             System.out.println("DEBUG " + sBackend.substring(7).trim() + "    " + sBackend);

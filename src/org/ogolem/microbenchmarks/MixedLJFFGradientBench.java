@@ -45,7 +45,7 @@ import org.ogolem.core.SimpleBondInfo;
 /**
  * Benchmarks gradient calculation in the Lennard-Jones FF for Ar55.
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-07-19
  */
 class MixedLJFFGradientBench implements SingleMicroBenchmark {
     
@@ -60,7 +60,7 @@ class MixedLJFFGradientBench implements SingleMicroBenchmark {
         
         this.lj55 = CartesianCoordinatesLibrary.getAr55GlobMin();
         this.bonds55 = new SimpleBondInfo(55);
-        this.ljFF = new MixedLJForceField();
+        this.ljFF = new MixedLJForceField(true);
         this.energyparts = new double[55];
         this.grad = new Gradient(3, 55);
         this.xyz1D = lj55.getAll1DCartes();
