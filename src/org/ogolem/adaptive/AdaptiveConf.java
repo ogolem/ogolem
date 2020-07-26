@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2018, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -99,7 +99,7 @@ import org.ogolem.properties.StressTensor;
 /**
  * A configuration object for the adaptive package.
  * @author Johannes Dieterich
- * @version 2018-07-07
+ * @version 2020-07-25
  */
 public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     
@@ -1032,11 +1032,23 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             if(sa.length > 1) {cache = Boolean.parseBoolean(sa[1]);}
             adapt = new AdaptiveSkalevalaCaller(whichMethod, true, null, cache);
             sWhichMethod = s;
+        } else if (s.startsWith("externalcaller:")) {
+            String s2 = s.substring("externalcaller:".length()).trim();
+            if (!s2.endsWith("D") && !s2.endsWith("d")){
+                throw new RuntimeException("ERROR: Dimensionality choice doesn't end with D/d.");
+            } else {
+
+                // chop the D/d off
+                s2 = s2.substring(0, s2.length()-1).trim();
+                int dims = Integer.parseInt(s2);
+                adapt = new AdaptiveExternalCaller(dims);
+                sWhichMethod = "externalcaller:"+dims+"D";
+            }
         } else if (s.startsWith("schwefelbench:")) {
             // try to parse the dimensionality
             String s2 = s.substring(14).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchSchwefels(15);
                 sWhichMethod = "schwefelbench:15D";
@@ -1079,7 +1091,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // try to parse the dimensionality
             String s2 = s.substring(15).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchRastrigin(15);
                 sWhichMethod = "rastriginbench:15D";
@@ -1102,7 +1114,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // try to parse the dimensionality
             String s2 = s.substring(12).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchAckley(15, true);
                 sWhichMethod = "ackleybench:15D";
@@ -1125,7 +1137,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // try to parse the dimensionality
             String s2 = s.substring(12).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchAckley(15, false);
                 sWhichMethod = "ackleybench:15D";
@@ -1149,7 +1161,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // try to parse the dimensionality
             String s2 = s.substring(13).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchLunacek(15);
                 sWhichMethod = "lunacekbench:15D";
@@ -1173,7 +1185,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // try to parse the dimensionality
             String s2 = s.substring(25).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchGriewangkRosenbrock(15);
                 sWhichMethod = "griewangkrosenbrockbench:15D";
@@ -1196,7 +1208,7 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             // try to parse the dimensionality
             String s2 = s.substring(16).trim();
 
-            if(!s2.endsWith("D") || !s2.endsWith("D")){
+            if(!s2.endsWith("D") && !s2.endsWith("d")){
                 System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
                 adapt = new BenchSchaffer(15);
                 sWhichMethod = "schafferf7bench:15D";

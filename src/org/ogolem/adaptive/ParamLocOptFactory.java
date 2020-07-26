@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,13 @@ import java.util.HashMap;
 import org.ogolem.adaptive.genericfitness.GenericFitnessFunction;
 import org.ogolem.generic.GenericBackend;
 import org.ogolem.generic.GenericLocOpt;
+import org.ogolem.generic.GenericNoLocOpt;
 import org.ogolem.locopt.AbstractLocOptFactory;
 
 /**
  * The adaptive parameter version of the local optimization factory.
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-07-25
  */
 class ParamLocOptFactory extends AbstractLocOptFactory<Double,AdaptiveParameters> {
 
@@ -71,8 +72,26 @@ class ParamLocOptFactory extends AbstractLocOptFactory<Double,AdaptiveParameters
     @Override
     protected GenericLocOpt<Double,AdaptiveParameters> buildSpecializedLocalOptimization(final String input) throws Exception {
         
-        // at this point, we have no specialized local optimizations for the adaptive part. this is actually a rather good thing, I feel.
-        
+    	if(input.startsWith("external:")){
+    		
+    		final String[] opts = tokenizeSecondLevel(input.substring("external:".length()).trim());
+            
+            GenericBackend<Double,AdaptiveParameters> backend = null;
+            for(final String opt : opts){
+                if(opt.startsWith("backend=")){
+                    backend = getBackend(opt.substring(8));
+                } else {
+                    throw new RuntimeException("Unknown option " + opt + " in single point only!");
+                }
+            }
+            
+            checkSanityBackend(backend);
+            
+            return new ExternalLocOpt(backend);
+    	}
+    	
+        // no specialized local optimization left
+    	
         return null;
     }
 
