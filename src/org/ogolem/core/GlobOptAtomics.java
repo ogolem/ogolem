@@ -76,7 +76,7 @@ class GlobOptAtomics {
         sizes.add(0);
         atomNos.add(geom.getMoleculeAtPosition(0).getNumberOfAtoms());
 
-        for(int molID = 0; molID < noMols; molID++){
+        for(int molID = 1; molID < noMols; molID++){
             // we check for the sizes
             final int noAtoms = geom.getMoleculeAtPosition(molID).getNumberOfAtoms();
             assert(noAtoms > 0);
@@ -141,73 +141,105 @@ class GlobOptAtomics {
         return molTypes;
     }
     
-    static double randomCuttingPlane(final int whichMode, final double[][] coms1,
+    static enum CUTTINGMODE {ZEROZ, GAUSSDISTR, NORMDISTR};
+    
+    static double randomCuttingZPlane(final CUTTINGMODE whichMode, final double[][] coms1,
             final Lottery random){
     
+        return randomCuttingPlane(whichMode, coms1, random, 2);
+    }
+    
+    static double randomCuttingYPlane(final CUTTINGMODE whichMode, final double[][] coms1,
+            final Lottery random){
+    
+        return randomCuttingPlane(whichMode, coms1, random, 1);
+    }
+    
+    static double randomCuttingXPlane(final CUTTINGMODE whichMode, final double[][] coms1,
+            final Lottery random){
+    
+        return randomCuttingPlane(whichMode, coms1, random, 0);
+    }
+    
+    private static double randomCuttingPlane(final CUTTINGMODE whichMode, final double[][] coms1,
+            final Lottery random, final int coord){
+        
         assert(coms1 != null);
         assert(coms1.length == 3);
+        assert(coord >= 0);
+        assert(coord < 3);
         
-        if(whichMode < 0 || whichMode > 2){
-            System.err.println("WARNING: Unknown cutting plane choice. Using plane in COM!");
-            return 0.0;
-        }
-        
-        if(whichMode == 0) return 0.0; // stays on 0.0
+        if(whichMode == CUTTINGMODE.ZEROZ) return 0.0; // stays on 0.0
         
         
         double plane = 0.0;
-        // the plane is on z between the maxima (+/-)
+        // the plane is on coord between the maxima (+/-)
 
-        // 1) find the max and min z value for 1 and 2
+        // 1) find the max and min coord value for 1 and 2
         double max = Double.NEGATIVE_INFINITY;
         double min = Double.POSITIVE_INFINITY;
 
-        for (int i = 0; i < coms1[0].length; i++) {
-            max = Math.max(coms1[2][i], max);
-            min = Math.min(coms1[2][i], min);
+        for (int i = 0; i < coms1[coord].length; i++) {
+            max = Math.max(coms1[coord][i], max);
+            min = Math.min(coms1[coord][i], min);
         }
         
         // 2) take the SMALLER max and the BIGGER min value
-        if (whichMode == 1) {
-            // Gauss distribution, maximum on z = 0
+        if (whichMode == CUTTINGMODE.GAUSSDISTR) {
+            // Gauss distribution, maximum on coord = 0
             final double gauss = RandomUtils.gaussDouble(-1.0, 1.0);
             plane = (gauss >= 0.0) ? gauss * max : gauss * min;
-        } else if (whichMode == 2) {
+        } else if (whichMode == CUTTINGMODE.NORMDISTR) {
             // even distribution
             plane = random.nextDouble()*(max-min)+min;
         }
         
-        return plane;
+        return plane;        
     }
-
-    static double findOptimalPlaneHeight(final double[][] coords, final int noUnder){
+    
+    static double findOptimalZPlaneHeight(final double[][] coords, final int noUnder){
+        return findOptimalPlaneHeight(coords, noUnder, 2);
+    }
+    
+    static double findOptimalYPlaneHeight(final double[][] coords, final int noUnder){
+        return findOptimalPlaneHeight(coords, noUnder, 1);
+    }
+    
+    static double findOptimalXPlaneHeight(final double[][] coords, final int noUnder){
+        return findOptimalPlaneHeight(coords, noUnder, 0);
+    }
+        
+    private static double findOptimalPlaneHeight(final double[][] coords, final int noUnder,
+            final int coord){
         
         assert(noUnder > 0);
         assert(noUnder < coords[2].length);
+        assert(coord >= 0);
+        assert(coord < 3);
         
-        // order the coordinates by their z value (so number 2)
-        final double[] zvals = coords[2].clone();
-        Arrays.sort(zvals);
+        // order the coordinates by their coord value (so number 2)
+        final double[] coordVals = coords[coord].clone();
+        Arrays.sort(coordVals);
                 
         // now we figure out where the plane would be        
         if(noUnder == 0){
             // everything is above (should never happen as it is pointless)
-            return zvals[0] - 1.0;
+            return coordVals[0] - 1.0;
         }
 
-        if(noUnder == zvals.length){
+        if(noUnder == coordVals.length){
             // everything is underneath (should also never happen as it is pointless)
-            return zvals[zvals.length] + 1.0;
+            return coordVals[coordVals.length] + 1.0;
         }
         
-        final double valFirstBelow = zvals[noUnder-1];
-        final double valFirstAbove = zvals[noUnder];
+        final double valFirstBelow = coordVals[noUnder-1];
+        final double valFirstAbove = coordVals[noUnder];
         final double diff = valFirstAbove - valFirstBelow;
         
         if(Math.abs(diff) < 1E-8){
             // we return NaN since two COMs are too close together
             log.info("Absolute difference " + Math.abs(diff) + " too small. Tried to find " + noUnder);
-            if(log.isDebugEnabled()){log.debug(Arrays.toString(zvals));}
+            if(log.isDebugEnabled()){log.debug(Arrays.toString(coordVals));}
             return Double.NaN;
         }
         

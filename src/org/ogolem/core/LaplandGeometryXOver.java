@@ -40,26 +40,26 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import static org.ogolem.core.GlobOptAtomics.findOptimalPlaneHeight;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingPlane;
 import static org.ogolem.core.GlobOptAtomics.randomRotation;
 import org.ogolem.generic.GenericCrossover;
 import org.ogolem.helpers.Tuple;
+import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
+import static org.ogolem.core.GlobOptAtomics.findOptimalZPlaneHeight;
 import org.ogolem.random.Lottery;
 
 /**
  * Phenotype algorithm with implicit exchange of atom types. Like Sweden, just different. ;-)
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2020-07-03
  */
 public class LaplandGeometryXOver implements GenericCrossover<Molecule,Geometry>{
     
     private static final long serialVersionUID = (long) 20200425;
     private static final boolean DEBUG = false;
     private final Lottery random = Lottery.getInstance();
-    private final int whichGlobOpt;
+    private final GlobOptAtomics.CUTTINGMODE whichGlobOpt;
 
-    LaplandGeometryXOver(final int whichGlobOpt){
+    LaplandGeometryXOver(final GlobOptAtomics.CUTTINGMODE whichGlobOpt){
         this.whichGlobOpt = whichGlobOpt;
     }
     
@@ -102,7 +102,7 @@ public class LaplandGeometryXOver implements GenericCrossover<Molecule,Geometry>
                 cartesMother.getAllAtomsPerMol(), gChild2.getAllFlexies(), gChild2.getExplicitDoFs(), gChild2.getAllConstraints(false),
                 gChild2.getAllConstraintsXYZ(false), gChild2.getSIDs(), gChild2.getBondInfo());
          gChild1 = new Geometry(cartesFather, gChild1.getID(), gChild1.getNumberOfIndieParticles(),
-                cartesFather.getAllAtomsPerMol(), gChild1.getAllFlexies(), gChild2.getExplicitDoFs(), gChild1.getAllConstraints(false),
+                cartesFather.getAllAtomsPerMol(), gChild1.getAllFlexies(), gChild1.getExplicitDoFs(), gChild1.getAllConstraints(false),
                 gChild1.getAllConstraintsXYZ(false), gChild1.getSIDs(), gChild1.getBondInfo());
 
          // in case of environments, add it in at this point
@@ -139,7 +139,7 @@ public class LaplandGeometryXOver implements GenericCrossover<Molecule,Geometry>
         boolean cont;
         int iFatherCOMs = -1;
         do{
-            dPlaneHeightFather = randomCuttingPlane(whichGlobOpt, daFatherCOMs, random);
+            dPlaneHeightFather = randomCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
             // check which COMs are above and underneath the plane (for the father)
             for (int i = 0; i < iNoOfMolecules; i++) {
                 if (daFatherCOMs[2][i] <= dPlaneHeightFather) {
@@ -175,7 +175,7 @@ public class LaplandGeometryXOver implements GenericCrossover<Molecule,Geometry>
         }
         
         // now move the plane in the mother geometry till enough COMs are above/underneath
-        final double dPlaneHeightMother = findOptimalPlaneHeight(daMotherCOMs, iFatherCOMs);
+        final double dPlaneHeightMother = findOptimalZPlaneHeight(daMotherCOMs, iFatherCOMs);
 
         if(Double.isNaN(dPlaneHeightMother)){
             // two COMs were too close together, return null'd geometries

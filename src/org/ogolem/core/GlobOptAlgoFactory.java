@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2020-06-27
+ * @version 2020-07-03
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
@@ -234,12 +234,24 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             return new FoehrGeometryXOver(howManyCuts);
         } else if(xOverString.startsWith("lapland:")){
             final String[] tokens = tokenizeThirdLevel(xOverString.substring(8));
-            int cutStyle = 2;
+            GlobOptAtomics.CUTTINGMODE cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
             
             for (final String token : tokens) {
                 if (token.startsWith("cutstyle=")) {
-                    cutStyle = integerToken("cutstyle=",token);
-                    if(cutStyle < 0 || cutStyle > 2){throw new RuntimeException("cutsyle= specification out of allowed bounds (0-2).");}
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                 } else {
                     throw new RuntimeException("Unknown token " + token + " in specialized xover (lapland).");
                 }
@@ -252,7 +264,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             
             final MergingPhenoXOver.MergingPhenoConfig mergeConfig = new MergingPhenoXOver.MergingPhenoConfig(true);
             CollisionDetection.CDTYPE whichCollDetect = globConf.getWhichCollisionEngine();
-            int cutStyle = 2;
+            GlobOptAtomics.CUTTINGMODE cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
             double blowColl = globConf.blowFacBondDetect;
             double blowDiss = globConf.blowFacDissocDetect;
             boolean doMerging = false;
@@ -274,9 +286,21 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                 } else if(token.startsWith("mergeiter=")){
                     mergeConfig.noIterations = integerToken("mergeiter=",token);
                 } else if(token.startsWith("cutstyle=")){
-                    mergeConfig.planeMode = integerToken("cutstyle=",token);
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                     cutStyle = mergeConfig.planeMode;
-                    if(cutStyle < 0 || cutStyle > 2){throw new RuntimeException("cutsyle= specification out of allowed bounds (0-2).");}
                 } else if(token.startsWith("nointerpoints=")){
                     mergeConfig.numberOfInterpolationPoints = integerToken("nointerpoints=",token);
                 } else if(token.startsWith("optbounds=")){
@@ -304,7 +328,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             
             final MergingPhenoXOver.MergingPhenoConfig mergeConfig = new MergingPhenoXOver.MergingPhenoConfig(false);
             CollisionDetection.CDTYPE whichCollDetect = globConf.getWhichCollisionEngine();
-            int cutStyle = 2;
+            GlobOptAtomics.CUTTINGMODE cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
             double blowColl = globConf.blowFacBondDetect;
             double blowDiss = globConf.blowFacDissocDetect;
             boolean doMerging = false;
@@ -325,9 +349,21 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                 } else if(token.startsWith("mergeiter=")){
                     mergeConfig.noIterations = integerToken("mergeiter=",token);
                 } else if(token.startsWith("cutstyle=")){
-                    mergeConfig.planeMode = integerToken("cutstyle=",token);
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                     cutStyle = mergeConfig.planeMode;
-                    if(cutStyle < 0 || cutStyle > 2){throw new RuntimeException("cutsyle= specification out of allowed bounds (0-2).");}
                 } else if(token.startsWith("nointerpoints=")){
                     mergeConfig.numberOfInterpolationPoints = integerToken("nointerpoints=",token);
                 } else if(token.startsWith("optbounds=")){
@@ -349,18 +385,68 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             return new AlandGeometryXOver(doMerging,globConf.getRefNewton().getBackend(),mergeConfig,blowColl,blowDiss,collDetect,cutStyle,doCDDD,false);
         } else if(xOverString.startsWith("sweden:")){
             final String[] tokens = tokenizeThirdLevel(xOverString.substring(7));
-            int cutStyle = 2;
+            GlobOptAtomics.CUTTINGMODE cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
             
             for (final String token : tokens) {
                 if (token.startsWith("cutstyle=")) {
-                    cutStyle = integerToken("cutstyle=",token);
-                    if(cutStyle < 0 || cutStyle > 2){throw new RuntimeException("cutsyle= specification out of allowed bounds (0-2).");}
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                 } else {
                     throw new RuntimeException("Unknown token " + token + " in specialized xover (sweden).");
                 }
             }
             
             return new SwedenGeometryXOver(cutStyle);
+        } else if(xOverString.startsWith("norrbotten:")){
+            final String[] tokens = tokenizeThirdLevel(xOverString.substring(11));
+            GlobOptAtomics.CUTTINGMODE cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+            NorrbottenGeometryXOver.ROTATIONPLANE plane = NorrbottenGeometryXOver.ROTATIONPLANE.XY;
+
+            for (final String token : tokens) {
+                if (token.startsWith("cutstyle=")) {
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            cutStyle = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
+                } else if(token.startsWith("inplane=")){
+                    final String pl = token.substring("inplane=".length()).trim();
+                    if(pl.equalsIgnoreCase("xy")){
+                        plane = NorrbottenGeometryXOver.ROTATIONPLANE.XY;
+                    } else if(pl.equalsIgnoreCase("xz")){
+                        plane = NorrbottenGeometryXOver.ROTATIONPLANE.XZ;
+                    } else if(pl.equalsIgnoreCase("yz")){
+                        plane = NorrbottenGeometryXOver.ROTATIONPLANE.YZ;
+                    } else {
+                        throw new RuntimeException("inplane= choice must be xy or xz or yz. Is: " + plane);
+                    }
+                } else {
+                    throw new RuntimeException("Unknown token " + token + " in specialized xover (norrbotten).");
+                }
+            }
+
+            return new NorrbottenGeometryXOver(cutStyle, plane);
         } else if(xOverString.startsWith("iceland:")){
             
             final String[] tokens = tokenizeThirdLevel(xOverString.substring(8));
@@ -387,8 +473,20 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                 } else if(token.startsWith("mergeiter=")){
                     mergeConfig.noIterations = integerToken("mergeiter=",token);
                 } else if(token.startsWith("cutstyle=")){
-                    mergeConfig.planeMode = integerToken("cutstyle=",token);
-                    if(mergeConfig.planeMode < 0 || mergeConfig.planeMode > 2){throw new RuntimeException("cutsyle= specification out of allowed bounds (0-2).");}
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                 } else if(token.startsWith("nointerpoints=")){
                     mergeConfig.numberOfInterpolationPoints = integerToken("nointerpoints=",token);
                 } else if(token.startsWith("optbounds=")){
@@ -434,8 +532,20 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                 } else if(token.startsWith("mergeiter=")){
                     mergeConfig.noIterations = integerToken("mergeiter=",token);
                 } else if(token.startsWith("cutstyle=")){
-                    mergeConfig.planeMode = integerToken("cutstyle=",token);
-                    if(mergeConfig.planeMode < 0 || mergeConfig.planeMode > 2){throw new RuntimeException("cutsyle= specification out of allowed bounds (0-2).");}
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            mergeConfig.planeMode = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                 } else if(token.startsWith("nointerpoints=")){
                     mergeConfig.numberOfInterpolationPoints = integerToken("nointerpoints=",token);
                 } else if(token.startsWith("optbounds=")){
@@ -681,16 +791,67 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
 
             return new MonteCarloExtOnlyGeometryMutation(mode, maxMoveCOM, maxMoveEuler);
                 
+        } else if(mutString.startsWith("2d-extcoordmc:")){
+
+            final String[] tokens = tokenizeThirdLevel(mutString.substring(14));
+            MonteCarlo2DExtOnlyGeometryMutation.MOVEMODE mode = MonteCarlo2DExtOnlyGeometryMutation.MOVEMODE.ONE;
+            double maxMoveCOM = 0.2; // 0.2 bohr max move
+            double maxMoveEuler = 0.2; // 0.2 of all Eulers max
+            int maxGauss = globConf.geoConfCopy().noOfParticles/2;
+            double gaussWidth = 1.0;
+
+            for (final String token : tokens) {
+                if (token.startsWith("mode=")) {
+                    final String s = token.substring(5).trim();
+                    if (s.equalsIgnoreCase("all")) {
+                        mode = MonteCarlo2DExtOnlyGeometryMutation.MOVEMODE.ALL;
+                    } else if (s.equalsIgnoreCase("one")) {
+                        mode = MonteCarlo2DExtOnlyGeometryMutation.MOVEMODE.ONE;
+                    } else if (s.equalsIgnoreCase("some")) {
+                        mode = MonteCarlo2DExtOnlyGeometryMutation.MOVEMODE.SOME;
+                    } else if (s.equalsIgnoreCase("gaussian")){
+                        mode = MonteCarlo2DExtOnlyGeometryMutation.MOVEMODE.GAUSSIAN;
+                    } else {
+                        throw new RuntimeException("Unknown move mode " + mode + " in MC 2d-extonly mutation for geometries.");
+                    }
+                } else if (token.startsWith("maxmovecom=")) {
+                    maxMoveCOM = doubleToken("maxmovecom=", token);
+                } else if (token.startsWith("maxmoveeuler=")) {
+                    maxMoveEuler = doubleToken("maxmoveeuler=", token);
+                } else if (token.startsWith("gaussmax=")){
+                    maxGauss = integerToken("gaussmax=", token);
+                } else if (token.startsWith("gausswidth=")){
+                    gaussWidth = doubleToken("gausswidth=", token);
+                } else {
+                    throw new RuntimeException("Unknown token " + token + " in specialized mutation (2D-ExtCoordMonteCarlo).");
+                }
+            }
+
+            return new MonteCarlo2DExtOnlyGeometryMutation(mode, maxMoveCOM, maxMoveEuler, maxGauss, gaussWidth);
+
         } else if(mutString.startsWith("finland:")){
             
             final String[] tokens = tokenizeThirdLevel(mutString.substring(8));
             
             double blowDiss = globConf.blowFacDissocDetect;
             double blowColl = globConf.blowFacBondDetect;
-            int cutType = 2;
+            GlobOptAtomics.CUTTINGMODE cutType = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
             for (final String token : tokens) {
                 if(token.startsWith("cutstyle=")){
-                    cutType = integerToken("cutstyle=",token);
+                    final int cut = integerToken("cutstyle=",token);
+                    switch(cut){
+                        case 0:
+                            cutType = GlobOptAtomics.CUTTINGMODE.ZEROZ;
+                            break;
+                        case 1:
+                            cutType = GlobOptAtomics.CUTTINGMODE.GAUSSDISTR;
+                            break;
+                        case 2:
+                            cutType = GlobOptAtomics.CUTTINGMODE.NORMDISTR;
+                            break;
+                        default:
+                            throw new RuntimeException("Cut style must be 0 to 2. Is: " + cut);
+                    }
                 } else if(token.startsWith("blowdiss=")){
                     blowDiss = doubleToken("blowdiss=",token);
                 } else if(token.startsWith("blowcoll=")){
@@ -738,6 +899,43 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             }
             
             return new NorwayGeometryMutation(whichCollDetect,blowColl,blowDiss,whichDissDetect,mode);
+        } else if(mutString.startsWith("norway2D:")){
+            
+            final String[] tokens = tokenizeThirdLevel(mutString.substring(7));
+            
+            double blowDiss = globConf.blowFacDissocDetect;
+            double blowColl = globConf.blowFacBondDetect;
+            CollisionDetection.CDTYPE whichCollDetect = globConf.getWhichCollisionEngine();
+            DissociationDetection.DDTYPE whichDissDetect = globConf.whichDissociationEngine;
+            Norway2DGeometryMutation.MUTMODE mode = Norway2DGeometryMutation.MUTMODE.ASCENDING; // ascending by default
+            for (final String token : tokens) {
+                if(token.startsWith("colldetect=")){
+                    final String sub = stringToken("colldetect=",token);
+                    whichCollDetect = CollisionDetection.parseType(sub);
+                } else if(token.startsWith("dissdetect=")){
+                    final String sub = stringToken("dissdetect=",token);
+                    whichDissDetect = DissociationDetection.parseType(sub);
+                } else if(token.startsWith("blowdiss=")){
+                    blowDiss = doubleToken("blowdiss=",token);
+                } else if(token.startsWith("blowcoll=")){
+                    blowColl = doubleToken("blowcoll=",token);
+                } else if(token.startsWith("mode=")){
+                    final String s = token.substring(5).trim();
+                    if(s.equalsIgnoreCase("ascending")){
+                        mode = Norway2DGeometryMutation.MUTMODE.ASCENDING;
+                    } else if(s.equalsIgnoreCase("random")){
+                        mode = Norway2DGeometryMutation.MUTMODE.RANDOM;
+                    } else if(s.equalsIgnoreCase("size")){
+                        mode = Norway2DGeometryMutation.MUTMODE.BYSIZE;
+                    } else{
+                        throw new RuntimeException("Illegal mode " + mode + " for setting up 2D-norway.");
+                    }
+                } else {
+                    throw new RuntimeException("Unknown token " + token + " in specialized mutation (2D-norway).");
+                }
+            }
+            
+            return new Norway2DGeometryMutation(whichCollDetect,blowColl,blowDiss,whichDissDetect,mode);
         } else if(mutString.startsWith("xchangemut:")){
             
             final String[] tokens = tokenizeThirdLevel(mutString.substring(11));

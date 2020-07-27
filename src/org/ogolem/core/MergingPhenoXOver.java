@@ -54,7 +54,7 @@ import org.ogolem.random.RandomUtils;
  * a backend. Original implementation in some version of phenix, this is an independent
  * rewrite though, never seen the original code (so all bugs are mine, all ideas are Bernds).
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-03
  */
 public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
    
@@ -138,7 +138,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         boolean cont;
         int noFatherUnder;
         do{
-            planeHeightFather = GlobOptAtomics.randomCuttingPlane(config.planeMode, fatherCOMs, random);
+            planeHeightFather = GlobOptAtomics.randomCuttingZPlane(config.planeMode, fatherCOMs, random);
             // check which COMs are above and underneath the plane (for the father)
             for (int i = 0; i < noMols; i++) {
                 if (fatherCOMs[2][i] <= planeHeightFather) {
@@ -174,7 +174,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         }
         
         // now move the plane in the mother geometry till enough COMs are above/underneath
-        final double planeHeightMum = GlobOptAtomics.findOptimalPlaneHeight(motherCOMs, noFatherUnder);
+        final double planeHeightMum = GlobOptAtomics.findOptimalZPlaneHeight(motherCOMs, noFatherUnder);
 
         if(Double.isNaN(planeHeightMum)){
             // two COMs were too close together, return null'd geometries
@@ -993,7 +993,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         public double stoppingTrustRegionRadius;
         public final double[][] optBounds;
         public int noIterations;
-        public int planeMode;
+        public GlobOptAtomics.CUTTINGMODE planeMode;
         
         public MergingPhenoConfig(final boolean use6D){
             this.use6D = use6D;
@@ -1005,7 +1005,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
                     {-5.0*ANGTOBOHR,-5.0*ANGTOBOHR,-5.0*ANGTOBOHR,-Math.PI,-0.5*Math.PI,-Math.PI},
                     {10*ANGTOBOHR,10*ANGTOBOHR,10*ANGTOBOHR,Math.PI,0.5*Math.PI,Math.PI}};
                 noIterations = 200;
-                planeMode = 0;
+                planeMode = GlobOptAtomics.CUTTINGMODE.ZEROZ;
             } else{
                 numberOfInterpolationPoints = 5; // recommended setting is 2N+1
                 initialTrustRegionRadius = 1E-1;
@@ -1013,7 +1013,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
                 optBounds = new double[][]{
                     {-1.0*ANGTOBOHR,0.0}, {15*ANGTOBOHR,2*Math.PI}};
                 noIterations = 100;
-                planeMode = 0;
+                planeMode = GlobOptAtomics.CUTTINGMODE.ZEROZ;
             }
         }
         
@@ -1031,7 +1031,7 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule,Geometry> {
         public String toString(){
             return "\t use 6D?" + this.use6D + "\n\t interpoints: " + this.numberOfInterpolationPoints + "\n\t initial trust: " + this.initialTrustRegionRadius
                     + "\n\t stopping trust " + this.stoppingTrustRegionRadius + "\n\t max iterations: " + this.noIterations
-                    + "\n\t plane modus: " + this.planeMode;
+                    + "\n\t plane modus: " + this.planeMode.toString();
         }
     }
 }

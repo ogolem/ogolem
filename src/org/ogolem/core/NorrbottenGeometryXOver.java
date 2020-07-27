@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2016, J. M. Dieterich and B. Hartke
+              2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,44 +41,59 @@ package org.ogolem.core;
 import java.util.ArrayList;
 import java.util.List;
 import static org.ogolem.core.GlobOptAtomics.assignMolecularTypes;
+import static org.ogolem.core.GlobOptAtomics.findOptimalXPlaneHeight;
+import static org.ogolem.core.GlobOptAtomics.findOptimalYPlaneHeight;
+import static org.ogolem.core.GlobOptAtomics.findOptimalZPlaneHeight;
+import static org.ogolem.core.GlobOptAtomics.randomCuttingXPlane;
+import static org.ogolem.core.GlobOptAtomics.randomCuttingYPlane;
+import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
 import org.ogolem.generic.GenericCrossover;
 import org.ogolem.helpers.Tuple;
 import org.ogolem.random.Lottery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
-import static org.ogolem.core.GlobOptAtomics.findOptimalZPlaneHeight;
 
 /**
- * Our basic N-type phenotype X-Over. Does not rotate the input structures.
- * SWEDEN, named in honor of Mr Mats Eriksson, the hardest rocker of them all!
+ * Our basic N-type phenotype X-Over in a user-specified plane. Rotates the
+ * input structures.
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2020-07-03
  */
-public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometry> {
+public class NorrbottenGeometryXOver implements GenericCrossover<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20200425;
+    private static final long serialVersionUID = (long) 20160403;
     private static final boolean DEBUG = false;
-    private static final Logger log = LoggerFactory.getLogger(PhenotypeGeometryXOver.class);
+    private static final Logger log = LoggerFactory.getLogger(NorrbottenGeometryXOver.class);
+    
+    public static enum ROTATIONPLANE{XY,XZ,YZ};
+    
     private final Lottery random = Lottery.getInstance();
     private final GlobOptAtomics.CUTTINGMODE whichGlobOpt;
     
-    PhenotypeGeometryXOver(final GlobOptAtomics.CUTTINGMODE whichGlobOpt){
+    private final ROTATIONPLANE plane;
+    
+    NorrbottenGeometryXOver(final GlobOptAtomics.CUTTINGMODE whichGlobOpt, final ROTATIONPLANE plane){
+        assert(whichGlobOpt != null);
+        assert(plane != null);
+        
         this.whichGlobOpt = whichGlobOpt;
+        this.plane = plane;
     }
     
-    PhenotypeGeometryXOver(final PhenotypeGeometryXOver orig){
+    NorrbottenGeometryXOver(final NorrbottenGeometryXOver orig){
         this.whichGlobOpt = orig.whichGlobOpt;
+        this.plane = orig.plane;
     }
     
     @Override
-    public PhenotypeGeometryXOver clone() {
-        return new PhenotypeGeometryXOver(this);
+    public NorrbottenGeometryXOver clone() {
+        return new NorrbottenGeometryXOver(this);
     }
 
     @Override
     public String getMyID() {
-        return "BASIC SWEDEN\nphenotype X-Over\n\tglobopt style: " + whichGlobOpt.toString();
+        return "NORRBOTTEN\nphenotype X-Over\n\tglobopt style: " + whichGlobOpt.toString()
+                + "\n\trotation plane: " + plane.name();
     }
 
     @Override
@@ -88,6 +104,63 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         final Geometry gChild2 = new Geometry(mother);
         gChild2.setID(futureID);
         
+        final CartesianCoordinates cartesMother = gChild2.getCartesians();
+        final CartesianCoordinates cartesFather = gChild1.getCartesians();
+
+        cartesMother.moveCoordsToCOM();
+        cartesFather.moveCoordsToCOM();
+        
+        // rotate the two
+        final double rot1 = 2*Math.PI*random.nextDouble();
+        final double rot2 = 2*Math.PI*random.nextDouble();
+        
+        switch (plane) {
+            case XY:
+                CoordTranslation.rotateXYZAroundZ(cartesMother.getAllXYZCoordsCopy(),rot1,cartesMother.getAllXYZCoord());
+                CoordTranslation.rotateXYZAroundZ(cartesFather.getAllXYZCoordsCopy(),rot2,cartesFather.getAllXYZCoord());
+                break;
+            case XZ:
+                CoordTranslation.rotateXYZAroundY(cartesMother.getAllXYZCoordsCopy(),rot1,cartesMother.getAllXYZCoord());
+                CoordTranslation.rotateXYZAroundY(cartesFather.getAllXYZCoordsCopy(),rot2,cartesFather.getAllXYZCoord());
+                break;
+            case YZ:
+                CoordTranslation.rotateXYZAroundX(cartesMother.getAllXYZCoordsCopy(),rot1,cartesMother.getAllXYZCoord());
+                CoordTranslation.rotateXYZAroundX(cartesFather.getAllXYZCoordsCopy(),rot2,cartesFather.getAllXYZCoord());
+                break;
+        }
+        
+        if(DEBUG){
+            final String[] printCart1 = cartesMother.createPrintableCartesians();
+            final String[] printCart2 = cartesFather.createPrintableCartesians();
+            System.out.println("DEBUG: Cartesians after rotation: mother");
+            for(final String s : printCart1){
+                System.out.println(s);
+            }
+            System.out.println("DEBUG: Cartesians after rotation: father");
+            for(final String s : printCart2){
+                System.out.println(s);
+            }
+        }
+
+         // translate it to geometries again
+        gChild1.updateAllCoordinates(cartesFather.getAllXYZCoord());
+        gChild2.updateAllCoordinates(cartesMother.getAllXYZCoord());
+
+         // set the IDs of mother and father
+         gChild1.setMother(mother.getID());
+         gChild1.setFather(father.getID());
+         gChild2.setMother(mother.getID());
+         gChild2.setFather(father.getID());
+
+
+        // in case of environments, add it in at this point
+        if(mother.containsEnvironment()){
+            // the environment
+            final List<Environment> envChilds = mother.getEnvironment().createOffspring(father.getEnvironment());
+            gChild1.setEnvironment(envChilds.get(0));
+            gChild2.setEnvironment(envChilds.get(1));
+        }
+
         // first get all COMs and put them into matrices/double arrays
         final double[][] daMotherCOMs = new double[3][gChild1.getNumberOfIndieParticles()];
         final double[][] daFatherCOMs = new double[3][gChild1.getNumberOfIndieParticles()];
@@ -109,19 +182,33 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         final List<Integer> fatherAbove = new ArrayList<>(noMols);
         final List<Integer> fatherUnder = new ArrayList<>(noMols);
 
-        double dPlaneHeightFather;
+        double dPlaneHeightFather = 0.0;
+        short lookAtCoord = 0;        
         int ec = 0;
         boolean cont;
         int noFatherUnder = -1;
         do {
-            dPlaneHeightFather = randomCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
+            switch (plane) {
+                case XY:
+                    dPlaneHeightFather = randomCuttingXPlane(whichGlobOpt, daFatherCOMs, random);
+                    lookAtCoord = 0;
+                    break;
+                case XZ:
+                    dPlaneHeightFather = randomCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
+                    lookAtCoord = 2;
+                    break;
+                case YZ:
+                    dPlaneHeightFather = randomCuttingYPlane(whichGlobOpt, daFatherCOMs, random);
+                    lookAtCoord = 1;
+                    break;
+            }
             // check which COMs are above and underneath the plane (for the father)
             for (int i = 0; i < noMols; i++) {
-                if (daFatherCOMs[2][i] <= dPlaneHeightFather) {
-                    // underneath
+                if (daFatherCOMs[lookAtCoord][i] <= dPlaneHeightFather) {
+                    // "underneath"
                     fatherUnder.add(i);
                 } else {
-                    // above
+                    // "above"
                     fatherAbove.add(i);
                 }
             }
@@ -150,8 +237,19 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         }
         
         // now move the plane in the mother geometry till enough COMs are above/underneath
-        final double dPlaneHeightMother = findOptimalZPlaneHeight(daMotherCOMs, noFatherUnder);
-
+        double dPlaneHeightMother = 0.0;
+        switch (plane) {
+            case XY:
+                dPlaneHeightMother = findOptimalXPlaneHeight(daMotherCOMs, noFatherUnder);
+                break;
+            case XZ:
+                dPlaneHeightMother = findOptimalZPlaneHeight(daMotherCOMs, noFatherUnder);
+                break;
+            case YZ:
+                dPlaneHeightMother = findOptimalYPlaneHeight(daMotherCOMs, noFatherUnder);
+                break;
+        }
+        
         if(Double.isNaN(dPlaneHeightMother)){
             // two COMs were too close together, return null'd geometries
             System.err.println("WARNING: Couldn't find cutting plane for mother, two COMs too close.");
@@ -174,11 +272,11 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         final List<Integer> motherAbove = new ArrayList<>(noMols);
 
         for (int ii = 0; ii < noMols; ii++) {
-            if (daMotherCOMs[2][ii] <= dPlaneHeightMother) {
-                // underneath
+            if (daMotherCOMs[lookAtCoord][ii] <= dPlaneHeightMother) {
+                // "underneath"
                 motherUnder.add(ii);
             } else {
-                // above
+                // "above"
                 motherAbove.add(ii);
             }
         }
@@ -376,7 +474,7 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         motherUnder.clear();
         motherAbove.clear();
         for (int kk = 0; kk < noMols; kk++) {
-            if (daMotherCOMs[2][kk] <= dPlaneHeightMother) {
+            if (daMotherCOMs[lookAtCoord][kk] <= dPlaneHeightMother) {
                 // underneath
                 motherUnder.add(kk);
             } else {
@@ -386,7 +484,7 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         }
         
         for (int kk = 0; kk < noMols; kk++) {
-            if (daFatherCOMs[2][kk] <= dPlaneHeightFather) {
+            if (daFatherCOMs[lookAtCoord][kk] <= dPlaneHeightFather) {
                 // underneath
                 fatherUnder.add(kk);
             } else {
@@ -398,7 +496,7 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
         final int iMotherCOMs = motherUnder.size();
         if (iMotherCOMs != fatherUnder.size()){
             // we f***** it up
-            System.err.println("ERROR: We f***** it up in Sweden. Mother: " + iMotherCOMs + " father: " + fatherUnder.size());
+            System.err.println("ERROR: We f***** it up in Norrbotten. Mother: " + iMotherCOMs + " father: " + fatherUnder.size());
             return new Tuple<>(null,null);
         }
 
@@ -502,8 +600,8 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
                     final double[] daTempCOM = m1.getExternalCenterOfMass();
                     final double[] daTempCOM2 = m2.getExternalCenterOfMass();
 
-                    daTempCOM[2] = daTempCOM[2] - dPlaneHeightMother + dPlaneHeightFather;// + heightIncr;
-                    daTempCOM2[2] = daTempCOM2[2] + dPlaneHeightMother - dPlaneHeightFather;// + heightIncr;
+                    daTempCOM[lookAtCoord] = daTempCOM[lookAtCoord] - dPlaneHeightMother + dPlaneHeightFather;// + heightIncr;
+                    daTempCOM2[lookAtCoord] = daTempCOM2[lookAtCoord] + dPlaneHeightMother - dPlaneHeightFather;// + heightIncr;
 
                     gChild1.setMoleculeAtPosition(whichMol, m2);
                     gChild2.setMoleculeAtPosition(iTempMol, m1);
@@ -563,6 +661,10 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule,Geometr
             return new Tuple<>(null,null);
         }
 
+        assert(gChild1.containsEnvironment() == mother.containsEnvironment());
+        assert(gChild2.containsEnvironment() == father.containsEnvironment());
+        assert(gChild1.containsEnvironment() == gChild2.containsEnvironment());
+        
         return new Tuple<>(gChild1,gChild2);
     }
     
