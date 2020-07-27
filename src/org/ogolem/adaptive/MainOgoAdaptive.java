@@ -61,7 +61,7 @@ import org.ogolem.properties.Energy;
 /**
  * The main class of the adaptive package designed to do a paramterization.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-25
  */
 public class MainOgoAdaptive {
 
@@ -381,6 +381,11 @@ public class MainOgoAdaptive {
             // yeah, not happening yet
             System.err.println("WARNING: No final energy evaluation possible for non-cartesian structural data type.");
             System.exit(0);
+        }
+        
+        if(adapConf.whichParamLocOpt.startsWith("external")) {
+        	// external does not support single evals
+        	System.exit(0);
         }
         
         // do a last set of energy evaluations

@@ -54,7 +54,7 @@ import org.ogolem.generic.ContinuousProblem;
  * cache is not thread-safe. Therefore in a multi-threaded environment, it is
  * absolutely required to generate a copy of this class for each thread.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-25
  */
 public class AdaptiveParameters extends ContinuousProblem<Double> {
 
@@ -78,7 +78,7 @@ public class AdaptiveParameters extends ContinuousProblem<Double> {
      * @param noOfParamsPerKey
      * @param paramsForMethod
      */
-    public AdaptiveParameters(final int numberOfParameters, final int id, final String[] keys,
+    public AdaptiveParameters(final int numberOfParameters, final long id, final String[] keys,
             final int[] noOfParamsPerKey, final String paramsForMethod){
         super();
         this.parameters = new double[numberOfParameters];
@@ -145,7 +145,7 @@ public class AdaptiveParameters extends ContinuousProblem<Double> {
      * @param formattedParams the formatted parameters as in a .param file.
      * @param id the id of this set
      */
-    public AdaptiveParameters(final String[] formattedParams, final int id){
+    public AdaptiveParameters(final String[] formattedParams, final long id){
         super();
         this.myID = id;
 
