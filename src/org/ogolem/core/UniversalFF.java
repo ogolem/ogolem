@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import contrib.atomdroiduff.AtomdroidUFF;
+import de.gwdg.rmata.atomdroiduff.AtomdroidUFF;
 
 /**
  * Provides energy and gradient calculated using a very simple UFF approach.
@@ -111,7 +111,7 @@ class UniversalFF implements CartesianFullBackend{
         
         copy1d3d(daXYZ1D, coords, noAts, atomNos);
 
-        contrib.atomdroiduff.Gradient g = uff.gradient(style, coords, !hasBeenUsed);
+        de.gwdg.rmata.atomdroiduff.Gradient g = uff.gradient(style, coords, !hasBeenUsed);
         if(!hasBeenUsed){
             hasBeenUsed = true; //now it has
         }
