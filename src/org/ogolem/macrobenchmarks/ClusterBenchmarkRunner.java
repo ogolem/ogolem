@@ -135,7 +135,11 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
             totAtoms += mc.noOfAtoms;
         }
         
-        final int[] atsPerMol = new int[gc.noOfParticles];
+        final boolean hasEnv = (gc.env != null);
+        if(hasEnv) totAtoms += gc.env.atomsInEnv();
+        
+        final int noOfMolecules = (hasEnv) ? gc.noOfParticles + 1 : gc.noOfParticles;
+        final int[] atsPerMol = new int[noOfMolecules];
         final short[] spins = new short[totAtoms];
         final float[] charges = new float[totAtoms];
         final String[] sids = new String[gc.noOfParticles];
@@ -150,6 +154,7 @@ class ClusterBenchmarkRunner implements BenchmarkRunner {
             }
             off += mc.noOfAtoms;
         }
+        if(hasEnv) atsPerMol[atsPerMol.length-1] = gc.env.atomsInEnv();
         
         final CartesianCoordinates refCartes = Input.readCartesFromFile(workDir + File.separator + refGeometry,
                 gc.noOfParticles, atsPerMol, spins, charges);

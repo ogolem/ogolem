@@ -79,6 +79,7 @@ public class MixedLJForceField implements CartesianFullBackend {
         final double[] eps = new double[iNoOfAtoms];
         final double[] sig = new double[iNoOfAtoms];
         for (int i = 0; i < iNoOfAtoms; i++) {
+            if(atomNos[i] == 0){continue;} // dummy
             eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
             sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
         }
@@ -94,6 +95,8 @@ public class MixedLJForceField implements CartesianFullBackend {
         final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
         for (int i = 0; i < firstLoopAtomNo; i++) {
 
+            if(atomNos[i] == 0){continue;} // dummy
+
             final double dEpsilon1 = eps[i];
             final double dSigma1 = sig[i];
             final double x0 = xyz1D[i];
@@ -101,6 +104,8 @@ public class MixedLJForceField implements CartesianFullBackend {
             final double z0 = xyz1D[i+2*iNoOfAtoms];
 
             for (int j = i + 1; j < iNoOfAtoms; j++) {
+
+                if(atomNos[j] == 0){continue;} // dummy
 
                 // the Lennard-Jones parameters, set two
                 final double dEpsilon2 = eps[j];
@@ -178,6 +183,7 @@ public class MixedLJForceField implements CartesianFullBackend {
         final double[] eps = new double[iNoOfAtoms];
         final double[] sig = new double[iNoOfAtoms];
         for (int i = 0; i < iNoOfAtoms; i++) {
+            if(atomNos[i] == 0){continue;} // dummy
             eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
             sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
         }
@@ -192,6 +198,8 @@ public class MixedLJForceField implements CartesianFullBackend {
         
         final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1: iNoOfAtoms-1;
         for (int i = 0; i < firstLoopAtomNo; i++) {
+
+            if(atomNos[i] == 0){continue;} // dummy
             
             // LJ parameters, set one. getting it here is of course faster
             final double dEpsilon1 = eps[i];
@@ -205,6 +213,8 @@ public class MixedLJForceField implements CartesianFullBackend {
             double gradZI = daGradientMat[2][i];
             
             for (int j = (i + 1); j < iNoOfAtoms; j++) {
+
+                if(atomNos[j] == 0){continue;} // dummy
 
                 // the Lennard-Jones parameters, set two
                 final double dEpsilon2 = eps[j];

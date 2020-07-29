@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2012-2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,34 +38,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import java.util.List;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
 
 /**
  * Implements a mutation operator which in essence is only a MC step.
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-07-19
  */
 public class MonteCarloMutation implements Serializable {
     
     private static final long serialVersionUID = (long) 20140327;
+    private static final boolean VERBOSE = false;
     
     private static final Lottery random = Lottery.getInstance();
     
-    public static Molecule mutate(final Molecule mol, final int mode, final double maxMove){
+    public static enum MOVEMODE{ALL, ONE, SOME, GAUSSIAN, ALLMOL, ONEMOL, SOMEMOL, GAUSSIANMOL};
+    
+    public static Molecule mutate(final Molecule mol, final MOVEMODE mode, final double maxMove,
+            final int gaussMax, final double gaussWidth){
+        
+        assert(maxMove > 0.0);
+        assert(gaussMax >= 0);
+        assert(gaussWidth > 0.0);
+        assert(mode != null);
         
         final CartesianCoordinates cartes = mol.getCartesians();
         final double[][] xyz = cartes.getAllXYZCoord();
         final boolean[][] constr = mol.getConstraints();
         
-        if(mode == 0){
-            moveOne(xyz,constr,maxMove);
-        } else if(mode == 1){
-            moveAll(xyz,constr,maxMove);
-        } else if(mode == 2){
-            moveSome(xyz,constr,maxMove);
-        } else{
-            System.err.println("ERROR: Unknown case in molecular MonteCarloMutation. Contact author(s)!");
+        switch (mode) {
+            case ONE:
+                moveOne(xyz,constr,maxMove);
+                break;
+            case ALL:
+                moveAll(xyz,constr,maxMove);
+                break;
+            case SOME:
+                moveSome(xyz,constr,maxMove);
+                break;
+            case GAUSSIAN:
+                moveGauss(xyz,constr,maxMove,gaussMax,gaussWidth);
+                break;
+            default:
+                System.err.println("ERROR: Unknown case in molecular MonteCarloMutation. Contact author(s)!");
+                break;
         }
         
         final Molecule molNew = new Molecule (cartes, mol.getMolPosition(), mol.getSID(),
@@ -74,26 +92,40 @@ public class MonteCarloMutation implements Serializable {
         return molNew;
     }
     
-    public static Geometry mutate(final Geometry g, final int mode, final double maxMove){
+    public static Geometry mutate(final Geometry g, final MOVEMODE mode, final double maxMove,
+            final int gaussMax, final double gaussWidth){
         
-        if(mode < 10){
+        assert(maxMove > 0.0);
+        assert(gaussMax > 0);
+        assert(gaussWidth > 0.0);
+        
+        if(mode == MOVEMODE.ALL || mode == MOVEMODE.ONE || mode == MOVEMODE.SOME || mode == MOVEMODE.GAUSSIAN){
             final CartesianCoordinates cartes = new CartesianCoordinates(g.getCartesians());
             final double[][] xyz = cartes.getAllXYZCoord();
             final boolean[][] constr = g.getAllConstraintsXYZ(false);
         
-            if(mode == 0){
-                moveOne(xyz,constr,maxMove);
-            } else if(mode == 1){
-                moveAll(xyz,constr,maxMove);
-            } else if(mode == 2){
-                moveSome(xyz,constr,maxMove);
-            } else{
-                System.err.println("ERROR: Unknown case in geometric MonteCarloMutation. Contact author(s)!");
+            switch (mode) {
+                case ONE:
+                    moveOne(xyz,constr,maxMove);
+                    break;
+                case ALL:
+                    moveAll(xyz,constr,maxMove);
+                    break;
+                case SOME:
+                    moveSome(xyz,constr,maxMove);
+                    break;
+                case GAUSSIAN:
+                    moveGauss(xyz,constr,maxMove,gaussMax,gaussWidth);
+                    break;
+                default:
+                    System.err.println("ERROR: Unknown case in geometric MonteCarloMutation. Contact author(s)!");
+                    break;
             }
             
-            final Geometry gNew = new Geometry(cartes, g.getID(), g.getNumberOfIndieParticles(),
-                cartes.getAllAtomsPerMol(), g.getAllFlexies(), g.getExplicitDoFs(), g.getAllConstraints(false),
-                g.getAllConstraintsXYZ(false), g.getSIDs(), g.getBondInfo().clone());
+            final Geometry gNew = new Geometry(g);
+            // we use this routine since it allows us to get above only the cartesians w/o environment and
+            // here update the coordinates without needing to consider environment
+            gNew.updateAllCoordinates(xyz);
 
             return gNew;
         } else {
@@ -101,14 +133,22 @@ public class MonteCarloMutation implements Serializable {
             final Geometry gNew = new Geometry(g);
             final boolean[] constr = g.getAllConstraints(false);
             
-            if(mode == 10){
-                moveOne(gNew,constr,maxMove);
-            } else if(mode == 11){
-                moveAll(gNew,constr,maxMove);
-            } else if(mode == 12){
-                moveSome(gNew,constr,maxMove);
-            } else{
-                System.err.println("ERROR: Unknown case in geometric MonteCarloMutation2. Contact author(s)!");
+            switch (mode) {
+                case ONEMOL:
+                    moveOne(gNew,constr,maxMove);
+                    break;
+                case ALLMOL:
+                    moveAll(gNew,constr,maxMove);
+                    break;
+                case SOMEMOL:
+                    moveSome(gNew,constr,maxMove);
+                    break;
+                case GAUSSIANMOL:
+                    moveGauss(gNew,constr,maxMove,gaussMax,gaussWidth);
+                    break;
+                default:
+                    System.err.println("ERROR: Unknown case in geometric MonteCarloMutation2. Contact author(s)!");
+                    break;
             }
             
             return gNew;
@@ -146,11 +186,37 @@ public class MonteCarloMutation implements Serializable {
         final double target = random.nextDouble();
         final double[] r = new double[3];
         
+        int countMoved = 0;
         for(int i = 0; i < xyz[0].length; i++){
             if((!constr[0][i] || !constr[1][i] || !constr[2][i]) && (target > random.nextDouble())){
                 randomizer(xyz,constr,maxMove,i,r);
+                countMoved++;
             }
         }
+        
+        if(VERBOSE){System.out.println("DEBUG: Moved " + countMoved + " atoms.");}
+    }
+    
+    private static void moveGauss(final double[][] xyz, final boolean[][] constr, final double maxMove, final int gaussMax, final double gaussWidth){
+
+        int nonConstr = 0;
+        for(int i = 0; i < xyz[0].length; i++){
+            if(!constr[0][i] || !constr[1][i] || !constr[2][i]) nonConstr++;
+        }
+        
+        final int noMove = (int) RandomUtils.gaussDoubleAroundVal(1, nonConstr, gaussWidth, gaussMax);
+        final List<Integer> move = RandomUtils.listOfPoints(noMove, nonConstr);
+        
+        int idx = 0;
+        final double[] r = new double[3];
+        for(int i = 0; i < xyz[0].length; i++){
+            if(!constr[0][i] || !constr[1][i] || !constr[2][i] && move.contains(idx)){
+                randomizer(xyz,constr,maxMove,i,r);
+                idx++;
+            }
+        }
+        
+        if(VERBOSE){System.out.println("DEBUG: Moved " + noMove + " atoms.");}
     }
     
     private static void moveOne(final Geometry g, final boolean[] constr, final double maxMove){
@@ -163,7 +229,7 @@ public class MonteCarloMutation implements Serializable {
         } while(cont);
         
         // move
-        final Molecule newMol = mutate(g.getMoleculeAtPosition(which), 2, maxMove);
+        final Molecule newMol = mutate(g.getMoleculeAtPosition(which), MOVEMODE.SOME, maxMove, 1, 1.0); // hardcoding is OK as we are not using the Gaussian mutation
         g.setMoleculeAtPosition(which, newMol);
     }
     
@@ -171,7 +237,7 @@ public class MonteCarloMutation implements Serializable {
         
         for(int i = 0; i < g.getNumberOfIndieParticles(); i++){
             if(!constr[i]){
-                final Molecule newMol = mutate(g.getMoleculeAtPosition(i), 2, maxMove);
+                final Molecule newMol = mutate(g.getMoleculeAtPosition(i), MOVEMODE.SOME, maxMove, 1, 1.0);
                 g.setMoleculeAtPosition(i, newMol);
             }
        }
@@ -180,12 +246,39 @@ public class MonteCarloMutation implements Serializable {
     private static void moveSome(final Geometry g, final boolean[] constr, final double maxMove){
 
         final double target = random.nextDouble();
+        
+        int countMoved = 0;
         for(int i = 0; i < g.getNumberOfIndieParticles(); i++){
             if(!constr[i] && (target > random.nextDouble())){
-                final Molecule newMol = mutate(g.getMoleculeAtPosition(i), 2, maxMove);
+                final Molecule newMol = mutate(g.getMoleculeAtPosition(i), MOVEMODE.SOME, maxMove, 1, 1.0);
                 g.setMoleculeAtPosition(i, newMol);
+                countMoved++;
             }
        }
+        
+        if(VERBOSE){System.out.println("DEBUG: Moved " + countMoved + " molecules.");}
+    }
+    
+    private static void moveGauss(final Geometry g, final boolean[] constr, final double maxMove, final int gaussMax, final double gaussWidth){
+
+        int nonConstr = 0;
+        for(int i = 0; i < constr.length; i++){
+            if(!constr[i])nonConstr++;
+        }
+        
+        final int noMove = (int) RandomUtils.gaussDoubleAroundVal(0, nonConstr, gaussWidth, gaussMax);
+        final List<Integer> move = RandomUtils.listOfPoints(noMove, nonConstr);
+        
+        int idx = 0;
+        for(int i = 0; i < g.getNumberOfIndieParticles(); i++){
+            if(!constr[i] && move.contains(idx)){
+                final Molecule newMol = mutate(g.getMoleculeAtPosition(i), MOVEMODE.SOME, maxMove, 1, 1.0);
+                g.setMoleculeAtPosition(i, newMol);
+                idx++;
+            }
+        }
+        
+        if(VERBOSE){System.out.println("DEBUG: Moved " + noMove + " molecules.");}
     }
     
     private static void randomizer(final double[][] xyz, final boolean[][] constr, final double maxMove, final int which, final double[] r){

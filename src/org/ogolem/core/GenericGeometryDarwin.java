@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,11 +48,11 @@ import org.ogolem.helpers.Tuple;
 /**
  * A generified (or de-generified?) Darwin implementation based off GenericAbstractDarwin.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-15
  */
 public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geometry> {
     
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200715;
     private final GenericCrossover<Double,Molecule> molXOver;
     private final GenericMutation<Double,Molecule> molMutation;
     private final double molXOverProb;
@@ -100,6 +100,7 @@ public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geomet
 
     @Override
     protected void postXOver(final Geometry individual1, final Geometry individual2, final long futureID) {
+        
         assert(individual1.isThereAFlexy() == individual2.isThereAFlexy());
         if(individual1.isThereAFlexy()){
             // we need to try molecular crossover
@@ -118,10 +119,14 @@ public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geomet
                 }
             }
         }
+        
+        assert(individual1.containsEnvironment() == individual2.containsEnvironment());
+        // currently, the x-over is handled in all the x-overs. kinda annoying but should work.
     }
 
     @Override
     protected void postMutation(final Geometry individual) {
+        
         if(individual.isThereAFlexy()){
             // we need to try molecular mutation
             for(int i = 0; i < individual.getNumberOfIndieParticles(); i++){
@@ -132,6 +137,11 @@ public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geomet
                     individual.setMoleculeAtPosition(i, mutated);
                 }
             }
+        }
+        
+        if(individual.containsEnvironment()){
+            // let's do some environment mutation (i.e., the connectors cluster to environment)
+            individual.mutateEnvironment();
         }
     }
 
