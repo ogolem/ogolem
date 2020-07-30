@@ -38,20 +38,30 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import java.util.Arrays;
+
 /**
  * This provides a backend for mixed atom type Lennard-Jones calculations.
  * Uses Lorentz-Berthelot combination rules.
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-07-19
  */
 public class MixedLJForceField implements CartesianFullBackend {
     
     // the ID
-    private static final long serialVersionUID = (long) 20200201;
+    private static final long serialVersionUID = (long) 20200719;
 
+    private final boolean cache;
+    private double[] eps;
+    private double[] sig;
+    
+    public MixedLJForceField(final boolean useCaching) {
+    	this.cache = useCaching;
+    }
+    
     @Override
     public MixedLJForceField clone(){
-        return new MixedLJForceField();
+        return new MixedLJForceField(cache);
     }
 
     @Override
@@ -67,7 +77,7 @@ public class MixedLJForceField implements CartesianFullBackend {
             final boolean hasRigidEnv) {
         
         // zero the partial contributions
-        for(int i = 0; i < energyparts.length; i++) energyparts[i] = 0.0;
+    	Arrays.fill(energyparts, 0.0);
 
         // some cutoff constants
         final double t1 = 1.0/0.64;
@@ -76,12 +86,14 @@ public class MixedLJForceField implements CartesianFullBackend {
         final double t112 = t1Hex*t1Hex;
         
         // get all LJ parameters in O(N)
-        final double[] eps = new double[iNoOfAtoms];
-        final double[] sig = new double[iNoOfAtoms];
-        for (int i = 0; i < iNoOfAtoms; i++) {
-            if(atomNos[i] == 0){continue;} // dummy
-            eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
-            sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
+        if (!cache || eps == null) {
+            eps = new double[iNoOfAtoms];
+            sig = new double[iNoOfAtoms];
+            for (int i = 0; i < iNoOfAtoms; i++) {
+                if(atomNos[i] == 0){continue;} // dummy
+                eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
+                sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
+            }
         }
         
         // get the squared distances between all atoms
@@ -167,7 +179,7 @@ public class MixedLJForceField implements CartesianFullBackend {
             final Gradient gradient, final boolean hasRigidEnv) {
 
         // zero the partial contributions
-        for(int i = 0; i < energyparts.length; i++) energyparts[i] = 0.0;
+    	Arrays.fill(energyparts, 0.0);
         
         // the matrix for the gradient
         gradient.zeroGradient();
@@ -180,12 +192,14 @@ public class MixedLJForceField implements CartesianFullBackend {
         final double t112 = t1Hex*t1Hex;
         
         // get all LJ parameters in O(N)
-        final double[] eps = new double[iNoOfAtoms];
-        final double[] sig = new double[iNoOfAtoms];
-        for (int i = 0; i < iNoOfAtoms; i++) {
-            if(atomNos[i] == 0){continue;} // dummy
-            eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
-            sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
+        if (!cache || eps == null) {
+            eps = new double[iNoOfAtoms];
+            sig = new double[iNoOfAtoms];
+            for (int i = 0; i < iNoOfAtoms; i++) {
+                if(atomNos[i] == 0){continue;} // dummy
+                eps[i] = AtomicProperties.giveLennardJonesEpsilon(saAtomTypes[i]);
+                sig[i] = AtomicProperties.giveLennardJonesSigma(saAtomTypes[i]);
+            }
         }
         
         // calculate all pair distances
