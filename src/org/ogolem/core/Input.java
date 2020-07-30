@@ -66,7 +66,7 @@ import org.ogolem.random.StandardRNG;
  * This invokes the IOHandler and checks the resulting array of Strings for
  * configuration options and configures a GlobalConfig object.
  * @author Johannes Dieterich
- * @version 2020-07-12
+ * @version 2020-07-21
  */
 public final class Input {
 
@@ -1669,7 +1669,7 @@ public final class Input {
 
                 if (molBlock.size() == 2 && molBlock.get(1).startsWith("BondMatrix=")) {
                     // try to parse the bond matrix
-                    final String pathToBonds = molBlock.get(1).substring(11).trim();
+                    final String pathToBonds = inputDir + File.separator + molBlock.get(1).substring(11).trim();
                     try {
                         if (pathToBonds.endsWith(".list")) {
                             final BondInfo bonds = readBondsListIn(pathToBonds, mc.noOfAtoms);
