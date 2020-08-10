@@ -50,7 +50,7 @@ import org.ogolem.random.StandardRNG;
 /**
  * Benchmark the Norway packing mutation/init for a LJ cluster.
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2020-08-09
  */
 class NorwayPackingLJBench implements SingleMicroBenchmark {
 
@@ -67,7 +67,7 @@ class NorwayPackingLJBench implements SingleMicroBenchmark {
         
         Lottery.setGenerator(new StandardRNG(RNGSEED));
 
-        this.norway = new NorwayGeometryMutation(CollisionDetection.CDTYPE.SIMPLEPAIRWISE, BLOWCOLL, BLOWDISS,
+        this.norway = new NorwayGeometryMutation(NorwayGeometryMutation.PACKDIM.THREED, CollisionDetection.CDTYPE.SIMPLEPAIRWISE, BLOWCOLL, BLOWDISS,
             DissociationDetection.DEFAULTDD, NorwayGeometryMutation.MUTMODE.ASCENDING);
 
         assert(noLJAtoms > 0);
