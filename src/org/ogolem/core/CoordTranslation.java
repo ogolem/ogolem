@@ -340,10 +340,12 @@ public final class CoordTranslation {
         
         assert(flexies != null);
         assert(sids != null);
-        assert(atsPerMol.length == sids.length);
+        if(!cartes.containsEnvironment()) {
+        	assert(atsPerMol.length == sids.length);
+        	assert(degreesOfFreedom.size() == cartes.getNoOfMolecules());
+        }
         assert(flexies.length == sids.length);
         assert(degreesOfFreedom != null);
-        assert(degreesOfFreedom.size() == cartes.getNoOfMolecules());
         
         final GeometryConfig gc = new GeometryConfig();
 

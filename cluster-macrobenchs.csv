@@ -1,6 +1,8 @@
 # cluster structure benchmarks
 # LJ38 - LBFGS
 examples/clusteropt/ar38 , ar38_sweden.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
+# LJ38 - LBFGS - seeded
+examples/clusteropt/ar38_seeded , ar38_sweden_seeded.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
 # LJ38 - FIRE
 examples/clusteropt/ar38_fire , ar38_fire.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
 # LJ55
@@ -20,3 +22,5 @@ examples/clusteropt/si6_swg , si6.ogo  , -1.025728, globmin.xyz , 1e-6 , 1e-4
 examples/clusteropt/co10_at_pd200 , co10_at_pd200.ogo , -0.10527158710675105 , globmin.xyz , 1e-6 , 1e-4
 # Xe7Ar7 cluster on a single layer Ar100 surface
 examples/clusteropt/xe7kr7_ar100_surface , xe7_kr7_ar100.ogo , -0.019833090090614337 , globmin.xyz , 1e-6 , 1e-4
+# Xe7Ar7 cluster on a single layer Ar100 surface (seeded)
+examples/clusteropt/xe7kr7_ar100_surface_seeded , xe7_kr7_ar100_seeded.ogo , -0.019833090090614337 , globmin.xyz , 1e-6 , 1e-4
