@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ package org.ogolem.core;
 /**
  * A simple, double matrix-backed implementation of the BondInfo interface.
  * @author Johannes Dieterich
- * @version 2016-02-24
+ * @version 2020-07-20
  */
 public class SimpleBondInfo extends AbstractBondInfo {
     
@@ -113,7 +113,7 @@ public class SimpleBondInfo extends AbstractBondInfo {
     public void setBond(final int atom1, final int atom2, final short bondType){
         this.bondTypes[atom1][atom2] = bondType;
         this.bondTypes[atom2][atom1] = bondType;
-        if(bondType > 0){
+        if(bondType != BondInfo.NOBOND){
             this.bonds[atom1][atom2] = true;
             this.bonds[atom2][atom1] = true;
         }

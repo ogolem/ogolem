@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2017, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,43 +49,43 @@ import org.ogolem.random.RandomUtils;
 /**
  * Holds as the father of all environments for the cluster.
  * @author Johannes Dieterich
- * @version 2017-01-01
+ * @version 2020-07-20
  */
-public final class SimpleEnvironment implements Environment{
+public class SimpleEnvironment implements Environment{
 
-    private static final long serialVersionUID = (long) 20170101;
-    private static final boolean DEBUG = false;
+    private static final long serialVersionUID = (long) 20200719;
+    protected static final boolean DEBUG = false;
     
     public static enum FITMODE{FULLEXTERNAL, LAYERONLY};
     
     public static final double THRESHENPOSSAME = 1e-6;
     
-    private final Lottery random;
+    protected final Lottery random;
     
-    private final BondInfo envBonds;
+    protected final BondInfo envBonds;
 
-    private final boolean flexySurface;
+    protected final boolean flexySurface;
 
     //TODO howto use this? and what is with a more fine-grained rigid-part?
-    private final List<Integer> listSecAtoms;
+    protected final List<Integer> listSecAtoms;
 
-    private final CollisionDetection.CDTYPE whichCollDetect;
+    protected final CollisionDetection.CDTYPE whichCollDetect;
 
-    private final double blowColl;
+    protected final double blowColl;
 
-    private final Atom[] referencePoints;
+    protected final Atom[] referencePoints;
 
-    private final CartesianCoordinates cartEnv;
+    protected final CartesianCoordinates cartEnv;
 
-    private double[] distanceCOMs;
+    protected double[] distanceCOMs;
 
-    private final double[] eulersToCluster;
+    protected final double[] eulersToCluster;
     
-    private final FITMODE mode;
+    protected final FITMODE mode;
     
-    private final ENVIRONMENTTYPE type;
+    protected final ENVIRONMENTTYPE type;
 
-    private final AllowedSpace space;
+    protected final AllowedSpace space;
     
     /**
      * The constructor for the initial creation.
@@ -116,9 +116,9 @@ public final class SimpleEnvironment implements Environment{
     * A standard copy constructor.
     * @param original
     */
-   private SimpleEnvironment(final SimpleEnvironment original){
-        this.cartEnv = new CartesianCoordinates(original.cartEnv);
-        this.envBonds = original.envBonds.clone();
+    protected SimpleEnvironment(final SimpleEnvironment original){
+        this.cartEnv = (original.flexySurface) ? new CartesianCoordinates(original.cartEnv) : original.cartEnv; // only need to copy for flexible surfaces, otherwise the Cartesian is frozen
+        this.envBonds = original.envBonds.shallowCopy(); // the bonds are effectively immutable, so this is allowed to safe on GC
         this.distanceCOMs = original.distanceCOMs.clone();
         this.eulersToCluster = (original.mode == FITMODE.LAYERONLY) ? null : original.eulersToCluster.clone();
         this.flexySurface = original.flexySurface;
@@ -156,20 +156,20 @@ public final class SimpleEnvironment implements Environment{
         }
 
         // marry them
-        final CartesianCoordinates married = marryThem(clusterCartes, clusterBonds).getObject1();
+        final CartesianCoordinates married = marryThem(clusterCartes);
         if(DEBUG){
             System.out.println("DEBUG: Married trial cartesian:");
             for(final String s : married.createPrintableCartesians()){
                 System.out.println(s);
             }
         }
-
+        
         // check for CD (no DD required)
         final CollisionDetection detect = new CollisionDetection(whichCollDetect);
 
         final BondInfo marriedBonds = this.marryBonds(clusterCartes.getNoOfAtoms(),
                 (clusterCartes.getNoOfAtoms()+cartEnv.getNoOfAtoms()));
-        final CollisionInfo info = detect.checkForCollision(married, blowColl, marriedBonds);
+        final boolean hasCollision = detect.checkOnlyForCollision(married, blowColl, marriedBonds);
         /*
          * important side-note: due to us actually *wanting* interactions between
          * the environment and the cluster, the blow factor above needs to be very
@@ -177,7 +177,7 @@ public final class SimpleEnvironment implements Environment{
          */
 
 
-        return !info.hasCollision();
+        return hasCollision;
     }
 
     @Override
@@ -186,6 +186,22 @@ public final class SimpleEnvironment implements Environment{
         if(clusterCartes.containsEnvironment()){
             System.err.println("ERROR: Cluster cartesian already contains an environment. This is a bug. Contact author(s).");
             return new Tuple<>(clusterCartes, clusterBonds);
+        }
+        
+        final CartesianCoordinates completeCartes = marryThem(clusterCartes);
+
+        final int iNoOfAtoms = clusterCartes.getNoOfAtoms() + cartEnv.getNoOfAtoms();
+        final BondInfo completeBonds = marryBonds(clusterBonds, clusterCartes.getNoOfAtoms(), iNoOfAtoms);
+        
+        return new Tuple<>(completeCartes, completeBonds);
+    }
+
+    @Override
+    public CartesianCoordinates marryThem(final CartesianCoordinates clusterCartes){
+
+        if(clusterCartes.containsEnvironment()){
+            System.err.println("ERROR: Cluster cartesian already contains an environment. This is a bug. Contact author(s).");
+            return clusterCartes;
         }
         
         /*
@@ -217,7 +233,7 @@ public final class SimpleEnvironment implements Environment{
         CartesianCoordinates completeCartes = new CartesianCoordinates(iNoOfAtoms, iNoOfMols, iaAtsPerMol);
 
         final double[][] xyzEnv = cartEnv.getAllXYZCoord();
-        final double[][] xyzComplete = new double[3][iNoOfAtoms];
+        final double[][] xyzComplete = completeCartes.getAllXYZCoord();
 
         // copy around a little
         System.arraycopy(xyzCluster[0], 0, xyzComplete[0], 0, xyzCluster[0].length);
@@ -227,30 +243,23 @@ public final class SimpleEnvironment implements Environment{
         System.arraycopy(xyzEnv[1], 0, xyzComplete[1], xyzCluster[0].length, xyzEnv[0].length);
         System.arraycopy(xyzEnv[2], 0, xyzComplete[2], xyzCluster[0].length, xyzEnv[0].length);
         
-        completeCartes.setAllXYZ(xyzComplete);
-
         // the atom types
-        final String[] saAtomsCompl = new String[iNoOfAtoms];
+        final String[] saAtomsCompl = completeCartes.getAllAtomTypes();
         final String[] saAtomsCluster = clusterCartes.getAllAtomTypes();
         final String[] saAtomsEnv = cartEnv.getAllAtomTypes();
 
         System.arraycopy(saAtomsCluster,0,saAtomsCompl,0,saAtomsCluster.length);
         System.arraycopy(saAtomsEnv,0,saAtomsCompl,saAtomsCluster.length,saAtomsEnv.length);
 
-        completeCartes.setAllAtomTypes(saAtomsCompl);
-        
         // spins and charges
-        final short[] iaSpinsCompl = new short[completeCartes.getNoOfAtoms()];
-        final float[] faChargesCompl = new float[completeCartes.getNoOfAtoms()];
+        final short[] iaSpinsCompl = completeCartes.getAllSpins();
+        final float[] faChargesCompl = completeCartes.getAllCharges();
 
         final short[] iaSpinsCluster = clusterCartes.getAllSpins();
         final float[] faChargesCluster = clusterCartes.getAllCharges();
 
         System.arraycopy(iaSpinsCluster, 0, iaSpinsCompl, 0, iaSpinsCluster.length);
         System.arraycopy(faChargesCluster, 0, faChargesCompl, 0, faChargesCluster.length);
-
-        completeCartes.setAllSpins(iaSpinsCompl);
-        completeCartes.setAllCharges(faChargesCompl);
 
         // zmats
         final ZMatrix[] allZmatsCluster = clusterCartes.getZMatrices();
@@ -269,12 +278,13 @@ public final class SimpleEnvironment implements Environment{
 
         // and of course we should also add a clone of this
         completeCartes.setRefEnvironment(clone());
-
-        final BondInfo completeBonds = marryBonds(clusterBonds, clusterCartes.getNoOfAtoms(), iNoOfAtoms);
         
-        return new Tuple<>(completeCartes, completeBonds);
-    }
+        // recalc atom numbers
+        completeCartes.recalcAtomNumbers();
 
+        return completeCartes;
+    }
+    
     @Override
     public CartesianCoordinates divorceThem(final CartesianCoordinates completeCartes){
         
@@ -395,16 +405,13 @@ public final class SimpleEnvironment implements Environment{
                 iaClusterAtsPerMol.length, iaClusterAtsPerMol);
 
         // the spins and charges
-        final short[] iaSpinsCluster = new short[iNoOfAtomsCluster];
-        final float[] faChargesCluster = new float[iNoOfAtomsCluster];
+        final short[] iaSpinsCluster = clusterCartes.getAllSpins();
+        final float[] faChargesCluster = clusterCartes.getAllCharges();
         final short[] iaSpinsCompl = completeCartes.getAllSpins();
         final float[] faChargesCompl = completeCartes.getAllCharges();
 
         System.arraycopy(iaSpinsCompl,0,iaSpinsCluster,0,iNoOfAtomsCluster);
         System.arraycopy(faChargesCompl,0,faChargesCluster,0,iNoOfAtomsCluster);
-
-        clusterCartes.setAllSpins(iaSpinsCluster);
-        clusterCartes.setAllCharges(faChargesCluster);
 
         // the zmats
         final ZMatrix[] allComplZmats = completeCartes.getZMatrices();
@@ -417,11 +424,10 @@ public final class SimpleEnvironment implements Environment{
         clusterCartes.setZMatrices(allClusterZmats);
 
         // coordinates and atom types
-        final String[] saAtomsCluster = new String[iNoOfAtomsCluster];
+        final String[] saAtomsCluster = clusterCartes.getAllAtomTypes();
         final String[] saAtomsComplete = completeCartes.getAllAtomTypes();
 
         System.arraycopy(saAtomsComplete,0,saAtomsCluster,0,iNoOfAtomsCluster);
-        clusterCartes.setAllAtomTypes(saAtomsCluster);
 
         final double[][] clusterCoords = clusterCartes.getAllXYZCoord();
         final double[][] completeCoords = completeCartes.getAllXYZCoord();
@@ -468,6 +474,7 @@ public final class SimpleEnvironment implements Environment{
     public void initializeConnections(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds){
 
         final CollisionDetection collDetect = new CollisionDetection(whichCollDetect);
+        final BondInfo marriedBonds = marryBonds(clusterCartes.getNoOfAtoms(), (clusterCartes.getNoOfAtoms()+cartEnv.getNoOfAtoms()));
 
         long emergCounter = 0;
         boolean hasColl;
@@ -484,13 +491,13 @@ public final class SimpleEnvironment implements Environment{
             distanceCOMs = space.getPointInSpace();
 
             // check for collisions. DO NOT check for collisions within cluster!
-            final CollisionInfo collInfo = collDetect.checkForCollision(marryThem(clusterCartes, clusterBonds).getObject1(), blowColl,
-                    marryBonds(clusterCartes.getNoOfAtoms(), (clusterCartes.getNoOfAtoms()+cartEnv.getNoOfAtoms())));
-            hasColl = collInfo.hasCollision();
+            final CartesianCoordinates c = marryThem(clusterCartes);
+            hasColl = collDetect.checkOnlyForCollision(c, blowColl, marriedBonds);
             emergCounter++;
             
             if(hasColl && DEBUG){
                 // get more info
+            	final CollisionInfo collInfo = collDetect.checkForCollision(c, blowColl, marriedBonds);
                 final List<Collision> colls = collInfo.getCollisions();
                 for(final Collision coll : colls){
                     System.out.println("DEBUG: Collision between " + coll.getAtomOne() + " and " + coll.getAtomTwo());
@@ -683,12 +690,13 @@ public final class SimpleEnvironment implements Environment{
      * @param noTotalAts the total number of atoms in the system
      * @return a bond info object useful for CD applications.
      */
-    private BondInfo marryBonds(final int noClusterAts, final int noTotalAts){
+    protected BondInfo marryBonds(final int noClusterAts, final int noTotalAts){
 
         final BondInfo bondsCompl = new SimpleBondInfo(noTotalAts);
 
         for(int i = 0; i < noClusterAts; i++){
             for(int j = 0; j < noClusterAts; j++){
+            	//XXX could be done with fill
                 // it doesn't matter, what we fill in here since it's not about these distances anyways (but there must be bonds)
                 bondsCompl.setBond(i, j, BondInfo.UNCERTAIN);
             }
@@ -696,7 +704,7 @@ public final class SimpleEnvironment implements Environment{
 
         for(int i = noClusterAts; i < noTotalAts; i++){
             for(int j = i; j < noTotalAts; j++){
-                if(envBonds.hasBond(i-noClusterAts, noClusterAts)){
+                if(envBonds.hasBond(i-noClusterAts, j-noClusterAts)){
                     final short bond = envBonds.bondType(i-noClusterAts, j-noClusterAts);
                     bondsCompl.setBond(i, j, bond);
                     bondsCompl.setBond(j, i, bond);
@@ -707,7 +715,7 @@ public final class SimpleEnvironment implements Environment{
         return bondsCompl;
     }
     
-    private BondInfo marryBonds(final BondInfo clusterBonds, final int noClusterAts, final int noTotalAts){
+    protected BondInfo marryBonds(final BondInfo clusterBonds, final int noClusterAts, final int noTotalAts){
 
         final BondInfo bondsCompl = new SimpleBondInfo(noTotalAts);
 
@@ -724,7 +732,7 @@ public final class SimpleEnvironment implements Environment{
 
         for(int i = noClusterAts; i < noTotalAts; i++){
             for(int j = i; j < noTotalAts; j++){
-                if(envBonds.hasBond(i-noClusterAts, noClusterAts)){
+                if(envBonds.hasBond(i-noClusterAts, j-noClusterAts)){
                     final short bond = envBonds.bondType(i-noClusterAts, j-noClusterAts);
                     bondsCompl.setBond(i, j, bond);
                     bondsCompl.setBond(j, i, bond);
@@ -735,7 +743,7 @@ public final class SimpleEnvironment implements Environment{
         return bondsCompl;
     }
     
-    private BondInfo divorceBonds(final BondInfo complete, final int noClusterAts){
+    protected BondInfo divorceBonds(final BondInfo complete, final int noClusterAts){
     
         final BondInfo clusterBonds = new SimpleBondInfo(noClusterAts);
         

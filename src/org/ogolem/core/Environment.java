@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010, J. M. Dieterich
-              2016-2017, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,8 @@ public interface Environment extends Cloneable, Serializable{
     boolean doesItFit(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
     Tuple<CartesianCoordinates, BondInfo> marryThem(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
+    
+    CartesianCoordinates marryThem(final CartesianCoordinates clusterCartes);
 
     CartesianCoordinates divorceThem(final CartesianCoordinates completeCartes);
 
