@@ -44,7 +44,7 @@ import org.ogolem.io.InputPrimitives;
 /**
  * Individual reader implementation for geometries.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-08-09
  */
 public class GeometryReader implements IndividualReader<Geometry>{
 
@@ -83,14 +83,14 @@ public class GeometryReader implements IndividualReader<Geometry>{
         
         // translate back...
         final GeometryConfig geoConf = individual.returnMyConfig();
-        final Geometry geom = CoordTranslation.cartesianToGeometry(cartes, cartes.getNoOfMolecules(),
+        final Geometry geom = CoordTranslation.cartesianToGeometry(cartes, geoConf.noOfParticles,
                 cartes.getAllAtomsPerMol(), individual.getAllFlexies(), individual.getExplicitDoFs(),
                 individual.getAllConstraints(true), individual.getAllConstraintsXYZ(true),
                 individual.getSIDs(), geoConf.bonds.clone());
         
         individual.setAllCOMs(geom.getAllCOMs());
         individual.setAllExtCoords(geom.getAllExtCoords());
-        for(int i = 0; i < cartes.getNoOfMolecules(); i++){
+        for(int i = 0; i < geoConf.noOfParticles; i++){
             final Molecule mol = geom.getMoleculeAtPosition(i);
             individual.setMoleculeAtPosition(i, new Molecule(mol));
         }
