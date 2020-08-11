@@ -49,7 +49,7 @@ import org.ogolem.random.RandomUtils;
 /**
  * Holds as the father of all environments for the cluster.
  * @author Johannes Dieterich
- * @version 2020-07-20
+ * @version 2020-08-10
  */
 public class SimpleEnvironment implements Environment{
 
@@ -176,8 +176,7 @@ public class SimpleEnvironment implements Environment{
          * small, below 1.0, to actually just alert *real* clashes.
          */
 
-
-        return hasCollision;
+        return !hasCollision;
     }
 
     @Override

@@ -53,12 +53,12 @@ import org.ogolem.properties.Property;
 /**
  * Provides global optimization of MOPAC parameters.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-29
  */
 public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Newton{
 
     // the ID
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200729;
 
     private static long noOfGeomLocalOpts = (long) 0;
     private static long noOfMolLocalOpts = (long) 0;
@@ -71,10 +71,13 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
 
     private final double blowBonds;
 
+    private final double blowBondsEnv;
+
     public AdaptiveMopacCaller(final boolean doSanityCheck, final boolean bAzobenzeneStyle,
-            final double blowFacBondDetect, final boolean inAdaptive){
+            final double blowFacBondDetect, final double blowFacClusterEnvClashDetect, final boolean inAdaptive){
         this.azoBenzene = bAzobenzeneStyle;
         this.blowBonds = blowFacBondDetect;
+        this.blowBondsEnv = blowFacClusterEnvClashDetect;
         this.doSanityCheck = doSanityCheck;
         if(!inAdaptive){
             final String sFile = "adaptive-mopac.param";
@@ -96,6 +99,7 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
         this.azoBenzene = orig.azoBenzene;
         this.doSanityCheck = orig.doSanityCheck;
         this.blowBonds = orig.blowBonds;
+        this.blowBondsEnv = orig.blowBondsEnv;
         this.parameters = (orig.parameters == null) ? null : orig.parameters.copy();
     }
 
@@ -143,7 +147,7 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
 
         if (doSanityCheck) {
             // check the cartesian for sanity
-            final boolean bSanity = GeometrySanityCheck.checkSanity(cartes, gStartGeom.getBondInfo(), blowBonds);
+            final boolean bSanity = GeometrySanityCheck.checkSanity(cartes, gStartGeom.getBondInfo(), blowBonds, blowBondsEnv);
 
             if (!bSanity) {
                 // something's wrong

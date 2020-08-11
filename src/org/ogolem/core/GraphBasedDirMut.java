@@ -1,6 +1,6 @@
 /**
 Copyright (c) 2013-2014, J. M. Dieterich and B. Hartke
-              2016-2017, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,11 +56,11 @@ import static org.ogolem.core.CoordTranslation.distance;
  * A directed mutation using a graph-based analysis of the cluster in question.
  * @author Johannes Dieterich
  * @author Bernd Hartke
- * @version 2017-03-03
+ * @version 2020-07-29
  */
 public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
     
-    private static final long serialVersionUID = (long) 20140525;
+    private static final long serialVersionUID = (long) 20200729;
     
     public static final double DEFAULTEULERINCR = Math.toRadians(30);
     public static final double DEFAULTGRIDINCR = 0.5*Constants.ANGTOBOHR;
@@ -75,6 +75,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
     private final double blowBonds;
     private final CollisionDetectionEngine collDetect;
     private final double blowColl;
+    private final double blowCollEnv;
     private final Newton newton;
     private final CartesianFullBackend back;
     private final double gridHalfLength;
@@ -94,6 +95,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
      * @param blowBonds the blow factor for the connectivity detection
      * @param collDetect the collision detection engine to be used
      * @param blowColl the blow factor for the collision detection
+     * @param blowCollEnv the blow factor for the collision detection for the environment (if there is one)
      * @param newton the local optimization engine (including a backend!) to be used
      * @param gridHalfLength the half length of the grid to be used
      * @param gridIncr the grid increment to be used
@@ -107,7 +109,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
      * @param fullyRelaxed do a fully relaxed locopt (only used if useOptApproach == true).
      */
     public GraphBasedDirMut(final double blowBonds, final CollisionDetectionEngine collDetect,
-            final double blowColl, final Newton newton, final double gridHalfLength,
+            final double blowColl, final double blowCollEnv, final Newton newton, final double gridHalfLength,
             final double gridIncr, final double eulerIncr, final boolean useGridApproach,
             final boolean useOptApproach, final double realCDBlow, final double realDDBlow,
             final boolean doLocOptFirst, final boolean fullyRelaxed,
@@ -116,6 +118,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
         this.blowBonds = blowBonds;
         this.collDetect = collDetect;
         this.blowColl = blowColl;
+        this.blowCollEnv = blowCollEnv;
         this.doLocOpt = doLocOptFirst;
         this.doCDFirst = doCDFirst;
         if(newton.getBackend() == null){
@@ -139,6 +142,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
         this.blowBonds = orig.blowBonds;
         this.collDetect = orig.collDetect.clone();
         this.blowColl = orig.blowColl;
+        this.blowCollEnv = orig.blowCollEnv;
         this.back = orig.back.clone();
         this.newton = orig.newton.clone();
         this.gridHalfLength = orig.gridHalfLength;
@@ -848,7 +852,7 @@ public class GraphBasedDirMut implements GenericMutation<Molecule,Geometry>{
             
             System.out.println("INFO: We found " + collCounter + " collisions in  " + tryCounter  + " tries.");
             // just for kicks, we are running CD/DD on the current work geometry
-            final GeometrySanityCheck sanity = new GeometrySanityCheck(realCD, realDD, true, true);
+            final GeometrySanityCheck sanity = new GeometrySanityCheck(realCD, blowCollEnv, realDD, true, true);
             
             final boolean isSane = sanity.isSane(work);
             if(!isSane){

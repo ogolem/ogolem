@@ -67,12 +67,12 @@ import org.ogolem.random.Lottery;
  * All configuration data needed for the program to run is in this class. It is
  * reusable for the "constructor madness". Default values are provided.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-29
  */
 public class GlobalConfig implements Configuration<Molecule,Geometry> {
 
     // the ID
-    private static final long serialVersionUID = (long) 20200425;
+    private static final long serialVersionUID = (long) 20200729;
 
     // the pool size: PoolSize=
     int poolSize = 100;
@@ -399,7 +399,7 @@ public class GlobalConfig implements Configuration<Molecule,Geometry> {
 
     /**
      * the blow factor for the environment fitting detection:
-     * TODO input keyword
+     * BlowEnvClusterClash=
      */
     double blowFacEnvClusterClashes = 0.8;
 
@@ -896,6 +896,10 @@ public class GlobalConfig implements Configuration<Molecule,Geometry> {
         
         final GeometryInitialization initer = new GeometryInit(whichInitialFill);
         final GenericFitnessFunction<Molecule,Geometry> fit = org.ogolem.core.FitnessFunctionFactory.build(this,(initNewton == null) ? refNewton : initNewton, fitnessFunctionConfig);
+
+        if(fit == null){
+            throw new RuntimeException("Fitness function not yet set!");
+        }
         
         final GeometryInitializationToGenericAdaptor adap = new GeometryInitializationToGenericAdaptor(initer,whichCollisionEngine,
                     whichDissociationEngine, maxCellSize.clone(),
@@ -1021,6 +1025,10 @@ public class GlobalConfig implements Configuration<Molecule,Geometry> {
     
     public double getBlowFacBondDetect() {
         return blowFacBondDetect;
+    }
+
+    public double getBlowFacClusterEnvClashDetect() {
+        return blowFacEnvClusterClashes;
     }
 
     public double getBlowFacDissocDetect() {

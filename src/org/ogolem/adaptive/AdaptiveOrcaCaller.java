@@ -57,7 +57,7 @@ import org.ogolem.properties.Property;
 public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements Newton{
 
     // the ID
-    private static final long serialVersionUID = (long) 20101108;
+    private static final long serialVersionUID = (long) 20160121;
     
     private static long noOfGeomLocalOpts = (long) 0;
     private static long noOfMolLocalOpts = (long) 0;
@@ -65,18 +65,22 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
     private AdaptiveParameters parameters = null;
 
     private final double dBlowBonds;
+    
+    private final double dBlowBondsEnv;
 
     private final boolean bDoSanityCheck;
 
-    public AdaptiveOrcaCaller(final double blowFacBondDetect, final boolean doSanityCheck){
+    public AdaptiveOrcaCaller(final double blowFacBondDetect, final double blowFacClusterEnvClashDetect, final boolean doSanityCheck){
         // TODO fix this!
         this.dBlowBonds = blowFacBondDetect;
+        this.dBlowBondsEnv = blowFacClusterEnvClashDetect;
         this.bDoSanityCheck = doSanityCheck;
     }
 
     private AdaptiveOrcaCaller(AdaptiveOrcaCaller orig){
         this.bDoSanityCheck = orig.bDoSanityCheck;
         this.dBlowBonds = orig.dBlowBonds;
+        this.dBlowBondsEnv = orig.dBlowBondsEnv;
     }
 
     @Override
@@ -135,7 +139,7 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
 
         if (bDoSanityCheck) {
             // check the cartesian for sanity
-            final boolean bSanity = GeometrySanityCheck.checkSanity(cartes, gStartGeom.getBondInfo(), dBlowBonds);
+            final boolean bSanity = GeometrySanityCheck.checkSanity(cartes, gStartGeom.getBondInfo(), dBlowBonds, dBlowBondsEnv);
 
             if (!bSanity) {
                 // something's wrong
