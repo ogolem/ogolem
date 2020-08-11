@@ -49,11 +49,13 @@ import org.ogolem.random.RandomUtils;
  * know from the 3D knappsack problem that one should arrange "big" molecules
  * first to have an optimal packing, we do exactly this.
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-08-09
  */
 public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry> {
 
-    private static final long serialVersionUID = (long) 20200201;
+    public static enum PACKDIM {TWOD, THREED};
+
+    private static final long serialVersionUID = (long) 20200809;
     private static final boolean DEBUG = false;
     
     private static final int FAILEDATTEMPTSTOINCR = 500;
@@ -69,10 +71,11 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     private final double blowDiss;
     private final DissociationDetection.DDTYPE whichDissDetect;
     private final MUTMODE mode;
-    
+    private final PACKDIM packdim;
+
     //TODO explicit DoF are not initialized
     
-    public NorwayGeometryMutation(final CollisionDetection.CDTYPE whichCollDetect, final double blowColl, final double blowDiss,
+    public NorwayGeometryMutation(final PACKDIM packdim, final CollisionDetection.CDTYPE whichCollDetect, final double blowColl, final double blowDiss,
             final DissociationDetection.DDTYPE whichDissDetect, final MUTMODE mode){
         
         assert(blowColl >= 0.0);
@@ -87,6 +90,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
         this.blowDiss = blowDiss;
         this.whichDissDetect = whichDissDetect;
         this.mode = mode;
+        this.packdim = packdim;
     }
     
     NorwayGeometryMutation(final NorwayGeometryMutation orig){
@@ -95,6 +99,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
         this.colldetect = orig.colldetect.clone();
         this.whichDissDetect = orig.whichDissDetect;
         this.mode = orig.mode;
+        this.packdim = orig.packdim;
     }
     
     @Override
@@ -104,7 +109,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
 
     @Override
     public String getMyID() {
-        return "NORWAY PACKING MUTATION";
+        return "NORWAY PACKING MUTATION " + packdim.name();
     }
 
     @Override
@@ -277,8 +282,9 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
                 
                 // set a random orientation
                 RandomUtils.randomEulers(gc.geomMCs.get(wherePlaced).externalOrient);
-                
-                for(int j = 0; j < 3; j++){
+               
+                final int end = (packdim == PACKDIM.THREED) ? 3 : 2; 
+                for(int j = 0; j < end; j++){
                     rndCOM[j] = random.nextDouble()*cellSize[j];
                     // get the sign
                     if(random.nextBoolean()){
@@ -291,7 +297,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
                 final double[] extCOM = gc.geomMCs.get(wherePlaced).externalCOM;
                 extCOM[0] = rndCOM[0];
                 extCOM[1] = rndCOM[1];
-                extCOM[2] = rndCOM[2];
+                extCOM[2] = (packdim == PACKDIM.THREED) ? rndCOM[2] : 0.0; /* keep it in x-y plane if not packing 3D */
                 
                 // get the cartesian of this mol and put it into the cache object
                 final Molecule mol = new Molecule(gc.geomMCs.get(wherePlaced));
@@ -340,7 +346,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
                 
                 if(countFailedAtt >= FAILEDATTEMPTSTOINCR){
                     // inflate cell
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < end; j++) {
                         final double incr = random.nextDouble()*INCRBOHR;
                         cellSize[j] += incr;
                         if(DEBUG){System.out.println("DEBUG: Incrementing cell size: " + j + " " + incr + " " + FAILEDATTEMPTSTOINCR + " " + countFailedAtt);}
@@ -392,10 +398,11 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
     private double[] returnInitialBoxSize(final CartesianCoordinates cartes){
 
         final double[][] coords = cartes.getAllXYZCoord();
-        final double[] box = new double[3];
+        final int end = (packdim == PACKDIM.THREED) ? 3 : 2;
+        final double[] box = new double[end];
 
         // find the max/min values and round them up
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < end; i++){
             // loop over the coordinates
             for(int j = 0; j < cartes.getNoOfAtoms(); j++){
                 // loop over the atoms
@@ -407,7 +414,7 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule,Geometry
         }
 
         // add something (up to INCRBOHR bohr) on top
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < end; i++){
             box[i] += random.nextDouble()*INCRBOHR;
         }
 

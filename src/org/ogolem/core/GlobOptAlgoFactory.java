@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2020-07-19
+ * @version 2020-08-09
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
@@ -954,7 +954,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                 }
             }
             
-            return new NorwayGeometryMutation(whichCollDetect,blowColl,blowDiss,whichDissDetect,mode);
+            return new NorwayGeometryMutation(NorwayGeometryMutation.PACKDIM.THREED, whichCollDetect, blowColl, blowDiss, whichDissDetect, mode);
         } else if(mutString.startsWith("norway2D:")){
             
             final String[] tokens = tokenizeThirdLevel(mutString.substring(7));
@@ -963,7 +963,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             double blowColl = globConf.blowFacBondDetect;
             CollisionDetection.CDTYPE whichCollDetect = globConf.getWhichCollisionEngine();
             DissociationDetection.DDTYPE whichDissDetect = globConf.whichDissociationEngine;
-            Norway2DGeometryMutation.MUTMODE mode = Norway2DGeometryMutation.MUTMODE.ASCENDING; // ascending by default
+            NorwayGeometryMutation.MUTMODE mode = NorwayGeometryMutation.MUTMODE.ASCENDING; // ascending by default
             for (final String token : tokens) {
                 if(token.startsWith("colldetect=")){
                     final String sub = stringToken("colldetect=",token);
@@ -978,11 +978,11 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                 } else if(token.startsWith("mode=")){
                     final String s = token.substring(5).trim();
                     if(s.equalsIgnoreCase("ascending")){
-                        mode = Norway2DGeometryMutation.MUTMODE.ASCENDING;
+                        mode = NorwayGeometryMutation.MUTMODE.ASCENDING;
                     } else if(s.equalsIgnoreCase("random")){
-                        mode = Norway2DGeometryMutation.MUTMODE.RANDOM;
+                        mode = NorwayGeometryMutation.MUTMODE.RANDOM;
                     } else if(s.equalsIgnoreCase("size")){
-                        mode = Norway2DGeometryMutation.MUTMODE.BYSIZE;
+                        mode = NorwayGeometryMutation.MUTMODE.BYSIZE;
                     } else{
                         throw new RuntimeException("Illegal mode " + mode + " for setting up 2D-norway.");
                     }
@@ -990,8 +990,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
                     throw new RuntimeException("Unknown token " + token + " in specialized mutation (2D-norway).");
                 }
             }
-            
-            return new Norway2DGeometryMutation(whichCollDetect,blowColl,blowDiss,whichDissDetect,mode);
+            return new NorwayGeometryMutation(NorwayGeometryMutation.PACKDIM.TWOD, whichCollDetect, blowColl, blowDiss, whichDissDetect, mode);
         } else if(mutString.startsWith("xchangemut:")){
             
             final String[] tokens = tokenizeThirdLevel(mutString.substring(11));

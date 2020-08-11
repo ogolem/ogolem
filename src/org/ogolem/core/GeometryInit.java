@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ package org.ogolem.core;
 /**
  * A decorator for the geometry initialization routines.
  * @author Johannes Dieterich
- * @version 2016-04-02
+ * @version 2020-08-09
  */
 public final class GeometryInit implements GeometryInitialization{
 
@@ -58,22 +58,22 @@ public final class GeometryInit implements GeometryInitialization{
 
         switch(whichInit){
             case PACKBYSIZE:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.BYSIZE);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.BYSIZE, NorwayGeometryMutation.PACKDIM.THREED);
                 break;
             case PACKRANDOMLY:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.RANDOM);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.RANDOM, NorwayGeometryMutation.PACKDIM.THREED);
                 break;
             case PACKASCENDING:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.THREED);
                 break;
             case LAYERPACKINGBYSIZE:
-                init = new PackingLayerInit(Norway2DGeometryMutation.MUTMODE.BYSIZE);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.BYSIZE, NorwayGeometryMutation.PACKDIM.TWOD);
                 break;
             case LAYERPACKINGRANDOMLY:
-                init = new PackingLayerInit(Norway2DGeometryMutation.MUTMODE.RANDOM);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.RANDOM, NorwayGeometryMutation.PACKDIM.TWOD);
                 break;
             case LAYERPACKINGASCENDING:
-                init = new PackingLayerInit(Norway2DGeometryMutation.MUTMODE.ASCENDING);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.TWOD);
                 break;
             case RANDOMWITHDD:
                 init = new RandomizedGeomInit(true);
@@ -84,7 +84,7 @@ public final class GeometryInit implements GeometryInitialization{
             default:
                 System.err.println("ERROR: No such initialization routine representing "
                         + whichInit.name() + " using packing without size consideration now.");
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING);
+                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.THREED);
                 break;
         }
     }

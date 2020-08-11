@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,16 +41,18 @@ package org.ogolem.core;
 /**
  * Packs the geometry for initialization.
  * @author Johannes Dieterich
- * @version 2015-07-19
+ * @version 2020-08-09
  */
 public final class PackingInit implements GeometryInitialization{
     
-    private static final long serialVersionUID = (long) 20150719;
+    private static final long serialVersionUID = (long) 20200809;
     
     private final NorwayGeometryMutation.MUTMODE packingMode;
+    private final NorwayGeometryMutation.PACKDIM packDim;
     
-    public PackingInit(final NorwayGeometryMutation.MUTMODE mode){
+    public PackingInit(final NorwayGeometryMutation.MUTMODE mode, final NorwayGeometryMutation.PACKDIM packDim){
         this.packingMode = mode;
+        this.packDim = packDim;
     }
 
     @Override
@@ -59,8 +61,8 @@ public final class PackingInit implements GeometryInitialization{
             final double blowDiss, final double blowColl, final float explDoFRatio,
             final boolean molecularCD){
 
-        final NorwayGeometryMutation norway = new NorwayGeometryMutation(whichCollDetect, blowColl, blowDiss,
-            whichDissocDetect,packingMode);
+        final NorwayGeometryMutation norway = new NorwayGeometryMutation(packDim, whichCollDetect, blowColl, blowDiss,
+            whichDissocDetect, packingMode);
         
         final Geometry packed = norway.mutate(geom);
         

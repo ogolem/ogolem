@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ import org.ogolem.random.StandardRNG;
 /**
 *
 * @author Johannes Dieterich
-* @version 2020-06-22
+* @version 2020-08-09
 */
 public class AdaptiveSWGFFTest {
 
@@ -102,7 +102,7 @@ public class AdaptiveSWGFFTest {
         cartes.recalcAtomNumbersForced();
 
         Lottery.setGenerator(new StandardRNG(142));
-        final NorwayGeometryMutation norway = new NorwayGeometryMutation(CollisionDetection.CDTYPE.SIMPLEPAIRWISE, 1.4, 4.0,
+        final NorwayGeometryMutation norway = new NorwayGeometryMutation(NorwayGeometryMutation.PACKDIM.THREED, CollisionDetection.CDTYPE.SIMPLEPAIRWISE, 1.4, 4.0,
                 DissociationDetection.DEFAULTDD, NorwayGeometryMutation.MUTMODE.ASCENDING);
         
         final Geometry geom = new Geometry(cartes, 0, noAtoms, atsPerMol, molFlexies, allFlexies, molConstraints,
@@ -171,7 +171,7 @@ public class AdaptiveSWGFFTest {
         cartes.recalcAtomNumbersForced();
 
         Lottery.setGenerator(new StandardRNG(141));
-        final NorwayGeometryMutation norway = new NorwayGeometryMutation(CollisionDetection.CDTYPE.SIMPLEPAIRWISE, 1.4, 4.0,
+        final NorwayGeometryMutation norway = new NorwayGeometryMutation(NorwayGeometryMutation.PACKDIM.THREED, CollisionDetection.CDTYPE.SIMPLEPAIRWISE, 1.4, 4.0,
                 DissociationDetection.DEFAULTDD, NorwayGeometryMutation.MUTMODE.ASCENDING);
         
         final Geometry geom = new Geometry(cartes, 0, noAtoms, atsPerMol, molFlexies, allFlexies, molConstraints,
