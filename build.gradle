@@ -98,7 +98,7 @@ shadowJar {
 }
 
 spotless {
-  ratchetFrom '6c84f98a'
+  ratchetFrom '00fb668'
   java {
     googleJavaFormat()
   }
