@@ -66,7 +66,7 @@ import org.ogolem.random.StandardRNG;
  * This invokes the IOHandler and checks the resulting array of Strings for
  * configuration options and configures a GlobalConfig object.
  * @author Johannes Dieterich
- * @version 2020-07-21
+ * @version 2020-07-29
  */
 public final class Input {
 
@@ -526,6 +526,14 @@ public final class Input {
                     globConf.blowFacInitialBondDetect = dBlowInitialBonds;
                 } catch (Exception e) {
                     System.err.println("Wrong input in BlowInitialBonds: " + e.toString() + " default used.");
+                }
+            } else if (line.startsWith("BlowEnvClusterClash=")) {
+                String sTemp2 = line.substring("BlowEnvClusterClash=".length()).trim();
+                try {
+                    final double d = Double.parseDouble(sTemp2);
+                    globConf.blowFacEnvClusterClashes = d;
+                } catch (Exception e) {
+                    System.err.println("Wrong input in BlowEnvClusterClash: " + e.toString() + " default used.");
                 }
             } else if (line.startsWith("OptimizationTarget=")){
                 globConf.fitnessFunctionConfig = line.substring(19).trim();
@@ -1477,7 +1485,7 @@ public final class Input {
         }
         
         final GenericSanityCheck<Molecule,Geometry> sanity = new GeometrySanityCheck(globConf.blowFacBondDetect,
-            globConf.blowFacDissocDetect, globConf.doPreCD, globConf.doPreDD);
+            globConf.blowFacEnvClusterClashes, globConf.blowFacDissocDetect, globConf.doPreCD, globConf.doPreDD);
         final IndividualWriter<Geometry> writer = new GeometryWriter(globConf.geomDumpFolder);
         final double crossPoss = globConf.crossPossibility;
         final double mutPoss = globConf.mutatePossibility;

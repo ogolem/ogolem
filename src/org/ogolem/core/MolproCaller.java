@@ -1,7 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2017, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,12 +44,12 @@ import org.ogolem.io.OutputPrimitives;
  * This calls MOLPRO for energy and/or gradient calculation as well as local optimizations using
  * the famous MOLPRO optimizer.
  * @author Johannes Dieterich
- * @version 2017-03-03
+ * @version 2020-07-29
  */
 final class MolproCaller implements CartesianFullBackend, Newton{
 
     // the ID
-    private static final long serialVersionUID = (long) 20120810;
+    private static final long serialVersionUID = (long) 20200729;
     
     static enum METHOD{AM1,HFVDZ,B86VDZ,MP2AVTZ,CUSTOM,CUSTOMNOLOCOPT};
     
@@ -70,6 +70,8 @@ final class MolproCaller implements CartesianFullBackend, Newton{
     private final String sCustomInp;
 
     private double dBlowBonds;
+
+    private double dBlowBondsEnv;
 
     private boolean bDoSanityCheck;
 
@@ -99,12 +101,14 @@ final class MolproCaller implements CartesianFullBackend, Newton{
 
         this.whichMethod = whichMethod;
         this.dBlowBonds = globconf.blowFacBondDetect;
+        this.dBlowBondsEnv = globconf.blowFacEnvClusterClashes;
         this.bDoSanityCheck = globconf.doPostSanityCheck;
     }
 
     private MolproCaller(final MolproCaller orig){
         this.whichMethod = orig.whichMethod;
         this.dBlowBonds = orig.dBlowBonds;
+        this.dBlowBondsEnv = orig.dBlowBondsEnv;
         this.bDoSanityCheck = orig.bDoSanityCheck;
         if(orig.sCustomInp != null){
             this.sCustomInp = orig.sCustomInp;
@@ -361,7 +365,7 @@ final class MolproCaller implements CartesianFullBackend, Newton{
 
         if (bDoSanityCheck) {
             // check the cartesian for sanity
-            final boolean bSanity = GeometrySanityCheck.checkSanity(cartes, gStartGeom.getBondInfo(), dBlowBonds);
+            final boolean bSanity = GeometrySanityCheck.checkSanity(cartes, gStartGeom.getBondInfo(), dBlowBonds, dBlowBondsEnv);
 
             if (!bSanity) {
                 // something's wrong

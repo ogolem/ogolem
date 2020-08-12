@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory to build the global optimization from input.
  * @author Johannes Dieterich
- * @version 2020-08-09
+ * @version 2020-08-10
  */
 public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecule,Geometry>{
     
@@ -1062,7 +1062,7 @@ public class GlobOptAlgoFactory extends GenericGlobalOptimizationFactory<Molecul
             }
             
             final CollisionDetectionEngine collDetect = new CollisionDetection(whichCollDetect);
-            return new GraphBasedDirMut(blowBonds, collDetect, blowColl, globConf.getRefNewton(),
+            return new GraphBasedDirMut(blowBonds, collDetect, blowColl, globConf.blowFacEnvClusterClashes, globConf.getRefNewton(),
                 gridHalfLength, gridIncr,eulerIncr,useGridApproach, useOptApproach,
                 globConf.blowFacBondDetect, globConf.blowFacDissocDetect, doLocOpt,
                 fullyRelaxed, doCDFirst);

@@ -41,11 +41,11 @@ package org.ogolem.core;
  * A blueprint for all local optimization implementations.
  * Should be extended and overidden upon demand.
  * @author Johannes Dieterich
- * @version 2016-09-03
+ * @version 2020-07-29
  */
 public abstract class AbstractLocOpt implements Newton{
     
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20200729;
     protected final boolean DEBUG;
     private static long noOfGeomLocalOpts = (long) 0;
     private static long noOfMolLocalOpts = (long) 0;
@@ -53,6 +53,7 @@ public abstract class AbstractLocOpt implements Newton{
     protected final boolean doCollDetect;
     protected final boolean doDissDetect;
     protected final double blowBonds;
+    protected final double blowBondsEnv;
     protected final double blowDissoc;
     
     /**
@@ -63,6 +64,7 @@ public abstract class AbstractLocOpt implements Newton{
         this.doSanityCheck = conf.doPostSanityCheck;
         this.doCollDetect = conf.doPostCD; 
         this.blowBonds = conf.blowFacBondDetect;
+        this.blowBondsEnv = conf.blowFacEnvClusterClashes;
         this.doDissDetect = conf.doPostDD;
         this.blowDissoc = conf.blowFacDissocDetect;
         this.DEBUG = (GlobalConfig.DEBUGLEVEL > 0);
@@ -71,6 +73,7 @@ public abstract class AbstractLocOpt implements Newton{
     public AbstractLocOpt(final AbstractLocOpt orig){
         this.doSanityCheck = orig.doSanityCheck;
         this.blowBonds = orig.blowBonds;
+        this.blowBondsEnv = orig.blowBondsEnv;
         this.doCollDetect = orig.doCollDetect;
         this.doDissDetect = orig.doDissDetect;
         this.blowDissoc = orig.blowDissoc;
@@ -128,7 +131,7 @@ public abstract class AbstractLocOpt implements Newton{
 
         if (doSanityCheck) {
             // check the cartesian for sanity, also check potentially for collisions
-            final boolean sanity = GeometrySanityCheck.checkSanity(cartes, gStart.getBondInfo(), blowBonds, doCollDetect, doDissDetect, blowDissoc);
+            final boolean sanity = GeometrySanityCheck.checkSanity(cartes, gStart.getBondInfo(), blowBonds, blowBondsEnv, doCollDetect, doDissDetect, blowDissoc);
 
             if (!sanity) {
                 // something's insane ;-)

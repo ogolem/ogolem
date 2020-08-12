@@ -1,6 +1,7 @@
 /**
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,20 +43,22 @@ import org.ogolem.generic.GenericSanityCheck;
 /**
  * Checks a given geometry for post-local-optimization-sanity.
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2016-09-05
  */
 public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Geometry>{
 
-    private static final long serialVersionUID = (long) 20140401;
+    private static final long serialVersionUID = (long) 20160121;
     private static final boolean DEBUG = false;
     private final double blowBonds;
+    private final double blowBondsEnv;
     private final boolean checkCollisions;
     private final boolean doDD;
     private final double blowDiss;
     
-    public GeometrySanityCheck(final double blowBonds, final double blowDiss, final boolean checkColl,
+    public GeometrySanityCheck(final double blowBonds, final double blowBondsEnv, final double blowDiss, final boolean checkColl,
             final boolean doDD){
         this.blowBonds = blowBonds;
+        this.blowBondsEnv = blowBondsEnv;
         this.blowDiss = blowDiss;
         this.checkCollisions = checkColl;
         this.doDD = doDD;
@@ -63,6 +66,7 @@ public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Ge
     
     GeometrySanityCheck(final GeometrySanityCheck orig){
         this.blowBonds = orig.blowBonds;
+        this.blowBondsEnv = orig.blowBondsEnv;
         this.blowDiss = orig.blowDiss;
         this.doDD = orig.doDD;
         this.checkCollisions = orig.checkCollisions;
@@ -76,10 +80,16 @@ public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Ge
     @Override
     public boolean isSane(final Geometry individual) {
         
-        final CartesianCoordinates cartes = individual.getCartesians();
+        final CartesianCoordinates cartes = (individual.containsEnvironment()) ? individual.getCartesiansWithEnvironment() : individual.getCartesians();
         final BondInfo bonds = individual.getBondInfo();
         
-        return checkSanity(cartes, bonds, blowBonds, checkCollisions, doDD, blowDiss);
+        if(individual.containsEnvironment()){
+            if(!individual.doesFitWithEnvironment()){
+                return false;
+            }
+        }
+        
+        return checkSanity(cartes, bonds, blowBonds, blowBondsEnv, checkCollisions, doDD, blowDiss);
     }
 
     
@@ -91,12 +101,13 @@ public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Ge
      * @param cartes A cartesian.
      * @param bonds The bonds in this cartesian.
      * @param blowBonds A blow factor.
+     * @param blowBondsEnv  A blow factor w.r.t. cluster/environment clashes (if there is one)
      * @return true if all bonds still exist, false otherwise.
      */
     public static boolean checkSanity(final CartesianCoordinates cartes, final BondInfo bonds,
-            final double blowBonds){
+            final double blowBonds, final double blowBondsEnv){
         
-        return checkSanity(cartes, bonds, blowBonds, false, false, 4.0);
+        return checkSanity(cartes, bonds, blowBonds, blowBondsEnv, false, false, 4.0);
     }
 
     /**
@@ -108,13 +119,19 @@ public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Ge
      * @param bonds The bonds in this cartesian
      * @param doDD do dissociation detection?
      * @param blowBonds A blow factor.
+     * @param blowBondsEnv A blow factor w.r.t. cluster/environment clashes (if there is one)
      * @param checkCollisions If also collisions shall be checked.
      * @param blowDiss A blow factor for the dissociation check.
      * @return true if all bonds still exist, false otherwise.
      */
     public static boolean checkSanity(final CartesianCoordinates cartes, final BondInfo bonds,
-            final double blowBonds, final boolean checkCollisions, final boolean doDD,
+            final double blowBonds, final double blowBondsEnv, final boolean checkCollisions, final boolean doDD,
             final double blowDiss){
+        
+        if(!checkCollisions && !doDD){
+            // we are doing neither: do not waste time in here.
+            return true;
+        }
         
         if(DEBUG){
             System.out.println("DEBUG: Sanity check working on the following cartesian...");
@@ -123,23 +140,33 @@ public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Ge
                 System.out.println(s);
             }
         }
-
+        
         // see above why we use the bond lengths
-        final int noOfAtoms = cartes.getNoOfAtoms();
+        final int noEnvAtoms = (cartes.containsEnvironment()) ? cartes.getReferenceEnvironmentCopy().atomsInEnv() : 0;
+        final int noOfAtomsCluster = cartes.getNoOfAtoms()-noEnvAtoms;
         final short[] nos = cartes.getAllAtomNumbers();
         final double[][] xyz = cartes.getAllXYZCoord();
-        final boolean[][] adjacency = (!doDD) ? null : new boolean[noOfAtoms][noOfAtoms];
+        final boolean[][] adjacency = (!doDD) ? null : new boolean[noOfAtomsCluster][noOfAtomsCluster];
+
+        final double[] radiiCluster = new double[noOfAtomsCluster];
+        for(int i = 0; i < noOfAtomsCluster; i++){
+            radiiCluster[i] = AtomicProperties.giveRadius(nos[i]);
+        }
         
-        for(int i = 0; i < noOfAtoms-1; i++){
-            final double rad1 = AtomicProperties.giveRadius(nos[i]);
-            for(int j = i+1; j < noOfAtoms; j++){
-                final double rad2 = AtomicProperties.giveRadius(nos[j]);
+        // first check CD within the cluster
+        for(int i = 0; i < noOfAtomsCluster-1; i++){
+            final double rad1 = radiiCluster[i];
+            final double x0 = xyz[0][i];
+            final double y0 = xyz[1][i];
+            final double z0 = xyz[2][i];
+            for(int j = i+1; j < noOfAtomsCluster; j++){
+                final double rad2 = radiiCluster[j];
                 final double radii = blowBonds*(rad1+rad2);
                 final double radiiSq = radii*radii;
                 
-                final double distX = xyz[0][i]-xyz[0][j];
-                final double distY = xyz[1][i]-xyz[1][j];
-                final double distZ = xyz[2][i]-xyz[2][j];
+                final double distX = x0-xyz[0][j];
+                final double distY = y0-xyz[1][j];
+                final double distZ = z0-xyz[2][j];
                 
                 final double distSq = distX*distX + distY*distY + distZ*distZ;
                 final boolean bond = bonds.hasBond(i, j);
@@ -174,11 +201,48 @@ public final class GeometrySanityCheck implements GenericSanityCheck<Molecule,Ge
             }
         }
         
+        // then the same for cluster -> env (NOT within env!)
+        if(checkCollisions && noEnvAtoms > 0){
+
+            final double[] radiiEnv = new double[noEnvAtoms];
+            for(int j = 0; j < noEnvAtoms; j++){
+                radiiEnv[j] = AtomicProperties.giveRadius(nos[noOfAtomsCluster+j]);
+            }
+
+            for(int i = 0; i < noOfAtomsCluster; i++){
+                final double rad1 = radiiCluster[i];
+                final double x0 = xyz[0][i];
+                final double y0 = xyz[1][i];
+                final double z0 = xyz[2][i];
+                for(int j = 0; j < noEnvAtoms; j++){
+                    final double rad2 = radiiEnv[j];
+                    final double radii = blowBondsEnv*(rad1+rad2);
+                    final double radiiSq = radii*radii;
+                
+                    final double distX = x0-xyz[0][noOfAtomsCluster+j];
+                    final double distY = y0-xyz[1][noOfAtomsCluster+j];
+                    final double distZ = z0-xyz[2][noOfAtomsCluster+j];
+                
+                    final double distSq = distX*distX + distY*distY + distZ*distZ;
+                
+                    // by definition, there are no *actual* bonds defined between cluster and env
+                    if(distSq < radiiSq){
+                        // there is a clash
+                        if(DEBUG) {
+                            System.out.println("DEBUG: Backing out because of a clash. " + i + "\t" + j);
+                            System.out.println("DEBUG: dist " + Math.sqrt(distSq) + " smaller than " + radii);
+                        }
+                        return false;
+                    }
+                }
+            }
+        }
+        
         if (!doDD) {
             return true;
         }
         
-        // check for DD using DFS
+        // check for DD using DFS (only within the cluster, not w.r.t. any potential environment)
         final boolean isConnected = DistanceCalc.dfsReachability(adjacency);
         if(DEBUG){
             if(!isConnected){System.out.println("DEBUG: Cluster is not connected.");}

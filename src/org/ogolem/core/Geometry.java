@@ -51,7 +51,7 @@ import org.ogolem.random.Lottery;
  * It needs to provide a lot of states, getters and setters
  * as well as methods.
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-29
  */
 public class Geometry extends ContinuousProblem<Molecule> {
 	
@@ -62,7 +62,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
      * Whenever something changes in this class, increment the serialVersionUID field.
      * AND: Nasty errors when sucking in old serialized objects may follow otherwise.
      */
-    private static final long serialVersionUID = (long) 20200429;
+    private static final long serialVersionUID = (long) 20200729;
 
     // a boolean saying whether or not it is already locally optimized
     private boolean isLocOptimized = false;
@@ -320,6 +320,10 @@ public class Geometry extends ContinuousProblem<Molecule> {
     /*
      * Methods
      */
+    /**
+     * Return the number of atoms in the cluster.
+     * @return number of atoms in the cluster, DOES NOT contain environment atoms
+     */
     public int getNumberOfAtoms(){
         
         int noOfAtoms = 0;
@@ -412,7 +416,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
      * @throws Exception an exception in case that no solution could be found within the number of steps
      */
     void setRandomOrientationOfMolecules(final CollisionDetection.CDTYPE whichCollDetect, final DissociationDetection.DDTYPE whichDissDetect,
-            final double blowDissDetect, final double blowBonds, final int emergency) throws Exception{
+            final double blowDissDetect, final double blowBonds, final double blowEnvClusterEnvClash, final int emergency) throws Exception{
 
         boolean repeat = true;
         int counter = 0;
@@ -425,7 +429,7 @@ public class Geometry extends ContinuousProblem<Molecule> {
             
             // check sanity
             final CartesianCoordinates cartes = getCartesians();
-            boolean sanity = GeometrySanityCheck.checkSanity(cartes, bonds, blowBonds);
+            boolean sanity = GeometrySanityCheck.checkSanity(cartes, bonds, blowBonds, blowEnvClusterEnvClash);
             if(!sanity){
                 continue;
             }

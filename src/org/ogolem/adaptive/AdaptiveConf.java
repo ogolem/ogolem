@@ -99,7 +99,7 @@ import org.ogolem.properties.StressTensor;
 /**
  * A configuration object for the adaptive package.
  * @author Johannes Dieterich
- * @version 2020-07-25
+ * @version 2020-07-29
  */
 public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
     
@@ -852,25 +852,25 @@ public class AdaptiveConf implements Configuration<Double,AdaptiveParameters> {
             String sTemp = s.substring(5).trim();
             sWhichMethod = sTemp;
             if (sWhichMethod.equalsIgnoreCase("AM1")) {
-                adapt = new AdaptiveOrcaCaller(globConf.getBlowFacBondDetect(), false);
+                adapt = new AdaptiveOrcaCaller(globConf.getBlowFacBondDetect(), globConf.getBlowFacClusterEnvClashDetect(), false);
             } else {
                 System.err.println("WARNING: No valid adaptivable choice found in selection orca."
                         + "Using orca:am1 instead.");
                 sWhichMethod = "AM1";
-                adapt = new AdaptiveOrcaCaller(globConf.getBlowFacBondDetect(), false);
+                adapt = new AdaptiveOrcaCaller(globConf.getBlowFacBondDetect(), globConf.getBlowFacClusterEnvClashDetect(), false);
             }
         } else if (s.startsWith("mopac:")) {
             String sTemp = s.substring(6).trim();
             sWhichMethod = sTemp;
             if (sWhichMethod.equalsIgnoreCase("AM1")) {
-                adapt = new AdaptiveMopacCaller(true,false, globConf.getBlowFacBondDetect(), true);
+                adapt = new AdaptiveMopacCaller(true,false, globConf.getBlowFacBondDetect(), globConf.getBlowFacClusterEnvClashDetect(), true);
             } else if (sWhichMethod.equalsIgnoreCase("azobenzene")) {
-                adapt = new AdaptiveMopacCaller(true,true, globConf.getBlowFacBondDetect(), true);
+                adapt = new AdaptiveMopacCaller(true,true, globConf.getBlowFacBondDetect(), globConf.getBlowFacClusterEnvClashDetect(), true);
             } else {
                 System.err.println("WARNING: No valid adaptivable choice found in selection mopac."
                         + "Using Mopac:am1 instead.");
                 sWhichMethod = "AM1";
-                adapt = new AdaptiveMopacCaller(true,false, globConf.getBlowFacBondDetect(), true);
+                adapt = new AdaptiveMopacCaller(true,false, globConf.getBlowFacBondDetect(), globConf.getBlowFacClusterEnvClashDetect(), true);
             }
         } else if (s.equalsIgnoreCase("adaptiveUFF")) {
             sWhichMethod = "AdaptiveUFF";
