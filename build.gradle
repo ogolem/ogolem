@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-  implementation name: 'atomdroid-1.0.0'
+  implementation name: 'atomdroid-1.1.0'
   implementation name: 'corrmd'
   implementation name: 'evbqmdff'
   implementation name: 'lionbench'
