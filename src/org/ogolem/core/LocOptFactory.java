@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import java.io.File;
 import java.util.HashMap;
 import org.ogolem.adaptive.AdaptiveParameters;
 import org.ogolem.generic.GenericBackend;
@@ -230,7 +231,7 @@ public class LocOptFactory extends AbstractLocOptFactory<Molecule, Geometry> {
       XTBCaller.METHOD meth = XTBCaller.METHOD.GFN2XTB;
       XTBCaller.OPTLEVEL opt = XTBCaller.OPTLEVEL.NORMAL;
       boolean setEnvironment = true;
-      String xControlFile = null;
+      String xControlFileName = null;
 
       final String[] spl = inputOpts.split("\\,");
       for (final String s : spl) {
@@ -268,13 +269,18 @@ public class LocOptFactory extends AbstractLocOptFactory<Molecule, Geometry> {
           setEnvironment = false;
         } else if (s.trim().startsWith("xcontrol=")) {
           final String x = s.trim().substring("xcontrol=".length()).trim();
-          xControlFile = x;
+          xControlFileName = x;
+          final File xControlFile = new File(xControlFileName);
+          if (!xControlFile.isFile() || !xControlFile.canRead()) {
+            throw new RuntimeException(
+                "xcontrol file " + xControlFileName + " not found by XTB caller");
+          }
         } else {
           throw new RuntimeException("Illegal XTB option " + s);
         }
       }
 
-      newton = new XTBCaller(config, meth, opt, setEnvironment, xControlFile);
+      newton = new XTBCaller(config, meth, opt, setEnvironment, xControlFileName);
     } else if (locOptString.startsWith("molpro:")) {
       String sTemp3 = locOptString.substring(7).trim();
       if (sTemp3.equalsIgnoreCase("am1/vdz") || sTemp3.equalsIgnoreCase("am1")) {
