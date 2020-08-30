@@ -93,13 +93,15 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
   private final String[] xtbOtherOptions;
   private final boolean setEnvironment;
   private final String xControlFileOrig;
+  private final boolean forceDelete;
 
   public XTBCaller(
       final GlobalConfig globconf,
       final METHOD method,
       final OPTLEVEL level,
       final boolean setEnvironment,
-      final String xControlFileOrig)
+      final String xControlFileOrig,
+      final boolean forceDelete)
       throws Exception {
     super(globconf);
 
@@ -161,6 +163,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     this.xtbOtherOptions = (otherOpts == null) ? null : otherOpts.split("\\s+");
     this.setEnvironment = setEnvironment;
     this.xControlFileOrig = xControlFileOrig;
+    this.forceDelete = forceDelete;
   }
 
   private XTBCaller(final XTBCaller orig) {
@@ -172,6 +175,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     this.xtbOtherOptions = orig.xtbOtherOptions;
     this.setEnvironment = orig.setEnvironment;
     this.xControlFileOrig = orig.xControlFileOrig;
+    this.forceDelete = orig.forceDelete;
   }
 
   @Override
@@ -274,10 +278,18 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     // any error???
     final int errCode = proc.waitFor();
     if (errCode != 0) {
+      if (forceDelete) {
+        ManipulationPrimitives.remove(dirName);
+        System.err.println("WARNING in XTB caller: removing subdir despite nonzero return code");
+      }
       throw new Exception(
           "xtb returns non-zero return value (local optimization). Error code " + errCode);
     }
     if (!new File(dirName + File.separator + ".xtboptok").isFile()) {
+      if (forceDelete) {
+        ManipulationPrimitives.remove(dirName);
+        System.err.println("WARNING in XTB caller: removing subdir despite non-converged locopt");
+      }
       throw new Exception("xtb locopt had problems.");
     }
     // cmd should(!) have completed normally...
