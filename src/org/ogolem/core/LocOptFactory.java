@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import java.io.File
 import java.util.HashMap;
 import org.ogolem.adaptive.AdaptiveParameters;
 import org.ogolem.generic.GenericBackend;
