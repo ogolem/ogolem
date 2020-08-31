@@ -19,7 +19,7 @@ examples/clusteropt/au10 , au10_gfn1_xtb.ogo , -39.8054548 , globmin_gfn1xtb.xyz
 # Si6 - SWGFF
 examples/clusteropt/si6_swg , si6.ogo  , -1.025728, globmin.xyz , 1e-6 , 1e-4
 # CO10 on Pd100 surface
-examples/clusteropt/co10_at_pd200 , co10_at_pd200.ogo , -0.10527158710675105 , globmin.xyz , 7e-6 , 1e-4
+examples/clusteropt/co10_at_pd200 , co10_at_pd200.ogo , -0.019703062666414292 , globmin.xyz , 7e-6 , 1e-4
 # Xe7Ar7 cluster on a single layer Ar100 surface
 examples/clusteropt/xe7kr7_ar100_surface , xe7_kr7_ar100.ogo , -0.019833090090614337 , globmin.xyz , 1e-6 , 1e-4
 # Xe7Ar7 cluster on a single layer Ar100 surface (seeded)
