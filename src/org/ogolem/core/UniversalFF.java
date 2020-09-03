@@ -44,12 +44,12 @@ import de.gwdg.rmata.atomdroiduff.AtomdroidUFF;
  * Provides energy and gradient calculated using a very simple UFF approach.
  *
  * @author Johannes Dieterich
- * @version 2020-08-92
+ * @version 2020-08-30
  */
 public class UniversalFF implements CartesianFullBackend {
 
   // the ID
-  private static final long serialVersionUID = (long) 2011117;
+  private static final long serialVersionUID = (long) 20200830;
 
   private final int style;
   private final boolean useCaching;
@@ -107,7 +107,7 @@ public class UniversalFF implements CartesianFullBackend {
       final boolean hasRigidEnv) {
 
     if (uff == null || !useCaching) {
-      initialize(noAts, bonds, atoms, charges, atomNos);
+      initialize(noAts, bonds, atoms, charges, atomNos, atsPerMol, hasRigidEnv);
     }
 
     copy1d3d(daXYZ1D, coords, noAts, atomNos);
@@ -137,7 +137,7 @@ public class UniversalFF implements CartesianFullBackend {
       final boolean hasRigidEnv) {
 
     if (uff == null || !useCaching) {
-      initialize(noAts, bonds, atoms, charges, atomNos);
+      initialize(noAts, bonds, atoms, charges, atomNos, atsPerMol, hasRigidEnv);
     }
 
     copy1d3d(daXYZ1D, coords, noAts, atomNos);
@@ -157,7 +157,9 @@ public class UniversalFF implements CartesianFullBackend {
       final BondInfo bonds,
       final String[] names,
       final float[] charges,
-      final short[] atomNos) {
+      final short[] atomNos,
+      final int[] atsPerMol,
+      final boolean hasRigidEnv) {
 
     int noDummy = 0;
     for (int i = 0; i < atomNos.length; i++) {
@@ -198,12 +200,17 @@ public class UniversalFF implements CartesianFullBackend {
       c1++;
     }
 
+    int noFrozen = (hasRigidEnv) ? atsPerMol[atsPerMol.length - 1] : 0;
+    int noUnfrozen = noAtoms - noFrozen;
+
+    int noDummies = 0;
     final float[] ch = new float[noAtoms];
     final String[] na = new String[noAtoms];
     final short[] nos = new short[noAtoms];
     c1 = 0;
     for (int i = 0; i < noAts; i++) {
       if (atomNos[i] == 0) {
+        if (i >= noUnfrozen) noDummies++;
         continue;
       }
       ch[c1] = charges[i];
@@ -212,7 +219,10 @@ public class UniversalFF implements CartesianFullBackend {
       c1++;
     }
 
-    uff = new AtomdroidUFF(noAtoms, na, bonding, ch, pos, numBonds, nos);
+    // subtract dummy atoms that used to be in the frozen part from the number of frozen atoms
+    if (hasRigidEnv) noFrozen -= noDummies;
+
+    uff = new AtomdroidUFF(noAtoms, noFrozen, na, bonding, ch, pos, numBonds, nos);
   }
 
   private static void copy1d3d(

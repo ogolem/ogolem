@@ -99,7 +99,7 @@ class UFFLargeMoleculeGradientBenchmark implements SingleMicroBenchmark {
         spins,
         bonds,
         gradient,
-        true);
+        false);
 
     return gradient.getTotalEnergy();
   }

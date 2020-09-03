@@ -1,10 +1,10 @@
 ###OGOLEM###
 #DebugLevel=42
-GlobOptAlgo=cluster{xover(multiple:50%norrbotten:|50%vinland:mode=surface,moveperstep=0.2,maxmoves=100,maxtries=10;sweden:cutstyle=2)mutation(multiple:25%montecarlo:mode=some|75%2d-extcoordmc:mode=some)}
+GlobOptAlgo=cluster{xover(multiple:2%mutationasxover:2d-extcoordmc:mode=some,maxmovecom=1.0,maxmoveeuler=0.5|50%norrbotten:|48%vinland:mode=surface,moveperstep=0.2,maxmoves=100,maxtries=10;sweden:cutstyle=2)mutation(multiple:25%montecarlo:mode=some|75%2d-extcoordmc:mode=some)}
 MutationPossibility=0.05
 LocOptAlgo=lbfgs:backend=environment+xyz:chainedfullcartesian:universal|surfacetopadsorptionbiaser:
 PoolSize=100
-NumberOfGlobIterations=10000
+NumberOfGlobIterations=50000
 GrowCell=false
 CellSize=15;15;15
 BlowFacDissoc=4.5
@@ -19,7 +19,7 @@ PostSanityDD=true
 GeneticRecordsToSerial=10000
 GeometriesToSerial=10000
 InitialFillAlgo=packlayerbysize
-AcceptableFitness=-0.105265
+AcceptableFitness=-0.019703
 <GEOMETRY>
 NumberOfParticles=10
 <MOLECULE>
