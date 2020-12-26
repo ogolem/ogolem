@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2015, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -38,57 +38,58 @@ package org.ogolem.core;
 
 /**
  * An abstract collision info object.
+ *
  * @author Johannes Dieterich
  * @version 2015-07-23
  */
 abstract class AbstractCollisionInfo implements CollisionInfo {
 
-    private static final long serialVersionUID = (long) 20150720;
+  private static final long serialVersionUID = (long) 20150720;
 
-    protected boolean distsComplete = false;
-    protected double[][] pairwiseDistances = null;
-    protected int noCollisions = 0;
-    
-    @Override
-    public boolean hasCollision() {
-        return noCollisions > 0;
-    }
+  protected boolean distsComplete = false;
+  protected double[][] pairwiseDistances = null;
+  protected int noCollisions = 0;
 
-    @Override
-    public int getNumberOfStoredCollisions() {
-        return noCollisions;
-    }
+  @Override
+  public boolean hasCollision() {
+    return noCollisions > 0;
+  }
 
-    @Override
-    public boolean pairWiseDistsComplete() {
-        return distsComplete;
-    }
+  @Override
+  public int getNumberOfStoredCollisions() {
+    return noCollisions;
+  }
 
-    @Override
-    public boolean setPairWiseDistances(final double[][] distances, final boolean areComplete) {
-        this.pairwiseDistances = distances;
-        this.distsComplete = areComplete;
-        
-        return true;
-    }
+  @Override
+  public boolean pairWiseDistsComplete() {
+    return distsComplete;
+  }
 
-    @Override
-    public double[][] getPairWiseDistances() {
-        return pairwiseDistances;
+  @Override
+  public boolean setPairWiseDistances(final double[][] distances, final boolean areComplete) {
+    this.pairwiseDistances = distances;
+    this.distsComplete = areComplete;
+
+    return true;
+  }
+
+  @Override
+  public double[][] getPairWiseDistances() {
+    return pairwiseDistances;
+  }
+
+  @Override
+  public void resizeDistsAndClearState(final int size) {
+
+    if (pairwiseDistances == null || pairwiseDistances.length != size) {
+      // resize
+      this.pairwiseDistances = new double[size][size];
     }
-    
-    @Override
-    public void resizeDistsAndClearState(final int size){
-        
-        if(pairwiseDistances == null || pairwiseDistances.length != size){
-            // resize
-            this.pairwiseDistances = new double[size][size];
-        }
-        noCollisions = 0;
-        distsComplete = false;
-        
-        cleanState();
-    }
-    
-    protected abstract void cleanState();
+    noCollisions = 0;
+    distsComplete = false;
+
+    cleanState();
+  }
+
+  protected abstract void cleanState();
 }

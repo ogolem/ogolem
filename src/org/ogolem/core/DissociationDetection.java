@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
@@ -40,118 +40,129 @@ package org.ogolem.core;
 
 /**
  * Dissociation detection within in a cluster of molecules.
+ *
  * @author Johannes Dieterich
  * @version 2015-04-28
  */
 public class DissociationDetection {
-    
-    public static enum DDTYPE{DFS,WARSHALL};
-    public static final DDTYPE DEFAULTDD = DDTYPE.DFS;
-    
-    /**
-     * @param pairWiseDists The pairwise distances between two atoms.
-     * @param saAtoms An array of Strings containing the atomic IDs.
-     * @param nos the atomic numbers
-     * @param dissBlow the blow factor for the atomic radii
-     * @param whichDetection which detection algorithm
-     * @return True if dissociation has been detected.
-     */
-    public static boolean checkForDissociation(final double[][] pairWiseDists,
-            final String[] saAtoms, final short[] nos, final double dissBlow,
-            final DDTYPE whichDetection) {
-        
-        if(whichDetection == DDTYPE.DFS){
-            // use DFS
-            final int noOfAtoms = nos.length;
 
-            // prepare an adjacency matrix
-            final boolean[][] adjacency = new boolean[noOfAtoms][noOfAtoms];
+  public static enum DDTYPE {
+    DFS,
+    WARSHALL
+  };
 
-            for (int i = 0; i < noOfAtoms; i++) {
-                final double rad1 = AtomicProperties.giveRadius(nos[i]);
-                for (int j = i; j < noOfAtoms; j++) { // on purpose from i as this sets the diagonal to true
-                    final double rad2 = AtomicProperties.giveRadius(nos[j]);
-                    final double summedRadii = (rad1 + rad2) * dissBlow;
-                    if (summedRadii >= pairWiseDists[i][j]) {
-                        adjacency[i][j] = true;
-                        adjacency[j][i] = true;
-                    } else{
-                        adjacency[i][j] = false;
-                        adjacency[j][i] = false;
-                    }
-                }
-            }
+  public static final DDTYPE DEFAULTDD = DDTYPE.DFS;
 
-            // call DFS
-            final boolean isConnected = DistanceCalc.dfsReachability(adjacency);
+  /**
+   * @param pairWiseDists The pairwise distances between two atoms.
+   * @param saAtoms An array of Strings containing the atomic IDs.
+   * @param nos the atomic numbers
+   * @param dissBlow the blow factor for the atomic radii
+   * @param whichDetection which detection algorithm
+   * @return True if dissociation has been detected.
+   */
+  public static boolean checkForDissociation(
+      final double[][] pairWiseDists,
+      final String[] saAtoms,
+      final short[] nos,
+      final double dissBlow,
+      final DDTYPE whichDetection) {
 
-            return !isConnected;
+    if (whichDetection == DDTYPE.DFS) {
+      // use DFS
+      final int noOfAtoms = nos.length;
 
-        } else if (whichDetection == DDTYPE.WARSHALL) {
-            // use Warshall
+      // prepare an adjacency matrix
+      final boolean[][] adjacency = new boolean[noOfAtoms][noOfAtoms];
 
-            final int noOfAtoms = nos.length;
-
-            // the adjacency matrix
-            final int[][] adjacency = new int[noOfAtoms][noOfAtoms];
-
-            for (int i = 0; i < noOfAtoms; i++) {
-                final double rad1 = AtomicProperties.giveRadius(nos[i]);
-                for (int j = i; j < noOfAtoms; j++) {
-                    final double rad2 = AtomicProperties.giveRadius(nos[j]);
-                    final double summedRadii = (rad1 + rad2) * dissBlow;
-                    if (summedRadii >= pairWiseDists[i][j]) {
-                        // atoms within reach
-                        adjacency[i][j] = 1;
-                        adjacency[j][i] = 1;
-                    }
-                }
-            }
-
-            // get the reachability matrix
-            final int[][] reachabilities = DistanceCalc.warshallDistances(adjacency);
-            final int length = reachabilities.length;
-            /*
-             * loop over the elements to check for zeros
-             * since our bonds are not "directed"and the matrix is symmetric,
-             * we can assume that it is sufficient to check just the upper half
-             * of it.
-             */
-            for (int i = 0; i < length - 1; i++) {
-                for (int j = i + 1; j < length; j++) {
-                    if (reachabilities[i][j] == 0) {
-                        // dissociation found
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } else {
-            System.err.println("ERROR: Can't handle dissociation detection " + whichDetection + " assuming everything to be fine now.");
-            return false;
+      for (int i = 0; i < noOfAtoms; i++) {
+        final double rad1 = AtomicProperties.giveRadius(nos[i]);
+        for (int j = i; j < noOfAtoms; j++) { // on purpose from i as this sets the diagonal to true
+          final double rad2 = AtomicProperties.giveRadius(nos[j]);
+          final double summedRadii = (rad1 + rad2) * dissBlow;
+          if (summedRadii >= pairWiseDists[i][j]) {
+            adjacency[i][j] = true;
+            adjacency[j][i] = true;
+          } else {
+            adjacency[i][j] = false;
+            adjacency[j][i] = false;
+          }
         }
+      }
+
+      // call DFS
+      final boolean isConnected = DistanceCalc.dfsReachability(adjacency);
+
+      return !isConnected;
+
+    } else if (whichDetection == DDTYPE.WARSHALL) {
+      // use Warshall
+
+      final int noOfAtoms = nos.length;
+
+      // the adjacency matrix
+      final int[][] adjacency = new int[noOfAtoms][noOfAtoms];
+
+      for (int i = 0; i < noOfAtoms; i++) {
+        final double rad1 = AtomicProperties.giveRadius(nos[i]);
+        for (int j = i; j < noOfAtoms; j++) {
+          final double rad2 = AtomicProperties.giveRadius(nos[j]);
+          final double summedRadii = (rad1 + rad2) * dissBlow;
+          if (summedRadii >= pairWiseDists[i][j]) {
+            // atoms within reach
+            adjacency[i][j] = 1;
+            adjacency[j][i] = 1;
+          }
+        }
+      }
+
+      // get the reachability matrix
+      final int[][] reachabilities = DistanceCalc.warshallDistances(adjacency);
+      final int length = reachabilities.length;
+      /*
+       * loop over the elements to check for zeros
+       * since our bonds are not "directed"and the matrix is symmetric,
+       * we can assume that it is sufficient to check just the upper half
+       * of it.
+       */
+      for (int i = 0; i < length - 1; i++) {
+        for (int j = i + 1; j < length; j++) {
+          if (reachabilities[i][j] == 0) {
+            // dissociation found
+            return true;
+          }
+        }
+      }
+      return false;
+    } else {
+      System.err.println(
+          "ERROR: Can't handle dissociation detection "
+              + whichDetection
+              + " assuming everything to be fine now.");
+      return false;
+    }
+  }
+
+  /* TODO we would like a non O(N^2) scaling DD. this should be possible
+   * considering a grid-like approach putting molecules into cells and
+   * trying to check whether there are cells w/o molecules. Problem is:
+   * the cells need to be big enough to yield a performance bettering and
+   * at the same time small enough to not render the DD useless. This
+   * means that there needs to be user input and the Warshall as a fallback
+   * alternative. Meaning this needs to be turned into a gateway again.
+   * I love them. :-)
+   * So first really get the gridlike CD to work properly and then use
+   * the information gained there for this. :-)
+   */
+
+  public static DDTYPE parseType(final String type) throws Exception {
+
+    if (type.equalsIgnoreCase("dfs")) {
+      return DDTYPE.DFS;
+    } else if (type.equalsIgnoreCase("warshall")) {
+      return DDTYPE.WARSHALL;
     }
 
-    /* TODO we would like a non O(N^2) scaling DD. this should be possible
-     * considering a grid-like approach putting molecules into cells and
-     * trying to check whether there are cells w/o molecules. Problem is:
-     * the cells need to be big enough to yield a performance bettering and
-     * at the same time small enough to not render the DD useless. This
-     * means that there needs to be user input and the Warshall as a fallback
-     * alternative. Meaning this needs to be turned into a gateway again.
-     * I love them. :-)
-     * So first really get the gridlike CD to work properly and then use
-     * the information gained there for this. :-)
-     */
-    
-    public static DDTYPE parseType(final String type) throws Exception {
-        
-        if(type.equalsIgnoreCase("dfs")){
-            return DDTYPE.DFS;
-        } else if(type.equalsIgnoreCase("warshall")){
-            return DDTYPE.WARSHALL;
-        }
-        
-        throw new Exception("Illegal dissociation detection " + type + ".");
-    }
+    throw new Exception("Illegal dissociation detection " + type + ".");
+  }
 }
