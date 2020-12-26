@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * Benchmarked functionalities should be micro - hence fast to benchmark and fundamental.
  *
  * @author Johannes Dieterich
- * @version 2020-08-16
+ * @version 2020-12-14
  */
 public class MainMicroBenchmarks {
 
@@ -70,6 +70,18 @@ public class MainMicroBenchmarks {
   private static final int NOWARMUPITERATIONS = 10000;
 
   public static void run(final String[] args) {
+
+    /* ALL BENCHMARKS MEASURING COLD AND WARM PERFORMANCE */
+    final MixedLJLocOptBench mixedLJLocBench = new MixedLJLocOptBench(50);
+    runOneCold(mixedLJLocBench, 1);
+
+    final MixedLJLocOptBench mixedLJLocBench2 = new MixedLJLocOptBench(100);
+    runOneCold(mixedLJLocBench2, 1);
+
+    final MixedLJLocOptBench mixedLJLocBench3 = new MixedLJLocOptBench(150);
+    runOneCold(mixedLJLocBench3, 1);
+
+    /* ALL BENCHMARKS UTILIZING AN EXPLICITLY WARMED UP JIT */
 
     // run advanced CD benchmark
     final AdvPairwiseCDBenchmark advCDBench = new AdvPairwiseCDBenchmark();
@@ -221,6 +233,79 @@ public class MainMicroBenchmarks {
 
     LOG.info(
         "Benchmark "
+            + name
+            + " took "
+            + Math.round(meanStdDev.getObject1())
+            + " +/- "
+            + Math.round(meanStdDev.getObject2())
+            + " ms per macro iteration\n"
+            + "                         or "
+            + Math.round(
+                1000.0 / meanStdDev.getObject1() * microBenchMultiplier * NOPERFMICROITERATIONS)
+            + " calls per second on average");
+  }
+
+  /**
+   * Run one micro benchmark but do not warm up the jit for the first attempt.
+   *
+   * @param bench the micro benchmark
+   * @param microBenchMultiplier multiplier for the micro perf iterations. Should be selected to
+   *     yield a macro iteration larger than 1000 ms.
+   */
+  private static void runOneCold(final SingleMicroBenchmark bench, final int microBenchMultiplier) {
+
+    final String name = bench.name();
+
+    // first do the warmup iterations to give JIT/JVM some time to equillibrate
+    LOG.debug("Benchmark " + name + " cold start...");
+    double sideEffectAvoider = 0.0;
+    final long tStartCold = System.currentTimeMillis();
+    try {
+      for (int i = 0; i < NOPERFMICROITERATIONS; i++) {
+        sideEffectAvoider += bench.runSingle();
+      }
+    } catch (Exception e) {
+      System.err.println("ERROR: Failure in warm up - should never happen!");
+      e.printStackTrace(System.err);
+    }
+    long tEndCold = System.currentTimeMillis();
+    LOG.debug("Benchmark " + name + " side effect avoider (warmup) " + sideEffectAvoider);
+
+    LOG.info(
+        "COLD Benchmark "
+            + name
+            + " took "
+            + (tEndCold - tStartCold)
+            + " ms per macro iteration\n"
+            + "                         or "
+            + Math.round(1000.0 / (tEndCold - tStartCold) * NOPERFMICROITERATIONS)
+            + " calls per second on average");
+
+    // now do the real performance run
+    final double[] times = new double[NOPERFMACROITERATIONS];
+    LOG.debug("Benchmark " + name + " starting...");
+
+    for (int macro = 0; macro < NOPERFMACROITERATIONS; macro++) {
+      sideEffectAvoider = 0.0;
+      final long tStart = System.currentTimeMillis();
+      try {
+        for (int i = 0; i < NOPERFMICROITERATIONS * microBenchMultiplier; i++) {
+          sideEffectAvoider += bench.runSingle();
+        }
+      } catch (Exception e) {
+        System.err.println("ERROR: Failure in perf run - should never happen!");
+        e.printStackTrace(System.err);
+      }
+
+      long tEnd = System.currentTimeMillis();
+      LOG.debug("Benchmark " + name + " side effect avoider (perf run) " + sideEffectAvoider);
+      times[macro] = (tEnd - tStart);
+    }
+
+    final Tuple<Double, Double> meanStdDev = StatisticUtils.meanAndStdDev(times);
+
+    LOG.info(
+        "WARMED Benchmark "
             + name
             + " took "
             + Math.round(meanStdDev.getObject1())
