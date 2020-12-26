@@ -38,6 +38,8 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'build/libs/ogolem-snapshot.jar', fingerprint: true
             archiveArtifacts artifacts: 'manual/manual.pdf', fingerprint: true
+            archiveArtifacts artifacts: 'build/reports/spotbugs/main.xml', fingerprint: true
+            archiveArtifacts artifacts: 'build/reports/spotbugs/test.xml', fingerprint: true
         }
     }
 }

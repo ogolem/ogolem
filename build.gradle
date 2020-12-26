@@ -1,6 +1,7 @@
 plugins {
   id 'com.github.johnrengelman.shadow' version '6.0.0'
   id 'com.diffplug.spotless' version '5.1.1'
+  id 'com.github.spotbugs' version '4.5.1'
   id 'java'
   id 'application'
 }
@@ -102,4 +103,9 @@ spotless {
   java {
     googleJavaFormat()
   }
+}
+
+spotbugs {
+    ignoreFailures = true
+    onlyAnalyze = [ 'org.ogolem.*' ]
 }
