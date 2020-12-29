@@ -232,7 +232,7 @@ public class LocOptFactory extends AbstractLocOptFactory<Molecule, Geometry> {
       XTBCaller.OPTLEVEL opt = XTBCaller.OPTLEVEL.NORMAL;
       boolean setEnvironment = true;
       String xControlFileName = null;
-      boolean forceDelete = false;
+      XTBCaller.SUBDIRS subdirs = XTBCaller.SUBDIRS.NORMAL;
 
       final String[] spl = inputOpts.split("\\,");
       for (final String s : spl) {
@@ -276,14 +276,23 @@ public class LocOptFactory extends AbstractLocOptFactory<Molecule, Geometry> {
             throw new RuntimeException(
                 "xcontrol file " + xControlFileName + " not found by XTB caller");
           }
-        } else if (s.trim().equalsIgnoreCase("forcedelete")) {
-          forceDelete = true;
+        } else if (s.trim().startsWith("subdirs=")) {
+          final String d = s.trim().substring("subdirs=".length()).trim();
+          if (d.equalsIgnoreCase("forcedelete")) {
+            subdirs = XTBCaller.SUBDIRS.FORCEDELETE;
+          } else if (d.equalsIgnoreCase("keepall")) {
+            subdirs = XTBCaller.SUBDIRS.KEEPALL;
+          } else if (d.equalsIgnoreCase("normal")) {
+            subdirs = XTBCaller.SUBDIRS.NORMAL;
+          } else {
+            throw new RuntimeException("Illegal subdir treatment " + d + " for XTB caller");
+          }
         } else {
           throw new RuntimeException("Illegal XTB option " + s);
         }
       }
 
-      newton = new XTBCaller(config, meth, opt, setEnvironment, xControlFileName, forceDelete);
+      newton = new XTBCaller(config, meth, opt, setEnvironment, xControlFileName, subdirs);
     } else if (locOptString.startsWith("molpro:")) {
       String sTemp3 = locOptString.substring(7).trim();
       if (sTemp3.equalsIgnoreCase("am1/vdz") || sTemp3.equalsIgnoreCase("am1")) {

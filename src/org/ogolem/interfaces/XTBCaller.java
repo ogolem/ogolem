@@ -86,6 +86,12 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     VERYTIGHT
   };
 
+  public static enum SUBDIRS {
+    NORMAL,
+    FORCEDELETE,
+    KEEPALL
+  };
+
   private final String xtbCmd;
   private final METHOD xtbMeth;
   private final String[] xtbMethod;
@@ -93,7 +99,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
   private final String[] xtbOtherOptions;
   private final boolean setEnvironment;
   private final String xControlFileOrig;
-  private final boolean forceDelete;
+  private final SUBDIRS subdirs;
 
   public XTBCaller(
       final GlobalConfig globconf,
@@ -101,7 +107,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
       final OPTLEVEL level,
       final boolean setEnvironment,
       final String xControlFileOrig,
-      final boolean forceDelete)
+      final SUBDIRS subdirs)
       throws Exception {
     super(globconf);
 
@@ -163,7 +169,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     this.xtbOtherOptions = (otherOpts == null) ? null : otherOpts.split("\\s+");
     this.setEnvironment = setEnvironment;
     this.xControlFileOrig = xControlFileOrig;
-    this.forceDelete = forceDelete;
+    this.subdirs = subdirs;
   }
 
   private XTBCaller(final XTBCaller orig) {
@@ -175,7 +181,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     this.xtbOtherOptions = orig.xtbOtherOptions;
     this.setEnvironment = orig.setEnvironment;
     this.xControlFileOrig = orig.xControlFileOrig;
-    this.forceDelete = orig.forceDelete;
+    this.subdirs = orig.subdirs;
   }
 
   @Override
@@ -278,7 +284,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     // any error???
     final int errCode = proc.waitFor();
     if (errCode != 0) {
-      if (forceDelete) {
+      if (subdirs == SUBDIRS.FORCEDELETE) {
         ManipulationPrimitives.remove(dirName);
         System.err.println("WARNING in XTB caller: removing subdir despite nonzero return code");
       }
@@ -286,7 +292,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
           "xtb returns non-zero return value (local optimization). Error code " + errCode);
     }
     if (!new File(dirName + File.separator + ".xtboptok").isFile()) {
-      if (forceDelete) {
+      if (subdirs == SUBDIRS.FORCEDELETE) {
         ManipulationPrimitives.remove(dirName);
         System.err.println("WARNING in XTB caller: removing subdir despite non-converged locopt");
       }
@@ -333,7 +339,9 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     }
 
     // cleanup
-    ManipulationPrimitives.remove(dirName);
+    if (subdirs != SUBDIRS.KEEPALL) {
+      ManipulationPrimitives.remove(dirName);
+    }
 
     return res;
   }
