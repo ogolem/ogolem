@@ -42,6 +42,7 @@ import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
 import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.generic.GenericMutation;
+import org.ogolem.math.SymmetricMatrixNoDiag;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
 
@@ -227,17 +228,21 @@ public class FinlandGeometryMutation implements GenericMutation<Molecule, Geomet
         colldetect.checkForCollision(mutatedCartes, blowColl, mutated.getBondInfo());
 
     // now we want to figure out what the smallest distance of the BIG distances is
-    final double[][] collInfo = childColl.getPairWiseDistances();
+    final SymmetricMatrixNoDiag collInfo = childColl.getPairWiseDistances();
+    final double[] distsBuffer = collInfo.underlyingStorageBuffer();
+    int distsIdx = 0;
 
     final int[] whichAts = new int[2];
     double smallesDist = Double.MAX_VALUE;
-    for (int i = 0; i < collInfo.length - 1; i++) {
-      for (int j = i; j < collInfo.length; j++) {
+    for (int i = 0; i < collInfo.noRows() - 1; i++) {
+      for (int j = i; j < collInfo.noCols(); j++) {
         // > 90 000 sounds like a reasonable cutoff
-        if (collInfo[i][j] > ALMOSTUNIVERSE && collInfo[i][j] < smallesDist) {
+        final double dist = distsBuffer[distsIdx];
+        distsIdx++;
+        if (dist > ALMOSTUNIVERSE && dist < smallesDist) {
           whichAts[0] = i;
           whichAts[1] = j;
-          smallesDist = collInfo[i][j];
+          smallesDist = dist;
         }
       }
     }

@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,11 +38,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import org.ogolem.math.SymmetricMatrixNoDiag;
+
 /**
  * Dissociation detection within in a cluster of molecules.
  *
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-12-21
  */
 public class DissociationDetection {
 
@@ -62,7 +64,7 @@ public class DissociationDetection {
    * @return True if dissociation has been detected.
    */
   public static boolean checkForDissociation(
-      final double[][] pairWiseDists,
+      final SymmetricMatrixNoDiag pairWiseDists,
       final String[] saAtoms,
       final short[] nos,
       final double dissBlow,
@@ -75,18 +77,31 @@ public class DissociationDetection {
       // prepare an adjacency matrix
       final boolean[][] adjacency = new boolean[noOfAtoms][noOfAtoms];
 
+      final double[] radii = new double[noOfAtoms];
       for (int i = 0; i < noOfAtoms; i++) {
-        final double rad1 = AtomicProperties.giveRadius(nos[i]);
-        for (int j = i; j < noOfAtoms; j++) { // on purpose from i as this sets the diagonal to true
-          final double rad2 = AtomicProperties.giveRadius(nos[j]);
-          final double summedRadii = (rad1 + rad2) * dissBlow;
-          if (summedRadii >= pairWiseDists[i][j]) {
+        radii[i] = dissBlow * AtomicProperties.giveRadius(nos[i]);
+      }
+
+      final double[] dists = pairWiseDists.underlyingStorageBuffer();
+      int distsIdx = 0;
+
+      for (int i = 0;
+          i < noOfAtoms;
+          i++) { // on purpose to noOfAtoms so that the diagonal is set to true
+        final double rad1 = radii[i];
+        // set the diagonal true
+        adjacency[i][i] = true;
+        for (int j = i + 1; j < noOfAtoms; j++) {
+          final double rad2 = radii[j];
+          final double summedRadii = rad1 + rad2;
+          if (summedRadii >= dists[distsIdx]) {
             adjacency[i][j] = true;
             adjacency[j][i] = true;
           } else {
             adjacency[i][j] = false;
             adjacency[j][i] = false;
           }
+          distsIdx++;
         }
       }
 
@@ -103,16 +118,29 @@ public class DissociationDetection {
       // the adjacency matrix
       final int[][] adjacency = new int[noOfAtoms][noOfAtoms];
 
+      final double[] radii = new double[noOfAtoms];
       for (int i = 0; i < noOfAtoms; i++) {
-        final double rad1 = AtomicProperties.giveRadius(nos[i]);
-        for (int j = i; j < noOfAtoms; j++) {
-          final double rad2 = AtomicProperties.giveRadius(nos[j]);
-          final double summedRadii = (rad1 + rad2) * dissBlow;
-          if (summedRadii >= pairWiseDists[i][j]) {
+        radii[i] = dissBlow * AtomicProperties.giveRadius(nos[i]);
+      }
+
+      final double[] dists = pairWiseDists.underlyingStorageBuffer();
+      int distsIdx = 0;
+
+      for (int i = 0;
+          i < noOfAtoms;
+          i++) { // on purpose to noOfAtoms so that the diagonal is set to true
+        final double rad1 = radii[i];
+        // set the diagonal to 1 == self reach
+        adjacency[i][i] = 1;
+        for (int j = i + 1; j < noOfAtoms; j++) {
+          final double rad2 = radii[j];
+          final double summedRadii = rad1 + rad2;
+          if (summedRadii >= dists[distsIdx]) {
             // atoms within reach
             adjacency[i][j] = 1;
             adjacency[j][i] = 1;
           }
+          distsIdx++;
         }
       }
 

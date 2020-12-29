@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,13 +38,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import java.util.Arrays;
 import java.util.LinkedList;
+import org.ogolem.math.SymmetricMatrixNoDiag;
 
 /**
  * This is a O(N) scaling method working with a grid to find collisions in the geometry.
  *
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-12-21
  */
 class GridCollisionDetection implements CollisionDetectionEngine {
 
@@ -171,22 +173,11 @@ class GridCollisionDetection implements CollisionDetectionEngine {
 
     final int iNoOfAtoms = cartes.getNoOfAtoms();
     info.resizeDistsAndClearState(iNoOfAtoms);
-    final double[][] daDistances = info.getPairWiseDistances();
+    final SymmetricMatrixNoDiag daDistances = info.getPairWiseDistances();
 
     // first "initialize" all distances with big values
-    for (int i = 0; i < iNoOfAtoms; i++) {
-      for (int j = i; j < iNoOfAtoms; j++) {
-        if (i == j) {
-          // self-self: distance is 0, of course
-          daDistances[i][j] = 0.0;
-          continue;
-        } else {
-          // set it to be big
-          daDistances[i][j] = 1E6;
-        }
-        daDistances[j][i] = daDistances[i][j];
-      }
-    }
+    final double[] buffer = daDistances.underlyingStorageBuffer();
+    Arrays.fill(buffer, 1E6);
 
     /*
      * now compute the actual distances of atoms in the same box or in neighboring ones
@@ -221,8 +212,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
             // put the distance in
             final int iIDOne = atOne.getID();
             final int iIDTwo = atTwo.getID();
-            daDistances[iIDOne][iIDTwo] = dDistTemp;
-            daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+            daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
             // check for collision
             if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -280,8 +270,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -340,8 +329,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -399,8 +387,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -458,8 +445,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -518,8 +504,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -578,8 +563,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {
@@ -638,8 +622,7 @@ class GridCollisionDetection implements CollisionDetectionEngine {
               // put the distance in
               final int iIDOne = atOne.getID();
               final int iIDTwo = atTwo.getID();
-              daDistances[iIDOne][iIDTwo] = dDistTemp;
-              daDistances[iIDTwo][iIDOne] = daDistances[iIDOne][iIDTwo];
+              daDistances.setElement(iIDOne, iIDTwo, dDistTemp);
 
               // check for collision
               if (dDistTemp <= dRadii && !bonds.hasBond(iIDOne, iIDTwo)) {

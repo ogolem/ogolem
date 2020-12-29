@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,66 +34,31 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
+package org.ogolem.math;
 
-import org.ogolem.math.SymmetricMatrixNoDiag;
+import java.io.Serializable;
 
 /**
- * An abstract collision info object.
+ * An interface for matrices.
  *
  * @author Johannes Dieterich
  * @version 2020-12-21
  */
-abstract class AbstractCollisionInfo implements CollisionInfo {
+public interface Matrix extends Serializable {
 
-  private static final long serialVersionUID = (long) 20201221;
+  public int noRows();
 
-  protected boolean distsComplete = false;
-  protected SymmetricMatrixNoDiag pairwiseDistances = null;
-  protected int noCollisions = 0;
+  public int noCols();
 
-  @Override
-  public boolean hasCollision() {
-    return noCollisions > 0;
-  }
+  public void setElement(final int i, final int j, final double val);
 
-  @Override
-  public int getNumberOfStoredCollisions() {
-    return noCollisions;
-  }
+  public double getElement(final int i, final int j);
 
-  @Override
-  public boolean pairWiseDistsComplete() {
-    return distsComplete;
-  }
-
-  @Override
-  public boolean setPairWiseDistances(
-      final SymmetricMatrixNoDiag distances, final boolean areComplete) {
-
-    this.pairwiseDistances = distances;
-    this.distsComplete = areComplete;
-
-    return true;
-  }
-
-  @Override
-  public SymmetricMatrixNoDiag getPairWiseDistances() {
-    return pairwiseDistances;
-  }
-
-  @Override
-  public void resizeDistsAndClearState(final int size) {
-
-    if (pairwiseDistances == null || pairwiseDistances.noRows() != size) {
-      // resize
-      this.pairwiseDistances = new SymmetricMatrixNoDiag(size);
-    }
-    noCollisions = 0;
-    distsComplete = false;
-
-    cleanState();
-  }
-
-  protected abstract void cleanState();
+  /**
+   * Returns a direct reference to the underlying storage buffer.
+   *
+   * @return the underlying storage buffer. Size and indexing implementation dependent. Handle with
+   *     utmost care!
+   */
+  public double[] underlyingStorageBuffer();
 }
