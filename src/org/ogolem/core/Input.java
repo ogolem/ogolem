@@ -1176,6 +1176,28 @@ public final class Input {
     }
 
     /*
+     * INITIALIZE THE RANDOM NUMBER GENERATOR here,
+     * since environments refer to it
+     */
+    RNGenerator rng = null;
+    if (rngString.equalsIgnoreCase("javarng:autoseed")) {
+      // get seed first
+      final Random r = new Random();
+      final long seed = r.nextLong();
+      rng = new StandardRNG(seed);
+    } else if (rngString.startsWith("javarng:seed=")) {
+      final String s = rngString.substring("javarng:seed=".length()).trim();
+      final long seed = Long.parseLong(s);
+      rng = new StandardRNG(seed);
+    } else {
+      throw new RuntimeException("Illegal RNG configured: " + rngString);
+    }
+
+    System.out.println("INFO: RNG initialized: " + rng.getInformation());
+
+    Lottery.setGenerator(rng);
+
+    /*
      * work on environment tags
      */
     if (hasEnvTag) {
@@ -1539,27 +1561,6 @@ public final class Input {
 
       globConf.backendDefs = backendDefs;
     }
-
-    /*
-     * SECOND TO LAST THING: INITIALIZE THE RANDOM NUMBER GENERATOR
-     */
-    RNGenerator rng = null;
-    if (rngString.equalsIgnoreCase("javarng:autoseed")) {
-      // get seed first
-      final Random r = new Random();
-      final long seed = r.nextLong();
-      rng = new StandardRNG(seed);
-    } else if (rngString.startsWith("javarng:seed=")) {
-      final String s = rngString.substring("javarng:seed=".length()).trim();
-      final long seed = Long.parseLong(s);
-      rng = new StandardRNG(seed);
-    } else {
-      throw new RuntimeException("Illegal RNG configured: " + rngString);
-    }
-
-    System.out.println("INFO: RNG initialized: " + rng.getInformation());
-
-    Lottery.setGenerator(rng);
 
     /*
      * LAST THINGS: BUILD LOCOPT AND GLOBOPT OBJECTS
