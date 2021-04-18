@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2011, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,42 +39,48 @@ package org.ogolem.core;
 
 /**
  * A dummy, might be helpful sometimes.
+ *
  * @author Johannes Dieterich
- * @version 2012-02-16
+ * @version 2012-12-29
  */
 public class DummyLocOpt extends AbstractLocOpt {
-    
-    private static final long serialVersionUID = (long) 2020216;
-    
-    DummyLocOpt(final GlobalConfig config){
-        super(config);
-    }
-    
-    DummyLocOpt(final DummyLocOpt orig){
-        super(orig);
-    }
- 
-    @Override
-    public String myID(){
-        return "dummy";
-    }
-    
-    @Override
-    public String myIDandMethod(){
-        return "dummy";
-    }
-    
-    @Override
-    public DummyLocOpt clone(){
-        return new DummyLocOpt(this);
-    }
-    
-    @Override
-    public CartesianCoordinates cartesToCartes (long lID, CartesianCoordinates cartes,
-            boolean[][] baConstraints, boolean isConstricted, final BondInfo bonds) throws ConvergenceException{
-        
-        cartes.setEnergy(FixedValues.NONCONVERGEDENERGY);
-        
-        return cartes;
-    }
+
+  private static final long serialVersionUID = (long) 2020216;
+
+  DummyLocOpt(final GlobalConfig config) {
+    super(config);
+  }
+
+  DummyLocOpt(final DummyLocOpt orig) {
+    super(orig);
+  }
+
+  @Override
+  public String myID() {
+    return "dummy";
+  }
+
+  @Override
+  public String myIDandMethod() {
+    return "dummy";
+  }
+
+  @Override
+  public DummyLocOpt copy() {
+    return new DummyLocOpt(this);
+  }
+
+  @Override
+  public CartesianCoordinates cartesToCartes(
+      long lID,
+      CartesianCoordinates cartes,
+      boolean[][] baConstraints,
+      boolean isConstricted,
+      final BondInfo bonds)
+      throws ConvergenceException {
+
+    cartes.setEnergy(FixedValues.NONCONVERGEDENERGY);
+
+    return cartes;
+  }
 }

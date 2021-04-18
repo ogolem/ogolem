@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015-2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,51 +41,56 @@ import org.ogolem.properties.CellVolume;
 
 /**
  * A reference data object for bulk modulus calculations.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-16
+ * @version 2020-12-30
  */
 public class RefCellVolumeData<V extends StructuralData> implements ReferenceInputData<CellVolume> {
-    
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final ReferenceGeomData<CellVolume,V> geom;
-    private final int refPoint;
-    private final String sym;
-    private final short atomNo;
-    
-    public RefCellVolumeData(final int refPoint, final String sym, final short atomNo, final ReferenceGeomData<CellVolume,V> geom){
-        this.sym = sym;
-        this.atomNo = atomNo;
-        this.refPoint = refPoint;
-        this.geom = geom;
-    }
-    
-    private RefCellVolumeData(final RefCellVolumeData<V> orig){
-        this.sym = orig.sym;
-        this.atomNo = orig.atomNo;
-        this.refPoint = orig.refPoint;
-        this.geom = orig.geom.clone();
-    }
-    
-    @Override
-    public RefCellVolumeData<V> clone() {
-        return new RefCellVolumeData<>(this);
-    }
-    
-    public String getSymmetry(){
-        return sym;
-    }
-    
-    public short getAtomNo(){
-        return atomNo;
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
-    
-    public ReferenceGeomData<CellVolume,V> getGeomData(){
-        return geom;
-    }
+
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final ReferenceGeomData<CellVolume, V> geom;
+  private final int refPoint;
+  private final String sym;
+  private final short atomNo;
+
+  public RefCellVolumeData(
+      final int refPoint,
+      final String sym,
+      final short atomNo,
+      final ReferenceGeomData<CellVolume, V> geom) {
+    this.sym = sym;
+    this.atomNo = atomNo;
+    this.refPoint = refPoint;
+    this.geom = geom;
+  }
+
+  private RefCellVolumeData(final RefCellVolumeData<V> orig) {
+    this.sym = orig.sym;
+    this.atomNo = orig.atomNo;
+    this.refPoint = orig.refPoint;
+    this.geom = orig.geom.copy();
+  }
+
+  @Override
+  public RefCellVolumeData<V> copy() {
+    return new RefCellVolumeData<>(this);
+  }
+
+  public String getSymmetry() {
+    return sym;
+  }
+
+  public short getAtomNo() {
+    return atomNo;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
+
+  public ReferenceGeomData<CellVolume, V> getGeomData() {
+    return geom;
+  }
 }

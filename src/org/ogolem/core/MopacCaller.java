@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import org.ogolem.io.OutputPrimitives;
  * This calls the program suite Mopac for local geometry optimizations.
  *
  * @author Johannes Dieterich
- * @version 2015-04-21
+ * @version 2020-12-29
  */
 final class MopacCaller extends AbstractLocOpt {
 
@@ -128,7 +128,7 @@ final class MopacCaller extends AbstractLocOpt {
   }
 
   @Override
-  public MopacCaller clone() {
+  public MopacCaller copy() {
     return new MopacCaller(this);
   }
 

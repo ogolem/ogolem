@@ -53,7 +53,7 @@ import org.ogolem.random.RandomUtils;
  * stretching ALL bond lengths of flexible molecules. (yeah... not yet...)
  *
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2020-12-29
  */
 public class FinlandGeometryMutation implements GenericMutation<Molecule, Geometry> {
 
@@ -84,7 +84,7 @@ public class FinlandGeometryMutation implements GenericMutation<Molecule, Geomet
   }
 
   @Override
-  public FinlandGeometryMutation clone() {
+  public FinlandGeometryMutation copy() {
     return new FinlandGeometryMutation(this);
   }
 

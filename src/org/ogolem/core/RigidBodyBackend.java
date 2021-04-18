@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,73 +39,98 @@ package org.ogolem.core;
 
 import java.io.Serializable;
 import java.util.List;
+import org.ogolem.generic.Copyable;
 
 /**
  * An interface for rigid body backends.
+ *
  * @author Johannes Dieterich
- * @version 2014-12-19
+ * @version 2020-12-29
  */
-public interface RigidBodyBackend extends Serializable, Cloneable {
-    
-    /**
-     * Clones this backend.
-     * @return a clone, i.e., a deep copy.
-     */
-    RigidBodyBackend clone();
-    
-    /**
-     * Name myself.
-     * @return this method's ID as a nice String.
-     */
-    String getMethodID();
-    
-    /**
-     * Checks if this implementation is suitable for the system under study. May
-     * set some internal state unique to this geometry!
-     * @param ref the reference geometry, must not be changed!
-     * @return true if this backend is happy with ALL aspects of this geometry, false otherwise
-     */
-    boolean suitableForThisBackend(final Geometry ref);
-    
-    /**
-     * Adjusts a molecule to put it in line with the assumptions of the force field behind it. May NOT deliberately change position or orientation beyond mere sanitization (or any other
-     * fields in the structure).
-     * @param mol The molecule which we want to rigidify.
-     */
-    void rigidify(final Molecule mol);
-    
-    /**
-     * Adjusts a CartesianCoordinates set for this particular backend. May add or delete atoms, may alter coordinates, symbols, ...
-     * @param ref the reference geometry
-     * @param unadjusted the unadjusted coordinates
-     * @param molID the molecule ID with respect to the Geometry object
-     * @return a CartesianCoordinates object (may be the same unadjusted object) with a fitting coordinate representation for this backend
-     */
-    CartesianCoordinates adjustCartesians(final Geometry ref, final CartesianCoordinates unadjusted, final int molID);
-    
-    /**
-     * Calculates the energy of this geometry (as a rigid body based off the 
-     * molecule units and their orientations and translations). Must not change
-     * the geometry!
-     * @param ref the reference geometry
-     * @param cartes a list of Cartesian coordinate objects that were pre-rotated, i.e., the respective Euler angle rotations where applied
-     * @param coms the COM translations of all the Cartesian coordinates
-     * @param counter a unique counter per evaluation w.r.t. this ref individual
-     * @return the energy based on the method in use
-     */
-    double energy(final Geometry ref, final List<CartesianCoordinates> cartes,
-            final double[][] coms, final int counter);
-    
-    /**
-     * Calculates the energy and gradient of this geometry (as a rigid body based off the 
-     * molecule units and their orientations and translations).
-     * @param ref the reference geometry
-     * @param cartes a list of Cartesian coordinate objects that were pre-rotated, i.e., the respective Euler angle rotations where applied
-     * @param coms the COM translations of all the Cartesian coordinates
-     * @param gradient the gradient for the external coordinates of the molecules in this geometry. Will be changed on return, does not need to be set to zero prior to calling. Contains: per molecule a double array with 3 Cartesians per atom as defined in the adjusted Cartesian set.
-     * @param counter a unique counter per evaluation w.r.t. this ref individual
-     * @return the energy based on the method in use
-     */
-    double gradient(final Geometry ref, final List<CartesianCoordinates> cartes,
-            final double[][] coms, final List<double[][]> gradient, final int counter);
+public interface RigidBodyBackend extends Serializable, Copyable {
+
+  /**
+   * Clones this backend.
+   *
+   * @return a clone, i.e., a deep copy.
+   */
+  @Override
+  RigidBodyBackend copy();
+
+  /**
+   * Name myself.
+   *
+   * @return this method's ID as a nice String.
+   */
+  String getMethodID();
+
+  /**
+   * Checks if this implementation is suitable for the system under study. May set some internal
+   * state unique to this geometry!
+   *
+   * @param ref the reference geometry, must not be changed!
+   * @return true if this backend is happy with ALL aspects of this geometry, false otherwise
+   */
+  boolean suitableForThisBackend(final Geometry ref);
+
+  /**
+   * Adjusts a molecule to put it in line with the assumptions of the force field behind it. May NOT
+   * deliberately change position or orientation beyond mere sanitization (or any other fields in
+   * the structure).
+   *
+   * @param mol The molecule which we want to rigidify.
+   */
+  void rigidify(final Molecule mol);
+
+  /**
+   * Adjusts a CartesianCoordinates set for this particular backend. May add or delete atoms, may
+   * alter coordinates, symbols, ...
+   *
+   * @param ref the reference geometry
+   * @param unadjusted the unadjusted coordinates
+   * @param molID the molecule ID with respect to the Geometry object
+   * @return a CartesianCoordinates object (may be the same unadjusted object) with a fitting
+   *     coordinate representation for this backend
+   */
+  CartesianCoordinates adjustCartesians(
+      final Geometry ref, final CartesianCoordinates unadjusted, final int molID);
+
+  /**
+   * Calculates the energy of this geometry (as a rigid body based off the molecule units and their
+   * orientations and translations). Must not change the geometry!
+   *
+   * @param ref the reference geometry
+   * @param cartes a list of Cartesian coordinate objects that were pre-rotated, i.e., the
+   *     respective Euler angle rotations where applied
+   * @param coms the COM translations of all the Cartesian coordinates
+   * @param counter a unique counter per evaluation w.r.t. this ref individual
+   * @return the energy based on the method in use
+   */
+  double energy(
+      final Geometry ref,
+      final List<CartesianCoordinates> cartes,
+      final double[][] coms,
+      final int counter);
+
+  /**
+   * Calculates the energy and gradient of this geometry (as a rigid body based off the molecule
+   * units and their orientations and translations).
+   *
+   * @param ref the reference geometry
+   * @param cartes a list of Cartesian coordinate objects that were pre-rotated, i.e., the
+   *     respective Euler angle rotations where applied
+   * @param coms the COM translations of all the Cartesian coordinates
+   * @param gradient the gradient for the external coordinates of the molecules in this geometry.
+   *     Will be changed on return, does not need to be set to zero prior to calling. Contains: per
+   *     molecule a double array with 3 Cartesians per atom as defined in the adjusted Cartesian
+   *     set.
+   * @param counter a unique counter per evaluation w.r.t. this ref individual
+   * @return the energy based on the method in use
+   */
+  double gradient(
+      final Geometry ref,
+      final List<CartesianCoordinates> cartes,
+      final double[][] coms,
+      final List<double[][]> gradient,
+      final int counter);
 }

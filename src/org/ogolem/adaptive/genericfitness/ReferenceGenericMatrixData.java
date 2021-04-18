@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,44 +40,45 @@ import org.ogolem.properties.GenericMatrixProperty;
 
 /**
  * A trivial data object for generic matrix properties.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-30
  */
-public class ReferenceGenericMatrixData implements ReferenceInputData<GenericMatrixProperty>{
+public class ReferenceGenericMatrixData implements ReferenceInputData<GenericMatrixProperty> {
 
-    private static final long serialVersionUID = (long) 20180102;
-    
-    private final int refPoint;
-    private final long pointID;
-    private final int typeID;
-    
-    public ReferenceGenericMatrixData(final int refPoint, final long pointID, final int typeID){
-        this.refPoint = refPoint;
-        this.pointID = pointID;
-        this.typeID = typeID;
-    }
-    
-    private ReferenceGenericMatrixData(final ReferenceGenericMatrixData orig){
-        this.refPoint = orig.refPoint;
-        this.pointID = orig.pointID;
-        this.typeID = orig.typeID;
-    }
-    
-    @Override
-    public ReferenceGenericMatrixData clone() {
-        return new ReferenceGenericMatrixData(this);
-    }
+  private static final long serialVersionUID = (long) 20180102;
 
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
-    
-    public long getPointID(){
-        return pointID;
-    }
-    
-    public int getTypeID(){
-        return typeID;
-    }
+  private final int refPoint;
+  private final long pointID;
+  private final int typeID;
+
+  public ReferenceGenericMatrixData(final int refPoint, final long pointID, final int typeID) {
+    this.refPoint = refPoint;
+    this.pointID = pointID;
+    this.typeID = typeID;
+  }
+
+  private ReferenceGenericMatrixData(final ReferenceGenericMatrixData orig) {
+    this.refPoint = orig.refPoint;
+    this.pointID = orig.pointID;
+    this.typeID = orig.typeID;
+  }
+
+  @Override
+  public ReferenceGenericMatrixData copy() {
+    return new ReferenceGenericMatrixData(this);
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
+
+  public long getPointID() {
+    return pointID;
+  }
+
+  public int getTypeID() {
+    return typeID;
+  }
 }

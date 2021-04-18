@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,33 +39,39 @@ package org.ogolem.spectral;
 
 import java.io.Serializable;
 import java.util.List;
+import org.ogolem.generic.Copyable;
 
 /**
  * A simple interface for spectra.
+ *
  * @author Johannes Dieterich
  * @version 2014-11-29
  */
-public interface Spectrum extends Cloneable, Serializable {
-    
-    Spectrum clone();
-    
-    /**
-     * 
-     * @param spectra
-     * @param weights
-     * @param threshPeakLocEqual may be not respected
-     * @param coeffThresh may be not respected
-     * @return the combined spectrum
-     * @throws Exception 
-     */
-    Spectrum addUp(final List<Spectrum> spectra, final double[] weights, final double threshPeakLocEqual,
-            final double coeffThresh) throws Exception;
-    
-    void normalize();
-    
-    List<Peak> getPeaks();
-    
-    List<Peak> getPeaksInInterval(final double start, final double end);
-    
-    String getFormattedSpectrum();
+public interface Spectrum extends Copyable, Serializable {
+
+  @Override
+  Spectrum copy();
+
+  /**
+   * @param spectra
+   * @param weights
+   * @param threshPeakLocEqual may be not respected
+   * @param coeffThresh may be not respected
+   * @return the combined spectrum
+   * @throws Exception
+   */
+  Spectrum addUp(
+      final List<Spectrum> spectra,
+      final double[] weights,
+      final double threshPeakLocEqual,
+      final double coeffThresh)
+      throws Exception;
+
+  void normalize();
+
+  List<Peak> getPeaks();
+
+  List<Peak> getPeaksInInterval(final double start, final double end);
+
+  String getFormattedSpectrum();
 }

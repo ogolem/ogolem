@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,67 +38,69 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.spectral;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * A peak.
+ *
  * @author Johannes Dieterich
- * @version 2014-11-29
+ * @version 2020-12-30
  */
-public class Peak implements Comparable<Peak>, Serializable, Cloneable {
-    
-    private static final long serialVersionUID = (long) 20131201;
-    private final double location;
-    private double intensity;
+public class Peak implements Comparable<Peak>, Serializable, Copyable {
 
-    public Peak(final double loc, final double inte) {
-        this.location = loc;
-        this.intensity = inte;
+  private static final long serialVersionUID = (long) 20131201;
+  private final double location;
+  private double intensity;
+
+  public Peak(final double loc, final double inte) {
+    this.location = loc;
+    this.intensity = inte;
+  }
+
+  public Peak(final Peak orig) {
+    this.intensity = orig.intensity;
+    this.location = orig.location;
+  }
+
+  @Override
+  public Peak copy() {
+    return new Peak(this);
+  }
+
+  public double getLocation() {
+    return location;
+  }
+
+  public double getIntensity() {
+    return intensity;
+  }
+
+  public void setIntensity(final double intensity) {
+    assert (intensity == intensity);
+    assert (intensity >= 0.0);
+    this.intensity = intensity;
+  }
+
+  @Override
+  public int compareTo(final Peak p) {
+
+    final int BEFORE = -1;
+    final int EQUAL = 0;
+    final int AFTER = 1;
+
+    // optimization
+    if (this == p) {
+      return EQUAL;
     }
 
-    public Peak(final Peak orig) {
-        this.intensity = orig.intensity;
-        this.location = orig.location;
+    if (p.getLocation() > this.getLocation()) {
+      return BEFORE;
+    } else if (p.getLocation() < this.getLocation()) {
+      return AFTER;
+    } else if (p.getLocation() == this.getLocation()) {
+      return EQUAL;
+    } else {
+      throw new RuntimeException("ERROR: WTF situation in peak!");
     }
-
-    @Override
-    public Peak clone() {
-        return new Peak(this);
-    }
-
-    public double getLocation() {
-        return location;
-    }
-
-    public double getIntensity() {
-        return intensity;
-    }
-
-    public void setIntensity(final double intensity) {
-        assert (intensity == intensity);
-        assert (intensity >= 0.0);
-        this.intensity = intensity;
-    }
-
-    @Override
-    public int compareTo(final Peak p) {
-
-        final int BEFORE = -1;
-        final int EQUAL = 0;
-        final int AFTER = 1;
-
-        // optimization
-        if (this == p) {
-            return EQUAL;
-        }
-
-        if (p.getLocation() > this.getLocation()) {
-            return BEFORE;
-        } else if (p.getLocation() < this.getLocation()) {
-            return AFTER;
-        } else if (p.getLocation() == this.getLocation()) {
-            return EQUAL;
-        } else {
-            throw new RuntimeException("ERROR: WTF situation in peak!");
-        }
-    }
+  }
 }

@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,44 +40,47 @@ package org.ogolem.properties;
 
 /**
  * The dipole property.
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
 public class Dipole extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    public static final double MAXABSDIPOLE = 1000;
-    
-    public Dipole(final double dipole){
-        super(dipole);
-    }
-    
-    @Override
-    public Dipole clone(){
-        return new Dipole(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || Math.abs(this.getValue()) >= MAXABSDIPOLE){
-            this.scalar = -1000.0;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
-    }
-    
-    @Override
-    public String name() {
-        return "DIPOLE";
-    }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof Dipole);
+  private static final long serialVersionUID = (long) 20171215;
+  public static final double MAXABSDIPOLE = 1000;
+
+  public Dipole(final double dipole) {
+    super(dipole);
+  }
+
+  @Override
+  public Dipole copy() {
+    return new Dipole(this.getValue());
+  }
+
+  @Override
+  public boolean makeSensible() {
+    if (Double.isInfinite(this.getValue())
+        || Double.isNaN(this.getValue())
+        || Math.abs(this.getValue()) >= MAXABSDIPOLE) {
+      this.scalar = -1000.0;
+      return true;
     }
+    return false;
+  }
+
+  @Override
+  public String printableProperty() {
+    return "" + this.getValue();
+  }
+
+  @Override
+  public String name() {
+    return "DIPOLE";
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    return (p instanceof Dipole);
+  }
 }

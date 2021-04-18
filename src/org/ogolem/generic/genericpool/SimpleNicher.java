@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2013, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,74 +42,87 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * An abstract implementation of the nicher.
+ *
  * @author Johannes Dieterich
- * @version 2016-01-14
+ * @version 2020-12-30
  */
-public class SimpleNicher<E,T extends Optimizable<E>>  extends AbstractNicher<E,T> {
+public class SimpleNicher<E, T extends Optimizable<E>> extends AbstractNicher<E, T> {
 
-    private static final long serialVersionUID = (long) 20130403;
-    private final int maxIndividualsPerNiche;
-    
-    public SimpleNicher(final int maxIndividualsPerNiche){
-        super();
-        this.maxIndividualsPerNiche = maxIndividualsPerNiche;
+  private static final long serialVersionUID = (long) 20130403;
+  private final int maxIndividualsPerNiche;
+
+  public SimpleNicher(final int maxIndividualsPerNiche) {
+    super();
+    this.maxIndividualsPerNiche = maxIndividualsPerNiche;
+  }
+
+  @Override
+  public boolean cleanUp(final GenericPool<E, T> pool) {
+
+    final int poolSize = pool.getCurrentPoolSize();
+
+    // check for most populated niche
+    int maxPop = 0;
+    Niche maxPopNiche = null;
+    for (final Tuple<Niche, Integer> tup : nichePopulation) {
+      if (tup.getObject2() > maxPop) {
+        maxPop = tup.getObject2();
+        maxPopNiche = tup.getObject1().copy();
+      }
     }
 
-    @Override
-    public boolean cleanUp(final GenericPool<E,T> pool){
-        
-        final int poolSize = pool.getCurrentPoolSize();
-        
-        // check for most populated niche
-        int maxPop = 0;
-        Niche maxPopNiche = null;
-        for(final Tuple<Niche,Integer> tup : nichePopulation){
-            if(tup.getObject2() > maxPop){
-                maxPop = tup.getObject2();
-                maxPopNiche = tup.getObject1().clone();
-            }
-        }
-        
-        if(maxPop <= maxIndividualsPerNiche || maxPopNiche == null) {return false;}
-        
-        // delete the worst individual (and really NEVER delete the best one!)
-        boolean deleted = false;
-        PoolLoop: for(int j = poolSize -1; j >= 0; j--){
-            final GenericPoolEntry<E,T> entry = pool.getEntryAtPosition(j);
-            if(entry.getNiche().comp(maxPopNiche)){
-                if(j == 0){
-                    System.err.println("ERROR: Trying to delete the best individual. Exiting, first some hopefully helpful output...");
-                    System.err.println(" maxPop " + maxPop);
-                    System.err.println(" maxIndividualsPerNiche " + maxIndividualsPerNiche);
-                    System.err.println(" maxPopNiche " + maxPopNiche.getID());
-                    for(int x = 0; x < pool.getCurrentPoolSize(); x++){
-                        final GenericPoolEntry<E,T> en = pool.getEntryAtPosition(x);
-                        System.err.println(" Pool entry " + x + " " + en.getNiche().getID());
-                    }
-                    System.err.println("");
-                    nichePopulation.forEach((tup) -> {
-                        System.err.println(" Niche pop: " + tup.getObject1().getID() + " " + tup.getObject2());
-                    });
-                    System.err.println(" Serializing pool for post-mortem analysis...");
-                    pool.serializeMe();
-                    System.err.println("");
-                    System.err.println("This ain't Roy's reaper algorithm. Therefore: Bye. ;-)");
-                    System.exit(42);
-                }
-                if(DEBUG){System.out.println("DEBUG: Deleting individual at position " + j + " with ID " + maxPopNiche.getID());}
-                pool.removeIndividualAtPos(j); // Please note that this function DOES delete the niche from the nicher, hence, we do NOT need to update stats
-                deleted = true;
-                break PoolLoop;
-            }
-        }
-        
-        if(!deleted) {
-            System.err.println("ERROR: Although there is a niche w/ population exceeding maxPop, the nicher didn't delete anything. Contact author(s).");
-            System.err.println("maxPop " + maxPop);
-            System.err.println("maxPopNiche " + maxPopNiche.getID());
-            return deleted;
-        }
-        
-        return true;
+    if (maxPop <= maxIndividualsPerNiche || maxPopNiche == null) {
+      return false;
     }
+
+    // delete the worst individual (and really NEVER delete the best one!)
+    boolean deleted = false;
+    PoolLoop:
+    for (int j = poolSize - 1; j >= 0; j--) {
+      final GenericPoolEntry<E, T> entry = pool.getEntryAtPosition(j);
+      if (entry.getNiche().comp(maxPopNiche)) {
+        if (j == 0) {
+          System.err.println(
+              "ERROR: Trying to delete the best individual. Exiting, first some hopefully helpful output...");
+          System.err.println(" maxPop " + maxPop);
+          System.err.println(" maxIndividualsPerNiche " + maxIndividualsPerNiche);
+          System.err.println(" maxPopNiche " + maxPopNiche.getID());
+          for (int x = 0; x < pool.getCurrentPoolSize(); x++) {
+            final GenericPoolEntry<E, T> en = pool.getEntryAtPosition(x);
+            System.err.println(" Pool entry " + x + " " + en.getNiche().getID());
+          }
+          System.err.println("");
+          nichePopulation.forEach(
+              (tup) -> {
+                System.err.println(
+                    " Niche pop: " + tup.getObject1().getID() + " " + tup.getObject2());
+              });
+          System.err.println(" Serializing pool for post-mortem analysis...");
+          pool.serializeMe();
+          System.err.println("");
+          System.err.println("This ain't Roy's reaper algorithm. Therefore: Bye. ;-)");
+          System.exit(42);
+        }
+        if (DEBUG) {
+          System.out.println(
+              "DEBUG: Deleting individual at position " + j + " with ID " + maxPopNiche.getID());
+        }
+        pool.removeIndividualAtPos(
+            j); // Please note that this function DOES delete the niche from the nicher, hence, we
+        // do NOT need to update stats
+        deleted = true;
+        break PoolLoop;
+      }
+    }
+
+    if (!deleted) {
+      System.err.println(
+          "ERROR: Although there is a niche w/ population exceeding maxPop, the nicher didn't delete anything. Contact author(s).");
+      System.err.println("maxPop " + maxPop);
+      System.err.println("maxPopNiche " + maxPopNiche.getID());
+      return deleted;
+    }
+
+    return true;
+  }
 }

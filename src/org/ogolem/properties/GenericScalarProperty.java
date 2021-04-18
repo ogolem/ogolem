@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2017-2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,55 +38,57 @@ package org.ogolem.properties;
 
 /**
  * A generic scalar property, i.e., a bare bones implementation.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-29
  */
 public class GenericScalarProperty extends ScalarProperty {
 
-    private static final long serialVersionUID = (long) 20171215;
-    
-    private final long id;
-    
-    public GenericScalarProperty(final double data, final long id){
-        super(data);
-        this.id = id;
-    }
-    
-    public GenericScalarProperty(final GenericScalarProperty orig){
-        super(orig.scalar);
-        this.id = orig.id;
-    }
-    
-    @Override
-    public GenericScalarProperty clone() {
-        return new GenericScalarProperty(this);
+  private static final long serialVersionUID = (long) 20171215;
+
+  private final long id;
+
+  public GenericScalarProperty(final double data, final long id) {
+    super(data);
+    this.id = id;
+  }
+
+  public GenericScalarProperty(final GenericScalarProperty orig) {
+    super(orig.scalar);
+    this.id = orig.id;
+  }
+
+  @Override
+  public GenericScalarProperty copy() {
+    return new GenericScalarProperty(this);
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    if (!(p instanceof GenericScalarProperty)) {
+      return false;
     }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        if(!(p instanceof GenericScalarProperty)) {return false;}
-        
-        final GenericScalarProperty gp = (GenericScalarProperty) p;
-        return (gp.id == id);
-    }
+    final GenericScalarProperty gp = (GenericScalarProperty) p;
+    return (gp.id == id);
+  }
 
-    @Override
-    public boolean makeSensible() {
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue())){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
+  @Override
+  public boolean makeSensible() {
+    if (Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue())) {
+      this.scalar = 0.0;
+      return true;
     }
+    return false;
+  }
 
-    @Override
-    public String printableProperty() {
-        return "" + this.getValue();
-    }
+  @Override
+  public String printableProperty() {
+    return "" + this.getValue();
+  }
 
-    @Override
-    public String name() {
-        return "GENERICSCALAR" + id;
-    }
-    
+  @Override
+  public String name() {
+    return "GENERICSCALAR" + id;
+  }
 }

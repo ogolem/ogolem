@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,16 +37,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * Interface for collision strength computers.
+ *
  * @author Johannes Dieterich
- * @version 2015-07-20
+ * @version 2020-12-30
  */
-public interface CollisionStrengthComputer extends Serializable, Cloneable {
-    
-    CollisionStrengthComputer clone();
-    
-    double calculateCollisionStrength(final int atom1, final int atom2, final double distance, final double idealDistance);
-    
+public interface CollisionStrengthComputer extends Serializable, Copyable {
+
+  @Override
+  CollisionStrengthComputer copy();
+
+  double calculateCollisionStrength(
+      final int atom1, final int atom2, final double distance, final double idealDistance);
 }

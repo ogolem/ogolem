@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2016-2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,125 +37,154 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 /**
- * A very hacky way to enforce/bias towards a cluster actually adsorbing on top the surface
- * and not below it. XX/"0" atoms are understood as the lowest most layer and, if any
- * other atom is below this in z component, large energy and gradient contributions
- * are added for this atom to push it up.
- * This version uses a step potential for eIncr>0 && gradIncr=0,
- * or a linear ramp potential for eIncr=0 && gradIncr>0, or no potential otherwise.
+ * A very hacky way to enforce/bias towards a cluster actually adsorbing on top the surface and not
+ * below it. XX/"0" atoms are understood as the lowest most layer and, if any other atom is below
+ * this in z component, large energy and gradient contributions are added for this atom to push it
+ * up. This version uses a step potential for eIncr>0 && gradIncr=0, or a linear ramp potential for
+ * eIncr=0 && gradIncr>0, or no potential otherwise.
+ *
  * @author Johannes Dieterich
- * @version 2017-03-03
+ * @version 2020-12-29
  */
 class HackySurfaceAdsorptionBiaser implements CartesianFullBackend {
 
-    private static final long serialVersionUID = (long) 20161019;
-    
-    private final double eIncr;
-    private final double gradIncr;
-    
-    HackySurfaceAdsorptionBiaser(final double eIncrement, final double gradIncrement){
-        
-        assert(eIncrement >= 0.0);
-        assert(gradIncrement >= 0.0);
-        
-        this.eIncr = eIncrement;
-        this.gradIncr = gradIncrement;
-    }
-    
-    private HackySurfaceAdsorptionBiaser(final HackySurfaceAdsorptionBiaser orig){
-        this.eIncr = orig.eIncr;
-        this.gradIncr = orig.gradIncr;
-    }
-    
-    @Override
-    public HackySurfaceAdsorptionBiaser clone() {
-        return new HackySurfaceAdsorptionBiaser(this);
+  private static final long serialVersionUID = (long) 20161019;
+
+  private final double eIncr;
+  private final double gradIncr;
+
+  HackySurfaceAdsorptionBiaser(final double eIncrement, final double gradIncrement) {
+
+    assert (eIncrement >= 0.0);
+    assert (gradIncrement >= 0.0);
+
+    this.eIncr = eIncrement;
+    this.gradIncr = gradIncrement;
+  }
+
+  private HackySurfaceAdsorptionBiaser(final HackySurfaceAdsorptionBiaser orig) {
+    this.eIncr = orig.eIncr;
+    this.gradIncr = orig.gradIncr;
+  }
+
+  @Override
+  public HackySurfaceAdsorptionBiaser copy() {
+    return new HackySurfaceAdsorptionBiaser(this);
+  }
+
+  @Override
+  public String getMethodID() {
+    return "hacky top surface adsorption biaser";
+  }
+
+  @Override
+  public void gradientCalculation(
+      final long lID,
+      final int iIteration,
+      final double[] xyz1D,
+      final String[] saAtomTypes,
+      final short[] atomNos,
+      final int[] atsPerMol,
+      final double[] energyparts,
+      final int iNoOfAtoms,
+      final float[] faCharges,
+      final short[] spins,
+      final BondInfo bonds,
+      final Gradient grad,
+      final boolean hasRigidEnv) {
+
+    grad.zeroGradient();
+
+    int beginEnv = 0;
+    for (int i = 0; i < atsPerMol.length - 1; i++) {
+      beginEnv += atsPerMol[i];
     }
 
-    @Override
-    public String getMethodID() {
-        return "hacky top surface adsorption biaser";
+    final double[][] gradMat = grad.getTotalGradient();
+    double eAddition = 0.0;
+    for (int at1 = beginEnv; at1 < iNoOfAtoms; at1++) {
+
+      final short at1No = atomNos[at1];
+      if (at1No != 0) {
+        continue;
+      }
+
+      final double z1 = xyz1D[2 * iNoOfAtoms + at1];
+
+      for (int at2 = 0; at2 < beginEnv; at2++) {
+
+        final short at2No = atomNos[at2];
+        if (at2No == 0) {
+          continue;
+        } // not between dummies
+
+        final double z2 = xyz1D[2 * iNoOfAtoms + at2];
+
+        if (z2 < z1) {
+          if (eIncr > 0.0 && gradIncr == 0.0) { // step potential (which has zero gradient)
+            eAddition += eIncr;
+          } else if (eIncr == 0.0 && gradIncr > 0.0) { // linear ramp potential
+            eAddition += gradIncr * (z1 - z2);
+            gradMat[2][at2] -= gradIncr;
+          }
+          // else: no additional potential & gradient
+        }
+      }
     }
 
-    @Override
-    public void gradientCalculation(final long lID, final int iIteration, final double[] xyz1D, final String[] saAtomTypes,
-            final short[] atomNos, final int[] atsPerMol, final double[] energyparts, final int iNoOfAtoms, final float[] faCharges,
-            final short[] spins, final BondInfo bonds, final Gradient grad, final boolean hasRigidEnv) {
-        
-        grad.zeroGradient();
-        
-        int beginEnv = 0;
-        for(int i = 0; i < atsPerMol.length - 1; i++){
-            beginEnv += atsPerMol[i];
-        }
-        
-        final double[][] gradMat = grad.getTotalGradient();
-        double eAddition = 0.0;
-        for(int at1 = beginEnv; at1 < iNoOfAtoms; at1++){
-            
-            final short at1No = atomNos[at1];
-            if(at1No != 0){continue;}
-            
-            final double z1 = xyz1D[2*iNoOfAtoms + at1];
-            
-            for(int at2 = 0; at2 < beginEnv; at2++){
-                
-                final short at2No = atomNos[at2];
-                if(at2No == 0){continue;} // not between dummies
-                
-                final double z2 = xyz1D[2*iNoOfAtoms + at2];
-                
-                if(z2 < z1){
-                    if(eIncr > 0.0 && gradIncr == 0.0){ // step potential (which has zero gradient)
-                        eAddition += eIncr;
-                    }else if(eIncr == 0.0 && gradIncr > 0.0){ // linear ramp potential
-                        eAddition += gradIncr*(z1-z2);
-                        gradMat[2][at2] -= gradIncr;                        
-                    }
-                    // else: no additional potential & gradient
-                }
-            }
-        }
-        
-        grad.setTotalEnergy(eAddition);
+    grad.setTotalEnergy(eAddition);
+  }
+
+  @Override
+  public double energyCalculation(
+      final long lID,
+      final int iIteration,
+      final double[] xyz1D,
+      final String[] saAtomTypes,
+      final short[] atomNos,
+      final int[] atsPerMol,
+      final double[] energyparts,
+      final int iNoOfAtoms,
+      final float[] faCharges,
+      final short[] spins,
+      final BondInfo bonds,
+      final boolean hasRigidEnv) {
+
+    int beginEnv = 0;
+    for (int i = 0; i < atsPerMol.length - 1; i++) {
+      beginEnv += atsPerMol[i];
     }
 
-    @Override
-    public double energyCalculation(final long lID, final int iIteration, final double[] xyz1D, final String[] saAtomTypes,
-            final short[] atomNos, final int[] atsPerMol, final double[] energyparts, final int iNoOfAtoms, final float[] faCharges,
-            final short[] spins, final BondInfo bonds, final boolean hasRigidEnv) {
-        
-        int beginEnv = 0;
-        for(int i = 0; i < atsPerMol.length - 1; i++){
-            beginEnv += atsPerMol[i];
+    double eAddition = 0.0;
+    for (int at1 = beginEnv; at1 < iNoOfAtoms; at1++) {
+
+      final short at1No = atomNos[at1];
+      if (at1No != 0) {
+        continue;
+      }
+
+      final double z1 = xyz1D[2 * iNoOfAtoms + at1];
+
+      for (int at2 = 0; at2 < beginEnv; at2++) {
+
+        final short at2No = atomNos[at2];
+        if (at2No == 0) {
+          continue;
+        } // not between dummies
+
+        final double z2 = xyz1D[2 * iNoOfAtoms + at2];
+
+        if (z2 < z1) {
+          if (eIncr > 0.0 && gradIncr == 0.0) { // step potential
+            eAddition += eIncr;
+          } else if (eIncr == 0.0 && gradIncr > 0.0) {
+            eAddition += gradIncr * (z1 - z2);
+          }
+          // else: no additional potential
         }
-        
-        double eAddition = 0.0;
-        for(int at1 = beginEnv; at1 < iNoOfAtoms; at1++){
-            
-            final short at1No = atomNos[at1];
-            if(at1No != 0){continue;}
-            
-            final double z1 = xyz1D[2*iNoOfAtoms + at1];
-            
-            for(int at2 = 0; at2 < beginEnv; at2++){
-                
-                final short at2No = atomNos[at2];
-                if(at2No == 0){continue;} // not between dummies
-                
-                final double z2 = xyz1D[2*iNoOfAtoms + at2];
-                
-                if(z2 < z1){
-                    if(eIncr > 0.0 && gradIncr == 0.0){ // step potential
-                        eAddition += eIncr;
-                    }else if(eIncr == 0.0 && gradIncr > 0.0){
-                        eAddition += gradIncr*(z1-z2);                    
-                    }
-                    // else: no additional potential
-                }
-            }
-        }
-        
-        return eAddition;
+      }
     }
+
+    return eAddition;
+  }
 }

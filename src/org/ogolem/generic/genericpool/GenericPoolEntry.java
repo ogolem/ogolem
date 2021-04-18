@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2012, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -43,64 +43,65 @@ import org.ogolem.generic.Optimizable;
 
 /**
  * An individual for the generic pool
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-30
  */
-public class GenericPoolEntry<E,T extends Optimizable<E>> implements Serializable, Copyable {
-    
-    private static final long serialVersionUID = (long) 20120215;
-    
-    private double fitness = Double.MAX_VALUE;
-    private T individual = null;
-    private Niche niche = null;
-    
-    GenericPoolEntry(){}
-    
-    GenericPoolEntry(final T individual, final double fitness){
-        this.fitness = fitness;
-        this.individual = individual;
-        this.niche = null;
-    }
-    
-    GenericPoolEntry(final T individual, final double fitness, final Niche niche){
-        this.fitness = fitness;
-        this.individual = individual;
-        this.niche = niche;
-    }
-    
-    @SuppressWarnings("unchecked")
-    GenericPoolEntry(final GenericPoolEntry<E,T> orig){
-        this.fitness = orig.fitness;
-        this.individual = (orig.individual == null) ? null : (T) orig.individual.copy();
-        this.niche = (orig.niche == null) ? null : orig.niche.clone();
-    }
-    
-    @Override
-    public GenericPoolEntry<E,T> copy(){
-        return new GenericPoolEntry<>(this);
-    }
-    
-    public void setFitness(final double fit){
-        fitness = fit;
-    }
-    
-    public double getFitness(){
-        return fitness;
-    }
-    
-    public void setIndividual(final T individuum){
-       individual = individuum;
-    }
-    
-    public T getIndividual(){
-        return individual;
-    }
-    
-    public void setNiche(final Niche n){
-        niche = n;
-    }
-    
-    public Niche getNiche(){
-        return niche;
-    }
+public class GenericPoolEntry<E, T extends Optimizable<E>> implements Serializable, Copyable {
+
+  private static final long serialVersionUID = (long) 20120215;
+
+  private double fitness = Double.MAX_VALUE;
+  private T individual = null;
+  private Niche niche = null;
+
+  GenericPoolEntry() {}
+
+  GenericPoolEntry(final T individual, final double fitness) {
+    this.fitness = fitness;
+    this.individual = individual;
+    this.niche = null;
+  }
+
+  GenericPoolEntry(final T individual, final double fitness, final Niche niche) {
+    this.fitness = fitness;
+    this.individual = individual;
+    this.niche = niche;
+  }
+
+  @SuppressWarnings("unchecked")
+  GenericPoolEntry(final GenericPoolEntry<E, T> orig) {
+    this.fitness = orig.fitness;
+    this.individual = (orig.individual == null) ? null : (T) orig.individual.copy();
+    this.niche = (orig.niche == null) ? null : orig.niche.copy();
+  }
+
+  @Override
+  public GenericPoolEntry<E, T> copy() {
+    return new GenericPoolEntry<>(this);
+  }
+
+  public void setFitness(final double fit) {
+    fitness = fit;
+  }
+
+  public double getFitness() {
+    return fitness;
+  }
+
+  public void setIndividual(final T individuum) {
+    individual = individuum;
+  }
+
+  public T getIndividual() {
+    return individual;
+  }
+
+  public void setNiche(final Niche n) {
+    niche = n;
+  }
+
+  public Niche getNiche() {
+    return niche;
+  }
 }

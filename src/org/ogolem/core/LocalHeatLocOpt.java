@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2013, J. M. Dieterich
-              2016-2017, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,72 +43,86 @@ import org.ogolem.generic.GenericLocOpt;
 import org.ogolem.heat.LocalHeatPulses;
 
 /**
- * Uses Moebius et al local heat pulses (which are meant as a global
- * optimization) as a local optimization backend.
+ * Uses Moebius et al local heat pulses (which are meant as a global optimization) as a local
+ * optimization backend.
+ *
  * @author Johannes Dieterich
- * @version 2017-06-25
+ * @version 2020-12-30
  */
-public class LocalHeatLocOpt extends GenericAbstractLocOpt<Molecule,Geometry> {
+public class LocalHeatLocOpt extends GenericAbstractLocOpt<Molecule, Geometry> {
 
-    private static final long serialVersionUID = (long) 20170625;
-    
-    private final GenericLocOpt<Molecule,Geometry> locopt;
-    private final CollisionDetectionEngine cd;
-    private final LocalHeatPulses.Configuration heatConfig;
-    private final double acceptableFitness;
-    private final double blowBonds;
-    private final double blowDissoc;
-    private final GlobalConfig config;
-    
-    LocalHeatLocOpt(final GlobalConfig config, final GenericLocOpt<Molecule,Geometry> refLoc,
-            final LocalHeatPulses.Configuration heatConfig) throws Exception {
-        super(refLoc.getBackend());
-        this.locopt = refLoc;
-        this.cd = new CollisionDetection(config.whichCollisionEngine);
-        this.heatConfig = heatConfig;
-        this.acceptableFitness = config.acceptableFitness;
-        this.blowBonds = config.blowFacBondDetect;
-        this.blowDissoc = config.blowFacDissocDetect;
-        this.config = config;
+  private static final long serialVersionUID = (long) 20170625;
+
+  private final GenericLocOpt<Molecule, Geometry> locopt;
+  private final CollisionDetectionEngine cd;
+  private final LocalHeatPulses.Configuration heatConfig;
+  private final double acceptableFitness;
+  private final double blowBonds;
+  private final double blowDissoc;
+  private final GlobalConfig config;
+
+  LocalHeatLocOpt(
+      final GlobalConfig config,
+      final GenericLocOpt<Molecule, Geometry> refLoc,
+      final LocalHeatPulses.Configuration heatConfig)
+      throws Exception {
+    super(refLoc.getBackend());
+    this.locopt = refLoc;
+    this.cd = new CollisionDetection(config.whichCollisionEngine);
+    this.heatConfig = heatConfig;
+    this.acceptableFitness = config.acceptableFitness;
+    this.blowBonds = config.blowFacBondDetect;
+    this.blowDissoc = config.blowFacDissocDetect;
+    this.config = config;
+  }
+
+  private LocalHeatLocOpt(final LocalHeatLocOpt orig) {
+    super(orig);
+    this.locopt = orig.locopt.copy();
+    this.cd = orig.cd.copy();
+    this.heatConfig = new LocalHeatPulses.Configuration(orig.heatConfig);
+    this.acceptableFitness = orig.acceptableFitness;
+    this.blowBonds = orig.blowBonds;
+    this.blowDissoc = orig.blowDissoc;
+    this.config = orig.config;
+  }
+
+  @Override
+  public LocalHeatLocOpt copy() {
+    return new LocalHeatLocOpt(this);
+  }
+
+  @Override
+  public String getMyID() {
+    String id = "Local heat pulses: " + locopt.getMyID();
+    id += "\n" + heatConfig.printConfig();
+
+    return id;
+  }
+
+  @Override
+  protected Geometry optimize(Geometry gStartGeometry) {
+
+    // we pull a new initer here, as we otherwise above run into an internal cyclic dependency (the
+    // initer depends on the backend, which depends on the locopt, which depends on the... initer).
+    GenericInitializer<Molecule, Geometry> initer = null;
+    try {
+      initer = config.getInitializer();
+    } catch (Exception e) {
+      throw new RuntimeException("Getting the initializer not working. This should not happen!", e);
     }
-    
-    private LocalHeatLocOpt(final LocalHeatLocOpt orig){
-        super(orig);
-        this.locopt = orig.locopt.copy();
-        this.cd = orig.cd.clone();
-        this.heatConfig = new LocalHeatPulses.Configuration(orig.heatConfig);
-        this.acceptableFitness = orig.acceptableFitness;
-        this.blowBonds = orig.blowBonds;
-        this.blowDissoc = orig.blowDissoc;
-        this.config = orig.config;
-    }
-    
-    @Override
-    public LocalHeatLocOpt copy(){
-        return new LocalHeatLocOpt(this);
-    }
-    
-    @Override
-    public String getMyID(){
-        String id = "Local heat pulses: " + locopt.getMyID();
-        id += "\n" + heatConfig.printConfig();
-        
-        return id;
-    }
-        
-    @Override
-    protected Geometry optimize(Geometry gStartGeometry){
-        
-        // we pull a new initer here, as we otherwise above run into an internal cyclic dependency (the initer depends on the backend, which depends on the locopt, which depends on the... initer).
-        GenericInitializer<Molecule,Geometry> initer =  null;
-        try{
-            initer = config.getInitializer();
-        } catch(Exception e){
-            throw new RuntimeException("Getting the initializer not working. This should not happen!",e);
-        }
-        
-        assert(initer != null);
-        
-        return LocalHeatPulses.cycle(gStartGeometry, locopt, cd, blowBonds, blowDissoc, gStartGeometry.getBondInfo(), heatConfig, acceptableFitness, initer);
-    }
+
+    assert (initer != null);
+
+    return LocalHeatPulses.cycle(
+        gStartGeometry,
+        locopt,
+        cd,
+        blowBonds,
+        blowDissoc,
+        gStartGeometry.getBondInfo(),
+        heatConfig,
+        acceptableFitness,
+        initer);
+  }
 }

@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,32 +46,45 @@ import org.ogolem.adaptive.genericfitness.PropertyCalculator;
 import org.ogolem.adaptive.genericfitness.ReferenceInputData;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
+import org.ogolem.generic.Copyable;
 import org.ogolem.properties.Property;
 
 /**
  * Kind of atomics for ALL kinds of reparametrizable methods.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-16
+ * @version 2020-12-29
  */
-public interface Adaptivable extends Cloneable, Serializable {
-    
-    Adaptivable clone();
+public interface Adaptivable extends Copyable, Serializable {
 
-    @Deprecated
-    double energyOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, int geomID, final BondInfo bonds);
+  @Override
+  Adaptivable copy();
 
-    @Deprecated
-    double gradientOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, int geomID, final BondInfo bonds,
-            final double[] grad);
+  @Deprecated
+  double energyOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      int geomID,
+      final BondInfo bonds);
 
-    double[][] minMaxBordersForParams(final AdaptiveParameters params);
+  @Deprecated
+  double gradientOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      int geomID,
+      final BondInfo bonds,
+      final double[] grad);
 
-    AdaptiveParameters createInitialParameterStub(final ArrayList<CartesianCoordinates> refCartes,
-            final String sMethod);
+  double[][] minMaxBordersForParams(final AdaptiveParameters params);
 
-    <T extends Property, V extends ReferenceInputData<T>> PropertyCalculator<T,V> getCalculatorForProperty(final T property, final V data);
-    
-    List<? extends Property> runAllPropertyCalcs(final AdaptiveParameters params, final List<GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>>> referencePoints);
+  AdaptiveParameters createInitialParameterStub(
+      final ArrayList<CartesianCoordinates> refCartes, final String sMethod);
+
+  <T extends Property, V extends ReferenceInputData<T>>
+      PropertyCalculator<T, V> getCalculatorForProperty(final T property, final V data);
+
+  List<? extends Property> runAllPropertyCalcs(
+      final AdaptiveParameters params,
+      final List<GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>>>
+          referencePoints);
 }

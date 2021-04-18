@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,36 +41,37 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * A no crossover, essentially a double copy machine.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class NoCrossover<E, T extends Optimizable<E>> implements GenericCrossover<E,T> {
+public class NoCrossover<E, T extends Optimizable<E>> implements GenericCrossover<E, T> {
 
-    private static final long serialVersionUID = (long) 20200429;
-    
-    @Override
-    public GenericCrossover<E, T> clone() {
-        return new NoCrossover<>();
-    }
+  private static final long serialVersionUID = (long) 20200429;
 
-    @Override
-    public String getMyID() {
-        return "NO CROSSOVER";
-    }
+  @Override
+  public GenericCrossover<E, T> copy() {
+    return new NoCrossover<>();
+  }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
-        
-        final T child1 = (T) mother.copy();
-        child1.setID(futureID);
-        final T child2 = (T) father.copy();
-        child2.setID(futureID);
-        return new Tuple<>(child1,child2);
-    }
+  @Override
+  public String getMyID() {
+    return "NO CROSSOVER";
+  }
 
-    @Override
-    public short hasPriority() {
-        return -1;
-    }
+  @Override
+  @SuppressWarnings("unchecked")
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    final T child1 = (T) mother.copy();
+    child1.setID(futureID);
+    final T child2 = (T) father.copy();
+    child2.setID(futureID);
+    return new Tuple<>(child1, child2);
+  }
+
+  @Override
+  public short hasPriority() {
+    return -1;
+  }
 }

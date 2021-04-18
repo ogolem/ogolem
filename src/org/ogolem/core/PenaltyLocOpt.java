@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2010-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,113 +39,119 @@ package org.ogolem.core;
 
 /**
  * Adds a penalty function to an arbitrary local optimization.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-23
+ * @version 2020-12-29
  */
-class PenaltyLocOpt implements Newton{
+class PenaltyLocOpt implements Newton {
 
-    // the ID
-    private static final long serialVersionUID = (long) 20101108;
+  // the ID
+  private static final long serialVersionUID = (long) 20101108;
 
-    private final Newton locopt;
+  private final Newton locopt;
 
-    private final AdditivePenaltyFunction penalty;
+  private final AdditivePenaltyFunction penalty;
 
-    PenaltyLocOpt(final GlobalConfig globConf, final Newton newton){
-        locopt = newton;
+  PenaltyLocOpt(final GlobalConfig globConf, final Newton newton) {
+    locopt = newton;
 
-        if(globConf.penalty == null){
-            penalty = null;
-        } else{
-            penalty = globConf.penalty.clone();
-        }
+    if (globConf.penalty == null) {
+      penalty = null;
+    } else {
+      penalty = globConf.penalty.copy();
+    }
+  }
+
+  private PenaltyLocOpt(final PenaltyLocOpt orig) {
+    locopt = orig.locopt.copy();
+    if (orig.penalty == null) {
+      penalty = null;
+    } else {
+      penalty = orig.penalty.copy();
+    }
+  }
+
+  @Override
+  public PenaltyLocOpt copy() {
+    return new PenaltyLocOpt(this);
+  }
+
+  @Override
+  public String myIDandMethod() {
+    return "Penalty LocOpt with " + locopt.myIDandMethod();
+  }
+
+  @Override
+  public Geometry localOptimization(Geometry geom) {
+
+    // optimize
+    geom = locopt.localOptimization(geom);
+
+    if (penalty == null) {
+      System.err.println("ERROR: No penalty function defined.");
+      return geom;
     }
 
-    private PenaltyLocOpt(final PenaltyLocOpt orig){
-        locopt = orig.locopt.clone();
-        if(orig.penalty == null){
-            penalty = null;
-        } else{
-            penalty = orig.penalty.clone();
-        }
-    }
+    // penalty
+    final double dPenalty = penalty.penalty(geom);
 
-    @Override
-    public PenaltyLocOpt clone(){
-        return new PenaltyLocOpt(this);
-    }
+    // put in
+    final double dNewFitness = geom.getFitness() + dPenalty;
+    geom.setFitness(dNewFitness);
 
-    @Override
-    public String myIDandMethod(){
-        return "Penalty LocOpt with " + locopt.myIDandMethod();
-    }
+    return geom;
+  }
 
-    @Override
-    public Geometry localOptimization(Geometry geom){
+  @Override
+  public Molecule localOptimization(Molecule molecule) {
 
-        // optimize
-        geom = locopt.localOptimization(geom);
+    // optimize
+    molecule = locopt.localOptimization(molecule);
 
-        if(penalty == null){
-            System.err.println("ERROR: No penalty function defined.");
-            return geom;
-        }
+    // penalty
+    final double dPenalty = penalty.penalty(molecule);
 
-        // penalty
-        final double dPenalty = penalty.penalty(geom);
+    // put in
+    final double dNewFitness = molecule.getEnergy() + dPenalty;
+    molecule.setEnergy(dNewFitness);
 
-        // put in
-        final double dNewFitness = geom.getFitness() + dPenalty;
-        geom.setFitness(dNewFitness);
+    return molecule;
+  }
 
-        return geom;
-    }
+  @Override
+  public CartesianCoordinates cartesToCartes(
+      long id,
+      CartesianCoordinates cartes,
+      boolean[][] constraints,
+      boolean isConstricted,
+      final BondInfo bonds)
+      throws Exception {
 
-    @Override
-    public Molecule localOptimization(Molecule molecule){
+    // optimize
+    cartes = locopt.cartesToCartes(id, cartes, constraints, isConstricted, bonds);
 
-        // optimize
-        molecule = locopt.localOptimization(molecule);
+    // penalty
+    final double penaltyAdd = penalty.penalty(cartes);
 
-        // penalty
-        final double dPenalty = penalty.penalty(molecule);
+    // put in
+    final double newFitness = cartes.getEnergy() + penaltyAdd;
+    cartes.setEnergy(newFitness);
 
-        // put in
-        final double dNewFitness = molecule.getEnergy() + dPenalty;
-        molecule.setEnergy(dNewFitness);
+    return cartes;
+  }
 
-        return molecule;
-    }
+  @Override
+  public CartesianFullBackend getBackend() {
+    return locopt.getBackend();
+  }
 
-    @Override
-    public CartesianCoordinates cartesToCartes(long id, CartesianCoordinates cartes,
-            boolean[][] constraints, boolean isConstricted, final BondInfo bonds) throws Exception{
+  @Override
+  public long getNumberOfGeomLocalOpts() {
+    return locopt.getNumberOfGeomLocalOpts();
+  }
 
-        // optimize
-        cartes = locopt.cartesToCartes(id, cartes, constraints, isConstricted, bonds);
-
-        // penalty
-        final double penaltyAdd = penalty.penalty(cartes);
-
-        // put in
-        final double newFitness = cartes.getEnergy() + penaltyAdd;
-        cartes.setEnergy(newFitness);
-
-        return cartes;
-    }
-    
-    @Override
-    public CartesianFullBackend getBackend(){
-        return locopt.getBackend();
-    }
-    
-    @Override
-    public long getNumberOfGeomLocalOpts(){
-        return locopt.getNumberOfGeomLocalOpts();
-    }
-    
-    @Override
-    public long getNumberOfMolLocalOpts(){
-        return locopt.getNumberOfMolLocalOpts();
-    }
+  @Override
+  public long getNumberOfMolLocalOpts() {
+    return locopt.getNumberOfMolLocalOpts();
+  }
 }

@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015-2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,44 +41,46 @@ import org.ogolem.properties.Density;
 
 /**
  * Data for forces calculations.
+ *
  * @author Johannes Dieterich
- * @version 2017-09-25
+ * @version 2020-12-30
  */
-public class ReferenceDensityData<V extends StructuralData> implements ReferenceInputData<Density>{
+public class ReferenceDensityData<V extends StructuralData> implements ReferenceInputData<Density> {
 
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final ReferenceGeomData<Density,V> geom;
-    private final int refPoint;
-    private final String tag;
-    
-    public ReferenceDensityData(final int refPoint, final String tag, final ReferenceGeomData<Density,V> geom){
-        this.geom = geom;
-        this.refPoint = refPoint;
-        this.tag = tag;
-    }
-    
-    private ReferenceDensityData(final ReferenceDensityData<V> orig){
-        this.geom = orig.geom.clone();
-        this.refPoint = orig.refPoint;
-        this.tag = orig.tag;
-    }
-    
-    @Override
-    public ReferenceDensityData<V> clone() {
-        return new ReferenceDensityData<>(this);
-    }
-    
-    public ReferenceGeomData<Density,V> getGeomData(){
-        return geom;
-    }
-    
-    public String getTag(){
-        return tag;
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final ReferenceGeomData<Density, V> geom;
+  private final int refPoint;
+  private final String tag;
+
+  public ReferenceDensityData(
+      final int refPoint, final String tag, final ReferenceGeomData<Density, V> geom) {
+    this.geom = geom;
+    this.refPoint = refPoint;
+    this.tag = tag;
+  }
+
+  private ReferenceDensityData(final ReferenceDensityData<V> orig) {
+    this.geom = orig.geom.copy();
+    this.refPoint = orig.refPoint;
+    this.tag = orig.tag;
+  }
+
+  @Override
+  public ReferenceDensityData<V> copy() {
+    return new ReferenceDensityData<>(this);
+  }
+
+  public ReferenceGeomData<Density, V> getGeomData() {
+    return geom;
+  }
+
+  public String getTag() {
+    return tag;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
 }

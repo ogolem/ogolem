@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -40,83 +40,84 @@ import org.ogolem.random.Lottery;
 
 /**
  * A half-sphere, where the base is always in the x-y plane.
+ *
  * @author Johannes Dieterich
- * @version 2020-06-22
+ * @version 2020-12-30
  */
 public class HalfSphereSpace implements AllowedSpace {
-    
-    private static final long serialVersionUID = (long) 20200622;
 
-    private final Lottery random;
-    
-    private final double radius;
-    private final double[] center;
-    
-    HalfSphereSpace(final double[] middle, final double radius){
-        this.center = middle;
-        this.radius = radius;
-        this.random = Lottery.getInstance();
-    }
-    
-    private HalfSphereSpace(final HalfSphereSpace orig){
-        this.radius = orig.radius;
-        this.center = orig.center;
-        this.random = Lottery.getInstance();
-    }
-    
-    @Override
-    public HalfSphereSpace clone() {
-        return new HalfSphereSpace(this);
-    }
+  private static final long serialVersionUID = (long) 20200622;
 
-    @Override
-    public double[] getPointInSpace() {
-        
-        // we need some randoms
-        final double[] spherical = new double[3];
-        // radius
-        spherical[0] = radius * random.nextDouble();
+  private final Lottery random;
 
-        // phi and omega
-        spherical[1] = random.nextDouble() * 2.0 * Math.PI;
-        spherical[2] = random.nextDouble() * Math.PI;
+  private final double radius;
+  private final double[] center;
 
-        // translate to cartesian
-        final double[] point = new double[3];
-        CoordTranslation.sphericalToCartesianCoord(spherical, point);
+  HalfSphereSpace(final double[] middle, final double radius) {
+    this.center = middle;
+    this.radius = radius;
+    this.random = Lottery.getInstance();
+  }
 
-        // move with respect to middle
-        for(int i = 0; i < 3; i++){
-            point[i] += center[i];
-        }
-        
-        // now ensure that it is in the upper half of the sphere
-        if(point[2] < center[2]){
-            final double diff = center[2] - point[2];
-            point[2] = center[2] + diff;
-        }
-        
-        assert(isPointInSpace(point));
+  private HalfSphereSpace(final HalfSphereSpace orig) {
+    this.radius = orig.radius;
+    this.center = orig.center;
+    this.random = Lottery.getInstance();
+  }
 
-        return point;
+  @Override
+  public HalfSphereSpace copy() {
+    return new HalfSphereSpace(this);
+  }
+
+  @Override
+  public double[] getPointInSpace() {
+
+    // we need some randoms
+    final double[] spherical = new double[3];
+    // radius
+    spherical[0] = radius * random.nextDouble();
+
+    // phi and omega
+    spherical[1] = random.nextDouble() * 2.0 * Math.PI;
+    spherical[2] = random.nextDouble() * Math.PI;
+
+    // translate to cartesian
+    final double[] point = new double[3];
+    CoordTranslation.sphericalToCartesianCoord(spherical, point);
+
+    // move with respect to middle
+    for (int i = 0; i < 3; i++) {
+      point[i] += center[i];
     }
 
-    @Override
-    public boolean isPointInSpace(final double[] point) {
+    // now ensure that it is in the upper half of the sphere
+    if (point[2] < center[2]) {
+      final double diff = center[2] - point[2];
+      point[2] = center[2] + diff;
+    }
 
-        if(point[2] < center[2]){
-            return false; // too low
-        }
+    assert (isPointInSpace(point));
 
-        // move with respect to middle of sphere
-        final double x = point[0] - center[0];
-        final double y = point[1] - center[1];
-        final double z = point[2] - center[2];
+    return point;
+  }
 
-        // calculate only the radius
-        final double r = Math.sqrt(x*x+y*y+z*z);
+  @Override
+  public boolean isPointInSpace(final double[] point) {
 
-        // check
-        return (r <= radius);
-    }    
+    if (point[2] < center[2]) {
+      return false; // too low
+    }
+
+    // move with respect to middle of sphere
+    final double x = point[0] - center[0];
+    final double y = point[1] - center[1];
+    final double z = point[2] - center[2];
+
+    // calculate only the radius
+    final double r = Math.sqrt(x * x + y * y + z * z);
+
+    // check
+    return (r <= radius);
+  }
 }

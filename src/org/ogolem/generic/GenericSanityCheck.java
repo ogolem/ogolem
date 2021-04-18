@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich and B. Hartke
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,12 +41,14 @@ import java.io.Serializable;
 
 /**
  * Interface for a sanity check, we will need this eventually.
+ *
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-12-30
  */
-public interface GenericSanityCheck<E, T extends Optimizable<E>> extends Serializable, Cloneable {
-    
-    GenericSanityCheck<E,T> clone();
-    
-    boolean isSane(final T individual);
+public interface GenericSanityCheck<E, T extends Optimizable<E>> extends Serializable, Copyable {
+
+  @Override
+  GenericSanityCheck<E, T> copy();
+
+  boolean isSane(final T individual);
 }

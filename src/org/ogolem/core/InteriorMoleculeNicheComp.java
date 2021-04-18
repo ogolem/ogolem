@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
               2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -42,46 +42,56 @@ import org.ogolem.generic.genericpool.NicheComputer;
 
 /**
  * Nicher working based on the number of interior molecules
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-30
  */
-class InteriorMoleculeNicheComp implements NicheComputer<Molecule,Geometry>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    private final static boolean DEBUG = true;
-    private final SurfaceDetectionEngine surfer;
-    
-    InteriorMoleculeNicheComp(final SurfaceDetectionEngine surfer){
-        this.surfer = surfer;
-    }
-    
-    private InteriorMoleculeNicheComp(final InteriorMoleculeNicheComp orig){
-        this.surfer = orig.surfer.clone();
-    }
-    
-    @Override
-    public InteriorMoleculeNicheComp copy(){
-        return new InteriorMoleculeNicheComp(this);
-    }
-    
-    @Override
-    public Niche computeNiche(final Geometry g){
-        
-        final Surface surf = surfer.detectTheSurface(g.getCartesians());
-        final int[] molSurf = surf.giveAllSurfaceMolecules();
-        
-        int numInternal = 0;
-        for(int i = 0; i < g.getNumberOfIndieParticles(); i++){
-            boolean found = false;
-            for(int j = 0; j < molSurf.length; j++){
-                if(molSurf[j] == i){found = true; break;}
-            }
-            if(DEBUG){System.out.println("DEBUG: Molecule " + i + " found in surface? " + found);}
-            if(!found){numInternal++;}
+class InteriorMoleculeNicheComp implements NicheComputer<Molecule, Geometry> {
+
+  private static final long serialVersionUID = (long) 20200429;
+  private static final boolean DEBUG = true;
+  private final SurfaceDetectionEngine surfer;
+
+  InteriorMoleculeNicheComp(final SurfaceDetectionEngine surfer) {
+    this.surfer = surfer;
+  }
+
+  private InteriorMoleculeNicheComp(final InteriorMoleculeNicheComp orig) {
+    this.surfer = orig.surfer.copy();
+  }
+
+  @Override
+  public InteriorMoleculeNicheComp copy() {
+    return new InteriorMoleculeNicheComp(this);
+  }
+
+  @Override
+  public Niche computeNiche(final Geometry g) {
+
+    final Surface surf = surfer.detectTheSurface(g.getCartesians());
+    final int[] molSurf = surf.giveAllSurfaceMolecules();
+
+    int numInternal = 0;
+    for (int i = 0; i < g.getNumberOfIndieParticles(); i++) {
+      boolean found = false;
+      for (int j = 0; j < molSurf.length; j++) {
+        if (molSurf[j] == i) {
+          found = true;
+          break;
         }
-        
-        if(DEBUG){System.out.println("DEBUG: Number of interior molecules " + numInternal);}
-        
-        return new Niche("interiormolecule"+numInternal);
+      }
+      if (DEBUG) {
+        System.out.println("DEBUG: Molecule " + i + " found in surface? " + found);
+      }
+      if (!found) {
+        numInternal++;
+      }
     }
+
+    if (DEBUG) {
+      System.out.println("DEBUG: Number of interior molecules " + numInternal);
+    }
+
+    return new Niche("interiormolecule" + numInternal);
+  }
 }

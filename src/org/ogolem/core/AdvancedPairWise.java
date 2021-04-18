@@ -61,11 +61,11 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
 
   private AdvancedPairWise(final AdvancedPairWise orig) {
     this.exit = orig.exit;
-    this.comp = orig.comp.clone();
+    this.comp = orig.comp.copy();
   }
 
   @Override
-  public AdvancedPairWise clone() {
+  public AdvancedPairWise copy() {
     return new AdvancedPairWise(this);
   }
 

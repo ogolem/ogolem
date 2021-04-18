@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,64 +37,70 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import static org.ogolem.core.FixedValues.NONCONVERGEDENERGY;
+
 import org.ogolem.properties.Property;
 
 /**
  * A dummy fitness for e.g. benchmark functions.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-16
+ * @version 2020-12-29
  */
 public class DummyFitness implements Property {
 
-    private static final long serialVersionUID = (long) 20160716;
-    private double fitness;
-    
-    public DummyFitness(final double fitness){
-        this.fitness = fitness;
-    }
-    
-    private DummyFitness(final DummyFitness orig){
-        this.fitness = orig.fitness;
-    }
-    
-    @Override
-    public DummyFitness clone() {
-        return new DummyFitness(this);
-    }
+  private static final long serialVersionUID = (long) 20160716;
+  private double fitness;
 
-    @Override
-    public double getValue() {
-        return fitness;
-    }
+  public DummyFitness(final double fitness) {
+    this.fitness = fitness;
+  }
 
-    @Override
-    public double signedDifference(final Property p) {
-        if(!(p instanceof DummyFitness)) {throw new IllegalArgumentException("Property should be an instance of DummyFitness!");}
-        return Math.abs(fitness - p.getValue());
-    }
+  private DummyFitness(final DummyFitness orig) {
+    this.fitness = orig.fitness;
+  }
 
-    @Override
-    public double absoluteDifference(final Property p) {
-        if(!(p instanceof DummyFitness)) {throw new IllegalArgumentException("Property should be an instance of DummyFitness!");}
-        return Math.abs(fitness - p.getValue());
-    }
+  @Override
+  public DummyFitness copy() {
+    return new DummyFitness(this);
+  }
 
-    @Override
-    public boolean makeSensible() {
-        if(Double.isInfinite(fitness) || Double.isNaN(fitness) || fitness > NONCONVERGEDENERGY){
-            fitness = NONCONVERGEDENERGY;
-            return true;
-        }
-        return false;
-    }
+  @Override
+  public double getValue() {
+    return fitness;
+  }
 
-    @Override
-    public String printableProperty() {
-        return "" + fitness;
+  @Override
+  public double signedDifference(final Property p) {
+    if (!(p instanceof DummyFitness)) {
+      throw new IllegalArgumentException("Property should be an instance of DummyFitness!");
     }
+    return Math.abs(fitness - p.getValue());
+  }
 
-    @Override
-    public String name() {
-        return "DUMMY";
-    }    
+  @Override
+  public double absoluteDifference(final Property p) {
+    if (!(p instanceof DummyFitness)) {
+      throw new IllegalArgumentException("Property should be an instance of DummyFitness!");
+    }
+    return Math.abs(fitness - p.getValue());
+  }
+
+  @Override
+  public boolean makeSensible() {
+    if (Double.isInfinite(fitness) || Double.isNaN(fitness) || fitness > NONCONVERGEDENERGY) {
+      fitness = NONCONVERGEDENERGY;
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public String printableProperty() {
+    return "" + fitness;
+  }
+
+  @Override
+  public String name() {
+    return "DUMMY";
+  }
 }

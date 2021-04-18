@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2010, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,74 +41,75 @@ import org.ogolem.random.Lottery;
 
 /**
  * Defines an orbit space, i.e., a "shell" of a sphere.
+ *
  * @author Johannes Dieterich
- * @version 2020-06-22
+ * @version 2020-12-30
  */
-final class OrbitSpace implements AllowedSpace{
+final class OrbitSpace implements AllowedSpace {
 
-    private final static long serialVersionUID = (long) 20200622;
+  private static final long serialVersionUID = (long) 20200622;
 
-    private final Lottery random;
+  private final Lottery random;
 
-    private final double lowOrb;
+  private final double lowOrb;
 
-    private final double highOrb;
+  private final double highOrb;
 
-    private final double[] center;
+  private final double[] center;
 
-    OrbitSpace(final double[] center, final double lowestOrb, final double highestOrb){
-        this.center = center;
-        this.lowOrb = lowestOrb;
-        this.highOrb = highestOrb;
-        this.random = Lottery.getInstance();
+  OrbitSpace(final double[] center, final double lowestOrb, final double highestOrb) {
+    this.center = center;
+    this.lowOrb = lowestOrb;
+    this.highOrb = highestOrb;
+    this.random = Lottery.getInstance();
+  }
+
+  @Override
+  public OrbitSpace copy() {
+
+    final double[] tmp = center.clone();
+
+    return new OrbitSpace(tmp, this.lowOrb, this.highOrb);
+  }
+
+  @Override
+  public double[] getPointInSpace() {
+
+    // we need some randoms
+    final double[] spherical = new double[3];
+    // radius
+    spherical[0] = (highOrb - lowOrb) * random.nextDouble() + lowOrb;
+
+    // phi and omega
+    spherical[1] = random.nextDouble() * 2.0 * Math.PI;
+    spherical[2] = random.nextDouble() * Math.PI;
+
+    // translate to cartesian
+    final double[] cartes = new double[3];
+    CoordTranslation.sphericalToCartesianCoord(spherical, cartes);
+
+    // move with respect to center
+    for (int i = 0; i < 3; i++) {
+      cartes[i] += center[i];
     }
 
-    @Override
-    public OrbitSpace clone(){
-        
-        final double[] tmp = center.clone();
+    assert (isPointInSpace(cartes));
 
-        return new OrbitSpace(tmp, this.lowOrb, this.highOrb);
-    }
+    return cartes;
+  }
 
-    @Override
-    public double[] getPointInSpace(){
+  @Override
+  public boolean isPointInSpace(double[] point) {
 
-        // we need some randoms
-        final double[] spherical = new double[3];
-        // radius
-        spherical[0] = (highOrb-lowOrb)*random.nextDouble()+lowOrb;
+    // move with respect to middle of sphere
+    final double x = point[0] - center[0];
+    final double y = point[1] - center[1];
+    final double z = point[2] - center[2];
 
-        // phi and omega
-        spherical[1] = random.nextDouble() * 2.0 * Math.PI;
-        spherical[2] = random.nextDouble() * Math.PI;
+    // calculate only the radius
+    final double r = Math.sqrt(x * x + y * y + z * z);
 
-        // translate to cartesian
-        final double[] cartes = new double[3];
-        CoordTranslation.sphericalToCartesianCoord(spherical, cartes);
-
-        // move with respect to center
-        for(int i = 0; i < 3; i++){
-            cartes[i] += center[i];
-        }
-        
-        assert(isPointInSpace(cartes));
-
-        return cartes;
-    }
-
-    @Override
-    public boolean isPointInSpace(double[] point){
-
-        // move with respect to middle of sphere
-        final double x = point[0] - center[0];
-        final double y = point[1] - center[1];
-        final double z = point[2] - center[2];
-
-        // calculate only the radius
-        final double r = Math.sqrt(x*x+y*y+z*z);
-
-        // check
-        return (r >= lowOrb && r <= highOrb);
-    }
+    // check
+    return (r >= lowOrb && r <= highOrb);
+  }
 }

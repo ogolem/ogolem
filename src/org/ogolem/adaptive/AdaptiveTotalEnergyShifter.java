@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2011-2012, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,161 +46,167 @@ import org.ogolem.helpers.Tuple3D;
 
 /**
  * Shifts total energies. Might be helpful sometimes.
+ *
  * @author Johannes Dieterich
- * @version 2012-06-13
+ * @version 2020-12-29
  */
 public class AdaptiveTotalEnergyShifter implements AdaptiveInteractionTerm {
 
-    private static final long serialVersionUID = (long) 20111024;
-    private final boolean useCaching;
-    private int[] posCache;
-    
-    AdaptiveTotalEnergyShifter(final boolean useCache){
-        this.useCaching = useCache;
-    }
-    
-    private AdaptiveTotalEnergyShifter(final AdaptiveTotalEnergyShifter orig){
-        this.useCaching = orig.useCaching;
-        if(orig.posCache != null) this.posCache = orig.posCache.clone();
-        else this.posCache = null;
-    }
-    
-    @Override
-    public AdaptiveTotalEnergyShifter clone(){
-        return new AdaptiveTotalEnergyShifter(this);
+  private static final long serialVersionUID = (long) 20111024;
+  private final boolean useCaching;
+  private int[] posCache;
+
+  AdaptiveTotalEnergyShifter(final boolean useCache) {
+    this.useCaching = useCache;
+  }
+
+  private AdaptiveTotalEnergyShifter(final AdaptiveTotalEnergyShifter orig) {
+    this.useCaching = orig.useCaching;
+    if (orig.posCache != null) this.posCache = orig.posCache.clone();
+    else this.posCache = null;
+  }
+
+  @Override
+  public AdaptiveTotalEnergyShifter copy() {
+    return new AdaptiveTotalEnergyShifter(this);
+  }
+
+  @Override
+  public double partialInteraction(final Topology topology, final AdaptiveParameters params) {
+
+    final String[] atoms = topology.getAtomNames();
+    final int noOfAtoms = topology.getNumberOfAtoms();
+
+    if (useCaching && posCache == null) {
+      // initialize cache
+      posCache = new int[noOfAtoms];
+      for (int i = 0; i < noOfAtoms; i++) {
+        final String s = "totalenergyshifter:" + atoms[i];
+        posCache[i] = params.getStartPointForKey(s);
+      }
     }
 
-    @Override
-    public double partialInteraction(final Topology topology, final AdaptiveParameters params){
-        
-        final String[] atoms = topology.getAtomNames();
-        final int noOfAtoms = topology.getNumberOfAtoms();
-        
-        if(useCaching && posCache == null){
-            // initialize cache
-            posCache = new int[noOfAtoms];
-            for(int i = 0; i < noOfAtoms; i++){
-                final String s = "totalenergyshifter:" + atoms[i];
-                posCache[i] = params.getStartPointForKey(s);
-            }
-        }
-        
-        double energy = 0.0;
-        final double[] p = params.getAllParamters();
-        for(int i = 0; i < noOfAtoms; i++){
+    double energy = 0.0;
+    final double[] p = params.getAllParamters();
+    for (int i = 0; i < noOfAtoms; i++) {
 
-            final int pos = (useCaching) ? posCache[i] : params.getStartPointForKey("totalenergyshifter:" + atoms[i]);
-            
-            energy += p[pos];
-        }
-        
-        return energy;
-    }
-    
-    @Override
-    public double partialParamGradient(final Topology topology,
-        final AdaptiveParameters params, final double[] grad){
-        
-        final String[] atoms = topology.getAtomNames();
-        final int noOfAtoms = topology.getNumberOfAtoms();
-        final double[] p = params.getAllParamters();
-        
-        if(useCaching && posCache == null){
-            // initialize cache
-            posCache = new int[noOfAtoms];
-            for(int i = 0; i < noOfAtoms; i++){
-                final String s = "totalenergyshifter:" + atoms[i];
-                posCache[i] = params.getStartPointForKey(s);
-            }
-        }
-        
-        double energy = 0.0;
-        for(int i = 0; i < noOfAtoms; i++){            
-            final int pos = (useCaching) ? posCache[i] : params.getStartPointForKey("totalenergyshifter:" + atoms[i]);
-            grad[pos]++;
-            energy += p[pos];
-        }
-        
-        return energy;
-    }
-    
-    @Override
-    public Gradient partialCartesianGradient(final Topology topology,
-            final AdaptiveParameters params){
-        
-        // there is no cartesian gradient, obviously.
-        final Gradient g = new Gradient();
-        final double[][] grad = new double[3][topology.getNumberOfAtoms()];
-        g.setGradientTotal(grad);
-        
-        final String[] atoms = topology.getAtomNames();
-        final int noOfAtoms = topology.getNumberOfAtoms();
-        
-        if(useCaching && posCache == null){
-            // initialize cache
-            posCache = new int[noOfAtoms];
-            for(int i = 0; i < noOfAtoms; i++){
-                final String s = "totalenergyshifter:" + atoms[i];
-                posCache[i] = params.getStartPointForKey(s);
-            }
-        }
-        
-        double energy = 0.0;
-        final double[] p = params.getAllParamters();
-        for(int i = 0; i < noOfAtoms; i++){
+      final int pos =
+          (useCaching) ? posCache[i] : params.getStartPointForKey("totalenergyshifter:" + atoms[i]);
 
-            final int pos = (useCaching) ? posCache[i] : params.getStartPointForKey("totalenergyshifter:" + atoms[i]);
-            
-            energy += p[pos];
-        }
-        g.setTotalEnergy(energy);
-        
-        return g;
+      energy += p[pos];
     }
-    
-    @Override
-    public Tuple3D<String[],int[],Integer> requiredParams(final ArrayList<CartesianCoordinates>
-            cartesians, final ArrayList<Topology> topologies, final String sMethod){
-        
-        final ArrayList<String> allAtoms = new ArrayList<>();
-        
-        for(final CartesianCoordinates cartes : cartesians){
-            final String[] atoms = cartes.getAllAtomTypes();
-            for(final String atom : atoms){
-                if(!allAtoms.contains(atom)) allAtoms.add(atom);
-            }
-        }
-        
-        // and back...
-        int paramSum = 0;
-        final String[] keys = new String[allAtoms.size()];
-        final int[] paramsPerKey = new int[allAtoms.size()];
-        for(int i = 0; i < allAtoms.size(); i++){
-            keys[i] = "totalenergyshifter:" + allAtoms.get(i);
-            paramsPerKey[i] = 1;
-            paramSum++;
-        }
-        
-        final Tuple3D<String[], int[], Integer> result = new Tuple3D<>(keys, paramsPerKey, paramSum);
 
-        return result;
+    return energy;
+  }
+
+  @Override
+  public double partialParamGradient(
+      final Topology topology, final AdaptiveParameters params, final double[] grad) {
+
+    final String[] atoms = topology.getAtomNames();
+    final int noOfAtoms = topology.getNumberOfAtoms();
+    final double[] p = params.getAllParamters();
+
+    if (useCaching && posCache == null) {
+      // initialize cache
+      posCache = new int[noOfAtoms];
+      for (int i = 0; i < noOfAtoms; i++) {
+        final String s = "totalenergyshifter:" + atoms[i];
+        posCache[i] = params.getStartPointForKey(s);
+      }
     }
-    
-    @Override
-    public double[][] bordersForMyParams(final AdaptiveParameters params){
-        
-        // not all of the parameters belong to us
-        final List<String> corrKeys = params.getKeysStartingWith("totalenergyshifter:");      
-        final int noOfKeys = corrKeys.size();
 
-        double[][] borders = new double[2][noOfKeys];
-
-        for(int i = 0; i < noOfKeys; i++){
-            // in hartree seems reasonable.
-            borders[0][i] = -100.0;
-            borders[1][i] = 0.0;
-        }
-        
-        return borders;
+    double energy = 0.0;
+    for (int i = 0; i < noOfAtoms; i++) {
+      final int pos =
+          (useCaching) ? posCache[i] : params.getStartPointForKey("totalenergyshifter:" + atoms[i]);
+      grad[pos]++;
+      energy += p[pos];
     }
+
+    return energy;
+  }
+
+  @Override
+  public Gradient partialCartesianGradient(
+      final Topology topology, final AdaptiveParameters params) {
+
+    // there is no cartesian gradient, obviously.
+    final Gradient g = new Gradient();
+    final double[][] grad = new double[3][topology.getNumberOfAtoms()];
+    g.setGradientTotal(grad);
+
+    final String[] atoms = topology.getAtomNames();
+    final int noOfAtoms = topology.getNumberOfAtoms();
+
+    if (useCaching && posCache == null) {
+      // initialize cache
+      posCache = new int[noOfAtoms];
+      for (int i = 0; i < noOfAtoms; i++) {
+        final String s = "totalenergyshifter:" + atoms[i];
+        posCache[i] = params.getStartPointForKey(s);
+      }
+    }
+
+    double energy = 0.0;
+    final double[] p = params.getAllParamters();
+    for (int i = 0; i < noOfAtoms; i++) {
+
+      final int pos =
+          (useCaching) ? posCache[i] : params.getStartPointForKey("totalenergyshifter:" + atoms[i]);
+
+      energy += p[pos];
+    }
+    g.setTotalEnergy(energy);
+
+    return g;
+  }
+
+  @Override
+  public Tuple3D<String[], int[], Integer> requiredParams(
+      final ArrayList<CartesianCoordinates> cartesians,
+      final ArrayList<Topology> topologies,
+      final String sMethod) {
+
+    final ArrayList<String> allAtoms = new ArrayList<>();
+
+    for (final CartesianCoordinates cartes : cartesians) {
+      final String[] atoms = cartes.getAllAtomTypes();
+      for (final String atom : atoms) {
+        if (!allAtoms.contains(atom)) allAtoms.add(atom);
+      }
+    }
+
+    // and back...
+    int paramSum = 0;
+    final String[] keys = new String[allAtoms.size()];
+    final int[] paramsPerKey = new int[allAtoms.size()];
+    for (int i = 0; i < allAtoms.size(); i++) {
+      keys[i] = "totalenergyshifter:" + allAtoms.get(i);
+      paramsPerKey[i] = 1;
+      paramSum++;
+    }
+
+    final Tuple3D<String[], int[], Integer> result = new Tuple3D<>(keys, paramsPerKey, paramSum);
+
+    return result;
+  }
+
+  @Override
+  public double[][] bordersForMyParams(final AdaptiveParameters params) {
+
+    // not all of the parameters belong to us
+    final List<String> corrKeys = params.getKeysStartingWith("totalenergyshifter:");
+    final int noOfKeys = corrKeys.size();
+
+    double[][] borders = new double[2][noOfKeys];
+
+    for (int i = 0; i < noOfKeys; i++) {
+      // in hartree seems reasonable.
+      borders[0][i] = -100.0;
+      borders[1][i] = 0.0;
+    }
+
+    return borders;
+  }
 }

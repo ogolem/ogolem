@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2013-2014, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2013-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,30 +41,33 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * Interface for a generic crossover.
+ *
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2020-12-29
  */
-public interface GenericCrossover<E,T extends Optimizable<E>> extends Serializable, Cloneable {
-    
-    GenericCrossover<E,T> clone();
-    
-    String getMyID();
-    
-    /**
-     * Generic crossover. Returns (in best case) two children T, if something went
-     * wrong, one of both may be null.
-     * @param mother the T to be used as a mother in the crossover
-     * @param father the T to be used as a father in the crossover
-     * @param futureID the ID of the children in the future
-     * @return a tuple of two children, content may be null
-     */
-    public Tuple<T,T> crossover(final T mother, final T father, final long futureID);
-    
-    /**
-     * If this crossover w.r.t. to the last carried out crossover operation
-     * has a priority which of the two children to use.
-     * @return -1: no priority, 0: child 0, 1: child 1, all other values are not
-     * allowed
-     */
-    public short hasPriority();
+public interface GenericCrossover<E, T extends Optimizable<E>> extends Serializable, Copyable {
+
+  @Override
+  GenericCrossover<E, T> copy();
+
+  String getMyID();
+
+  /**
+   * Generic crossover. Returns (in best case) two children T, if something went wrong, one of both
+   * may be null.
+   *
+   * @param mother the T to be used as a mother in the crossover
+   * @param father the T to be used as a father in the crossover
+   * @param futureID the ID of the children in the future
+   * @return a tuple of two children, content may be null
+   */
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID);
+
+  /**
+   * If this crossover w.r.t. to the last carried out crossover operation has a priority which of
+   * the two children to use.
+   *
+   * @return -1: no priority, 0: child 0, 1: child 1, all other values are not allowed
+   */
+  public short hasPriority();
 }

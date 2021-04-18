@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,30 +38,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.properties;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * Property interface.
+ *
  * @author Johannes Dieterich
- * @version 2015-03-03
+ * @version 2020-12-29
  */
-public interface Property extends Serializable, Cloneable {
-    
-    Property clone();
-    
-    /**
-     * Should be used with caution as not every property may be reduced to one
-     * double value in a sane manner.
-     * @return The value encoded as a double
-     */
-    double getValue();
-    
-    double signedDifference(Property p);
-    
-    double absoluteDifference(Property p);
-    
-    boolean makeSensible();
-    
-    String printableProperty();
-    
-    String name();
+public interface Property extends Serializable, Copyable {
+
+  @Override
+  Property copy();
+
+  /**
+   * Should be used with caution as not every property may be reduced to one double value in a sane
+   * manner.
+   *
+   * @return The value encoded as a double
+   */
+  double getValue();
+
+  double signedDifference(Property p);
+
+  double absoluteDifference(Property p);
+
+  boolean makeSensible();
+
+  String printableProperty();
+
+  String name();
 }

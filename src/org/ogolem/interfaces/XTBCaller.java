@@ -64,7 +64,7 @@ import org.ogolem.io.OutputPrimitives;
  *
  * @author Bernd Hartke
  * @author Johannes Dieterich
- * @version 2020-07-04
+ * @version 2020-12-30
  */
 public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
 
@@ -185,7 +185,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
   }
 
   @Override
-  public XTBCaller clone() {
+  public XTBCaller copy() {
     return new XTBCaller(this);
   }
 
@@ -301,7 +301,7 @@ public class XTBCaller extends AbstractLocOpt implements CartesianFullBackend {
     // cmd should(!) have completed normally...
 
     // read the output back in
-    final CartesianCoordinates res = cartes.clone();
+    final CartesianCoordinates res = cartes.copy();
     try {
       final String[] resDat = InputPrimitives.readFileIn(xyzRes);
       final String[] atoms = res.getAllAtomTypes();

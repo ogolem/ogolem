@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,30 +40,31 @@ import org.ogolem.adaptive.DummyFitness;
 
 /**
  * Dummy data for the dummy fitness.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-16
+ * @version 2020-12-30
  */
 public class ReferenceDummyData implements ReferenceInputData<DummyFitness> {
 
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final int refPoint;
-    
-    public ReferenceDummyData(final int refPoint){
-        this.refPoint = refPoint;
-    }
-    
-    private ReferenceDummyData(final ReferenceDummyData orig){
-        this.refPoint = orig.refPoint;
-    }
-    
-    @Override
-    public ReferenceDummyData clone() {
-        return new ReferenceDummyData(this);
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final int refPoint;
+
+  public ReferenceDummyData(final int refPoint) {
+    this.refPoint = refPoint;
+  }
+
+  private ReferenceDummyData(final ReferenceDummyData orig) {
+    this.refPoint = orig.refPoint;
+  }
+
+  @Override
+  public ReferenceDummyData copy() {
+    return new ReferenceDummyData(this);
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
 }

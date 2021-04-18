@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich and B. Hartke
-              2013, J. M. Dieterich and B. Hartke
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,81 +38,84 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic;
 
 import java.util.List;
-import org.ogolem.random.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.RandomUtils;
 
 /**
  * An n-point, generic genotype, real-number based crossover operator.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class GenericPortugalCrossover <E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    private final int noCrosses;
-    
-    public GenericPortugalCrossover(final int noCrosses){
-        this.noCrosses = noCrosses;
-    }
-    
-    @Override
-    public GenericPortugalCrossover<E,T> clone(){
-        return new GenericPortugalCrossover<>(noCrosses);
-    }
-    
-    @Override
-    public String getMyID(){
-        return "portugal " + noCrosses;
-    }
-    
-    @Override
-    public Tuple<T,T> crossover(final T mother, final T father, final long futureID){
-        
-        @SuppressWarnings("unchecked")
-        final T child1 = (T) mother.copy();
-        @SuppressWarnings("unchecked")
-        final T child2 = (T) father.copy();
-        final E[] genomeChild1 = child1.getGenomeCopy();
-        final E[] genomeChild2 = child2.getGenomeCopy();
-        
-        if(genomeChild1 == null || genomeChild2 == null){
-            return new Tuple<>(null,null);
-        }
-        
-        assert(genomeChild1.length == genomeChild2.length);
-        
-        if(noCrosses >= genomeChild1.length){
-            System.err.println("ERROR: OGOLEM does NOT believe that you want to use this amount of crossing points! Sorry. ;-)");
-            return new Tuple<>(null,null);
-        }
-        
-        final List<Integer> crossPts = RandomUtils.rndListOfPoints(noCrosses, genomeChild1.length);
-                
-        // swap it
-        boolean mothFirst = true;
-        for(int i = 0; i < genomeChild1.length; i++){
-            
-            if(!mothFirst){
-                final E mo = genomeChild1[i];
-                genomeChild1[i] = genomeChild2[i];
-                genomeChild2[i] = mo;
-            } // else: no swapping needed, mother data is in child1 already
+public class GenericPortugalCrossover<E, T extends Optimizable<E>>
+    implements GenericCrossover<E, T> {
 
-            // check whether we need to swap
-            if(crossPts.contains(i)){
-                mothFirst = !mothFirst;
-            }
-        }
-        
-        // put back in
-        child1.setGenome(genomeChild1);
-        child2.setGenome(genomeChild2);
-        
-        return new Tuple<>(child1,child2);
-    }    
+  private static final long serialVersionUID = (long) 20200429;
+  private final int noCrosses;
 
-    @Override
-    public short hasPriority() {
-        return -1;
+  public GenericPortugalCrossover(final int noCrosses) {
+    this.noCrosses = noCrosses;
+  }
+
+  @Override
+  public GenericPortugalCrossover<E, T> copy() {
+    return new GenericPortugalCrossover<>(noCrosses);
+  }
+
+  @Override
+  public String getMyID() {
+    return "portugal " + noCrosses;
+  }
+
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    @SuppressWarnings("unchecked")
+    final T child1 = (T) mother.copy();
+    @SuppressWarnings("unchecked")
+    final T child2 = (T) father.copy();
+    final E[] genomeChild1 = child1.getGenomeCopy();
+    final E[] genomeChild2 = child2.getGenomeCopy();
+
+    if (genomeChild1 == null || genomeChild2 == null) {
+      return new Tuple<>(null, null);
     }
+
+    assert (genomeChild1.length == genomeChild2.length);
+
+    if (noCrosses >= genomeChild1.length) {
+      System.err.println(
+          "ERROR: OGOLEM does NOT believe that you want to use this amount of crossing points! Sorry. ;-)");
+      return new Tuple<>(null, null);
+    }
+
+    final List<Integer> crossPts = RandomUtils.rndListOfPoints(noCrosses, genomeChild1.length);
+
+    // swap it
+    boolean mothFirst = true;
+    for (int i = 0; i < genomeChild1.length; i++) {
+
+      if (!mothFirst) {
+        final E mo = genomeChild1[i];
+        genomeChild1[i] = genomeChild2[i];
+        genomeChild2[i] = mo;
+      } // else: no swapping needed, mother data is in child1 already
+
+      // check whether we need to swap
+      if (crossPts.contains(i)) {
+        mothFirst = !mothFirst;
+      }
+    }
+
+    // put back in
+    child1.setGenome(genomeChild1);
+    child2.setGenome(genomeChild2);
+
+    return new Tuple<>(child1, child2);
+  }
+
+  @Override
+  public short hasPriority() {
+    return -1;
+  }
 }

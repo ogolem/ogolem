@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,44 +41,51 @@ import org.ogolem.generic.GenericSanityCheck;
 
 /**
  * A parameter sanity check.
+ *
  * @author Johannes Dieterich
- * @version 2014-05-02
+ * @version 2020-12-30
  */
-public class ParameterSanityCheck implements GenericSanityCheck<Double,AdaptiveParameters>{
+public class ParameterSanityCheck implements GenericSanityCheck<Double, AdaptiveParameters> {
 
-    private static final long serialVersionUID = (long) 20140502;
-    private final boolean checkBorders;
-    private final double[] lower;
-    private final double[] upper;
-    
-    public ParameterSanityCheck(final boolean checkBorders, final double[] lower,
-            final double[] upper){
-        assert(upper != null);
-        assert(lower != null);
-        assert(lower.length == upper.length);
-        this.checkBorders = checkBorders;
-        this.lower = lower;
-        this.upper = upper;
-    }
-            
-    @Override
-    public GenericSanityCheck<Double, AdaptiveParameters> clone() {
-        return new ParameterSanityCheck(checkBorders,lower.clone(), upper.clone());
-    }
+  private static final long serialVersionUID = (long) 20140502;
+  private final boolean checkBorders;
+  private final double[] lower;
+  private final double[] upper;
 
-    @Override
-    public boolean isSane(final AdaptiveParameters individual) {
-        
-        final double[] values = individual.getAllParamters();
-        if(values.length != upper.length){return false;}
-        for(int i = 0; i < values.length; i++){
-            final double d = values[i];
-            if(Double.isNaN(d) || Double.isInfinite(d)){return false;}
-            if(checkBorders){
-                if(d > upper[i] || d < lower[i]){return false;}
-            }
+  public ParameterSanityCheck(
+      final boolean checkBorders, final double[] lower, final double[] upper) {
+    assert (upper != null);
+    assert (lower != null);
+    assert (lower.length == upper.length);
+    this.checkBorders = checkBorders;
+    this.lower = lower;
+    this.upper = upper;
+  }
+
+  @Override
+  public GenericSanityCheck<Double, AdaptiveParameters> copy() {
+    return new ParameterSanityCheck(checkBorders, lower.clone(), upper.clone());
+  }
+
+  @Override
+  public boolean isSane(final AdaptiveParameters individual) {
+
+    final double[] values = individual.getAllParamters();
+    if (values.length != upper.length) {
+      return false;
+    }
+    for (int i = 0; i < values.length; i++) {
+      final double d = values[i];
+      if (Double.isNaN(d) || Double.isInfinite(d)) {
+        return false;
+      }
+      if (checkBorders) {
+        if (d > upper[i] || d < lower[i]) {
+          return false;
         }
-        
-        return true;
+      }
     }
+
+    return true;
+  }
 }

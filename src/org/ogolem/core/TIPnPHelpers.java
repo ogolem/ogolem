@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014-2015, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,91 +38,93 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import org.apache.commons.math3.util.FastMath;
-import org.ogolem.math.LookupedFunction;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.math.LookupedFunction;
 
 /**
  * A collection of helpful snippets for TIPnP type water force fields.
+ *
  * @author Johannes Dieterich
- * @version 2015-01-08
+ * @version 2020-12-30
  */
 public class TIPnPHelpers {
-    
-    
-    /**
-     * Sanitizes a water molecule to have certain internal degrees of freedom.
-     * @param mol must be a water molecule. NOT BEING CHECKED!
-     * @param rOH the wished for distance of O to H in a.u.
-     * @param angHOH the wished for angle H-O-H in deg
-     */
-    static void sanitizeWater(final Molecule mol, final double rOH, final double angHOH){
-        
-        // XXX first check if the current one is fine
-        //final double[][] currXYZ = mol.getReferenceCartesians();
-        //final double distOH1Sq;
-        
-        final CartesianCoordinates cMol = mol.getCartesians();
-        
-        // this may be not the fastest, but it is certainly the simplest
-        final CartesianCoordinates cCorr = cMol.clone();
-        final double[][] xyzCorrect = cCorr.getAllXYZCoord();
-        // O: in 0/0/0
-        xyzCorrect[0][0] = 0.0;
-        xyzCorrect[1][0] = 0.0;
-        xyzCorrect[2][0] = 0.0;
-        // H1: in rOH/0/0
-        xyzCorrect[0][1] = rOH;
-        xyzCorrect[1][1] = 0.0;
-        xyzCorrect[2][1] = 0.0;
-        // H2: slightly more involved...
-        final double realRot = Math.toRadians(angHOH);
-        final double sinR = FastMath.sin(realRot);
-        final double cosR = FastMath.cos(realRot);
-        
-        // basically roate H1 around the z-axis
-        xyzCorrect[0][2] = cosR*rOH;
-        xyzCorrect[1][2] = sinR*rOH;
-        xyzCorrect[2][2] = 0.0;
-                
-        // take care of COM moves
-        final double[] comDevMol = cMol.calculateTheCOM();
-        cMol.moveCoordsToCOM();
-        cCorr.moveCoordsToCOM();
-                
-        // align the "correct" with the reference
-        final Tuple<CartesianCoordinates,Double> aligned;
-        try{
-            aligned = CoordTranslation.alignTwoCartesians(cMol, cCorr);
-        } catch(Exception e){
-            System.err.println("WARNING: Aligning of rigidified and original failed. Using horrible rotated rigidified one!");
-            mol.setReferenceCartesian(cCorr.getAllXYZCoord());
-            return;
-        }
-        aligned.getObject1().moveCoordsToPoint(comDevMol);
-        mol.setReferenceCartesian(aligned.getObject1().getAllXYZCoord());
-    }
-    
-    /**
-     * An anti-cold fusion function to be used in TIPnP evaluations as going back
-     * to the original phenix work by Bernd Hartke.
-     */
-    public static class AntiColdFusionFunction implements LookupedFunction {
-        
-        private static final long serialVersionUID = (long) 20141221;
 
-        @Override
-        public AntiColdFusionFunction clone() {
-            return new AntiColdFusionFunction();
-        }
+  /**
+   * Sanitizes a water molecule to have certain internal degrees of freedom.
+   *
+   * @param mol must be a water molecule. NOT BEING CHECKED!
+   * @param rOH the wished for distance of O to H in a.u.
+   * @param angHOH the wished for angle H-O-H in deg
+   */
+  static void sanitizeWater(final Molecule mol, final double rOH, final double angHOH) {
 
-        @Override
-        public double func(final double radius) {
-            return Math.exp(-radius)*Math.pow(radius,-7);
-        }
-        
-        double grad(final double radius){
-            //TODO
-            return 0.0;
-        }
+    // XXX first check if the current one is fine
+    // final double[][] currXYZ = mol.getReferenceCartesians();
+    // final double distOH1Sq;
+
+    final CartesianCoordinates cMol = mol.getCartesians();
+
+    // this may be not the fastest, but it is certainly the simplest
+    final CartesianCoordinates cCorr = cMol.copy();
+    final double[][] xyzCorrect = cCorr.getAllXYZCoord();
+    // O: in 0/0/0
+    xyzCorrect[0][0] = 0.0;
+    xyzCorrect[1][0] = 0.0;
+    xyzCorrect[2][0] = 0.0;
+    // H1: in rOH/0/0
+    xyzCorrect[0][1] = rOH;
+    xyzCorrect[1][1] = 0.0;
+    xyzCorrect[2][1] = 0.0;
+    // H2: slightly more involved...
+    final double realRot = Math.toRadians(angHOH);
+    final double sinR = FastMath.sin(realRot);
+    final double cosR = FastMath.cos(realRot);
+
+    // basically roate H1 around the z-axis
+    xyzCorrect[0][2] = cosR * rOH;
+    xyzCorrect[1][2] = sinR * rOH;
+    xyzCorrect[2][2] = 0.0;
+
+    // take care of COM moves
+    final double[] comDevMol = cMol.calculateTheCOM();
+    cMol.moveCoordsToCOM();
+    cCorr.moveCoordsToCOM();
+
+    // align the "correct" with the reference
+    final Tuple<CartesianCoordinates, Double> aligned;
+    try {
+      aligned = CoordTranslation.alignTwoCartesians(cMol, cCorr);
+    } catch (Exception e) {
+      System.err.println(
+          "WARNING: Aligning of rigidified and original failed. Using horrible rotated rigidified one!");
+      mol.setReferenceCartesian(cCorr.getAllXYZCoord());
+      return;
     }
+    aligned.getObject1().moveCoordsToPoint(comDevMol);
+    mol.setReferenceCartesian(aligned.getObject1().getAllXYZCoord());
+  }
+
+  /**
+   * An anti-cold fusion function to be used in TIPnP evaluations as going back to the original
+   * phenix work by Bernd Hartke.
+   */
+  public static class AntiColdFusionFunction implements LookupedFunction {
+
+    private static final long serialVersionUID = (long) 20141221;
+
+    @Override
+    public AntiColdFusionFunction copy() {
+      return new AntiColdFusionFunction();
+    }
+
+    @Override
+    public double func(final double radius) {
+      return Math.exp(-radius) * Math.pow(radius, -7);
+    }
+
+    double grad(final double radius) {
+      // TODO
+      return 0.0;
+    }
+  }
 }

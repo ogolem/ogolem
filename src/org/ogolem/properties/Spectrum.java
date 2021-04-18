@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,55 +38,56 @@ package org.ogolem.properties;
 
 /**
  * A spectrum as a property.
+ *
  * @author Johannes Dieterich
- * @version 2015-03-03
+ * @version 2020-12-29
  */
 public class Spectrum implements Property {
 
-    private static final long serialVersionUID = (long) 20150303;
-    private final org.ogolem.spectral.Spectrum spec;
-    
-    public Spectrum(final org.ogolem.spectral.Spectrum spec){
-        this.spec = spec;
-    }
-    
-    @Override
-    public Spectrum clone() {
-        return new Spectrum(spec.clone());
-    }
+  private static final long serialVersionUID = (long) 20150303;
+  private final org.ogolem.spectral.Spectrum spec;
 
-    @Override
-    public double getValue() {
-        //XXX not supported yet
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+  public Spectrum(final org.ogolem.spectral.Spectrum spec) {
+    this.spec = spec;
+  }
 
-    @Override
-    public double signedDifference(Property p) {
-        //XXX not supported yet
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+  @Override
+  public Spectrum copy() {
+    return new Spectrum(spec.copy());
+  }
 
-    @Override
-    public double absoluteDifference(Property p) {
-        //XXX not supported yet
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+  @Override
+  public double getValue() {
+    // XXX not supported yet
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
-    @Override
-    public boolean makeSensible() {
-        //XXX not supported yet
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+  @Override
+  public double signedDifference(Property p) {
+    // XXX not supported yet
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
-    @Override
-    public String printableProperty() {
-        
-        return spec.getFormattedSpectrum();
-    }
+  @Override
+  public double absoluteDifference(Property p) {
+    // XXX not supported yet
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
-    @Override
-    public String name() {
-        return "SPECTRUM";
-    }
+  @Override
+  public boolean makeSensible() {
+    // XXX not supported yet
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public String printableProperty() {
+
+    return spec.getFormattedSpectrum();
+  }
+
+  @Override
+  public String name() {
+    return "SPECTRUM";
+  }
 }

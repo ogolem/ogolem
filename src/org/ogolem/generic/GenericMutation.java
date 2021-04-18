@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2013-2014, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2013-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,20 +40,23 @@ import java.io.Serializable;
 
 /**
  * Generic interface for a mutation.
+ *
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2020-12-29
  */
-public interface GenericMutation<E,T extends Optimizable<E>> extends Serializable, Cloneable {
-    
-    GenericMutation<E,T> clone();
-    
-    String getMyID();
-    
-    /**
-     * Mutation of a T. Implementation depended if orig may be changed and returned
-     * as a the "mutated" (highly discouraged!). May return null.
-     * @param orig The starting Optimizable.
-     * @return mutated object, can be a changed orig or null.
-     */
-    public T mutate(final T orig);
+public interface GenericMutation<E, T extends Optimizable<E>> extends Serializable, Copyable {
+
+  @Override
+  GenericMutation<E, T> copy();
+
+  String getMyID();
+
+  /**
+   * Mutation of a T. Implementation depended if orig may be changed and returned as a the "mutated"
+   * (highly discouraged!). May return null.
+   *
+   * @param orig The starting Optimizable.
+   * @return mutated object, can be a changed orig or null.
+   */
+  public T mutate(final T orig);
 }

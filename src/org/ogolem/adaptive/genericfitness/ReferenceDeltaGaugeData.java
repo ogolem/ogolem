@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,58 +41,64 @@ import org.ogolem.properties.DeltaGauge;
 
 /**
  * A reference data object for delta gauge calculations.
+ *
  * @author Johannes Dieterich
- * @version 2017-09-14
+ * @version 2020-12-30
  */
-public class ReferenceDeltaGaugeData<V extends StructuralData> implements ReferenceInputData<DeltaGauge> {
-    
-    private static final long serialVersionUID = (long) 20170914;
-    
-    private ReferenceGeomData<DeltaGauge,V> geom;
-    private final int refPoint;
-    private final String sym;
-    private final short atomNo;
-    
-    public ReferenceDeltaGaugeData(final int refPoint, final String sym, final short atomNo, final ReferenceGeomData<DeltaGauge,V> geom){
-        assert(sym != null);
-        assert(!sym.isEmpty());
-        this.sym = sym;
-        this.atomNo = atomNo;
-        this.refPoint = refPoint;
-        this.geom = geom;
-    }
-    
-    private ReferenceDeltaGaugeData(final ReferenceDeltaGaugeData<V> orig){
-        this.sym = orig.sym;
-        this.atomNo = orig.atomNo;
-        this.refPoint = orig.refPoint;
-        this.geom =  (orig.geom != null) ? orig.geom.clone() : null;
-    }
-    
-    @Override
-    public ReferenceDeltaGaugeData<V> clone() {
-        return new ReferenceDeltaGaugeData<>(this);
-    }
-    
-    public String getSymmetry(){
-        return sym;
-    }
-    
-    public short getAtomNo(){
-        return atomNo;
-    }
+public class ReferenceDeltaGaugeData<V extends StructuralData>
+    implements ReferenceInputData<DeltaGauge> {
 
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
-    
-    public ReferenceGeomData<DeltaGauge,V> getGeomData(){
-        assert(geom != null);
-        return geom;
-    }
-    
-    public void setGeomData(ReferenceGeomData<DeltaGauge,V> geom){
-        this.geom = geom;
-    }
+  private static final long serialVersionUID = (long) 20170914;
+
+  private ReferenceGeomData<DeltaGauge, V> geom;
+  private final int refPoint;
+  private final String sym;
+  private final short atomNo;
+
+  public ReferenceDeltaGaugeData(
+      final int refPoint,
+      final String sym,
+      final short atomNo,
+      final ReferenceGeomData<DeltaGauge, V> geom) {
+    assert (sym != null);
+    assert (!sym.isEmpty());
+    this.sym = sym;
+    this.atomNo = atomNo;
+    this.refPoint = refPoint;
+    this.geom = geom;
+  }
+
+  private ReferenceDeltaGaugeData(final ReferenceDeltaGaugeData<V> orig) {
+    this.sym = orig.sym;
+    this.atomNo = orig.atomNo;
+    this.refPoint = orig.refPoint;
+    this.geom = (orig.geom != null) ? orig.geom.copy() : null;
+  }
+
+  @Override
+  public ReferenceDeltaGaugeData<V> copy() {
+    return new ReferenceDeltaGaugeData<>(this);
+  }
+
+  public String getSymmetry() {
+    return sym;
+  }
+
+  public short getAtomNo() {
+    return atomNo;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
+
+  public ReferenceGeomData<DeltaGauge, V> getGeomData() {
+    assert (geom != null);
+    return geom;
+  }
+
+  public void setGeomData(ReferenceGeomData<DeltaGauge, V> geom) {
+    this.geom = geom;
+  }
 }

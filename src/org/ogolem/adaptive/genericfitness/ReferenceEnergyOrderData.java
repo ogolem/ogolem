@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,52 +43,56 @@ import org.ogolem.properties.EnergyOrder;
 
 /**
  * Data for energy order calculations.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-23
+ * @version 2020-12-30
  */
-public class ReferenceEnergyOrderData<V extends StructuralData> implements ReferenceInputData<EnergyOrder> {
-    
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final List<Tuple<String,ReferenceGeomData<EnergyOrder,V>>> geoms;
-    private final int refPoint;
-    
-    public ReferenceEnergyOrderData(final int refPoint, final List<Tuple<String,ReferenceGeomData<EnergyOrder,V>>> geoms){        
-        assert(geoms != null);
-        assert(!geoms.isEmpty());
-        
-        this.geoms = geoms;
-        this.refPoint = refPoint;
+public class ReferenceEnergyOrderData<V extends StructuralData>
+    implements ReferenceInputData<EnergyOrder> {
+
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final List<Tuple<String, ReferenceGeomData<EnergyOrder, V>>> geoms;
+  private final int refPoint;
+
+  public ReferenceEnergyOrderData(
+      final int refPoint, final List<Tuple<String, ReferenceGeomData<EnergyOrder, V>>> geoms) {
+    assert (geoms != null);
+    assert (!geoms.isEmpty());
+
+    this.geoms = geoms;
+    this.refPoint = refPoint;
+  }
+
+  private ReferenceEnergyOrderData(final ReferenceEnergyOrderData<V> orig) {
+    this.geoms = orig.geoms; // just re-use
+    this.refPoint = orig.refPoint;
+  }
+
+  @Override
+  public ReferenceEnergyOrderData<V> copy() {
+    return new ReferenceEnergyOrderData<>(this);
+  }
+
+  public ReferenceGeomData<EnergyOrder, V> getGeomDataForKey(final String key) {
+
+    for (final Tuple<String, ReferenceGeomData<EnergyOrder, V>> ent : geoms) {
+      if (ent.getObject1().equalsIgnoreCase(key)) {
+        return ent.getObject2();
+      }
     }
-    
-    private ReferenceEnergyOrderData(final ReferenceEnergyOrderData<V> orig){
-        this.geoms = orig.geoms; // just re-use
-        this.refPoint = orig.refPoint;
-    }
-    
-    @Override
-    public ReferenceEnergyOrderData<V> clone() {
-        return new ReferenceEnergyOrderData<>(this);
-    }
-    
-    public ReferenceGeomData<EnergyOrder,V> getGeomDataForKey(final String key){
-        
-        for(final Tuple<String,ReferenceGeomData<EnergyOrder,V>> ent : geoms){
-            if(ent.getObject1().equalsIgnoreCase(key)){
-                return ent.getObject2();
-            }
-        }
-        
-        System.err.println("ERROR: No reference data found for key " + key + ". Have fun with the null pointer...");
-        return null;
-    }
-    
-    public List<Tuple<String,ReferenceGeomData<EnergyOrder,V>>> getAllGeomData(){
-        return geoms;
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
+
+    System.err.println(
+        "ERROR: No reference data found for key " + key + ". Have fun with the null pointer...");
+    return null;
+  }
+
+  public List<Tuple<String, ReferenceGeomData<EnergyOrder, V>>> getAllGeomData() {
+    return geoms;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
 }

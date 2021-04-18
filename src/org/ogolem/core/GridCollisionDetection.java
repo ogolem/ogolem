@@ -65,12 +65,12 @@ class GridCollisionDetection implements CollisionDetectionEngine {
   }
 
   private GridCollisionDetection(final GridCollisionDetection orig) {
-    this.comp = orig.comp.clone();
+    this.comp = orig.comp.copy();
     this.bExitOnFirstClash = orig.bExitOnFirstClash;
   }
 
   @Override
-  public GridCollisionDetection clone() {
+  public GridCollisionDetection copy() {
     return new GridCollisionDetection(this);
   }
 

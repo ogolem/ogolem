@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -47,106 +47,133 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * A generified (or de-generified?) Darwin implementation based off GenericAbstractDarwin.
+ *
  * @author Johannes Dieterich
- * @version 2020-07-15
+ * @version 2020-12-29
  */
-public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule,Geometry> {
-    
-    private static final long serialVersionUID = (long) 20200715;
-    private final GenericCrossover<Double,Molecule> molXOver;
-    private final GenericMutation<Double,Molecule> molMutation;
-    private final double molXOverProb;
-    private final double molMutProb;
+public class GenericGeometryDarwin extends GenericAbstractDarwin<Molecule, Geometry> {
 
-    GenericGeometryDarwin(final GenericCrossover<Molecule,Geometry> cross, final GenericMutation<Molecule,Geometry> mut,
-            final GenericSanityCheck<Molecule,Geometry> sanity, final GenericFitnessFunction<Molecule,Geometry> fitness,
-            final IndividualWriter<Geometry> writer, final double crossPoss, final double mutPoss,
-            final boolean printBeforeFitness, final int noOfTries, final double molXOverProb, final double molMutProb,
-            final GenericCrossover<Double,Molecule> molXOver, final GenericMutation<Double,Molecule> molMutation){
-        super(cross, mut, sanity, fitness, writer, crossPoss, mutPoss,
-            printBeforeFitness, noOfTries);
-        assert(molXOverProb >= 0.0 && molXOverProb <= 1.0);
-        assert(molMutProb >= 0.0 && molMutProb <= 1.0);
-        this.molMutProb = molMutProb;
-        this.molXOverProb = molXOverProb;
-        this.molMutation = molMutation;
-        this.molXOver = molXOver;
-    }
-    
-    GenericGeometryDarwin(final GenericGeometryDarwin orig){
-        super(orig);
-        this.molMutProb = orig.molMutProb;
-        this.molXOverProb = orig.molXOverProb;
-        this.molMutation = orig.molMutation.clone();
-        this.molXOver = orig.molXOver.clone();
-    }
-    
-    @Override
-    public GenericGeometryDarwin copy() {
-        return new GenericGeometryDarwin(this);
-    }
+  private static final long serialVersionUID = (long) 20200715;
+  private final GenericCrossover<Double, Molecule> molXOver;
+  private final GenericMutation<Double, Molecule> molMutation;
+  private final double molXOverProb;
+  private final double molMutProb;
 
-    @Override
-    public String getMyID() {
-        return "GENERIC GEOMETRY DARWIN IMPLEMENTATION"
-                + "\nusing (for geometry): "
-                + "\n\txover    " + xover.getMyID() + " which probability " + crossPoss*100 + "%"
-                + "\n\tmutation " + mutation.getMyID() + " which probability " + mutPoss*100 + "%"
-                + "\nusing (for molecule): "
-                + "\n\txover    " + molXOver.getMyID() + " which probability " + molXOverProb*100 + "%"
-                + "\n\tmutation " + molMutation.getMyID() + " which probability " + molMutProb*100 + "%"
-                + "\nfitness  " + fitness.getMyID();
-    }
+  GenericGeometryDarwin(
+      final GenericCrossover<Molecule, Geometry> cross,
+      final GenericMutation<Molecule, Geometry> mut,
+      final GenericSanityCheck<Molecule, Geometry> sanity,
+      final GenericFitnessFunction<Molecule, Geometry> fitness,
+      final IndividualWriter<Geometry> writer,
+      final double crossPoss,
+      final double mutPoss,
+      final boolean printBeforeFitness,
+      final int noOfTries,
+      final double molXOverProb,
+      final double molMutProb,
+      final GenericCrossover<Double, Molecule> molXOver,
+      final GenericMutation<Double, Molecule> molMutation) {
+    super(cross, mut, sanity, fitness, writer, crossPoss, mutPoss, printBeforeFitness, noOfTries);
+    assert (molXOverProb >= 0.0 && molXOverProb <= 1.0);
+    assert (molMutProb >= 0.0 && molMutProb <= 1.0);
+    this.molMutProb = molMutProb;
+    this.molXOverProb = molXOverProb;
+    this.molMutation = molMutation;
+    this.molXOver = molXOver;
+  }
 
-    @Override
-    protected void postXOver(final Geometry individual1, final Geometry individual2, final long futureID) {
-        
-        assert(individual1.isThereAFlexy() == individual2.isThereAFlexy());
-        if(individual1.isThereAFlexy()){
-            // we need to try molecular crossover
-            final int noIndies = individual1.getNumberOfIndieParticles();
-            assert(noIndies == individual2.getNumberOfIndieParticles());
-            for(int i = 0; i < individual1.getNumberOfIndieParticles(); i++){
-                
-                final Molecule mol1 = individual1.getMoleculeAtPosition(i);
-                final Molecule mol2 = individual2.getMoleculeAtPosition(i);
-                assert(mol1.getFlexy() == mol2.getFlexy());
-                if(mol1.getFlexy() && r.nextDouble() <= molXOverProb){
-                    
-                    final Tuple<Molecule,Molecule> res = molXOver.crossover(mol1, mol2, futureID);
-                    individual1.setMoleculeAtPosition(i, res.getObject2());
-                    individual2.setMoleculeAtPosition(i, res.getObject1());
-                }
-            }
+  GenericGeometryDarwin(final GenericGeometryDarwin orig) {
+    super(orig);
+    this.molMutProb = orig.molMutProb;
+    this.molXOverProb = orig.molXOverProb;
+    this.molMutation = orig.molMutation.copy();
+    this.molXOver = orig.molXOver.copy();
+  }
+
+  @Override
+  public GenericGeometryDarwin copy() {
+    return new GenericGeometryDarwin(this);
+  }
+
+  @Override
+  public String getMyID() {
+    return "GENERIC GEOMETRY DARWIN IMPLEMENTATION"
+        + "\nusing (for geometry): "
+        + "\n\txover    "
+        + xover.getMyID()
+        + " which probability "
+        + crossPoss * 100
+        + "%"
+        + "\n\tmutation "
+        + mutation.getMyID()
+        + " which probability "
+        + mutPoss * 100
+        + "%"
+        + "\nusing (for molecule): "
+        + "\n\txover    "
+        + molXOver.getMyID()
+        + " which probability "
+        + molXOverProb * 100
+        + "%"
+        + "\n\tmutation "
+        + molMutation.getMyID()
+        + " which probability "
+        + molMutProb * 100
+        + "%"
+        + "\nfitness  "
+        + fitness.getMyID();
+  }
+
+  @Override
+  protected void postXOver(
+      final Geometry individual1, final Geometry individual2, final long futureID) {
+
+    assert (individual1.isThereAFlexy() == individual2.isThereAFlexy());
+    if (individual1.isThereAFlexy()) {
+      // we need to try molecular crossover
+      final int noIndies = individual1.getNumberOfIndieParticles();
+      assert (noIndies == individual2.getNumberOfIndieParticles());
+      for (int i = 0; i < individual1.getNumberOfIndieParticles(); i++) {
+
+        final Molecule mol1 = individual1.getMoleculeAtPosition(i);
+        final Molecule mol2 = individual2.getMoleculeAtPosition(i);
+        assert (mol1.getFlexy() == mol2.getFlexy());
+        if (mol1.getFlexy() && r.nextDouble() <= molXOverProb) {
+
+          final Tuple<Molecule, Molecule> res = molXOver.crossover(mol1, mol2, futureID);
+          individual1.setMoleculeAtPosition(i, res.getObject2());
+          individual2.setMoleculeAtPosition(i, res.getObject1());
         }
-        
-        assert(individual1.containsEnvironment() == individual2.containsEnvironment());
-        // currently, the x-over is handled in all the x-overs. kinda annoying but should work.
+      }
     }
 
-    @Override
-    protected void postMutation(final Geometry individual) {
-        
-        if(individual.isThereAFlexy()){
-            // we need to try molecular mutation
-            for(int i = 0; i < individual.getNumberOfIndieParticles(); i++){
-                
-                final Molecule mol = individual.getMoleculeAtPosition(i);
-                if(mol.getFlexy() && r.nextDouble() <= molMutProb){
-                    final Molecule mutated = molMutation.mutate(mol);
-                    individual.setMoleculeAtPosition(i, mutated);
-                }
-            }
+    assert (individual1.containsEnvironment() == individual2.containsEnvironment());
+    // currently, the x-over is handled in all the x-overs. kinda annoying but should work.
+  }
+
+  @Override
+  protected void postMutation(final Geometry individual) {
+
+    if (individual.isThereAFlexy()) {
+      // we need to try molecular mutation
+      for (int i = 0; i < individual.getNumberOfIndieParticles(); i++) {
+
+        final Molecule mol = individual.getMoleculeAtPosition(i);
+        if (mol.getFlexy() && r.nextDouble() <= molMutProb) {
+          final Molecule mutated = molMutation.mutate(mol);
+          individual.setMoleculeAtPosition(i, mutated);
         }
-        
-        if(individual.containsEnvironment()){
-            // let's do some environment mutation (i.e., the connectors cluster to environment)
-            individual.mutateEnvironment();
-        }
+      }
     }
 
-    @Override
-    protected void runAfterEachTry() {
-        // does not need to be implemented
+    if (individual.containsEnvironment()) {
+      // let's do some environment mutation (i.e., the connectors cluster to environment)
+      individual.mutateEnvironment();
     }
+  }
+
+  @Override
+  protected void runAfterEachTry() {
+    // does not need to be implemented
+  }
 }

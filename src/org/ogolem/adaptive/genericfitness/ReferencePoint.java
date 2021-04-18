@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,70 +40,76 @@ import org.ogolem.properties.Property;
 
 /**
  * A straighforward implementation of a generic reference point.
+ *
  * @author Johannes Dieterich
- * @version 2015-10-28
+ * @version 2020-12-30
  */
-public class ReferencePoint<T extends Property, V extends ReferenceInputData<T>> implements GenericReferencePoint<T,V> {
+public class ReferencePoint<T extends Property, V extends ReferenceInputData<T>>
+    implements GenericReferencePoint<T, V> {
 
-    private static final long serialVersionUID = (long) 20151028;
-    
-    private final T refProp;
-    private final V refInput;
-    private final int id;
-    private final double weight;
-    private final double maxDiff;
-    
-    public ReferencePoint(final T refProperty, final V refInputData, final int refID,
-            final double refWeight, final double refMaxDiff){
-        
-        assert(refProperty != null);
-        assert(refInputData != null);
-        assert(refWeight > 0.0);
-        assert(refMaxDiff > 0.0);
-        
-        this.refProp = refProperty;
-        this.refInput = refInputData;
-        this.id = refID;
-        this.weight = refWeight;
-        this.maxDiff = refMaxDiff;
-    }
-    
-    @SuppressWarnings("unchecked")
-    ReferencePoint(final ReferencePoint<T,V> orig){
-        this.id = orig.id;
-        this.maxDiff = orig.maxDiff;
-        this.refInput = (V) orig.refInput.clone();
-        this.refProp = (T) orig.refProp.clone();
-        this.weight = orig.weight;
-    }
-    
-    @Override
-    public ReferencePoint<T, V> clone() {
-        return new ReferencePoint<>(this);
-    }
-    
-    @Override
-    public T getReferenceProperty() {
-        return refProp;
-    }
+  private static final long serialVersionUID = (long) 20151028;
 
-    @Override
-    public V getReferenceInputData() {
-        return refInput;
-    }
+  private final T refProp;
+  private final V refInput;
+  private final int id;
+  private final double weight;
+  private final double maxDiff;
 
-    @Override
-    public int getReferenceID() {
-        return id;
-    }
+  public ReferencePoint(
+      final T refProperty,
+      final V refInputData,
+      final int refID,
+      final double refWeight,
+      final double refMaxDiff) {
 
-    @Override
-    public double getRefWeight() {
-        return weight;
-    }
+    assert (refProperty != null);
+    assert (refInputData != null);
+    assert (refWeight > 0.0);
+    assert (refMaxDiff > 0.0);
 
-    @Override
-    public double getMaxAllowedDiff() {
-        return maxDiff;
-    }
+    this.refProp = refProperty;
+    this.refInput = refInputData;
+    this.id = refID;
+    this.weight = refWeight;
+    this.maxDiff = refMaxDiff;
+  }
+
+  @SuppressWarnings("unchecked")
+  ReferencePoint(final ReferencePoint<T, V> orig) {
+    this.id = orig.id;
+    this.maxDiff = orig.maxDiff;
+    this.refInput = (V) orig.refInput.copy();
+    this.refProp = (T) orig.refProp.copy();
+    this.weight = orig.weight;
+  }
+
+  @Override
+  public ReferencePoint<T, V> copy() {
+    return new ReferencePoint<>(this);
+  }
+
+  @Override
+  public T getReferenceProperty() {
+    return refProp;
+  }
+
+  @Override
+  public V getReferenceInputData() {
+    return refInput;
+  }
+
+  @Override
+  public int getReferenceID() {
+    return id;
+  }
+
+  @Override
+  public double getRefWeight() {
+    return weight;
+  }
+
+  @Override
+  public double getMaxAllowedDiff() {
+    return maxDiff;
+  }
 }

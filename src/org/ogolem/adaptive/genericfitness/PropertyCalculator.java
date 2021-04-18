@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,18 +39,22 @@ package org.ogolem.adaptive.genericfitness;
 
 import java.io.Serializable;
 import org.ogolem.adaptive.AdaptiveParameters;
+import org.ogolem.generic.Copyable;
 import org.ogolem.properties.Property;
 
 /**
  * Calculates properties
+ *
  * @author Johannes Dieterich
- * @version 2015-07-31
+ * @version 2020-12-30
  */
-public interface PropertyCalculator<T extends Property, V extends ReferenceInputData<T>> extends Cloneable, Serializable {
-    
-    PropertyCalculator<T,V> clone();
-    
-    T calculateProperty(final AdaptiveParameters p, final V data);
-    
-    T calculatePropertyGradient(final AdaptiveParameters p, final V data, final double[] grad);
+public interface PropertyCalculator<T extends Property, V extends ReferenceInputData<T>>
+    extends Copyable, Serializable {
+
+  @Override
+  PropertyCalculator<T, V> copy();
+
+  T calculateProperty(final AdaptiveParameters p, final V data);
+
+  T calculatePropertyGradient(final AdaptiveParameters p, final V data, final double[] grad);
 }

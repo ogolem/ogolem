@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015-2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,37 +41,38 @@ import org.ogolem.properties.Forces;
 
 /**
  * Data for forces calculations.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-16
+ * @version 2020-12-30
  */
-public class ReferenceForcesData<V extends StructuralData> implements ReferenceInputData<Forces>{
+public class ReferenceForcesData<V extends StructuralData> implements ReferenceInputData<Forces> {
 
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final ReferenceGeomData<Forces,V> geom;
-    private final int refPoint;
-    
-    public ReferenceForcesData(final int refPoint, final ReferenceGeomData<Forces,V> geom){
-        this.geom = geom;
-        this.refPoint = refPoint;
-    }
-    
-    private ReferenceForcesData(final ReferenceForcesData<V> orig){
-        this.geom = orig.geom.clone();
-        this.refPoint = orig.refPoint;
-    }
-    
-    @Override
-    public ReferenceForcesData<V> clone() {
-        return new ReferenceForcesData<>(this);
-    }
-    
-    public ReferenceGeomData<Forces,V> getGeomData(){
-        return geom;
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final ReferenceGeomData<Forces, V> geom;
+  private final int refPoint;
+
+  public ReferenceForcesData(final int refPoint, final ReferenceGeomData<Forces, V> geom) {
+    this.geom = geom;
+    this.refPoint = refPoint;
+  }
+
+  private ReferenceForcesData(final ReferenceForcesData<V> orig) {
+    this.geom = orig.geom.copy();
+    this.refPoint = orig.refPoint;
+  }
+
+  @Override
+  public ReferenceForcesData<V> copy() {
+    return new ReferenceForcesData<>(this);
+  }
+
+  public ReferenceGeomData<Forces, V> getGeomData() {
+    return geom;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
 }

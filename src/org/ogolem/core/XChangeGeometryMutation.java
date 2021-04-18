@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,97 +44,100 @@ import org.ogolem.random.RandomUtils;
 
 /**
  * A mutation operator exchanging particles.
+ *
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-12-29
  */
-public class XChangeGeometryMutation implements GenericMutation<Molecule,Geometry> {
-    
-    private static final long serialVersionUID = (long) 20140327;
-    public static final double DEFAULTGAUSSWIDTH = 0.4;
-    public static final int SINGLEEXCHANGEMODE = 0;
-    public static final int MULTIPLEEXCHANGEMODE = 1;
-    
-    private final Lottery r;
-    private final double gaussWidth;
-    private final int mode;
-    
-    XChangeGeometryMutation(final int mode, final double gaussWidth){
-        assert(gaussWidth > 0.0);
-        assert(mode == 1 || mode == 0);
-        this.gaussWidth = gaussWidth;
-        this.mode = mode;
-        this.r = Lottery.getInstance();
+public class XChangeGeometryMutation implements GenericMutation<Molecule, Geometry> {
+
+  private static final long serialVersionUID = (long) 20140327;
+  public static final double DEFAULTGAUSSWIDTH = 0.4;
+  public static final int SINGLEEXCHANGEMODE = 0;
+  public static final int MULTIPLEEXCHANGEMODE = 1;
+
+  private final Lottery r;
+  private final double gaussWidth;
+  private final int mode;
+
+  XChangeGeometryMutation(final int mode, final double gaussWidth) {
+    assert (gaussWidth > 0.0);
+    assert (mode == 1 || mode == 0);
+    this.gaussWidth = gaussWidth;
+    this.mode = mode;
+    this.r = Lottery.getInstance();
+  }
+
+  XChangeGeometryMutation(final XChangeGeometryMutation orig) {
+    this.gaussWidth = orig.gaussWidth;
+    this.mode = orig.mode;
+    this.r = Lottery.getInstance();
+  }
+
+  @Override
+  public XChangeGeometryMutation copy() {
+    return new XChangeGeometryMutation(this);
+  }
+
+  @Override
+  public String getMyID() {
+    return "XChange mutation\n\tmode: " + mode + "\n\t Gaussian width " + gaussWidth;
+  }
+
+  @Override
+  public Geometry mutate(final Geometry orig) {
+
+    assert (orig.getNumberOfIndieParticles() >= 2);
+
+    final Geometry mutatedGeom = new Geometry(orig);
+
+    // find out how many molecules we will exchange
+    int noToXChange;
+    if (mode == SINGLEEXCHANGEMODE) {
+      noToXChange = 2;
+    } else if (mode == MULTIPLEEXCHANGEMODE) {
+      final double rand = RandomUtils.halfgaussDouble(0.0, 1.0, gaussWidth);
+      // since we want at least one pair,  choices are reduced by two
+      final int noOfChoices = mutatedGeom.getNumberOfIndieParticles() - 1;
+      final double oneSlot = 1. / (double) noOfChoices;
+      final int choice = (int) Math.floor(rand / oneSlot);
+
+      noToXChange = choice + 1;
+    } else {
+      throw new RuntimeException("Illegal mode " + mode + " in XChange operator");
     }
-    
-    XChangeGeometryMutation(final XChangeGeometryMutation orig){
-        this.gaussWidth = orig.gaussWidth;
-        this.mode = orig.mode;
-        this.r = Lottery.getInstance();
+
+    /*
+     * we want to know now, WHICH molecules we put into our exchange pool
+     */
+    final int noIndies = mutatedGeom.getNumberOfIndieParticles();
+
+    final List<Integer> toBeXChanged = RandomUtils.rndListOfPoints(noToXChange, noIndies);
+
+    /*
+     * the actual xchanging: always pairwise, of course... ;-)
+     */
+    for (int i = 0; i < noToXChange; i++) {
+
+      // get the pair
+      final int start = toBeXChanged.get(i);
+      final int partner = r.nextInt(noIndies);
+
+      final double[] com1 =
+          mutatedGeom.getMoleculeAtPosition(start).getExternalCenterOfMass().clone();
+      final double[] euler1 = mutatedGeom.getMoleculeAtPosition(start).getOrientation().clone();
+
+      final double[] com2 =
+          mutatedGeom.getMoleculeAtPosition(partner).getExternalCenterOfMass().clone();
+      final double[] euler2 = mutatedGeom.getMoleculeAtPosition(partner).getOrientation().clone();
+
+      // xchange
+      mutatedGeom.getMoleculeAtPosition(start).setExternalCenterOfMass(com2);
+      mutatedGeom.getMoleculeAtPosition(start).setOrientation(euler2);
+
+      mutatedGeom.getMoleculeAtPosition(partner).setExternalCenterOfMass(com1);
+      mutatedGeom.getMoleculeAtPosition(partner).setOrientation(euler1);
     }
 
-    @Override
-    public XChangeGeometryMutation clone() {
-        return new XChangeGeometryMutation(this);
-    }
-
-    @Override
-    public String getMyID() {
-        return "XChange mutation\n\tmode: " + mode + "\n\t Gaussian width " + gaussWidth;
-    }
-
-    @Override
-    public Geometry mutate(final Geometry orig) {
-        
-        assert(orig.getNumberOfIndieParticles() >= 2);
-        
-        final Geometry mutatedGeom = new Geometry(orig);
-
-        // find out how many molecules we will exchange
-        int noToXChange;
-        if(mode == SINGLEEXCHANGEMODE){
-            noToXChange = 2;
-        } else if(mode == MULTIPLEEXCHANGEMODE){
-            final double rand = RandomUtils.halfgaussDouble(0.0, 1.0, gaussWidth);
-            // since we want at least one pair,  choices are reduced by two
-            final int noOfChoices = mutatedGeom.getNumberOfIndieParticles() - 1;
-            final double oneSlot = 1. / (double) noOfChoices;
-            final int choice = (int) Math.floor(rand/oneSlot);
-
-            noToXChange = choice + 1;
-        } else{
-            throw new RuntimeException("Illegal mode " + mode + " in XChange operator");
-        }
-        
-        /*
-         * we want to know now, WHICH molecules we put into our exchange pool
-         */
-        final int noIndies = mutatedGeom.getNumberOfIndieParticles();
-        
-        final List<Integer> toBeXChanged = RandomUtils.rndListOfPoints(noToXChange,noIndies);
-        
-        /*
-         * the actual xchanging: always pairwise, of course... ;-)
-         */
-        for(int i = 0; i < noToXChange; i++){
-            
-            // get the pair
-            final int start = toBeXChanged.get(i);
-            final int partner = r.nextInt(noIndies);
-            
-            final double[] com1 = mutatedGeom.getMoleculeAtPosition(start).getExternalCenterOfMass().clone();
-            final double[] euler1 = mutatedGeom.getMoleculeAtPosition(start).getOrientation().clone();
-
-            final double[] com2 = mutatedGeom.getMoleculeAtPosition(partner).getExternalCenterOfMass().clone();
-            final double[] euler2 = mutatedGeom.getMoleculeAtPosition(partner).getOrientation().clone();
-
-            // xchange
-            mutatedGeom.getMoleculeAtPosition(start).setExternalCenterOfMass(com2);
-            mutatedGeom.getMoleculeAtPosition(start).setOrientation(euler2);
-
-            mutatedGeom.getMoleculeAtPosition(partner).setExternalCenterOfMass(com1);
-            mutatedGeom.getMoleculeAtPosition(partner).setOrientation(euler1);
-        }
-            
-        return mutatedGeom;
-    }    
+    return mutatedGeom;
+  }
 }

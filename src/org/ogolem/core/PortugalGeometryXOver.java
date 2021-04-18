@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,102 +45,105 @@ import org.ogolem.random.RandomUtils;
 
 /**
  * n-Point genotype crossover for geometries.
+ *
  * @author Johannes Dieterich
- * @version 2014-03-27
+ * @version 2020-12-30
  */
-public class PortugalGeometryXOver implements GenericCrossover<Molecule,Geometry> {
-    
-    private static final long serialVersionUID = (long) 20140327;
-    private final int noCuts;
-    
-    PortugalGeometryXOver(final int noCuts){
-        this.noCuts = noCuts;
-    }
-    
-    PortugalGeometryXOver(final PortugalGeometryXOver orig){
-        this.noCuts = orig.noCuts;
-    }
+public class PortugalGeometryXOver implements GenericCrossover<Molecule, Geometry> {
 
-    @Override
-    public PortugalGeometryXOver clone() {
-        return new PortugalGeometryXOver(this);
-    }
+  private static final long serialVersionUID = (long) 20140327;
+  private final int noCuts;
 
-    @Override
-    public String getMyID() {
-        return "PORTUGAL\nn-point geometry genotype crossover\n\t #crosses: " + noCuts;
-    }
+  PortugalGeometryXOver(final int noCuts) {
+    this.noCuts = noCuts;
+  }
 
-    @Override
-    public Tuple<Geometry, Geometry> crossover(Geometry mother, Geometry father, final long futureID) {
-        
-        final int noOfIndies = mother.getNumberOfIndieParticles();
+  PortugalGeometryXOver(final PortugalGeometryXOver orig) {
+    this.noCuts = orig.noCuts;
+  }
 
-        if(noOfIndies <= noCuts){
-            throw new RuntimeException("Too many cuts for number of molecules in geometry. " + noCuts + " vs " + noOfIndies);
-        }
-        
-        final List<Integer> cutPoints = RandomUtils.listOfPoints(noCuts, noOfIndies);
-                
-        // the geometry configurations
-        final GeometryConfig gcChildOne = new GeometryConfig();
-        final GeometryConfig gcChildTwo = new GeometryConfig();
+  @Override
+  public PortugalGeometryXOver copy() {
+    return new PortugalGeometryXOver(this);
+  }
 
-        final GeometryConfig gcMother = mother.returnMyConfig();
-        final GeometryConfig gcFather = father.returnMyConfig();
+  @Override
+  public String getMyID() {
+    return "PORTUGAL\nn-point geometry genotype crossover\n\t #crosses: " + noCuts;
+  }
 
-        //set some small values
-        gcChildOne.motherID = gcMother.lID;
-        gcChildTwo.motherID = gcMother.lID;
-        gcChildOne.fatherID = gcFather.lID;
-        gcChildTwo.fatherID = gcFather.lID;
-        gcChildOne.noOfParticles = noOfIndies;
-        gcChildTwo.noOfParticles = noOfIndies;
+  @Override
+  public Tuple<Geometry, Geometry> crossover(
+      Geometry mother, Geometry father, final long futureID) {
 
-        // the actual chopping of MC's...
-        final List<MoleculeConfig> alMCOne = new ArrayList<>(noOfIndies);
-        final List<MoleculeConfig> alMCTwo = new ArrayList<>(noOfIndies);
-        
-        boolean mothFirst = true;
-        for(int mol = 0; mol < noOfIndies; mol++){
-            
-            if(mothFirst){
-                alMCOne.add(gcMother.geomMCs.get(mol));
-                alMCTwo.add(gcFather.geomMCs.get(mol));
-            } else{
-                alMCTwo.add(gcMother.geomMCs.get(mol));
-                alMCOne.add(gcFather.geomMCs.get(mol));
-            }
-                        
-            if(cutPoints.contains(mol)) {
-                mothFirst = !mothFirst;
-            }
-        }
-        
-        // put the MCs into the GC
-        gcChildOne.geomMCs = alMCOne;
-        gcChildTwo.geomMCs = alMCTwo;
+    final int noOfIndies = mother.getNumberOfIndieParticles();
 
-        gcChildOne.bonds = mother.getBondInfo().clone();
-        gcChildTwo.bonds = father.getBondInfo().clone();
-
-        if(mother.containsEnvironment()){
-            // the environment
-            final List<Environment> envChilds = gcChildOne.env.createOffspring(gcChildTwo.env);
-            gcChildOne.env = envChilds.get(0);
-            gcChildTwo.env = envChilds.get(1);
-        }
-        
-        // create the two children
-        final Geometry gChildOne = new Geometry(gcChildOne);
-        final Geometry gChildTwo = new Geometry(gcChildTwo);
-        
-        //TODO test and debug
-        return new Tuple<>(gChildOne,gChildTwo);
+    if (noOfIndies <= noCuts) {
+      throw new RuntimeException(
+          "Too many cuts for number of molecules in geometry. " + noCuts + " vs " + noOfIndies);
     }
 
-    @Override
-    public short hasPriority() {
-        return -1;
+    final List<Integer> cutPoints = RandomUtils.listOfPoints(noCuts, noOfIndies);
+
+    // the geometry configurations
+    final GeometryConfig gcChildOne = new GeometryConfig();
+    final GeometryConfig gcChildTwo = new GeometryConfig();
+
+    final GeometryConfig gcMother = mother.returnMyConfig();
+    final GeometryConfig gcFather = father.returnMyConfig();
+
+    // set some small values
+    gcChildOne.motherID = gcMother.lID;
+    gcChildTwo.motherID = gcMother.lID;
+    gcChildOne.fatherID = gcFather.lID;
+    gcChildTwo.fatherID = gcFather.lID;
+    gcChildOne.noOfParticles = noOfIndies;
+    gcChildTwo.noOfParticles = noOfIndies;
+
+    // the actual chopping of MC's...
+    final List<MoleculeConfig> alMCOne = new ArrayList<>(noOfIndies);
+    final List<MoleculeConfig> alMCTwo = new ArrayList<>(noOfIndies);
+
+    boolean mothFirst = true;
+    for (int mol = 0; mol < noOfIndies; mol++) {
+
+      if (mothFirst) {
+        alMCOne.add(gcMother.geomMCs.get(mol));
+        alMCTwo.add(gcFather.geomMCs.get(mol));
+      } else {
+        alMCTwo.add(gcMother.geomMCs.get(mol));
+        alMCOne.add(gcFather.geomMCs.get(mol));
+      }
+
+      if (cutPoints.contains(mol)) {
+        mothFirst = !mothFirst;
+      }
     }
+
+    // put the MCs into the GC
+    gcChildOne.geomMCs = alMCOne;
+    gcChildTwo.geomMCs = alMCTwo;
+
+    gcChildOne.bonds = mother.getBondInfo().copy();
+    gcChildTwo.bonds = father.getBondInfo().copy();
+
+    if (mother.containsEnvironment()) {
+      // the environment
+      final List<Environment> envChilds = gcChildOne.env.createOffspring(gcChildTwo.env);
+      gcChildOne.env = envChilds.get(0);
+      gcChildTwo.env = envChilds.get(1);
+    }
+
+    // create the two children
+    final Geometry gChildOne = new Geometry(gcChildOne);
+    final Geometry gChildTwo = new Geometry(gcChildTwo);
+
+    // TODO test and debug
+    return new Tuple<>(gChildOne, gChildTwo);
+  }
+
+  @Override
+  public short hasPriority() {
+    return -1;
+  }
 }

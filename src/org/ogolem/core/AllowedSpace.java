@@ -1,5 +1,6 @@
-/**
-Copyright (c) 2010     , J. M. Dieterich
+/*
+Copyright (c) 2010, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,17 +38,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * Defines an allowed space inside a cavity, on a surface, whatever.
+ *
  * @author Johannes Dieterich
- * @version 2010-09-21
+ * @version 2020-12-30
  */
-public interface AllowedSpace extends Cloneable, Serializable{
+public interface AllowedSpace extends Copyable, Serializable {
 
-    AllowedSpace clone();
+  @Override
+  AllowedSpace copy();
 
-    double[] getPointInSpace();
+  double[] getPointInSpace();
 
-    boolean isPointInSpace(double[] point);
+  boolean isPointInSpace(double[] point);
 }

@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,43 +38,46 @@ package org.ogolem.properties;
 
 /**
  * Delta gauge property for solids. It is related to the bulk modulus and cell volume of the system.
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
 public class DeltaGauge extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    public DeltaGauge(final double deltaGauge){
-        super(deltaGauge);
-    }
-    
-    @Override
-    public DeltaGauge clone(){
-        return new DeltaGauge(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
-    }
 
-    @Override
-    public String name() {
-        return "DELTA GAUGE";
-    }
+  private static final long serialVersionUID = (long) 20171215;
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof DeltaGauge);
+  public DeltaGauge(final double deltaGauge) {
+    super(deltaGauge);
+  }
+
+  @Override
+  public DeltaGauge copy() {
+    return new DeltaGauge(this.getValue());
+  }
+
+  @Override
+  public boolean makeSensible() {
+    if (Double.isInfinite(this.getValue())
+        || Double.isNaN(this.getValue())
+        || this.getValue() < 0.0) {
+      this.scalar = 0.0;
+      return true;
     }
+    return false;
+  }
+
+  @Override
+  public String printableProperty() {
+    return "" + this.getValue();
+  }
+
+  @Override
+  public String name() {
+    return "DELTA GAUGE";
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    return (p instanceof DeltaGauge);
+  }
 }

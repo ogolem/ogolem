@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -44,70 +44,71 @@ import org.ogolem.random.Lottery;
 
 /**
  * A chain of crossover operators.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class GenericChainedXOver<E,T extends Optimizable<E>> implements GenericCrossover<E,T> {
-    
-    private static final long serialVersionUID = (long) 20200429;
-    private final List<GenericCrossover<E,T>> xovers;
-    private final List<Double> probs;
-    private final Lottery r;
-    
-    public GenericChainedXOver(final List<GenericCrossover<E,T>> xovers,
-            final List<Double> probs){
-        assert(xovers.size() == probs.size());
-        this.xovers = xovers;
-        this.probs = probs;
-        this.r = Lottery.getInstance();
-    }
-    
-    public GenericChainedXOver(final GenericChainedXOver<E,T> orig){
-        this.xovers = new ArrayList<>(orig.xovers.size());
-        orig.xovers.forEach((xover) -> {
-            xovers.add(xover.clone());
+public class GenericChainedXOver<E, T extends Optimizable<E>> implements GenericCrossover<E, T> {
+
+  private static final long serialVersionUID = (long) 20200429;
+  private final List<GenericCrossover<E, T>> xovers;
+  private final List<Double> probs;
+  private final Lottery r;
+
+  public GenericChainedXOver(final List<GenericCrossover<E, T>> xovers, final List<Double> probs) {
+    assert (xovers.size() == probs.size());
+    this.xovers = xovers;
+    this.probs = probs;
+    this.r = Lottery.getInstance();
+  }
+
+  public GenericChainedXOver(final GenericChainedXOver<E, T> orig) {
+    this.xovers = new ArrayList<>(orig.xovers.size());
+    orig.xovers.forEach(
+        (xover) -> {
+          xovers.add(xover.copy());
         });
-        this.probs = new ArrayList<>(orig.probs.size());
-        for(final double d : orig.probs){
-            assert(d >= 0.0 && d <= 1.0);
-            probs.add(d);
-        }
-        assert(xovers.size() == probs.size());
-        this.r = Lottery.getInstance();
+    this.probs = new ArrayList<>(orig.probs.size());
+    for (final double d : orig.probs) {
+      assert (d >= 0.0 && d <= 1.0);
+      probs.add(d);
     }
-    
-    @Override
-    public GenericCrossover<E, T> clone() {
-        return new GenericChainedXOver<>(this);
+    assert (xovers.size() == probs.size());
+    this.r = Lottery.getInstance();
+  }
+
+  @Override
+  public GenericCrossover<E, T> copy() {
+    return new GenericChainedXOver<>(this);
+  }
+
+  @Override
+  public String getMyID() {
+    String s = "CHAINED CROSSOVER\n";
+    for (final GenericCrossover<E, T> xover : xovers) {
+      s += xover.getMyID() + "\n";
     }
 
-    @Override
-    public String getMyID() {
-        String s = "CHAINED CROSSOVER\n";
-        for(final GenericCrossover<E,T> xover : xovers){
-            s += xover.getMyID() + "\n";
-        }
-        
-        return s;
+    return s;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    assert (xovers.size() == probs.size());
+    Tuple<T, T> children = new Tuple<>((T) mother.copy(), (T) father.copy());
+    for (int i = 0; i < xovers.size(); i++) {
+      if (r.nextDouble() < probs.get(i)) {
+        children = xovers.get(i).crossover(children.getObject1(), children.getObject2(), futureID);
+      }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
-        
-        assert(xovers.size() == probs.size());
-        Tuple<T,T> children = new Tuple<>((T) mother.copy(), (T)father.copy());
-        for(int  i = 0; i < xovers.size(); i++){
-            if(r.nextDouble() < probs.get(i)){
-                children = xovers.get(i).crossover(children.getObject1(), children.getObject2(), futureID);
-            }
-        }
-        
-        return children;
-    }
+    return children;
+  }
 
-    @Override
-    public short hasPriority() {
-        return -1;
-    }
+  @Override
+  public short hasPriority() {
+    return -1;
+  }
 }

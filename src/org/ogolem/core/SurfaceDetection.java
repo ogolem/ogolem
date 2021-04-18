@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2011, J. M. Dieterich
-              2015, J. M. Dieterich and B. Harkte
+              2015-2020, J. M. Dieterich and B. Harkte
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,40 +40,45 @@ package org.ogolem.core;
 
 /**
  * Works as a decorator to all surface dections implemented.
+ *
  * @author Johannes Dieterich
- * @version 2015-04-28
+ * @version 2020-12-30
  */
-class SurfaceDetection implements SurfaceDetectionEngine{
+class SurfaceDetection implements SurfaceDetectionEngine {
 
-    private static final long serialVersionUID = (long) 20150428;
-    
-    public static enum SURFDETECTTYPE{HARTKESURFACEDETECTTESS,HARTKESURFACEDETECTLONGLAT};
-    public static final SURFDETECTTYPE DEFAUTLSURFDETECT = SURFDETECTTYPE.HARTKESURFACEDETECTTESS;
-    
-    protected final SURFDETECTTYPE whichSurfDetect;
-    protected final SurfaceDetectionEngine surfaceDetect;
+  private static final long serialVersionUID = (long) 20150428;
 
-    SurfaceDetection(final SURFDETECTTYPE whichSurfaceDetection){
-        throw new RuntimeException("Surface detection not a stable feature yet, sorry!");
+  public static enum SURFDETECTTYPE {
+    HARTKESURFACEDETECTTESS,
+    HARTKESURFACEDETECTLONGLAT
+  };
+
+  public static final SURFDETECTTYPE DEFAUTLSURFDETECT = SURFDETECTTYPE.HARTKESURFACEDETECTTESS;
+
+  protected final SURFDETECTTYPE whichSurfDetect;
+  protected final SurfaceDetectionEngine surfaceDetect;
+
+  SurfaceDetection(final SURFDETECTTYPE whichSurfaceDetection) {
+    throw new RuntimeException("Surface detection not a stable feature yet, sorry!");
+  }
+
+  @Override
+  public Surface detectTheSurface(final CartesianCoordinates cartes) {
+    return surfaceDetect.detectTheSurface(cartes);
+  }
+
+  @Override
+  public SurfaceDetection copy() {
+    return new SurfaceDetection(whichSurfDetect);
+  }
+
+  static SURFDETECTTYPE parseType(final String type) throws Exception {
+    if (type.equalsIgnoreCase("hartketess")) {
+      return SURFDETECTTYPE.HARTKESURFACEDETECTTESS;
+    } else if (type.equalsIgnoreCase("hartkelonglat")) {
+      return SURFDETECTTYPE.HARTKESURFACEDETECTLONGLAT;
     }
 
-    @Override
-    public Surface detectTheSurface(final CartesianCoordinates cartes){
-        return surfaceDetect.detectTheSurface(cartes);
-    }
-
-    @Override
-    public SurfaceDetection clone() {
-        return new SurfaceDetection(whichSurfDetect);
-    }
-    
-    static SURFDETECTTYPE parseType(final String type) throws Exception {
-        if(type.equalsIgnoreCase("hartketess")){
-            return SURFDETECTTYPE.HARTKESURFACEDETECTTESS;
-        } else if(type.equalsIgnoreCase("hartkelonglat")){
-            return SURFDETECTTYPE.HARTKESURFACEDETECTLONGLAT;
-        }
-        
-        throw new Exception("Illegal surface detection " + type + ".");
-    }
+    throw new Exception("Illegal surface detection " + type + ".");
+  }
 }

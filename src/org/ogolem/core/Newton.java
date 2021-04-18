@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,49 +39,54 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * Defining an interface for local optimization methods.
+ *
  * @author Johannes Dieterich
- * @version 2012-06-20
+ * @version 2020-12-29
  */
-public interface Newton extends Cloneable, Serializable{
+public interface Newton extends Copyable, Serializable {
 
-    Newton clone();
+  Newton copy();
 
-    /**
-     * Locally optimize one molecule/building block of the cluster.
-     * @param mStartMolecule The unoptimized molecule
-     * @return An optimized molecule.
-     */
-    Molecule localOptimization(Molecule mStartMolecule);
+  /**
+   * Locally optimize one molecule/building block of the cluster.
+   *
+   * @param mStartMolecule The unoptimized molecule
+   * @return An optimized molecule.
+   */
+  Molecule localOptimization(Molecule mStartMolecule);
 
-    Geometry localOptimization(Geometry gStartGeometry);
+  Geometry localOptimization(Geometry gStartGeometry);
 
-    /**
-     * It depends on the implementation, whether the input
-     * cartesian stays unchanged or not. The usage of this method might be
-     * problematic in case that e.g. the implementation relies on the length of
-     * certain auxiliary information. USE WITH CARE AND IMPLEMENT PROPERLY!
-     * @param id An identifier.
-     * @param cartes A set of cartesian coordinates.
-     * @param constraints The constraints of these coordinates.
-     * @param isConstricted if the structure is at all constricted.
-     * @return An optimized set of cartesian coordinates.
-     * @throws Exception if something during the optimization went wrong.
-     */
-    CartesianCoordinates cartesToCartes(long id, CartesianCoordinates cartes,
-            boolean[][] constraints, boolean isConstricted, final BondInfo bonds) throws Exception;
+  /**
+   * It depends on the implementation, whether the input cartesian stays unchanged or not. The usage
+   * of this method might be problematic in case that e.g. the implementation relies on the length
+   * of certain auxiliary information. USE WITH CARE AND IMPLEMENT PROPERLY!
+   *
+   * @param id An identifier.
+   * @param cartes A set of cartesian coordinates.
+   * @param constraints The constraints of these coordinates.
+   * @param isConstricted if the structure is at all constricted.
+   * @return An optimized set of cartesian coordinates.
+   * @throws Exception if something during the optimization went wrong.
+   */
+  CartesianCoordinates cartesToCartes(
+      long id,
+      CartesianCoordinates cartes,
+      boolean[][] constraints,
+      boolean isConstricted,
+      final BondInfo bonds)
+      throws Exception;
 
-    String myIDandMethod();
-    
-    /**
-     * 
-     * @return The Backend, if available. Else null.
-     */
-    CartesianFullBackend getBackend();
-    
-    long getNumberOfGeomLocalOpts();
-    
-    long getNumberOfMolLocalOpts();
+  String myIDandMethod();
+
+  /** @return The Backend, if available. Else null. */
+  CartesianFullBackend getBackend();
+
+  long getNumberOfGeomLocalOpts();
+
+  long getNumberOfMolLocalOpts();
 }

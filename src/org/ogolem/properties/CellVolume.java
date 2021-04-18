@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,49 +39,52 @@ package org.ogolem.properties;
 
 /**
  * An (equilibrium) cell volume property.
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
 public class CellVolume extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
 
-    public CellVolume(final double cellVolume){
-        super(cellVolume);
-        assert(cellVolume >= 0.0);
-    }
-    
-    private CellVolume(final CellVolume orig){
-        super(orig.scalar);
-    }
-    
-    @Override
-    public CellVolume clone() {
-        return new CellVolume(this);
-    }
+  private static final long serialVersionUID = (long) 20171215;
 
-    @Override
-    public boolean makeSensible() {
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < 0.0){
-            this.scalar = 0.0; // not too sane...
-            return true;
-        }
-        
-        return false;
-    }
+  public CellVolume(final double cellVolume) {
+    super(cellVolume);
+    assert (cellVolume >= 0.0);
+  }
 
-    @Override
-    public String printableProperty() {
-        return "" + this.scalar;
+  private CellVolume(final CellVolume orig) {
+    super(orig.scalar);
+  }
+
+  @Override
+  public CellVolume copy() {
+    return new CellVolume(this);
+  }
+
+  @Override
+  public boolean makeSensible() {
+    if (Double.isInfinite(this.getValue())
+        || Double.isNaN(this.getValue())
+        || this.getValue() < 0.0) {
+      this.scalar = 0.0; // not too sane...
+      return true;
     }
 
-    @Override
-    public String name() {
-        return "CELL VOLUME";
-    }
+    return false;
+  }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof CellVolume);
-    }
+  @Override
+  public String printableProperty() {
+    return "" + this.scalar;
+  }
+
+  @Override
+  public String name() {
+    return "CELL VOLUME";
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    return (p instanceof CellVolume);
+  }
 }

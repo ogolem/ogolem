@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -47,107 +48,120 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The configuration object with dimerizer specific stuff.
+ *
  * @author Johannes Dieterich
  * @version 2013-03-07
  */
 public class DimerizerConfig {
-    
-    private static final Logger log = LoggerFactory.getLogger(DimerizerConfig.class);
-    
-    Geometry geom;
-    Grid<Geometry> grid;
-    Newton locopt;
-    
-    public DimerizerConfig(final String[] inputData, final GlobalConfig globConf) throws Exception {
-        this(inputData,globConf,6);
+
+  private static final Logger log = LoggerFactory.getLogger(DimerizerConfig.class);
+
+  Geometry geom;
+  Grid<Geometry> grid;
+  Newton locopt;
+
+  public DimerizerConfig(final String[] inputData, final GlobalConfig globConf) throws Exception {
+    this(inputData, globConf, 6);
+  }
+
+  public DimerizerConfig(final String[] inputData, final GlobalConfig globConf, final int firstXDim)
+      throws Exception {
+
+    assert (firstXDim > 0 && firstXDim < 7);
+
+    if (!inputData[0].trim().equalsIgnoreCase("###OGOLEMDIMERS###")) {
+      throw new Exception("Configuration file must begin with ###OGOLEMDIMERS###!");
     }
-    
-    public DimerizerConfig(final String[] inputData, final GlobalConfig globConf,
-            final int firstXDim) throws Exception{
-        
-        assert(firstXDim > 0 && firstXDim < 7);
-        
-        if(!inputData[0].trim().equalsIgnoreCase("###OGOLEMDIMERS###")){
-            throw new Exception("Configuration file must begin with ###OGOLEMDIMERS###!");
+    for (int i = 1; i < inputData.length; i++) {
+      final String line = inputData[i].trim();
+      if (line.startsWith("//") || line.startsWith("#")) {
+        continue;
+      } else if (line.startsWith("Grid=")) {
+
+        final double[] starts = new double[firstXDim];
+        final double[] ends = new double[firstXDim];
+        final double[] space = new double[firstXDim];
+
+        final String[] sa = line.substring(5).trim().split("\\/");
+        for (int x = 0; x < firstXDim; x++) {
+          final String s = sa[x];
+          final String[] sax = s.trim().split("\\:");
+          starts[x] = Double.parseDouble(sax[0].trim());
+          ends[x] = Double.parseDouble(sax[1].trim());
+          space[x] = Double.parseDouble(sax[2].trim());
+          if (space[x] < 0 || ends[x] < starts[x]) {
+            throw new Exception("Something wrong with grid dim " + x);
+          }
         }
-        for(int i = 1; i < inputData.length; i++){
-            final String line = inputData[i].trim();
-            if(line.startsWith("//") || line.startsWith("#")) {
-                continue;
-            } else if(line.startsWith("Grid=")){
-                
-                final double[] starts = new double[firstXDim];
-                final double[] ends = new double[firstXDim];
-                final double[] space = new double[firstXDim];
-                
-                final String[] sa = line.substring(5).trim().split("\\/");
-                for(int x = 0; x < firstXDim; x++){
-                    final String s = sa[x];
-                    final String[] sax = s.trim().split("\\:");
-                    starts[x] = Double.parseDouble(sax[0].trim());
-                    ends[x] = Double.parseDouble(sax[1].trim());
-                    space[x] = Double.parseDouble(sax[2].trim());
-                    if(space[x] < 0 || ends[x] < starts[x]){
-                        throw new Exception("Something wrong with grid dim " + x);
-                    }
-                }
-                
-                if(firstXDim == 6){
-                
-                    // check the sanity of the Euler angles (yes, not all fuckups...)
-                    if(starts[3] < -Math.PI){starts[3] = -Math.PI;}
-                    if(ends[3] >  Math.PI){ends[3] =  Math.PI;}
-        
-                    if(starts[4] < -0.5*Math.PI){starts[4] = -0.5*Math.PI;}
-                    if(ends[4] >  0.5*Math.PI){ends[4] =  0.5*Math.PI;}
-        
-                    if(starts[5] < -Math.PI){starts[5] = -Math.PI;}
-                    if(ends[5] >  Math.PI){ends[5] =  Math.PI;}
-                }
-                
-                log.info("Trying to setup grid.");
-                
-                this.grid = new Grid<>(starts,ends,space);
-                
-                log.info("Grid setup complete.");
-            } else{
-                throw new Exception("Unknown configuration option: " + line);
-            }
+
+        if (firstXDim == 6) {
+
+          // check the sanity of the Euler angles (yes, not all fuckups...)
+          if (starts[3] < -Math.PI) {
+            starts[3] = -Math.PI;
+          }
+          if (ends[3] > Math.PI) {
+            ends[3] = Math.PI;
+          }
+
+          if (starts[4] < -0.5 * Math.PI) {
+            starts[4] = -0.5 * Math.PI;
+          }
+          if (ends[4] > 0.5 * Math.PI) {
+            ends[4] = 0.5 * Math.PI;
+          }
+
+          if (starts[5] < -Math.PI) {
+            starts[5] = -Math.PI;
+          }
+          if (ends[5] > Math.PI) {
+            ends[5] = Math.PI;
+          }
         }
-        
-        this.locopt = globConf.getRefNewton().clone();
-        
-        // setup constraints (we will need them)
-        final GeometryConfig gc = globConf.geoConfCopy();
-        final MoleculeConfig mc1 = gc.geomMCs.get(0);
-        mc1.constricted = true;
-        mc1.constraints = new boolean[3][mc1.noOfAtoms];
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < mc1.noOfAtoms; j++){
-                mc1.constraints[i][j] = false;
-            }
-        }
-        
-        final MoleculeConfig mc2 = gc.geomMCs.get(1);
-        mc2.constricted = true;
-        mc2.constraints = new boolean[3][mc2.noOfAtoms];
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < mc2.noOfAtoms; j++){
-                mc2.constraints[i][j] = false;
-            }
-        }
-        
-        this.geom = new Geometry(gc);
-        if(geom.getNumberOfIndieParticles() != 2){
-            throw new Exception("Dimerizer wants 2 (!) molecules in geometry. Not more, not less.");
-        }
-        
-        if(grid == null || locopt == null){
-            throw new Exception("Something missing in config. Need a grid and a locopt.");
-        }
+
+        log.info("Trying to setup grid.");
+
+        this.grid = new Grid<>(starts, ends, space);
+
+        log.info("Grid setup complete.");
+      } else {
+        throw new Exception("Unknown configuration option: " + line);
+      }
     }
-    
-    public Grid<Geometry> getGrid(){
-        return this.grid;
+
+    this.locopt = globConf.getRefNewton().copy();
+
+    // setup constraints (we will need them)
+    final GeometryConfig gc = globConf.geoConfCopy();
+    final MoleculeConfig mc1 = gc.geomMCs.get(0);
+    mc1.constricted = true;
+    mc1.constraints = new boolean[3][mc1.noOfAtoms];
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < mc1.noOfAtoms; j++) {
+        mc1.constraints[i][j] = false;
+      }
     }
+
+    final MoleculeConfig mc2 = gc.geomMCs.get(1);
+    mc2.constricted = true;
+    mc2.constraints = new boolean[3][mc2.noOfAtoms];
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < mc2.noOfAtoms; j++) {
+        mc2.constraints[i][j] = false;
+      }
+    }
+
+    this.geom = new Geometry(gc);
+    if (geom.getNumberOfIndieParticles() != 2) {
+      throw new Exception("Dimerizer wants 2 (!) molecules in geometry. Not more, not less.");
+    }
+
+    if (grid == null || locopt == null) {
+      throw new Exception("Something missing in config. Need a grid and a locopt.");
+    }
+  }
+
+  public Grid<Geometry> getGrid() {
+    return this.grid;
+  }
 }

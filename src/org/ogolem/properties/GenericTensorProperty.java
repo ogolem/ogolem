@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,79 +38,87 @@ package org.ogolem.properties;
 
 /**
  * A generic tensor property, i.e., a bare bones implementation.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-29
  */
 public class GenericTensorProperty extends TensorProperty {
 
-    private static final long serialVersionUID = (long) 20180102;
-    
-    private final long id;
-    
-    public GenericTensorProperty(final double[][][] data, final boolean normDifferences, final long id){
-        super(data, normDifferences);
-        this.id = id;
-    }
-    
-    private GenericTensorProperty(final GenericTensorProperty orig){
-        super(orig);
-        this.id = orig.id;
-    }
-    
-    @Override
-    public GenericTensorProperty clone() {
-        return new GenericTensorProperty(this);
+  private static final long serialVersionUID = (long) 20180102;
+
+  private final long id;
+
+  public GenericTensorProperty(
+      final double[][][] data, final boolean normDifferences, final long id) {
+    super(data, normDifferences);
+    this.id = id;
+  }
+
+  private GenericTensorProperty(final GenericTensorProperty orig) {
+    super(orig);
+    this.id = orig.id;
+  }
+
+  @Override
+  public GenericTensorProperty copy() {
+    return new GenericTensorProperty(this);
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    if (!(p instanceof GenericTensorProperty)) {
+      return false;
     }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        if(!(p instanceof GenericTensorProperty)) {return false;}
-        
-        final GenericTensorProperty gp = (GenericTensorProperty) p;
-        return (gp.id == id);
+    final GenericTensorProperty gp = (GenericTensorProperty) p;
+    return (gp.id == id);
+  }
+
+  @Override
+  public boolean makeSensible() {
+
+    if (data == null) {
+      return false;
     }
 
-    @Override
-    public boolean makeSensible() {
-        
-        if(data == null){return false;}
-        
-        boolean manip = false;
-        for(int i = 0; i < data.length; i++){
-            for(int j = 0; i < data[i].length; j++){
-                for(int k = 0; k < data[i][j].length; k++){
-                    if(Double.isInfinite(data[i][j][k]) || Double.isNaN(data[i][j][k])){
-                        this.data[i][j][k] = 0.0;
-                        manip = true;
-                    }
-                }
-            }
+    boolean manip = false;
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; i < data[i].length; j++) {
+        for (int k = 0; k < data[i][j].length; k++) {
+          if (Double.isInfinite(data[i][j][k]) || Double.isNaN(data[i][j][k])) {
+            this.data[i][j][k] = 0.0;
+            manip = true;
+          }
         }
-        
-        return manip;
+      }
     }
 
-    @Override
-    public String printableProperty() {
-        
-        if(data == null){return "NULL'D";}
-        
-        String s = "";
-        for(int i = 0; i < data.length; i++){
-            for(int j = 0; i < data[i].length; j++){
-                for(int k = 0; i < data[i][j].length; k++){
-                    s += "\t" + data[i][j][k];
-                }
-                s += "\n";
-            }
-            s += "\n";
+    return manip;
+  }
+
+  @Override
+  public String printableProperty() {
+
+    if (data == null) {
+      return "NULL'D";
+    }
+
+    String s = "";
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; i < data[i].length; j++) {
+        for (int k = 0; i < data[i][j].length; k++) {
+          s += "\t" + data[i][j][k];
         }
-        
-        return s;
+        s += "\n";
+      }
+      s += "\n";
     }
 
-    @Override
-    public String name() {
-        return "GENERICTENSOR" + id;
-    }
+    return s;
+  }
+
+  @Override
+  public String name() {
+    return "GENERICTENSOR" + id;
+  }
 }

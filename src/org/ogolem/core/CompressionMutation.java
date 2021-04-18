@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,97 +42,118 @@ import org.ogolem.random.Lottery;
 
 /**
  * Compresses the cluster in order to mutate it a bit. Cannot be used with constraints.
+ *
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-12-30
  */
 public class CompressionMutation implements Serializable {
-    
-    private static final long serialVersionUID = (long) 20120612;
-    private static final Lottery random = Lottery.getInstance();
-    
-    public static Molecule mutate(final Molecule mol, final double maxCompression){
-        
-        if(mol.isConstricted()){
-            System.err.println("WARNING: Compression mutation not suitable for constraint molecules. Returning.");
-            return mol;
-        }
-        
-        CartesianCoordinates cartes = mol.getCartesians();
-        final ZMatrix[] zmatVec = cartes.getZMatrices();
 
-        cartes = cartesToCartes(cartes, maxCompression);
+  private static final long serialVersionUID = (long) 20120612;
+  private static final Lottery random = Lottery.getInstance();
 
-        // we anyway set the old zmatrix first in, so that we have something in there
-        cartes.setZMatrices(zmatVec);
+  public static Molecule mutate(final Molecule mol, final double maxCompression) {
 
-       
-        if (zmatVec[0] != null) {
-            final CartesianCoordinates cartesTemp = cartes.giveMolecularCartes(0, true);
-            zmatVec[0] = cartesTemp.calculateZMatrix();
-        } // else: nothing needs to happen, unflexible molecule
-
-        cartes.setZMatrices(zmatVec);
-        
-        final Molecule mEnd = new Molecule (cartes, mol.getMolPosition(), mol.getSID(),
-                mol.getFlexy(), mol.getDegreesOfFreedom(), mol.isConstricted(), mol.getConstraints());
-        mEnd.setID(mol.getMolPosition());
-        mEnd.setSID(mol.getSID());
-        
-        return mEnd;
+    if (mol.isConstricted()) {
+      System.err.println(
+          "WARNING: Compression mutation not suitable for constraint molecules. Returning.");
+      return mol;
     }
-    
-    public static Geometry mutate(final Geometry g, final double maxCompression){
-        
-        if(g.isThereAConstraint()){
-            System.err.println("WARNING: Compression mutation not suitable for constraint geoemtries. Returning.");
-            return g;
-        }
-        
-        CartesianCoordinates cartes = (g.containsEnvironment()) ? g.getCartesiansWithEnvironment(): g.getCartesians();
 
-        final ZMatrix[] zmatVec = cartes.getZMatrices();
-        final Environment refEnv = cartes.getReferenceEnvironmentCopy();
+    CartesianCoordinates cartes = mol.getCartesians();
+    final ZMatrix[] zmatVec = cartes.getZMatrices();
 
-        cartes = cartesToCartes(cartes, maxCompression);
+    cartes = cartesToCartes(cartes, maxCompression);
 
-        // we anyway set the old zmatrices first in, so that we have something in there
-        cartes.setZMatrices(zmatVec);
+    // we anyway set the old zmatrix first in, so that we have something in there
+    cartes.setZMatrices(zmatVec);
 
-        for(int i = 0; i < zmatVec.length; i++){
-            if(zmatVec[i] != null){
-                final CartesianCoordinates cartesTemp = cartes.giveMolecularCartes(i, true);
-                zmatVec[i] = cartesTemp.calculateZMatrix();
-            } // else: nothing needs to happen, unflexible molecule
-        }
+    if (zmatVec[0] != null) {
+      final CartesianCoordinates cartesTemp = cartes.giveMolecularCartes(0, true);
+      zmatVec[0] = cartesTemp.calculateZMatrix();
+    } // else: nothing needs to happen, unflexible molecule
 
-        cartes.setZMatrices(zmatVec);
-        cartes.setRefEnvironment(refEnv);
-        cartes.recalcAtomNumbers();
+    cartes.setZMatrices(zmatVec);
 
-        final Geometry gEnd = new Geometry(cartes, g.getID(), g.getNumberOfIndieParticles(),
-                cartes.getAllAtomsPerMol(), g.getAllFlexies(), g.getExplicitDoFs(), g.getAllConstraints(false),
-                g.getAllConstraintsXYZ(false), g.getSIDs(),g.getBondInfo().clone());
-        
-        gEnd.setFitness(cartes.getEnergy());
-        gEnd.setFather(g.getFatherID());
-        gEnd.setMother(g.getMotherID());
-        gEnd.setLocalOptimized(true);
-        
-        return gEnd;
+    final Molecule mEnd =
+        new Molecule(
+            cartes,
+            mol.getMolPosition(),
+            mol.getSID(),
+            mol.getFlexy(),
+            mol.getDegreesOfFreedom(),
+            mol.isConstricted(),
+            mol.getConstraints());
+    mEnd.setID(mol.getMolPosition());
+    mEnd.setSID(mol.getSID());
+
+    return mEnd;
+  }
+
+  public static Geometry mutate(final Geometry g, final double maxCompression) {
+
+    if (g.isThereAConstraint()) {
+      System.err.println(
+          "WARNING: Compression mutation not suitable for constraint geoemtries. Returning.");
+      return g;
     }
-    
-    private static CartesianCoordinates cartesToCartes(final CartesianCoordinates start, final double maxCompression){
-        
-        final CartesianCoordinates work = new CartesianCoordinates(start);
-        final double[][] xyz = work.getAllXYZCoord();
-        
-        final double compr = 1-(maxCompression*random.nextDouble());
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < xyz[0].length; j++) xyz[i][j] *= compr;
-        }
-        
-        return work;
+
+    CartesianCoordinates cartes =
+        (g.containsEnvironment()) ? g.getCartesiansWithEnvironment() : g.getCartesians();
+
+    final ZMatrix[] zmatVec = cartes.getZMatrices();
+    final Environment refEnv = cartes.getReferenceEnvironmentCopy();
+
+    cartes = cartesToCartes(cartes, maxCompression);
+
+    // we anyway set the old zmatrices first in, so that we have something in there
+    cartes.setZMatrices(zmatVec);
+
+    for (int i = 0; i < zmatVec.length; i++) {
+      if (zmatVec[i] != null) {
+        final CartesianCoordinates cartesTemp = cartes.giveMolecularCartes(i, true);
+        zmatVec[i] = cartesTemp.calculateZMatrix();
+      } // else: nothing needs to happen, unflexible molecule
     }
-    // TODO hook up and test
-    // TODO add partial compression (as in: part of a sphere), requires transformation of the coordinates
+
+    cartes.setZMatrices(zmatVec);
+    cartes.setRefEnvironment(refEnv);
+    cartes.recalcAtomNumbers();
+
+    final Geometry gEnd =
+        new Geometry(
+            cartes,
+            g.getID(),
+            g.getNumberOfIndieParticles(),
+            cartes.getAllAtomsPerMol(),
+            g.getAllFlexies(),
+            g.getExplicitDoFs(),
+            g.getAllConstraints(false),
+            g.getAllConstraintsXYZ(false),
+            g.getSIDs(),
+            g.getBondInfo().copy());
+
+    gEnd.setFitness(cartes.getEnergy());
+    gEnd.setFather(g.getFatherID());
+    gEnd.setMother(g.getMotherID());
+    gEnd.setLocalOptimized(true);
+
+    return gEnd;
+  }
+
+  private static CartesianCoordinates cartesToCartes(
+      final CartesianCoordinates start, final double maxCompression) {
+
+    final CartesianCoordinates work = new CartesianCoordinates(start);
+    final double[][] xyz = work.getAllXYZCoord();
+
+    final double compr = 1 - (maxCompression * random.nextDouble());
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < xyz[0].length; j++) xyz[i][j] *= compr;
+    }
+
+    return work;
+  }
+  // TODO hook up and test
+  // TODO add partial compression (as in: part of a sphere), requires transformation of the
+  // coordinates
 }

@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -45,85 +45,97 @@ import org.ogolem.random.RandomUtils;
 
 /**
  * A orientation-based mutation.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class FoehrGeometryMutation implements GenericMutation<Molecule,Geometry> {
-    
-    private static final long serialVersionUID = (long) 20200429;
+public class FoehrGeometryMutation implements GenericMutation<Molecule, Geometry> {
 
-    public static enum MODUS {INCREMENT,FULLYRANDOM};
-    public static enum HOWMANY {SINGLE, MULTIPLE, MULTIPLEGAUSS, ALL};
-    
-    private static final double INCRMUTSTRENGTH = 0.1; // XXX hard coded, but this seems to be a sane choice (10% of euler interval)
-    
-    private final Lottery r;
-    private final MODUS mode;
-    private final HOWMANY noMutations;
-    
-    FoehrGeometryMutation(final MODUS mode, final HOWMANY noOfMuts){
-        this.mode = mode;
-        this.noMutations = noOfMuts;
-        this.r = Lottery.getInstance();
-    }
-    
-    FoehrGeometryMutation(final FoehrGeometryMutation orig){
-        this.mode = orig.mode;
-        this.noMutations = orig.noMutations;
-        this.r = Lottery.getInstance();
-    }
-    
-    @Override
-    public FoehrGeometryMutation clone() {
-        return new FoehrGeometryMutation(this);
-    }
+  private static final long serialVersionUID = (long) 20200429;
 
-    @Override
-    public String getMyID() {        
-        return "FOEHR GEOMETRY MUTATION:\n\t mutation mode: " + mode.toString();
-    }
+  public static enum MODUS {
+    INCREMENT,
+    FULLYRANDOM
+  };
 
-    @Override
-    public Geometry mutate(final Geometry orig) {
-        
-        final int noMols = orig.getNumberOfIndieParticles();
-        
-        final List<Integer> mutations = new ArrayList<>();
-        switch(noMutations){
-            case SINGLE:
-                final int which = r.nextInt(noMols);
-                mutations.add(which);
-                break;
-            case MULTIPLE:
-                final int howMany = r.nextInt(noMols);
-                RandomUtils.listOfPoints(howMany, 0, noMols, mutations);
-                break;
-            case MULTIPLEGAUSS:
-                final int howMany2 = (int) Math.round(RandomUtils.halfgaussDouble(0, 1)*noMols);
-                RandomUtils.listOfPoints(howMany2, 0, noMols, mutations);
-                break;
-            case ALL:
-                for(int i = 0; i < noMols; i++){mutations.add(i);}
-                break;
+  public static enum HOWMANY {
+    SINGLE,
+    MULTIPLE,
+    MULTIPLEGAUSS,
+    ALL
+  };
+
+  private static final double INCRMUTSTRENGTH =
+      0.1; // XXX hard coded, but this seems to be a sane choice (10% of euler interval)
+
+  private final Lottery r;
+  private final MODUS mode;
+  private final HOWMANY noMutations;
+
+  FoehrGeometryMutation(final MODUS mode, final HOWMANY noOfMuts) {
+    this.mode = mode;
+    this.noMutations = noOfMuts;
+    this.r = Lottery.getInstance();
+  }
+
+  FoehrGeometryMutation(final FoehrGeometryMutation orig) {
+    this.mode = orig.mode;
+    this.noMutations = orig.noMutations;
+    this.r = Lottery.getInstance();
+  }
+
+  @Override
+  public FoehrGeometryMutation copy() {
+    return new FoehrGeometryMutation(this);
+  }
+
+  @Override
+  public String getMyID() {
+    return "FOEHR GEOMETRY MUTATION:\n\t mutation mode: " + mode.toString();
+  }
+
+  @Override
+  public Geometry mutate(final Geometry orig) {
+
+    final int noMols = orig.getNumberOfIndieParticles();
+
+    final List<Integer> mutations = new ArrayList<>();
+    switch (noMutations) {
+      case SINGLE:
+        final int which = r.nextInt(noMols);
+        mutations.add(which);
+        break;
+      case MULTIPLE:
+        final int howMany = r.nextInt(noMols);
+        RandomUtils.listOfPoints(howMany, 0, noMols, mutations);
+        break;
+      case MULTIPLEGAUSS:
+        final int howMany2 = (int) Math.round(RandomUtils.halfgaussDouble(0, 1) * noMols);
+        RandomUtils.listOfPoints(howMany2, 0, noMols, mutations);
+        break;
+      case ALL:
+        for (int i = 0; i < noMols; i++) {
+          mutations.add(i);
         }
-        
-        
-        final Geometry mutated = orig.copy();
-        for(final int mutMol : mutations){
-            
-            final Molecule mol = mutated.getMoleculeAtPosition(mutMol);
-            final double[] eulers = mol.getOrientation();
-            
-            switch(mode){
-                case INCREMENT:
-                    RandomUtils.randomEulerIncrements(eulers, INCRMUTSTRENGTH);
-                    break;
-                case FULLYRANDOM:
-                    RandomUtils.randomEulers(eulers);
-                    break;
-            }
-        }
-        
-        return mutated;
+        break;
     }
+
+    final Geometry mutated = orig.copy();
+    for (final int mutMol : mutations) {
+
+      final Molecule mol = mutated.getMoleculeAtPosition(mutMol);
+      final double[] eulers = mol.getOrientation();
+
+      switch (mode) {
+        case INCREMENT:
+          RandomUtils.randomEulerIncrements(eulers, INCRMUTSTRENGTH);
+          break;
+        case FULLYRANDOM:
+          RandomUtils.randomEulers(eulers);
+          break;
+      }
+    }
+
+    return mutated;
+  }
 }

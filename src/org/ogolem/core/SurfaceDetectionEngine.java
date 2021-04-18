@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2011, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,16 +39,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * Defines what all SurfaceDetectionEngines need to know.
+ *
  * @author Johannes Dieterich
- * @version 2011-03-30
+ * @version 2020-12-30
  */
-interface SurfaceDetectionEngine extends Serializable, Cloneable {
+interface SurfaceDetectionEngine extends Serializable, Copyable {
 
-    public SurfaceDetectionEngine clone();
-    
-    Surface detectTheSurface(final CartesianCoordinates cartes);
+  @Override
+  public SurfaceDetectionEngine copy();
 
+  Surface detectTheSurface(final CartesianCoordinates cartes);
 }

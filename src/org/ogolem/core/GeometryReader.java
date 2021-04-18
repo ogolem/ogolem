@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -38,72 +38,86 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import static org.ogolem.core.Constants.ANGTOBOHR;
+
 import org.ogolem.generic.IndividualReader;
 import org.ogolem.io.InputPrimitives;
 
 /**
  * Individual reader implementation for geometries.
+ *
  * @author Johannes Dieterich
- * @version 2020-08-09
+ * @version 2020-12-30
  */
-public class GeometryReader implements IndividualReader<Geometry>{
+public class GeometryReader implements IndividualReader<Geometry> {
 
-    private static final long serialVersionUID = (long) 20200429;
-    private static final boolean DEBUG = false;
-    
-    @Override
-    public GeometryReader copy() {
-        return new GeometryReader();
+  private static final long serialVersionUID = (long) 20200429;
+  private static final boolean DEBUG = false;
+
+  @Override
+  public GeometryReader copy() {
+    return new GeometryReader();
+  }
+
+  @Override
+  public void populateIndividualFromFile(final Geometry individual, final String file)
+      throws Exception {
+
+    final String[] data = InputPrimitives.readFileIn(file);
+    final CartesianCoordinates cartes = individual.getCartesiansWithEnvironment();
+    final String[] atoms = cartes.getAllAtomTypes();
+    final double[][] xyz = cartes.getAllXYZCoord();
+    final int noAtoms = cartes.getNoOfAtoms();
+
+    if (noAtoms > data.length - 2) {
+      throw new RuntimeException("Not enough data in xyz file " + file);
     }
 
-    @Override
-    public void populateIndividualFromFile(final Geometry individual, final String file) throws Exception {
-        
-        final String[] data = InputPrimitives.readFileIn(file);
-        final CartesianCoordinates cartes = individual.getCartesiansWithEnvironment();
-        final String[] atoms = cartes.getAllAtomTypes();
-        final double[][] xyz = cartes.getAllXYZCoord();
-        final int noAtoms = cartes.getNoOfAtoms();
-        
-        if(noAtoms > data.length-2){throw new RuntimeException("Not enough data in xyz file " + file);}
-        
-        for(int i = 2; i < noAtoms+2; i++){
-            final String[] sa = data[i].trim().split("\\s+");
-            if(!sa[0].equalsIgnoreCase(atoms[i-2])){throw new RuntimeException("Wrong atoms. Should be " + atoms[i-2] + " is " + sa[0]);}
-            
-            xyz[0][i-2] = Double.parseDouble(sa[1])*ANGTOBOHR;
-            xyz[1][i-2] = Double.parseDouble(sa[2])*ANGTOBOHR;
-            xyz[2][i-2] = Double.parseDouble(sa[3])*ANGTOBOHR;
-            
-            // just to make sure...
-            assert(!Double.isNaN(xyz[0][i-2]) && !Double.isInfinite(xyz[0][i-2]));
-            assert(!Double.isNaN(xyz[1][i-2]) && !Double.isInfinite(xyz[1][i-2]));
-            assert(!Double.isNaN(xyz[2][i-2]) && !Double.isInfinite(xyz[2][i-2]));
-        }
-        
-        // translate back...
-        final GeometryConfig geoConf = individual.returnMyConfig();
-        final Geometry geom = CoordTranslation.cartesianToGeometry(cartes, geoConf.noOfParticles,
-                cartes.getAllAtomsPerMol(), individual.getAllFlexies(), individual.getExplicitDoFs(),
-                individual.getAllConstraints(true), individual.getAllConstraintsXYZ(true),
-                individual.getSIDs(), geoConf.bonds.clone());
-        
-        individual.setAllCOMs(geom.getAllCOMs());
-        individual.setAllExtCoords(geom.getAllExtCoords());
-        for(int i = 0; i < geoConf.noOfParticles; i++){
-            final Molecule mol = geom.getMoleculeAtPosition(i);
-            individual.setMoleculeAtPosition(i, new Molecule(mol));
-        }
-        
-        if(individual.containsEnvironment()){
-            individual.setEnvironment(geom.getEnvironment().clone());
-        }
-        
-        if(DEBUG){
-            System.out.println("DEBUG: Individual from file " + file);
-            for(final String s : individual.makePrintableAbsoluteCoord(true)){
-                System.out.println(s);
-            }
-        }
+    for (int i = 2; i < noAtoms + 2; i++) {
+      final String[] sa = data[i].trim().split("\\s+");
+      if (!sa[0].equalsIgnoreCase(atoms[i - 2])) {
+        throw new RuntimeException("Wrong atoms. Should be " + atoms[i - 2] + " is " + sa[0]);
+      }
+
+      xyz[0][i - 2] = Double.parseDouble(sa[1]) * ANGTOBOHR;
+      xyz[1][i - 2] = Double.parseDouble(sa[2]) * ANGTOBOHR;
+      xyz[2][i - 2] = Double.parseDouble(sa[3]) * ANGTOBOHR;
+
+      // just to make sure...
+      assert (!Double.isNaN(xyz[0][i - 2]) && !Double.isInfinite(xyz[0][i - 2]));
+      assert (!Double.isNaN(xyz[1][i - 2]) && !Double.isInfinite(xyz[1][i - 2]));
+      assert (!Double.isNaN(xyz[2][i - 2]) && !Double.isInfinite(xyz[2][i - 2]));
     }
+
+    // translate back...
+    final GeometryConfig geoConf = individual.returnMyConfig();
+    final Geometry geom =
+        CoordTranslation.cartesianToGeometry(
+            cartes,
+            geoConf.noOfParticles,
+            cartes.getAllAtomsPerMol(),
+            individual.getAllFlexies(),
+            individual.getExplicitDoFs(),
+            individual.getAllConstraints(true),
+            individual.getAllConstraintsXYZ(true),
+            individual.getSIDs(),
+            geoConf.bonds.copy());
+
+    individual.setAllCOMs(geom.getAllCOMs());
+    individual.setAllExtCoords(geom.getAllExtCoords());
+    for (int i = 0; i < geoConf.noOfParticles; i++) {
+      final Molecule mol = geom.getMoleculeAtPosition(i);
+      individual.setMoleculeAtPosition(i, new Molecule(mol));
+    }
+
+    if (individual.containsEnvironment()) {
+      individual.setEnvironment(geom.getEnvironment().copy());
+    }
+
+    if (DEBUG) {
+      System.out.println("DEBUG: Individual from file " + file);
+      for (final String s : individual.makePrintableAbsoluteCoord(true)) {
+        System.out.println(s);
+      }
+    }
+  }
 }

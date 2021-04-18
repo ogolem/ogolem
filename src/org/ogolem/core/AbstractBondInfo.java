@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,38 +42,41 @@ import java.util.List;
 
 /**
  * An abstract stub for the bond info.
+ *
  * @author Johannes Dieterich
- * @version 2013-10-03
+ * @version 2020-12-30
  */
 abstract class AbstractBondInfo implements BondInfo {
-    
-    private static final long serialVersionUID = (long) 20131003;
-    protected final int noAtoms;
-    
-    AbstractBondInfo(final int noAtoms){
-        this.noAtoms = noAtoms;
-    }
-    
-    AbstractBondInfo(final AbstractBondInfo orig){
-        this.noAtoms = orig.noAtoms;
-    }
-    
-    @Override
-    public abstract BondInfo clone();
-    
-    @Override
-    public List<String> translateToInput(){
-        
-        final List<String> li = new ArrayList<>();
-        for(int at1 = 0; at1 < noAtoms-1; at1++){
-            for(int at2 = at1+1; at2 < noAtoms; at2++){
-                final short b = bondType(at1, at2);
-                if(b == BondInfo.NOBOND){continue;}
-                
-                // print out...
-                li.add(at1 + "\t" + at2 + "\t" + b);
-            }
+
+  private static final long serialVersionUID = (long) 20131003;
+  protected final int noAtoms;
+
+  AbstractBondInfo(final int noAtoms) {
+    this.noAtoms = noAtoms;
+  }
+
+  AbstractBondInfo(final AbstractBondInfo orig) {
+    this.noAtoms = orig.noAtoms;
+  }
+
+  @Override
+  public abstract BondInfo copy();
+
+  @Override
+  public List<String> translateToInput() {
+
+    final List<String> li = new ArrayList<>();
+    for (int at1 = 0; at1 < noAtoms - 1; at1++) {
+      for (int at2 = at1 + 1; at2 < noAtoms; at2++) {
+        final short b = bondType(at1, at2);
+        if (b == BondInfo.NOBOND) {
+          continue;
         }
-        return li;
+
+        // print out...
+        li.add(at1 + "\t" + at2 + "\t" + b);
+      }
     }
+    return li;
+  }
 }

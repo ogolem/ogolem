@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015-2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,53 +41,59 @@ import org.ogolem.properties.BulkModulus;
 
 /**
  * A reference data object for bulk modulus calculations.
+ *
  * @author Johannes Dieterich
- * @version 2016-07-16
+ * @version 2020-12-30
  */
-public class RefBulkModulusData<V extends StructuralData> implements ReferenceInputData<BulkModulus> {
-    
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final ReferenceGeomData<BulkModulus,V> geom;
-    private final int refPoint;
-    private final String sym;
-    private final short atomNo;
-    
-    public RefBulkModulusData(final int refPoint, final String sym, final short atomNo, final ReferenceGeomData<BulkModulus,V> geom){
-        assert(sym != null);
-        assert(!sym.isEmpty());
-        this.sym = sym;
-        this.atomNo = atomNo;
-        this.refPoint = refPoint;
-        this.geom = geom;
-    }
-    
-    private RefBulkModulusData(final RefBulkModulusData<V> orig){
-        this.sym = orig.sym;
-        this.atomNo = orig.atomNo;
-        this.refPoint = orig.refPoint;
-        this.geom = orig.geom.clone();
-    }
-    
-    @Override
-    public RefBulkModulusData<V> clone() {
-        return new RefBulkModulusData<>(this);
-    }
-    
-    public String getSymmetry(){
-        return sym;
-    }
-    
-    public short getAtomNo(){
-        return atomNo;
-    }
+public class RefBulkModulusData<V extends StructuralData>
+    implements ReferenceInputData<BulkModulus> {
 
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
-    
-    public ReferenceGeomData<BulkModulus,V> getGeomData(){
-        return geom;
-    }
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final ReferenceGeomData<BulkModulus, V> geom;
+  private final int refPoint;
+  private final String sym;
+  private final short atomNo;
+
+  public RefBulkModulusData(
+      final int refPoint,
+      final String sym,
+      final short atomNo,
+      final ReferenceGeomData<BulkModulus, V> geom) {
+    assert (sym != null);
+    assert (!sym.isEmpty());
+    this.sym = sym;
+    this.atomNo = atomNo;
+    this.refPoint = refPoint;
+    this.geom = geom;
+  }
+
+  private RefBulkModulusData(final RefBulkModulusData<V> orig) {
+    this.sym = orig.sym;
+    this.atomNo = orig.atomNo;
+    this.refPoint = orig.refPoint;
+    this.geom = orig.geom.copy();
+  }
+
+  @Override
+  public RefBulkModulusData<V> copy() {
+    return new RefBulkModulusData<>(this);
+  }
+
+  public String getSymmetry() {
+    return sym;
+  }
+
+  public short getAtomNo() {
+    return atomNo;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
+
+  public ReferenceGeomData<BulkModulus, V> getGeomData() {
+    return geom;
+  }
 }

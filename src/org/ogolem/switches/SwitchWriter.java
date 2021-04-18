@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,44 +41,44 @@ import org.ogolem.generic.IndividualWriter;
 
 /**
  * Writes one geometry out.
+ *
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-12-30
  */
 public class SwitchWriter implements IndividualWriter<Switch> {
-    
-    private static final long serialVersionUID = (long) 20131122;
-    
-    public SwitchWriter(){
-    }
-    
-    @Override
-    public SwitchWriter clone(){
-        return new SwitchWriter();
-    }
-    
-    @Override
-    public void writeIndividual(final Switch s){
-        // write out
-        try {
-            final String[] sa = s.createPrintableColors();
-            final String path = SwitchesConfig.switchDumpFolder;
-            final String sep = System.getProperty("file.separator");
-            Output.printMiscToFile(path + sep + "switch" + s.getID() + ".switch", sa);
-        } catch (Exception e) {
-            System.err.println("WARNING: Couldn't write switch " + s.getID() + ". " + e.toString());
-        }
-    }
 
-    @Override
-    public void writeIndividual(Switch s, String toFile) {
-        // write out
-        try {
-            final String[] sa = s.createPrintableColors();
-            final String path = SwitchesConfig.switchDumpFolder;
-            final String sep = System.getProperty("file.separator");
-            Output.printMiscToFile(toFile, sa);
-        } catch (Exception e) {
-            System.err.println("WARNING: Couldn't write switch " + s.getID() + ". " + e.toString());
-        }
+  private static final long serialVersionUID = (long) 20131122;
+
+  public SwitchWriter() {}
+
+  @Override
+  public SwitchWriter copy() {
+    return new SwitchWriter();
+  }
+
+  @Override
+  public void writeIndividual(final Switch s) {
+    // write out
+    try {
+      final String[] sa = s.createPrintableColors();
+      final String path = SwitchesConfig.switchDumpFolder;
+      final String sep = System.getProperty("file.separator");
+      Output.printMiscToFile(path + sep + "switch" + s.getID() + ".switch", sa);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't write switch " + s.getID() + ". " + e.toString());
     }
+  }
+
+  @Override
+  public void writeIndividual(Switch s, String toFile) {
+    // write out
+    try {
+      final String[] sa = s.createPrintableColors();
+      final String path = SwitchesConfig.switchDumpFolder;
+      final String sep = System.getProperty("file.separator");
+      Output.printMiscToFile(toFile, sa);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't write switch " + s.getID() + ". " + e.toString());
+    }
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -39,111 +39,114 @@ package org.ogolem.core;
 
 /**
  * A simple, double matrix-backed implementation of the BondInfo interface.
+ *
  * @author Johannes Dieterich
- * @version 2020-07-20
+ * @version 2020-12-30
  */
 public class SimpleBondInfo extends AbstractBondInfo {
-    
-    private static final long serialVersionUID = (long) 20160224;
-    private final boolean[][] bonds;
-    private final short[][] bondTypes;
-    
-    public SimpleBondInfo(final int noAtoms){
-        super(noAtoms);
-        this.bonds = new boolean[noAtoms][noAtoms];
-        for(int i = 0; i < noAtoms; i++){
-            for(int j = 0; j < noAtoms; j++){
-                bonds[i][j] = false;
-            }
+
+  private static final long serialVersionUID = (long) 20160224;
+  private final boolean[][] bonds;
+  private final short[][] bondTypes;
+
+  public SimpleBondInfo(final int noAtoms) {
+    super(noAtoms);
+    this.bonds = new boolean[noAtoms][noAtoms];
+    for (int i = 0; i < noAtoms; i++) {
+      for (int j = 0; j < noAtoms; j++) {
+        bonds[i][j] = false;
+      }
+    }
+    this.bondTypes = new short[noAtoms][noAtoms];
+  }
+
+  public SimpleBondInfo(final boolean[][] bondMat) {
+    super(bondMat.length);
+    this.bonds = new boolean[noAtoms][noAtoms];
+    this.bondTypes = new short[noAtoms][noAtoms];
+    for (int i = 0; i < noAtoms; i++) {
+      for (int j = 0; j < noAtoms; j++) {
+        bonds[i][j] = bondMat[i][j];
+        if (bonds[i][j]) {
+          bondTypes[i][j] = BondInfo.UNCERTAIN;
         }
-        this.bondTypes = new short[noAtoms][noAtoms];
+      }
     }
-    
-    public SimpleBondInfo(final boolean[][] bondMat){
-        super(bondMat.length);
-        this.bonds = new boolean[noAtoms][noAtoms];
-        this.bondTypes = new short[noAtoms][noAtoms];
-        for(int i = 0; i < noAtoms; i++){
-            for(int j = 0; j < noAtoms; j++){
-                bonds[i][j] = bondMat[i][j];
-                if(bonds[i][j]){
-                    bondTypes[i][j] = BondInfo.UNCERTAIN;
-                }
-            }
-        }
+  }
+
+  private SimpleBondInfo(final SimpleBondInfo orig) {
+    super(orig);
+    this.bondTypes = orig.bondTypes.clone();
+    this.bonds = orig.bonds.clone();
+  }
+
+  @Override
+  public SimpleBondInfo copy() {
+    final SimpleBondInfo cop = new SimpleBondInfo(noAtoms);
+    for (int i = 0; i < noAtoms; i++) {
+      System.arraycopy(this.bondTypes[i], 0, cop.bondTypes[i], 0, noAtoms);
+      System.arraycopy(this.bonds[i], 0, cop.bonds[i], 0, noAtoms);
     }
-    
-    private SimpleBondInfo(final SimpleBondInfo orig){
-        super(orig);
-        this.bondTypes = orig.bondTypes.clone();
-        this.bonds = orig.bonds.clone();
+    return cop;
+  }
+
+  @Override
+  public SimpleBondInfo shallowCopy() {
+    return new SimpleBondInfo(this);
+  }
+
+  @Override
+  public int getNoOfAtoms() {
+    return noAtoms;
+  }
+
+  @Override
+  public boolean hasBond(final int atom1, final int atom2) {
+    return this.bonds[atom1][atom2];
+  }
+
+  @Override
+  public short bondType(final int atom1, final int atom2) {
+    return this.bondTypes[atom1][atom2];
+  }
+
+  @Override
+  public void setBond(final int atom1, final int atom2, final short bondType) {
+    this.bondTypes[atom1][atom2] = bondType;
+    this.bondTypes[atom2][atom1] = bondType;
+    if (bondType != BondInfo.NOBOND) {
+      this.bonds[atom1][atom2] = true;
+      this.bonds[atom2][atom1] = true;
     }
-    
-    @Override
-    public SimpleBondInfo clone(){
-        final SimpleBondInfo cop = new SimpleBondInfo(noAtoms);
-        for(int i = 0; i < noAtoms; i++){
-            System.arraycopy(this.bondTypes[i], 0, cop.bondTypes[i], 0, noAtoms);
-            System.arraycopy(this.bonds[i], 0, cop.bonds[i], 0, noAtoms);
-        }
-        return cop;
-    }
-    
-    @Override
-    public SimpleBondInfo shallowCopy(){
-        return new SimpleBondInfo(this);
-    }
-    
-    @Override
-    public int getNoOfAtoms(){
-        return noAtoms;
-    }
-    
-    @Override
-    public boolean hasBond(final int atom1, final int atom2){
-        return this.bonds[atom1][atom2];
-    }
-    
-    @Override
-    public short bondType(final int atom1, final int atom2){
-        return this.bondTypes[atom1][atom2];
-    }
-    
-    @Override
-    public void setBond(final int atom1, final int atom2, final short bondType){
-        this.bondTypes[atom1][atom2] = bondType;
-        this.bondTypes[atom2][atom1] = bondType;
-        if(bondType != BondInfo.NOBOND){
-            this.bonds[atom1][atom2] = true;
-            this.bonds[atom2][atom1] = true;
-        }
-    }
-    
-    @Override
-    public boolean bondMatrixFast(){
-        return true;
-    }
-    
-    /**
-     * Due to its double-matrix backing, this operation is fast.
-     * @return the full bonds
-     */
-    @Override
-    public boolean[][] getFullBondMatrix(){
-        return this.bonds;
-    }
-    
-    @Override
-    public boolean bondInfoFast(){
-        return true;
-    }
-    
-    /**
-     * Due to its double-matrix backing, this operation is fast.
-     * @return the full bond information
-     */
-    @Override
-    public short[][] getBondInformation(){
-        return this.bondTypes;
-    }
+  }
+
+  @Override
+  public boolean bondMatrixFast() {
+    return true;
+  }
+
+  /**
+   * Due to its double-matrix backing, this operation is fast.
+   *
+   * @return the full bonds
+   */
+  @Override
+  public boolean[][] getFullBondMatrix() {
+    return this.bonds;
+  }
+
+  @Override
+  public boolean bondInfoFast() {
+    return true;
+  }
+
+  /**
+   * Due to its double-matrix backing, this operation is fast.
+   *
+   * @return the full bond information
+   */
+  @Override
+  public short[][] getBondInformation() {
+    return this.bondTypes;
+  }
 }

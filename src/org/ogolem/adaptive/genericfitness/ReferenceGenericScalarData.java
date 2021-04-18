@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,44 +40,45 @@ import org.ogolem.properties.GenericScalarProperty;
 
 /**
  * A trivial data object for generic scalar properties.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-30
  */
-public class ReferenceGenericScalarData implements ReferenceInputData<GenericScalarProperty>{
+public class ReferenceGenericScalarData implements ReferenceInputData<GenericScalarProperty> {
 
-    private static final long serialVersionUID = (long) 20180102;
-    
-    private final int refPoint;
-    private final long pointID;
-    private final int typeID;
-    
-    public ReferenceGenericScalarData(final int refPoint, final long pointID, final int typeID){
-        this.refPoint = refPoint;
-        this.pointID = pointID;
-        this.typeID = typeID;
-    }
-    
-    private ReferenceGenericScalarData(final ReferenceGenericScalarData orig){
-        this.refPoint = orig.refPoint;
-        this.pointID = orig.pointID;
-        this.typeID = orig.typeID;
-    }
-    
-    @Override
-    public ReferenceGenericScalarData clone() {
-        return new ReferenceGenericScalarData(this);
-    }
+  private static final long serialVersionUID = (long) 20180102;
 
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
-    
-    public long getPointID(){
-        return pointID;
-    }
-    
-    public int getTypeID(){
-        return typeID;
-    }
+  private final int refPoint;
+  private final long pointID;
+  private final int typeID;
+
+  public ReferenceGenericScalarData(final int refPoint, final long pointID, final int typeID) {
+    this.refPoint = refPoint;
+    this.pointID = pointID;
+    this.typeID = typeID;
+  }
+
+  private ReferenceGenericScalarData(final ReferenceGenericScalarData orig) {
+    this.refPoint = orig.refPoint;
+    this.pointID = orig.pointID;
+    this.typeID = orig.typeID;
+  }
+
+  @Override
+  public ReferenceGenericScalarData copy() {
+    return new ReferenceGenericScalarData(this);
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
+
+  public long getPointID() {
+    return pointID;
+  }
+
+  public int getTypeID() {
+    return typeID;
+  }
 }

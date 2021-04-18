@@ -44,7 +44,7 @@ import de.gwdg.rmata.atomdroiduff.AtomdroidUFF;
  * Provides energy and gradient calculated using a very simple UFF approach.
  *
  * @author Johannes Dieterich
- * @version 2020-08-30
+ * @version 2020-12-29
  */
 public class UniversalFF implements CartesianFullBackend {
 
@@ -82,7 +82,7 @@ public class UniversalFF implements CartesianFullBackend {
   }
 
   @Override
-  public UniversalFF clone() {
+  public UniversalFF copy() {
     return new UniversalFF(this);
   }
 

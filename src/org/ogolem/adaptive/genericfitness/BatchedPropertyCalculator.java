@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,18 +38,20 @@ package org.ogolem.adaptive.genericfitness;
 
 import java.io.Serializable;
 import org.ogolem.adaptive.AdaptiveParameters;
+import org.ogolem.generic.Copyable;
 import org.ogolem.properties.Property;
 
 /**
- *
  * @author Johannes Dieterich
- * @version 2015-10-28
+ * @version 2020-12-30
  */
-public interface BatchedPropertyCalculator extends Serializable, Cloneable {
-    
-    BatchedPropertyCalculator clone();
-    
-    void recalcForNewParameters(final AdaptiveParameters params);
-    
-    <T extends Property,V extends ReferenceInputData<T>> T obtainProperty(final AdaptiveParameters params, final int refID, final T propertyType);    
+public interface BatchedPropertyCalculator extends Serializable, Copyable {
+
+  @Override
+  BatchedPropertyCalculator copy();
+
+  void recalcForNewParameters(final AdaptiveParameters params);
+
+  <T extends Property, V extends ReferenceInputData<T>> T obtainProperty(
+      final AdaptiveParameters params, final int refID, final T propertyType);
 }

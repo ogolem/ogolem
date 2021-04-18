@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,78 +43,90 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * A mutation which changes character based on the step we are dealing with.
+ *
  * @author Johannes Dieterich
- * @version 2014-07-27
+ * @version 2020-12-29
  */
-public class GenericStepChangingXOver<E, T extends Optimizable<E>> implements GenericCrossover<E,T>{
+public class GenericStepChangingXOver<E, T extends Optimizable<E>>
+    implements GenericCrossover<E, T> {
 
-    private static final long serialVersionUID = (long) 20140727;
-    private final long totalSteps;
-    private final List<GenericCrossover<E,T>> xovers;
-    private final long[] offsets;
-    private GenericCrossover<E,T> ref;
-    
-    public GenericStepChangingXOver(final long totSteps, final List<GenericCrossover<E,T>> xovers,
-            final List<Double> percComplete){
-        this.totalSteps = totSteps;
-        if(xovers.size() != percComplete.size()){throw new RuntimeException("Mismatch in length of percentages and mutation operators!");}
-        
-        this.xovers = xovers;
-        this.offsets = new long[xovers.size()];
-        long old = 0l;
-        for(int i = 0; i < xovers.size(); i++){
-            long size = (long) Math.ceil(totalSteps*percComplete.get(i));
-            System.out.println(" " + percComplete.get(i) + "\t" + xovers.get(i).getMyID());
-            offsets[i] = old;
-            old += size;
-        }
-        
-        if(old < totalSteps-10){throw new RuntimeException("Too little percents specified in stepwise changing xover. " + old + "\t" + totalSteps);}
-        if(old > totalSteps+10){throw new RuntimeException("Too many percents specified in stepwise changing xover." + old + "\t" + totalSteps);}
-    }
-    
-    public GenericStepChangingXOver(final GenericStepChangingXOver<E,T> orig){
-        this.totalSteps = orig.totalSteps;
-        this.offsets = orig.offsets.clone();
-        this.xovers = new ArrayList<>();
-        for(int i = 0; i < orig.xovers.size(); i++){
-            this.xovers.add(orig.xovers.get(i).clone());
-        }
-    }
-    
-    @Override
-    public GenericStepChangingXOver<E, T> clone() {
-        return new GenericStepChangingXOver<>(this);
+  private static final long serialVersionUID = (long) 20140727;
+  private final long totalSteps;
+  private final List<GenericCrossover<E, T>> xovers;
+  private final long[] offsets;
+  private GenericCrossover<E, T> ref;
+
+  public GenericStepChangingXOver(
+      final long totSteps,
+      final List<GenericCrossover<E, T>> xovers,
+      final List<Double> percComplete) {
+    this.totalSteps = totSteps;
+    if (xovers.size() != percComplete.size()) {
+      throw new RuntimeException("Mismatch in length of percentages and mutation operators!");
     }
 
-    @Override
-    public String getMyID() {
-        String s = "STEPWISE CHANGING CROSSOVER:\n";
-        for(int i = 0; i < xovers.size(); i++){
-            s += "\t\t step complete offset: " + offsets[i] + "\t "+ xovers.get(i).getMyID();
-        }
-        
-        return s;
+    this.xovers = xovers;
+    this.offsets = new long[xovers.size()];
+    long old = 0l;
+    for (int i = 0; i < xovers.size(); i++) {
+      long size = (long) Math.ceil(totalSteps * percComplete.get(i));
+      System.out.println(" " + percComplete.get(i) + "\t" + xovers.get(i).getMyID());
+      offsets[i] = old;
+      old += size;
     }
 
-    @Override
-    public Tuple<T,T> crossover(final T mother, final T father, final long futureID){
-        
-        assert(offsets.length == xovers.size());
-        
-        for(int i = 0; i < offsets.length; i++){
-            if(offsets[i] <= futureID){
-                final Tuple<T,T> tup = xovers.get(i).crossover(mother, father, futureID);
-                ref = xovers.get(i);
-                return tup;
-            }
-        }
-        
-        throw new RuntimeException("Apparently doing more steps than we initially anticipated?!");
+    if (old < totalSteps - 10) {
+      throw new RuntimeException(
+          "Too little percents specified in stepwise changing xover. " + old + "\t" + totalSteps);
+    }
+    if (old > totalSteps + 10) {
+      throw new RuntimeException(
+          "Too many percents specified in stepwise changing xover." + old + "\t" + totalSteps);
+    }
+  }
+
+  public GenericStepChangingXOver(final GenericStepChangingXOver<E, T> orig) {
+    this.totalSteps = orig.totalSteps;
+    this.offsets = orig.offsets.clone();
+    this.xovers = new ArrayList<>();
+    for (int i = 0; i < orig.xovers.size(); i++) {
+      this.xovers.add(orig.xovers.get(i).copy());
+    }
+  }
+
+  @Override
+  public GenericStepChangingXOver<E, T> copy() {
+    return new GenericStepChangingXOver<>(this);
+  }
+
+  @Override
+  public String getMyID() {
+    String s = "STEPWISE CHANGING CROSSOVER:\n";
+    for (int i = 0; i < xovers.size(); i++) {
+      s += "\t\t step complete offset: " + offsets[i] + "\t " + xovers.get(i).getMyID();
     }
 
-    @Override
-    public short hasPriority() {
-        return ref.hasPriority();
+    return s;
+  }
+
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    assert (offsets.length == xovers.size());
+
+    for (int i = 0; i < offsets.length; i++) {
+      if (offsets[i] <= futureID) {
+        final Tuple<T, T> tup = xovers.get(i).crossover(mother, father, futureID);
+        ref = xovers.get(i);
+        return tup;
+      }
     }
+
+    throw new RuntimeException("Apparently doing more steps than we initially anticipated?!");
+  }
+
+  @Override
+  public short hasPriority() {
+    return ref.hasPriority();
+  }
 }
