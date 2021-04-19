@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,56 +49,68 @@ import org.ogolem.properties.Property;
 
 /**
  * A gateway/decorator to the Adaptivables.
+ *
  * @author Johannes Dieterich
- * @version 2015-10-29
+ * @version 2020-12-29
  */
-public class AdaptiveGateway implements Adaptivable{
+public class AdaptiveGateway implements Adaptivable {
 
-    private static final long serialVersionUID = (long) 20140503;
-    private final Adaptivable adaptivable;
+  private static final long serialVersionUID = (long) 20140503;
+  private final Adaptivable adaptivable;
 
-    public AdaptiveGateway(final AdaptiveConf adaptiveConf){
-        if(adaptiveConf.refAdaptivable == null){
-            throw new RuntimeException("ERROR: Adaptivable not set! This will fail!");
-        }
-        adaptivable = adaptiveConf.refAdaptivable.clone();
+  public AdaptiveGateway(final AdaptiveConf adaptiveConf) {
+    if (adaptiveConf.refAdaptivable == null) {
+      throw new RuntimeException("ERROR: Adaptivable not set! This will fail!");
     }
+    adaptivable = adaptiveConf.refAdaptivable.copy();
+  }
 
-    @Override
-    public Adaptivable clone(){
-        return adaptivable.clone();
-    }
+  @Override
+  public Adaptivable copy() {
+    return adaptivable.copy();
+  }
 
-    @Override
-    public double energyOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, final int geomID, final BondInfo bonds){
-        return adaptivable.energyOfStructWithParams(cartes, params, geomID, bonds);
-    }
+  @Override
+  public double energyOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds) {
+    return adaptivable.energyOfStructWithParams(cartes, params, geomID, bonds);
+  }
 
-    @Override
-    public double gradientOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, final int geomID, final BondInfo bonds,
-            final double[] grad){
-        return adaptivable.gradientOfStructWithParams(cartes, params, geomID, bonds, grad);
-    }
+  @Override
+  public double gradientOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds,
+      final double[] grad) {
+    return adaptivable.gradientOfStructWithParams(cartes, params, geomID, bonds, grad);
+  }
 
-    @Override
-    public double[][] minMaxBordersForParams(final AdaptiveParameters params){
-        return adaptivable.minMaxBordersForParams(params);
-    }
+  @Override
+  public double[][] minMaxBordersForParams(final AdaptiveParameters params) {
+    return adaptivable.minMaxBordersForParams(params);
+  }
 
-    @Override
-    public AdaptiveParameters createInitialParameterStub(final ArrayList<CartesianCoordinates> refCartes, final String sMethod){
-        return adaptivable.createInitialParameterStub(refCartes, sMethod);
-    }
+  @Override
+  public AdaptiveParameters createInitialParameterStub(
+      final ArrayList<CartesianCoordinates> refCartes, final String sMethod) {
+    return adaptivable.createInitialParameterStub(refCartes, sMethod);
+  }
 
-    @Override
-    public <T extends Property, V extends ReferenceInputData<T>> PropertyCalculator<T,V> getCalculatorForProperty(final T property, final V data) {
-        return adaptivable.<T,V>getCalculatorForProperty(property, data);
-    }
+  @Override
+  public <T extends Property, V extends ReferenceInputData<T>>
+      PropertyCalculator<T, V> getCalculatorForProperty(final T property, final V data) {
+    return adaptivable.<T, V>getCalculatorForProperty(property, data);
+  }
 
-    @Override
-    public List<? extends Property> runAllPropertyCalcs(AdaptiveParameters params, List<GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>>> referencePoints) {
-        return adaptivable.runAllPropertyCalcs(params, referencePoints);
-    }
+  @Override
+  public List<? extends Property> runAllPropertyCalcs(
+      AdaptiveParameters params,
+      List<GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>>>
+          referencePoints) {
+    return adaptivable.runAllPropertyCalcs(params, referencePoints);
+  }
 }

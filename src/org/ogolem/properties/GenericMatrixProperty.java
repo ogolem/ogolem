@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,74 +38,82 @@ package org.ogolem.properties;
 
 /**
  * A generic matrix property, i.e., a bare bones implementation.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-29
  */
 public class GenericMatrixProperty extends MatrixProperty {
 
-    private static final long serialVersionUID = (long) 20180102;
-    
-    private final long id;
-    
-    public GenericMatrixProperty(final double[][] data, final boolean normDifferences, final long id){
-        super(data, normDifferences);
-        this.id = id;
-    }
-    
-    private GenericMatrixProperty(final GenericMatrixProperty orig){
-        super(orig);
-        this.id = orig.id;
-    }
-    
-    @Override
-    public GenericMatrixProperty clone() {
-        return new GenericMatrixProperty(this);
+  private static final long serialVersionUID = (long) 20180102;
+
+  private final long id;
+
+  public GenericMatrixProperty(
+      final double[][] data, final boolean normDifferences, final long id) {
+    super(data, normDifferences);
+    this.id = id;
+  }
+
+  private GenericMatrixProperty(final GenericMatrixProperty orig) {
+    super(orig);
+    this.id = orig.id;
+  }
+
+  @Override
+  public GenericMatrixProperty copy() {
+    return new GenericMatrixProperty(this);
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    if (!(p instanceof GenericMatrixProperty)) {
+      return false;
     }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        if(!(p instanceof GenericMatrixProperty)) {return false;}
-        
-        final GenericMatrixProperty gp = (GenericMatrixProperty) p;
-        return (gp.id == id);
+    final GenericMatrixProperty gp = (GenericMatrixProperty) p;
+    return (gp.id == id);
+  }
+
+  @Override
+  public boolean makeSensible() {
+
+    if (data == null) {
+      return false;
     }
 
-    @Override
-    public boolean makeSensible() {
-        
-        if(data == null){return false;}
-        
-        boolean manip = false;
-        for(int i = 0; i < data.length; i++){
-            for(int j = 0; i < data[i].length; j++){
-                if(Double.isInfinite(data[i][j]) || Double.isNaN(data[i][j])){
-                    this.data[i][j] = 0.0;
-                    manip = true;
-                }
-            }
+    boolean manip = false;
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; i < data[i].length; j++) {
+        if (Double.isInfinite(data[i][j]) || Double.isNaN(data[i][j])) {
+          this.data[i][j] = 0.0;
+          manip = true;
         }
-        
-        return manip;
+      }
     }
 
-    @Override
-    public String printableProperty() {
-        
-        if(data == null){return "NULL'D";}
-        
-        String s = "";
-        for(int i = 0; i < data.length; i++){
-            for(int j = 0; i < data[i].length; j++){
-                s += "\t" + data[i][j];
-            }
-            s += "\n";
-        }
-        
-        return s;
+    return manip;
+  }
+
+  @Override
+  public String printableProperty() {
+
+    if (data == null) {
+      return "NULL'D";
     }
 
-    @Override
-    public String name() {
-        return "GENERICMATRIX" + id;
+    String s = "";
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; i < data[i].length; j++) {
+        s += "\t" + data[i][j];
+      }
+      s += "\n";
     }
+
+    return s;
+  }
+
+  @Override
+  public String name() {
+    return "GENERICMATRIX" + id;
+  }
 }

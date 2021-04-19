@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,19 +41,22 @@ import java.io.Serializable;
 
 /**
  * Writing an individual out, somehow.
+ *
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-12-30
  */
-public interface IndividualWriter<T> extends Cloneable, Serializable {
+public interface IndividualWriter<T> extends Copyable, Serializable {
 
-    public IndividualWriter<T> clone();
-    
-    void writeIndividual(final T individual);
-    
-    /**
-     * Write individual to a file.
-     * @param individual
-     * @param toFile can be extended with a file type.
-     */
-    void writeIndividual(final T individual, final String toFile);
+  @Override
+  public IndividualWriter<T> copy();
+
+  void writeIndividual(final T individual);
+
+  /**
+   * Write individual to a file.
+   *
+   * @param individual
+   * @param toFile can be extended with a file type.
+   */
+  void writeIndividual(final T individual, final String toFile);
 }

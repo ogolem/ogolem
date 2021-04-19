@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,109 +40,154 @@ import org.ogolem.core.FixedValues;
 
 /**
  * The base class for a matrix property
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
-public abstract class MatrixProperty implements Property{
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected final boolean normDifferences;
-    protected final double[][] data;
-    
-    protected MatrixProperty(final double[][] data, final boolean normDifferences){
-        this.normDifferences = normDifferences;
-        this.data = data;
-    }
-    
-    protected MatrixProperty(final MatrixProperty orig){
-        this.normDifferences = orig.normDifferences;
-        if(orig.data != null){
-        
-            this.data = new double[orig.data.length][];
-            for(int i = 0; i < orig.data.length; i++){
-                this.data[i] = orig.data[i].clone();
-            }
-        } else {
-            this.data = null;
-        }
-    }
-    
-    @Override
-    public abstract MatrixProperty clone();
-    
-    /**
-     * Return the absolute sum of all matrix elements. If this is not wished overriding is necessary.
-     * @return the pseudo-vector norm
-     */
-    @Override
-    public double getValue(){
-        
-        if(data == null){return FixedValues.NONCONVERGEDENERGY;}
-        
-        double sum = 0.0;
-        for(int i = 0; i < data.length; i++){
-            for(int j = 0; j < data[i].length; j++){
-                sum += Math.abs(data[i][j]);
-            }
-        }
-        
-        return sum;
-    }
-    
-    @Override
-    public double signedDifference(Property p){
-        
-        if (!ensureCorrectProperty(p)) {throw new IllegalArgumentException("Property should be an instance of " + name());}
+public abstract class MatrixProperty implements Property {
 
-        final MatrixProperty mp = (MatrixProperty) p;
-        
-        if(this.data == null || mp.data == null){return FixedValues.NONCONVERGEDENERGY;}
-        
-        if(mp.data.length != this.data.length){throw new RuntimeException("Matrix properties differ in lengths I: " + mp.data.length + " vs " + this.data.length);}
-        if(mp.data[0].length != this.data[0].length){throw new RuntimeException("Matrix properties differ in lengths II: " + mp.data[0].length + " vs " + this.data[0].length);}
-        
-        double diff = 0.0;
-        for (int i = 0; i < data.length; i++) {
-            if(data[0].length != data[i].length || data[i].length != mp.data[i].length){throw new IllegalArgumentException("First matrix dimension must be the same! Are " + data[i].length + " vs " + mp.data[i].length);}
-            for (int j = 0; j < data[0].length; j++) {
-                diff += (this.data[i][j] - mp.data[i][j]); // XXX this is suboptimal, but for the time being I have no better definition in my head
-            }
-        }
-        
-        if(this.normDifferences){
-            diff /= (data.length * data[0].length);
-        }
+  private static final long serialVersionUID = (long) 20171215;
 
-        return diff;
+  protected final boolean normDifferences;
+  protected final double[][] data;
+
+  protected MatrixProperty(final double[][] data, final boolean normDifferences) {
+    this.normDifferences = normDifferences;
+    this.data = data;
+  }
+
+  protected MatrixProperty(final MatrixProperty orig) {
+    this.normDifferences = orig.normDifferences;
+    if (orig.data != null) {
+
+      this.data = new double[orig.data.length][];
+      for (int i = 0; i < orig.data.length; i++) {
+        this.data[i] = orig.data[i].clone();
+      }
+    } else {
+      this.data = null;
     }
-    
-    @Override
-    public double absoluteDifference(Property p){
-        
-        if (!ensureCorrectProperty(p)) {throw new IllegalArgumentException("Property should be an instance of " + name());}
+  }
 
-        final MatrixProperty mp = (MatrixProperty) p;
-        
-        if(this.data == null || mp.data == null){return FixedValues.NONCONVERGEDENERGY;}
-        
-        if(mp.data.length != this.data.length){throw new RuntimeException("Matrix properties differ in lengths I: " + mp.data.length + " vs " + this.data.length);}
-        if(mp.data[0].length != this.data[0].length){throw new RuntimeException("Matrix properties differ in lengths II: " + mp.data[0].length + " vs " + this.data[0].length);}
-        
-        double diff = 0.0;
-        for (int i = 0; i < data.length; i++) {
-            if(data[0].length != data[i].length || data[i].length != mp.data[i].length){throw new IllegalArgumentException("First matrix dimension must be the same! Are " + data[i].length + " vs " + mp.data[i].length);}            
-            for (int j = 0; j < data[0].length; j++) {
-                diff += Math.abs(this.data[i][j] - mp.data[i][j]);
-            }
-        }        
-        
-        if(this.normDifferences){
-            diff /= (data.length * data[0].length);
-        }
+  @Override
+  public abstract MatrixProperty copy();
 
-        return diff;
+  /**
+   * Return the absolute sum of all matrix elements. If this is not wished overriding is necessary.
+   *
+   * @return the pseudo-vector norm
+   */
+  @Override
+  public double getValue() {
+
+    if (data == null) {
+      return FixedValues.NONCONVERGEDENERGY;
     }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
+
+    double sum = 0.0;
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; j < data[i].length; j++) {
+        sum += Math.abs(data[i][j]);
+      }
+    }
+
+    return sum;
+  }
+
+  @Override
+  public double signedDifference(Property p) {
+
+    if (!ensureCorrectProperty(p)) {
+      throw new IllegalArgumentException("Property should be an instance of " + name());
+    }
+
+    final MatrixProperty mp = (MatrixProperty) p;
+
+    if (this.data == null || mp.data == null) {
+      return FixedValues.NONCONVERGEDENERGY;
+    }
+
+    if (mp.data.length != this.data.length) {
+      throw new RuntimeException(
+          "Matrix properties differ in lengths I: " + mp.data.length + " vs " + this.data.length);
+    }
+    if (mp.data[0].length != this.data[0].length) {
+      throw new RuntimeException(
+          "Matrix properties differ in lengths II: "
+              + mp.data[0].length
+              + " vs "
+              + this.data[0].length);
+    }
+
+    double diff = 0.0;
+    for (int i = 0; i < data.length; i++) {
+      if (data[0].length != data[i].length || data[i].length != mp.data[i].length) {
+        throw new IllegalArgumentException(
+            "First matrix dimension must be the same! Are "
+                + data[i].length
+                + " vs "
+                + mp.data[i].length);
+      }
+      for (int j = 0; j < data[0].length; j++) {
+        diff +=
+            (this.data[i][j]
+                - mp.data[i][j]); // XXX this is suboptimal, but for the time being I have no better
+        // definition in my head
+      }
+    }
+
+    if (this.normDifferences) {
+      diff /= (data.length * data[0].length);
+    }
+
+    return diff;
+  }
+
+  @Override
+  public double absoluteDifference(Property p) {
+
+    if (!ensureCorrectProperty(p)) {
+      throw new IllegalArgumentException("Property should be an instance of " + name());
+    }
+
+    final MatrixProperty mp = (MatrixProperty) p;
+
+    if (this.data == null || mp.data == null) {
+      return FixedValues.NONCONVERGEDENERGY;
+    }
+
+    if (mp.data.length != this.data.length) {
+      throw new RuntimeException(
+          "Matrix properties differ in lengths I: " + mp.data.length + " vs " + this.data.length);
+    }
+    if (mp.data[0].length != this.data[0].length) {
+      throw new RuntimeException(
+          "Matrix properties differ in lengths II: "
+              + mp.data[0].length
+              + " vs "
+              + this.data[0].length);
+    }
+
+    double diff = 0.0;
+    for (int i = 0; i < data.length; i++) {
+      if (data[0].length != data[i].length || data[i].length != mp.data[i].length) {
+        throw new IllegalArgumentException(
+            "First matrix dimension must be the same! Are "
+                + data[i].length
+                + " vs "
+                + mp.data[i].length);
+      }
+      for (int j = 0; j < data[0].length; j++) {
+        diff += Math.abs(this.data[i][j] - mp.data[i][j]);
+      }
+    }
+
+    if (this.normDifferences) {
+      diff /= (data.length * data[0].length);
+    }
+
+    return diff;
+  }
+
+  protected abstract boolean ensureCorrectProperty(final Property p);
 }

@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,43 +42,46 @@ import static org.ogolem.core.FixedValues.NONCONVERGEDENERGY;
 
 /**
  * The difference of two excitation energies as a property.
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
-public class ExcitationDifference extends ScalarProperty{
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    public ExcitationDifference(final double diff){
-        super(diff);
-    }
-    
-    @Override
-    public ExcitationDifference clone(){
-        return new ExcitationDifference(this.getValue());
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() > NONCONVERGEDENERGY){
-            this.scalar = NONCONVERGEDENERGY;
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + this.getValue();
-    }
+public class ExcitationDifference extends ScalarProperty {
 
-    @Override
-    public String name() {
-        return "EXCITATION DIFFERENCE";
-    }
+  private static final long serialVersionUID = (long) 20171215;
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof ExcitationDifference);
+  public ExcitationDifference(final double diff) {
+    super(diff);
+  }
+
+  @Override
+  public ExcitationDifference copy() {
+    return new ExcitationDifference(this.getValue());
+  }
+
+  @Override
+  public boolean makeSensible() {
+    if (Double.isInfinite(this.getValue())
+        || Double.isNaN(this.getValue())
+        || this.getValue() > NONCONVERGEDENERGY) {
+      this.scalar = NONCONVERGEDENERGY;
+      return true;
     }
+    return false;
+  }
+
+  @Override
+  public String printableProperty() {
+    return "" + this.getValue();
+  }
+
+  @Override
+  public String name() {
+    return "EXCITATION DIFFERENCE";
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    return (p instanceof ExcitationDifference);
+  }
 }

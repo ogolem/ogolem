@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,49 +41,53 @@ import org.ogolem.generic.GenericMutation;
 
 /**
  * A Monte Carlo mutation operator for a Geometry.
+ *
  * @author Johannes Dieterich
- * @version 2017-04-10
+ * @version 2020-12-29
  */
-public class MonteCarloGeometryMutation implements GenericMutation<Molecule,Geometry>{
-    
-    private static final long serialVersionUID = (long) 20140327;
-    
-    private final MonteCarloMutation.MOVEMODE mode;
-    private final double maxMove;
-    private final int gaussMax;
-    private final double gaussWidth;
-    
-    public MonteCarloGeometryMutation(final MonteCarloMutation.MOVEMODE mode, final double maxMove,
-            final int gaussMax, final double gaussWidth){
-        assert(maxMove > 0.0);
-        assert(mode != null);
-        assert(gaussWidth > 0.0);
-        
-        this.maxMove = maxMove;
-        this.mode = mode;
-        this.gaussMax = gaussMax;
-        this.gaussWidth = gaussWidth;
-    }
-    
-    public MonteCarloGeometryMutation(final MonteCarloGeometryMutation orig){
-        this.maxMove = orig.maxMove;
-        this.mode = orig.mode;
-        this.gaussMax = orig.gaussMax;
-        this.gaussWidth = orig.gaussWidth;
-    }
-    
-    @Override
-    public MonteCarloGeometryMutation clone() {
-        return new MonteCarloGeometryMutation(this);
-    }
+public class MonteCarloGeometryMutation implements GenericMutation<Molecule, Geometry> {
 
-    @Override
-    public String getMyID() {
-        return "Monte Carlo mutation: \n\tmode: " + mode + "\n\tmaxmove: " + maxMove;
-    }
+  private static final long serialVersionUID = (long) 20140327;
 
-    @Override
-    public Geometry mutate(final Geometry orig) {
-        return MonteCarloMutation.mutate(orig, mode, maxMove, gaussMax, gaussWidth);
-    }
+  private final MonteCarloMutation.MOVEMODE mode;
+  private final double maxMove;
+  private final int gaussMax;
+  private final double gaussWidth;
+
+  public MonteCarloGeometryMutation(
+      final MonteCarloMutation.MOVEMODE mode,
+      final double maxMove,
+      final int gaussMax,
+      final double gaussWidth) {
+    assert (maxMove > 0.0);
+    assert (mode != null);
+    assert (gaussWidth > 0.0);
+
+    this.maxMove = maxMove;
+    this.mode = mode;
+    this.gaussMax = gaussMax;
+    this.gaussWidth = gaussWidth;
+  }
+
+  public MonteCarloGeometryMutation(final MonteCarloGeometryMutation orig) {
+    this.maxMove = orig.maxMove;
+    this.mode = orig.mode;
+    this.gaussMax = orig.gaussMax;
+    this.gaussWidth = orig.gaussWidth;
+  }
+
+  @Override
+  public MonteCarloGeometryMutation copy() {
+    return new MonteCarloGeometryMutation(this);
+  }
+
+  @Override
+  public String getMyID() {
+    return "Monte Carlo mutation: \n\tmode: " + mode + "\n\tmaxmove: " + maxMove;
+  }
+
+  @Override
+  public Geometry mutate(final Geometry orig) {
+    return MonteCarloMutation.mutate(orig, mode, maxMove, gaussMax, gaussWidth);
+  }
 }

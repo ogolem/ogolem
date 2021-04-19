@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -44,113 +44,129 @@ import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
 
 /**
- * A Monte Carlo mutation operator for a Geometry operating only in the external
- * coordinates (i.e., good only for non-flexible small molecules).
+ * A Monte Carlo mutation operator for a Geometry operating only in the external coordinates (i.e.,
+ * good only for non-flexible small molecules).
+ *
  * @author Johannes Dieterich
- * @version 2020-07-03
+ * @version 2020-12-29
  */
-public class MonteCarlo2DExtOnlyGeometryMutation implements GenericMutation<Molecule,Geometry>{
-    
-    public static enum MOVEMODE{ALL, ONE, SOME, GAUSSIAN};
-    
-    private static final long serialVersionUID = (long) 20160402;
-    private static final boolean VERBOSE = false;
-    
-    private final Lottery r = Lottery.getInstance();    
-    private final MOVEMODE mode;
-    private final double maxMoveCOM;
-    private final double maxMoveEuler;
-    private final int gaussMax;
-    private final double gaussWidth;
-    
-    public MonteCarlo2DExtOnlyGeometryMutation(final MOVEMODE mode, final double maxMoveCOM,
-            final double maxMoveEuler, final int gaussMax, final double gaussWidth){
-        assert(maxMoveCOM >= 0.0);
-        assert(maxMoveEuler >= 0.0);
-        assert(maxMoveEuler <= 1.0);
-        assert(mode != null);
-        assert(gaussMax >= 0);
-        assert(gaussWidth > 0.0);
-        
-        this.maxMoveCOM = maxMoveCOM;
-        this.maxMoveEuler = maxMoveEuler;
-        this.mode = mode;
-        this.gaussMax = gaussMax;
-        this.gaussWidth = gaussWidth;
-        
-    }
-    
-    public MonteCarlo2DExtOnlyGeometryMutation(final MonteCarlo2DExtOnlyGeometryMutation orig){
-        this.maxMoveCOM = orig.maxMoveCOM;
-        this.maxMoveEuler = orig.maxMoveEuler;
-        this.mode = orig.mode;
-        this.gaussMax = orig.gaussMax;
-        this.gaussWidth = orig.gaussWidth;
-    }
+public class MonteCarlo2DExtOnlyGeometryMutation implements GenericMutation<Molecule, Geometry> {
 
-    @Override
-    public MonteCarlo2DExtOnlyGeometryMutation clone() {
-        return new MonteCarlo2DExtOnlyGeometryMutation(this);
-    }
+  public static enum MOVEMODE {
+    ALL,
+    ONE,
+    SOME,
+    GAUSSIAN
+  };
 
-    @Override
-    public String getMyID() {
-        return "Monte Carlo (x-y 2D ext only) mutation: \n\tmode: " + mode.name()
-                + "\n\tmaxmove (COM): " + maxMoveCOM
-                + "\n\tmaxmove (Euler): " + maxMoveEuler;
-    }
+  private static final long serialVersionUID = (long) 20160402;
+  private static final boolean VERBOSE = false;
 
-    @Override
-    public Geometry mutate(final Geometry orig) {
-        
-        final int noMols = orig.getNumberOfIndieParticles();
-        
-        List<Integer> moveables = null;
-        switch (mode) {
-            case ONE:
-                final int which = r.nextInt(noMols);
-                moveables = new ArrayList<>();
-                moveables.add(which);
-                break;
-            case ALL:
-                moveables = new ArrayList<>();
-                for(int i = 0; i < noMols; i++){
-                    moveables.add(i);
-                }
-                break;
-            case SOME:
-                final int noPoints = r.nextInt(noMols-1)+1;
-                if(VERBOSE){System.out.println("DEBUG: Moving " + noPoints + " external COMs.");}
-                moveables = RandomUtils.listOfPoints(noPoints, noMols);
-                break;
-            case GAUSSIAN:
-                final int gaussMols = (int) Math.round(RandomUtils.gaussDoubleAroundVal(0, noMols, gaussWidth, gaussMax));
-                if(VERBOSE){System.out.println("DEBUG: Moving " + gaussMols + " external COMs.");}
-                moveables = RandomUtils.listOfPoints(gaussMols, noMols);
-                break;
-            default:
-                throw new RuntimeException("Illegal move mode " + mode.name() + " in extonly MC mutation.");
+  private final Lottery r = Lottery.getInstance();
+  private final MOVEMODE mode;
+  private final double maxMoveCOM;
+  private final double maxMoveEuler;
+  private final int gaussMax;
+  private final double gaussWidth;
+
+  public MonteCarlo2DExtOnlyGeometryMutation(
+      final MOVEMODE mode,
+      final double maxMoveCOM,
+      final double maxMoveEuler,
+      final int gaussMax,
+      final double gaussWidth) {
+    assert (maxMoveCOM >= 0.0);
+    assert (maxMoveEuler >= 0.0);
+    assert (maxMoveEuler <= 1.0);
+    assert (mode != null);
+    assert (gaussMax >= 0);
+    assert (gaussWidth > 0.0);
+
+    this.maxMoveCOM = maxMoveCOM;
+    this.maxMoveEuler = maxMoveEuler;
+    this.mode = mode;
+    this.gaussMax = gaussMax;
+    this.gaussWidth = gaussWidth;
+  }
+
+  public MonteCarlo2DExtOnlyGeometryMutation(final MonteCarlo2DExtOnlyGeometryMutation orig) {
+    this.maxMoveCOM = orig.maxMoveCOM;
+    this.maxMoveEuler = orig.maxMoveEuler;
+    this.mode = orig.mode;
+    this.gaussMax = orig.gaussMax;
+    this.gaussWidth = orig.gaussWidth;
+  }
+
+  @Override
+  public MonteCarlo2DExtOnlyGeometryMutation copy() {
+    return new MonteCarlo2DExtOnlyGeometryMutation(this);
+  }
+
+  @Override
+  public String getMyID() {
+    return "Monte Carlo (x-y 2D ext only) mutation: \n\tmode: "
+        + mode.name()
+        + "\n\tmaxmove (COM): "
+        + maxMoveCOM
+        + "\n\tmaxmove (Euler): "
+        + maxMoveEuler;
+  }
+
+  @Override
+  public Geometry mutate(final Geometry orig) {
+
+    final int noMols = orig.getNumberOfIndieParticles();
+
+    List<Integer> moveables = null;
+    switch (mode) {
+      case ONE:
+        final int which = r.nextInt(noMols);
+        moveables = new ArrayList<>();
+        moveables.add(which);
+        break;
+      case ALL:
+        moveables = new ArrayList<>();
+        for (int i = 0; i < noMols; i++) {
+          moveables.add(i);
         }
-        
-        
-        final Geometry work = new Geometry(orig);
-        final double[] comMove = new double[2];
-        for(final int moveMol : moveables){
-            
-            final double comM = maxMoveCOM*r.nextDouble();
-            RandomUtils.randomVector(comMove, comM);
-            
-            final double eulerM = maxMoveEuler*r.nextDouble();
-            
-            final Molecule m = work.getMoleculeAtPosition(moveMol);
-            final double[] origCOM = m.getExternalCenterOfMass();
-            final double sign1 = (r.nextBoolean()) ? -1.0 : 1.0;
-            origCOM[0] += sign1*comMove[0];
-            origCOM[1] += sign1*comMove[1];
-    
-            RandomUtils.randomEulerIncrements(m.getOrientation(), eulerM);
+        break;
+      case SOME:
+        final int noPoints = r.nextInt(noMols - 1) + 1;
+        if (VERBOSE) {
+          System.out.println("DEBUG: Moving " + noPoints + " external COMs.");
         }
-        
-        return work;
+        moveables = RandomUtils.listOfPoints(noPoints, noMols);
+        break;
+      case GAUSSIAN:
+        final int gaussMols =
+            (int) Math.round(RandomUtils.gaussDoubleAroundVal(0, noMols, gaussWidth, gaussMax));
+        if (VERBOSE) {
+          System.out.println("DEBUG: Moving " + gaussMols + " external COMs.");
+        }
+        moveables = RandomUtils.listOfPoints(gaussMols, noMols);
+        break;
+      default:
+        throw new RuntimeException("Illegal move mode " + mode.name() + " in extonly MC mutation.");
     }
+
+    final Geometry work = new Geometry(orig);
+    final double[] comMove = new double[2];
+    for (final int moveMol : moveables) {
+
+      final double comM = maxMoveCOM * r.nextDouble();
+      RandomUtils.randomVector(comMove, comM);
+
+      final double eulerM = maxMoveEuler * r.nextDouble();
+
+      final Molecule m = work.getMoleculeAtPosition(moveMol);
+      final double[] origCOM = m.getExternalCenterOfMass();
+      final double sign1 = (r.nextBoolean()) ? -1.0 : 1.0;
+      origCOM[0] += sign1 * comMove[0];
+      origCOM[1] += sign1 * comMove[1];
+
+      RandomUtils.randomEulerIncrements(m.getOrientation(), eulerM);
+    }
+
+    return work;
+  }
 }

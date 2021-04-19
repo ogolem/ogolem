@@ -2,7 +2,7 @@
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ import org.ogolem.io.OutputPrimitives;
  * This calls Orca as a backend for local optimization and dipole calculation.
  *
  * @author Johannes Dieterich
- * @version 2017-03-03
+ * @version 2020-12-29
  */
 public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBackend {
 
@@ -141,7 +141,7 @@ public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBac
   }
 
   @Override
-  public OrcaCaller clone() {
+  public OrcaCaller copy() {
     return new OrcaCaller(this);
   }
 

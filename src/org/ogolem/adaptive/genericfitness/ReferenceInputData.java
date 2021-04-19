@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,20 +37,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive.genericfitness;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 import org.ogolem.properties.Property;
 
 /**
  * The reference input data interface.
+ *
  * @author Johannes Dieterich
- * @version 2015-10-28
+ * @version 2020-12-30
  */
-public interface ReferenceInputData<T extends Property> extends Cloneable, Serializable {
-    
-    /**
-     * Clone this data object.
-     * @return a clone (instance of the SAME class as the original) to be used concurrently
-     */
-    ReferenceInputData<T> clone();
-    
-    int belongsToReferencePoint();
+public interface ReferenceInputData<T extends Property> extends Copyable, Serializable {
+
+  /**
+   * Clone this data object.
+   *
+   * @return a clone (instance of the SAME class as the original) to be used concurrently
+   */
+  @Override
+  ReferenceInputData<T> copy();
+
+  int belongsToReferencePoint();
 }

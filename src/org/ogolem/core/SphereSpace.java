@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2010, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,71 +41,70 @@ import org.ogolem.random.Lottery;
 
 /**
  * Defines a spherical space.
+ *
  * @author Johannes Dieterich
- * @version 2020-05-22
+ * @version 2020-12-30
  */
-final class SphereSpace implements AllowedSpace{
+final class SphereSpace implements AllowedSpace {
 
-    private final static long serialVersionUID = (long) 20200622;
+  private static final long serialVersionUID = (long) 20200622;
 
-    private final Lottery random;
+  private final Lottery random;
 
-    private final double radius;
-    private final double[] center;
+  private final double radius;
+  private final double[] center;
 
-    SphereSpace(final double[] middle, final double radius){
-        this.center = middle;
-        this.radius = radius;
-        this.random = Lottery.getInstance();
+  SphereSpace(final double[] middle, final double radius) {
+    this.center = middle;
+    this.radius = radius;
+    this.random = Lottery.getInstance();
+  }
+
+  @Override
+  public SphereSpace copy() {
+    double[] daTemp = center.clone();
+
+    return new SphereSpace(daTemp, this.radius);
+  }
+
+  @Override
+  public double[] getPointInSpace() {
+
+    // we need some randoms
+    final double[] spherical = new double[3];
+    // radius
+    spherical[0] = radius * random.nextDouble();
+
+    // phi and omega
+    spherical[1] = random.nextDouble() * 2.0 * Math.PI;
+    spherical[2] = random.nextDouble() * Math.PI;
+
+    // translate to cartesian
+    final double[] point = new double[3];
+    CoordTranslation.sphericalToCartesianCoord(spherical, point);
+
+    // move with respect to middle
+    for (int i = 0; i < 3; i++) {
+      point[i] += center[i];
     }
 
-    @Override
-    public SphereSpace clone(){
-        double[] daTemp = center.clone();
+    assert (isPointInSpace(point));
 
-        return new SphereSpace(daTemp, this.radius);
-    }
+    return point;
+  }
 
-    @Override
-    public double[] getPointInSpace(){
+  @Override
+  public boolean isPointInSpace(final double[] point) {
 
-        // we need some randoms
-        final double[] spherical = new double[3];
-        // radius
-        spherical[0] = radius * random.nextDouble();
+    // move with respect to middle of sphere
+    final double x = point[0] - center[0];
+    final double y = point[1] - center[1];
+    final double z = point[2] - center[2];
 
-        // phi and omega
-        spherical[1] = random.nextDouble() * 2.0 * Math.PI;
-        spherical[2] = random.nextDouble() * Math.PI;
+    // calculate only the radius
+    final double r = Math.sqrt(x * x + y * y + z * z);
 
-        // translate to cartesian
-        final double[] point = new double[3];
-        CoordTranslation.sphericalToCartesianCoord(spherical, point);
-
-        // move with respect to middle
-        for(int i = 0; i < 3; i++){
-            point[i] += center[i];
-        }
-        
-        assert(isPointInSpace(point));
-
-        return point;
-
-    }
-
-    @Override
-    public boolean isPointInSpace(final double[] point){
-
-        // move with respect to middle of sphere
-        final double x = point[0] - center[0];
-        final double y = point[1] - center[1];
-        final double z = point[2] - center[2];
-
-        // calculate only the radius
-        final double r = Math.sqrt(x*x+y*y+z*z);
-
-        // check
-        return (r <= radius);
-    }
-
+    // check
+    return (r <= radius);
+  }
 }

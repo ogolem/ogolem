@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,78 +45,83 @@ import org.ogolem.core.CartesianCoordinates;
 
 /**
  * A value object for the backbone of the switch.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-23
+ * @version 2020-12-30
  */
-public final class Backbone implements Serializable{
+public final class Backbone implements Serializable {
 
-    private static final long serialVersionUID = (long) 20091218;
+  private static final long serialVersionUID = (long) 20091218;
 
-    private final ArrayList<CartesianCoordinates> alCartes;
+  private final ArrayList<CartesianCoordinates> alCartes;
 
-    private final int[][] iaConnects;
+  private final int[][] iaConnects;
 
-    private final ArrayList<BondInfo> alBonds;
+  private final ArrayList<BondInfo> alBonds;
 
-    Backbone(final CartesianCoordinates cartesiansCis, final CartesianCoordinates cartesiansTrans,
-            final int[] connectsCis, final int[] connectsTrans, final BondInfo bondsCis, final BondInfo bondsTrans){
-        this.alCartes = new ArrayList<>(2);
-        // put cis and trans form in
-        alCartes.add(cartesiansCis);
-        alCartes.add(cartesiansTrans);
+  Backbone(
+      final CartesianCoordinates cartesiansCis,
+      final CartesianCoordinates cartesiansTrans,
+      final int[] connectsCis,
+      final int[] connectsTrans,
+      final BondInfo bondsCis,
+      final BondInfo bondsTrans) {
+    this.alCartes = new ArrayList<>(2);
+    // put cis and trans form in
+    alCartes.add(cartesiansCis);
+    alCartes.add(cartesiansTrans);
 
-        this.iaConnects = new int[2][];
-        iaConnects[0] = connectsCis;
-        iaConnects[1] = connectsTrans;
+    this.iaConnects = new int[2][];
+    iaConnects[0] = connectsCis;
+    iaConnects[1] = connectsTrans;
 
-        this.alBonds = new ArrayList<>(2);
-        // put cis and trans form in
-        alBonds.add(bondsCis);
-        alBonds.add(bondsTrans);
+    this.alBonds = new ArrayList<>(2);
+    // put cis and trans form in
+    alBonds.add(bondsCis);
+    alBonds.add(bondsTrans);
+  }
+
+  public Backbone(final Backbone refBackbone) {
+    this.alCartes = new ArrayList<>(2);
+    // put cis and trans in
+    alCartes.add(refBackbone.getCartesCopy(true));
+    alCartes.add(refBackbone.getCartesCopy(false));
+
+    this.iaConnects = new int[2][];
+    iaConnects[0] = refBackbone.getConnectsCopy(true);
+    iaConnects[1] = refBackbone.getConnectsCopy(false);
+
+    this.alBonds = new ArrayList<>(2);
+    // put cis and trans in
+    alBonds.add(refBackbone.getBondsCopy(true));
+    alBonds.add(refBackbone.getBondsCopy(false));
+  }
+
+  CartesianCoordinates getCartesCopy(final boolean bCis) {
+    if (bCis) {
+      // return the first
+      return new CartesianCoordinates(alCartes.get(0));
+    } else {
+      // return the second
+      return new CartesianCoordinates(alCartes.get(1));
     }
+  }
 
-    public Backbone(final Backbone refBackbone){
-        this.alCartes = new ArrayList<>(2);
-        // put cis and trans in
-        alCartes.add(refBackbone.getCartesCopy(true));
-        alCartes.add(refBackbone.getCartesCopy(false));
-
-        this.iaConnects = new int[2][];
-        iaConnects[0] = refBackbone.getConnectsCopy(true);
-        iaConnects[1] = refBackbone.getConnectsCopy(false);
-
-        this.alBonds = new ArrayList<>(2);
-        // put cis and trans in
-        alBonds.add(refBackbone.getBondsCopy(true));
-        alBonds.add(refBackbone.getBondsCopy(false));
+  public int[] getConnectsCopy(final boolean bCis) {
+    if (bCis) {
+      return iaConnects[0].clone();
+    } else {
+      return iaConnects[1].clone();
     }
+  }
 
-    CartesianCoordinates getCartesCopy(final boolean bCis){
-        if(bCis){
-            // return the first
-            return new CartesianCoordinates(alCartes.get(0));
-        } else{
-            // return the second
-            return new CartesianCoordinates(alCartes.get(1));
-        }
+  BondInfo getBondsCopy(final boolean bCis) {
+    if (bCis) {
+      // return the first
+      return alBonds.get(0).copy();
+    } else {
+      // return the second
+      return alBonds.get(1).copy();
     }
-
-    public int[] getConnectsCopy(final boolean bCis){
-        if(bCis){
-            return iaConnects[0].clone();
-        } else{
-            return iaConnects[1].clone();
-        }
-    }
-
-    BondInfo getBondsCopy(final boolean bCis){
-        if(bCis){
-            // return the first
-            return alBonds.get(0).clone();
-        } else{
-            // return the second
-            return alBonds.get(1).clone();
-        }
-    }
-
+  }
 }

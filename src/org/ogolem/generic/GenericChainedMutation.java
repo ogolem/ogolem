@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -43,65 +43,66 @@ import org.ogolem.random.Lottery;
 
 /**
  * A chain of mutation operators.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class GenericChainedMutation<E, T extends Optimizable<E>> implements GenericMutation<E,T> {
+public class GenericChainedMutation<E, T extends Optimizable<E>> implements GenericMutation<E, T> {
 
-    private static final long serialVersionUID = (long) 20200429;
-    private final List<GenericMutation<E,T>> mutations;
-    private final List<Double> probs;
-    private final Lottery r;
-    
-    public GenericChainedMutation(final List<GenericMutation<E,T>> muts,
-            final List<Double> probs){
-        assert(muts.size() == probs.size());
-        this.mutations = muts;
-        this.probs = probs;
-        this.r = Lottery.getInstance();
-    }
-    
-    public GenericChainedMutation(final GenericChainedMutation<E,T> orig){
-        this.mutations = new ArrayList<>(orig.mutations.size());
-        orig.mutations.forEach((mut) -> {
-            mutations.add(mut.clone());
+  private static final long serialVersionUID = (long) 20200429;
+  private final List<GenericMutation<E, T>> mutations;
+  private final List<Double> probs;
+  private final Lottery r;
+
+  public GenericChainedMutation(final List<GenericMutation<E, T>> muts, final List<Double> probs) {
+    assert (muts.size() == probs.size());
+    this.mutations = muts;
+    this.probs = probs;
+    this.r = Lottery.getInstance();
+  }
+
+  public GenericChainedMutation(final GenericChainedMutation<E, T> orig) {
+    this.mutations = new ArrayList<>(orig.mutations.size());
+    orig.mutations.forEach(
+        (mut) -> {
+          mutations.add(mut.copy());
         });
-        this.probs = new ArrayList<>(orig.probs.size());
-        for(final double d : orig.probs){
-            assert(d >= 0.0 && d <= 1.0);
-            probs.add(d);
-        }
-        assert(mutations.size() == probs.size());
-        this.r = Lottery.getInstance();
+    this.probs = new ArrayList<>(orig.probs.size());
+    for (final double d : orig.probs) {
+      assert (d >= 0.0 && d <= 1.0);
+      probs.add(d);
     }
-    
-    @Override
-    public GenericMutation<E, T> clone() {
-        return new GenericChainedMutation<>(this);
+    assert (mutations.size() == probs.size());
+    this.r = Lottery.getInstance();
+  }
+
+  @Override
+  public GenericMutation<E, T> copy() {
+    return new GenericChainedMutation<>(this);
+  }
+
+  @Override
+  public String getMyID() {
+    String s = "CHAINED MUTATION\n";
+    for (final GenericMutation<E, T> mut : mutations) {
+      s += mut.getMyID() + "\n";
     }
 
-    @Override
-    public String getMyID() {
-        String s = "CHAINED MUTATION\n";
-        for(final GenericMutation<E,T> mut : mutations){
-            s += mut.getMyID() + "\n";
-        }
-        
-        return s;
+    return s;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public T mutate(final T orig) {
+
+    assert (mutations.size() == probs.size());
+    T mutated = (T) orig.copy();
+    for (int i = 0; i < mutations.size(); i++) {
+      if (r.nextDouble() < probs.get(i)) {
+        mutated = mutations.get(i).mutate(mutated);
+      }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public T mutate(final T orig) {
-        
-        assert(mutations.size() == probs.size());
-        T mutated = (T) orig.copy();
-        for(int i = 0; i < mutations.size(); i++){
-            if(r.nextDouble() < probs.get(i)){
-                mutated = mutations.get(i).mutate(mutated);
-            }
-        }
-        
-        return mutated;
-    }
+    return mutated;
+  }
 }

@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,68 +40,75 @@ import org.ogolem.core.FixedValues;
 
 /**
  * A Cauchy stress tensor (i.e., a 3x3 matrix).
+ *
  * @author Johannes Dieterich
- * @version 2018-01-23
+ * @version 2020-12-29
  */
 public class StressTensor extends MatrixProperty {
-    
-    private static final long serialVersionUID = (long) 20180123;
 
-    public StressTensor(final double[][] stress){
-        super(stress, false);
-        if(stress != null){
-            assert(stress.length == 3);
-            assert(stress[0].length == 3);
-            assert(stress[1].length == 3);
-            assert(stress[2].length == 3);
+  private static final long serialVersionUID = (long) 20180123;
+
+  public StressTensor(final double[][] stress) {
+    super(stress, false);
+    if (stress != null) {
+      assert (stress.length == 3);
+      assert (stress[0].length == 3);
+      assert (stress[1].length == 3);
+      assert (stress[2].length == 3);
+    }
+  }
+
+  private StressTensor(final StressTensor orig) {
+    super(orig);
+  }
+
+  @Override
+  public StressTensor copy() {
+    return new StressTensor(this);
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    return (p instanceof StressTensor);
+  }
+
+  @Override
+  public boolean makeSensible() {
+
+    if (data == null) {
+      return false;
+    }
+
+    boolean wasTouched = false;
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (Double.isInfinite(data[i][j])
+            || Double.isNaN(data[i][j])
+            || data[i][j] > FixedValues.NONCONVERGEDGRADIENT) {
+          data[i][j] = FixedValues.NONCONVERGEDGRADIENT;
+          wasTouched = true;
         }
-    }
-    
-    private StressTensor(final StressTensor orig){
-        super(orig);
-    }
-    
-    @Override
-    public StressTensor clone() {
-        return new StressTensor(this);
+      }
     }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof StressTensor);
+    return wasTouched;
+  }
+
+  @Override
+  public String printableProperty() {
+    if (data == null) {
+      return "NULL'D STRESS TENSOR";
     }
 
-    @Override
-    public boolean makeSensible() {
+    String s = data[0][0] + "\t" + data[0][1] + "\t" + data[0][2];
+    s += data[1][0] + "\t" + data[1][1] + "\t" + data[1][2];
+    s += data[2][0] + "\t" + data[2][1] + "\t" + data[2][2];
 
-        if(data == null){return false;}
-        
-        boolean wasTouched = false;
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(Double.isInfinite(data[i][j]) || Double.isNaN(data[i][j]) || data[i][j] > FixedValues.NONCONVERGEDGRADIENT){
-                    data[i][j] = FixedValues.NONCONVERGEDGRADIENT;
-                    wasTouched = true;
-                }
-            }
-        }
-        
-        return wasTouched;
-    }
+    return s;
+  }
 
-    @Override
-    public String printableProperty() {
-        if(data == null){return "NULL'D STRESS TENSOR";}
-        
-        String s = data[0][0] + "\t" + data[0][1] + "\t" + data[0][2];
-        s += data[1][0] + "\t" + data[1][1] + "\t" + data[1][2];
-        s += data[2][0] + "\t" + data[2][1] + "\t" + data[2][2];
-        
-        return s;
-    }
-
-    @Override
-    public String name() {
-        return "STRESS TENSOR";
-    }
+  @Override
+  public String name() {
+    return "STRESS TENSOR";
+  }
 }

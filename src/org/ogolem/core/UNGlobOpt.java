@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2010-2013, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,69 +43,75 @@ import org.ogolem.random.Lottery;
 
 /**
  * Any number of any global optimization algorithms may be used here.
+ *
  * @author Johannes Dieterich
- * @version 2016-12-18
+ * @version 2020-12-30
  */
 final class UNGlobOpt implements GlobalOptimization {
 
-    private static final long serialVersionUID = (long) 20110606;
-    private final int[] percentEnds;
-    private final List<GlobalOptimization> globopts;
-    private final Lottery random = Lottery.getInstance();
+  private static final long serialVersionUID = (long) 20110606;
+  private final int[] percentEnds;
+  private final List<GlobalOptimization> globopts;
+  private final Lottery random = Lottery.getInstance();
 
-    UNGlobOpt(final List<GlobalOptimization> globopts, final List<Integer> percents,
-            final GlobalConfig config){
-        this.globopts = globopts;
-        this.percentEnds = new int[globopts.size()];
-        if(percents.size() != globopts.size()){
-            throw new RuntimeException("Not enough percentages for all global optimizations set.");
-        }
-        int off = 0;
-        for(int i = 0; i < percentEnds.length; i++){
-            off += percents.get(i);
-            percentEnds[i] = off;
-        }
-        if(off != 100){
-            throw new RuntimeException("Percentages do not add up to 100. Get your math right! Total percents: " + off);
-        }
+  UNGlobOpt(
+      final List<GlobalOptimization> globopts,
+      final List<Integer> percents,
+      final GlobalConfig config) {
+    this.globopts = globopts;
+    this.percentEnds = new int[globopts.size()];
+    if (percents.size() != globopts.size()) {
+      throw new RuntimeException("Not enough percentages for all global optimizations set.");
+    }
+    int off = 0;
+    for (int i = 0; i < percentEnds.length; i++) {
+      off += percents.get(i);
+      percentEnds[i] = off;
+    }
+    if (off != 100) {
+      throw new RuntimeException(
+          "Percentages do not add up to 100. Get your math right! Total percents: " + off);
+    }
+  }
+
+  UNGlobOpt(final UNGlobOpt orig) {
+    this.globopts = new ArrayList<>();
+    for (final GlobalOptimization opt : orig.globopts) {
+      GlobalOptimization clone = opt.copy();
+      this.globopts.add(clone);
     }
 
-    UNGlobOpt(final UNGlobOpt orig){
-        this.globopts = new ArrayList<>();
-        for(final GlobalOptimization opt : orig.globopts){
-            GlobalOptimization clone = opt.clone();
-            this.globopts.add(clone);
-        }
-        
-        this.percentEnds = orig.percentEnds.clone();
+    this.percentEnds = orig.percentEnds.clone();
+  }
+
+  @Override
+  public String getMyID() {
+    String s = "unitednations:";
+    for (final GlobalOptimization opt : globopts) {
+      s += opt.getMyID() + ";";
     }
 
-    @Override
-    public String getMyID(){
-        String s = "unitednations:";
-        for(final GlobalOptimization opt : globopts){
-            s += opt.getMyID() + ";";
-        }
+    return s;
+  }
 
-        return s;
+  @Override
+  public UNGlobOpt copy() {
+    return new UNGlobOpt(this);
+  }
+
+  @Override
+  public Geometry doTheGlobOpt(final long futureID, final Geometry geom1, final Geometry geom2) {
+
+    final int point = random.nextInt(100) + 1; // to get values 1-100 (inclusive)
+    for (int i = 0; i < percentEnds.length; i++) {
+      if (point <= percentEnds[i]) {
+        return globopts.get(i).doTheGlobOpt(futureID, geom2, geom2);
+      }
     }
 
-    @Override
-    public UNGlobOpt clone(){
-        return new UNGlobOpt(this);
-    }
-
-    @Override
-    public Geometry doTheGlobOpt(final long futureID, final Geometry geom1, final Geometry geom2) {
-
-        final int point = random.nextInt(100)+1; // to get values 1-100 (inclusive)
-        for(int i = 0; i < percentEnds.length; i++){
-            if(point <= percentEnds[i]){
-                return globopts.get(i).doTheGlobOpt(futureID, geom2, geom2);
-            }
-        }
-        
-        System.err.println("ERROR: Excecution flow reached end of UN globopt w/o dispatching to globopt.");
-        throw new RuntimeException("Excecution flow reached end of UN globopt w/o dispatching to globopt.");
-    }
+    System.err.println(
+        "ERROR: Excecution flow reached end of UN globopt w/o dispatching to globopt.");
+    throw new RuntimeException(
+        "Excecution flow reached end of UN globopt w/o dispatching to globopt.");
+  }
 }

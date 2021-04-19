@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,18 +39,21 @@ package org.ogolem.adaptive.genericfitness;
 
 import java.io.Serializable;
 import org.ogolem.adaptive.AdaptiveParameters;
+import org.ogolem.generic.Copyable;
 import org.ogolem.properties.Property;
 
 /**
  * An interface for the generic fitness term.
+ *
  * @author Johannes Dieterich
- * @version 2014-01-23
+ * @version 2020-12-30
  */
-public interface GenericFitnessTerm<T extends Property> extends Serializable, Cloneable {
-    
-    public GenericFitnessTerm<T> clone();
-    
-    public double calculateFitnessForProperty(final AdaptiveParameters p);
-    
-    public double calculateGradientForProperty(final AdaptiveParameters p, final double[] gradient);
+public interface GenericFitnessTerm<T extends Property> extends Serializable, Copyable {
+
+  @Override
+  public GenericFitnessTerm<T> copy();
+
+  public double calculateFitnessForProperty(final AdaptiveParameters p);
+
+  public double calculateGradientForProperty(final AdaptiveParameters p, final double[] gradient);
 }

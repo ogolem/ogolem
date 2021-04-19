@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,44 +42,45 @@ import org.ogolem.io.OutputPrimitives;
 
 /**
  * Writes one geometry out.
+ *
  * @author Johannes Dieterich
- * @version 2014-05-02
+ * @version 2020-12-30
  */
 public class ParameterWriter implements IndividualWriter<AdaptiveParameters> {
-    
-    private static final long serialVersionUID = (long) 20140502;
-    private final String outputFolder;
-    
-    ParameterWriter(final String outputFolder){
-        this.outputFolder = outputFolder;
-    }
-    
-    @Override
-    public ParameterWriter clone(){
-        return new ParameterWriter(outputFolder);
-    }
-    
-    @Override
-    public void writeIndividual(final AdaptiveParameters p){
-        // write xyz out
-        try {
-            final String[] sa = p.createFormattedOutput();
-            OutputPrimitives.writeOut(outputFolder, sa, true);
-        } catch (Exception e) {
-            System.err.println("WARNING: Couldn't write parameters " + p.getID() + ". " + e.toString());
-            e.printStackTrace(System.err);
-        }
-    }
 
-    @Override
-    public void writeIndividual(AdaptiveParameters p, String toFile) {
-        // write xyz out
-        try {
-            final String[] sa = p.createFormattedOutput();
-            OutputPrimitives.writeOut(toFile, sa, true);
-        } catch (Exception e) {
-            System.err.println("WARNING: Couldn't write parameters " + p.getID() + ". " + e.toString());
-            e.printStackTrace(System.err);
-        }
+  private static final long serialVersionUID = (long) 20140502;
+  private final String outputFolder;
+
+  ParameterWriter(final String outputFolder) {
+    this.outputFolder = outputFolder;
+  }
+
+  @Override
+  public ParameterWriter copy() {
+    return new ParameterWriter(outputFolder);
+  }
+
+  @Override
+  public void writeIndividual(final AdaptiveParameters p) {
+    // write xyz out
+    try {
+      final String[] sa = p.createFormattedOutput();
+      OutputPrimitives.writeOut(outputFolder, sa, true);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't write parameters " + p.getID() + ". " + e.toString());
+      e.printStackTrace(System.err);
     }
+  }
+
+  @Override
+  public void writeIndividual(AdaptiveParameters p, String toFile) {
+    // write xyz out
+    try {
+      final String[] sa = p.createFormattedOutput();
+      OutputPrimitives.writeOut(toFile, sa, true);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't write parameters " + p.getID() + ". " + e.toString());
+      e.printStackTrace(System.err);
+    }
+  }
 }

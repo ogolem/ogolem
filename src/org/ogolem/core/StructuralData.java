@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2016, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -16,7 +17,7 @@ modification, are permitted provided that the following conditions are met:
       must display the following acknowledgement:
 
       This product includes software developed at the Universities of
-      Kiel, Goettingen (Germany) and Princeton University (USA) by its 
+      Kiel, Goettingen (Germany) and Princeton University (USA) by its
       contributors: J. M. Dieterich and B. Hartke.
 
     * Neither the name of the University of Kiel, the University of Goettingen,
@@ -38,29 +39,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * An interface describing structural data value types. Really just a very high-level description!
+ *
  * @author Johannes M Dieterich
- * @version 2016-07-21
+ * @version 2020-12-30
  */
-public interface StructuralData extends Serializable {
-    
-    public StructuralData clone();
-    
-    public CartesianCoordinates getCartesianCoordinates();
-    
-    public int getNoOfAtoms();
-    
-    public int getNoOfMolecules();
-    
-    public short[] getAllAtomNumbers();
-    
-    public short[] getAllSpins();
-    
-    public float[] getAllCharges();
-    
-    public void setAllCharges(final float[] newCharges);
-    
-    public void setAllSpins(final short[] newSpins);
+public interface StructuralData extends Serializable, Copyable {
+
+  public StructuralData copy();
+
+  public CartesianCoordinates getCartesianCoordinates();
+
+  public int getNoOfAtoms();
+
+  public int getNoOfMolecules();
+
+  public short[] getAllAtomNumbers();
+
+  public short[] getAllSpins();
+
+  public float[] getAllCharges();
+
+  public void setAllCharges(final float[] newCharges);
+
+  public void setAllSpins(final short[] newSpins);
 }

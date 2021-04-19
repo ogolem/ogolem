@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,72 +39,75 @@ package org.ogolem.math;
 
 /**
  * A lookup table for the cos function.
+ *
  * @author Johannes Dieterich
- * @version 2012-06-12
+ * @version 2020-12-30
  */
 public class CosLookup extends AbstractLookup {
-    
-    private static final long serialVersionUID = (long) 20120612;
-    
-    private static final double twoPi = 2.0*Math.PI;
-    
-    public CosLookup(final int entries){
-        super(entries, 0.0, Math.PI);
-    }
-    
-    public CosLookup(final CosLookup orig){
-        super(orig);
-    }
-    
-    @Override
-    public CosLookup clone(){
-        return new CosLookup(this);
-    }
-    
-    /**
-     * A lookup function for the cos including linear interpolation.
-     * @param x The angle.
-     * @return The looked up and interpolated cos(x).
-     */
-    public double cosInter(final double x){
-        
-        double y = x % (twoPi);
-        if(y < 0.0) y = -y;
-        
-        final boolean b = y < Math.PI;      
-        final double z = (b) ? y : y - Math.PI;
-        final double poi = z * disEntries;
-        final int point = (int) poi;
-        // jump in
-        final double uncorr = (b) ? table[point] : -table[point];
-        final double uncorr2 = (point == ENTRIESDECR) ? uncorr : table[point+1];
-        final double uncorrT = (b) ? uncorr2 : -uncorr2;
-        final double rest = poi-point;
-        
-        return (uncorr + rest*(uncorrT-uncorr));
-    }
-    
-    /**
-     * A lookup function for the cos without interpolation.
-     * @param x The angle.
-     * @return The looked up cos(x).
-     */
-    public double cosNonInter(final double x){
-        
-        double y = x % (twoPi);
-        if(y < 0.0) y = -y;
-        
-        final boolean b = y < Math.PI;
-        final double z = (b) ? y : y - Math.PI;
-        final double poi = z * disEntries;
-        final int point = (int) poi;
-        // jump in
-        final double uncorr = (b) ? table[point] : -table[point];
-        return uncorr;
-    }
-    
-    @Override
-    protected double func(final double x){
-        return Math.cos(x);
-    }
+
+  private static final long serialVersionUID = (long) 20120612;
+
+  private static final double twoPi = 2.0 * Math.PI;
+
+  public CosLookup(final int entries) {
+    super(entries, 0.0, Math.PI);
+  }
+
+  public CosLookup(final CosLookup orig) {
+    super(orig);
+  }
+
+  @Override
+  public CosLookup copy() {
+    return new CosLookup(this);
+  }
+
+  /**
+   * A lookup function for the cos including linear interpolation.
+   *
+   * @param x The angle.
+   * @return The looked up and interpolated cos(x).
+   */
+  public double cosInter(final double x) {
+
+    double y = x % (twoPi);
+    if (y < 0.0) y = -y;
+
+    final boolean b = y < Math.PI;
+    final double z = (b) ? y : y - Math.PI;
+    final double poi = z * disEntries;
+    final int point = (int) poi;
+    // jump in
+    final double uncorr = (b) ? table[point] : -table[point];
+    final double uncorr2 = (point == ENTRIESDECR) ? uncorr : table[point + 1];
+    final double uncorrT = (b) ? uncorr2 : -uncorr2;
+    final double rest = poi - point;
+
+    return (uncorr + rest * (uncorrT - uncorr));
+  }
+
+  /**
+   * A lookup function for the cos without interpolation.
+   *
+   * @param x The angle.
+   * @return The looked up cos(x).
+   */
+  public double cosNonInter(final double x) {
+
+    double y = x % (twoPi);
+    if (y < 0.0) y = -y;
+
+    final boolean b = y < Math.PI;
+    final double z = (b) ? y : y - Math.PI;
+    final double poi = z * disEntries;
+    final int point = (int) poi;
+    // jump in
+    final double uncorr = (b) ? table[point] : -table[point];
+    return uncorr;
+  }
+
+  @Override
+  protected double func(final double x) {
+    return Math.cos(x);
+  }
 }

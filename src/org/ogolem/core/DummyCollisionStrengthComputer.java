@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,21 +38,22 @@ package org.ogolem.core;
 
 /**
  * A dummy computer.
+ *
  * @author Johannes Dieterich
- * @version 2015-07-20
+ * @version 2020-12-30
  */
 public class DummyCollisionStrengthComputer implements CollisionStrengthComputer {
 
-    private static final long serialVersionUID = (long) 20150720;
-    
-    @Override
-    public DummyCollisionStrengthComputer clone() {
-        return new DummyCollisionStrengthComputer();
-    }
+  private static final long serialVersionUID = (long) 20150720;
 
-    @Override
-    public double calculateCollisionStrength(final int atom1, final int atom2, final double distance, final double idealDistance) {
-        return CollisionInfo.DEFAULTSTRENGTH;
-    }
-    
+  @Override
+  public DummyCollisionStrengthComputer copy() {
+    return new DummyCollisionStrengthComputer();
+  }
+
+  @Override
+  public double calculateCollisionStrength(
+      final int atom1, final int atom2, final double distance, final double idealDistance) {
+    return CollisionInfo.DEFAULTSTRENGTH;
+  }
 }

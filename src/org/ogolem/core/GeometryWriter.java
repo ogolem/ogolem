@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,81 +45,84 @@ import org.ogolem.properties.Property;
 
 /**
  * Writes one geometry out.
+ *
  * @author Johannes Dieterich
- * @version 2015-03-11
+ * @version 2020-12-30
  */
 public class GeometryWriter implements IndividualWriter<Geometry> {
-    
-    private static final long serialVersionUID = (long) 20140330;
-    private final String outFolder;
-    
-    public GeometryWriter(final String outFolder){
-        this.outFolder = outFolder;
+
+  private static final long serialVersionUID = (long) 20140330;
+  private final String outFolder;
+
+  public GeometryWriter(final String outFolder) {
+    this.outFolder = outFolder;
+  }
+
+  @Override
+  public GeometryWriter copy() {
+    return new GeometryWriter(this.outFolder);
+  }
+
+  @Override
+  public void writeIndividual(final Geometry g) {
+    // write xyz out
+    try {
+      Output.printXYZSingleGeometry(g, true, outFolder);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't write geometry " + g.getID() + ". " + e.toString());
     }
-    
-    @Override
-    public GeometryWriter clone(){
-        return new GeometryWriter(this.outFolder);
+
+    // see about properties
+    final Iterator<Property> it = g.getPropertyIterator();
+    if (!it.hasNext()) {
+      // empty iterator, probably the more usual case
+      return;
     }
-    
-    @Override
-    public void writeIndividual(final Geometry g){
-        // write xyz out
-        try {
-            Output.printXYZSingleGeometry(g, true, outFolder);
-        } catch (Exception e) {
-            System.err.println("WARNING: Couldn't write geometry " + g.getID() + ". " + e.toString());
-        }
-        
-        // see about properties
-        final Iterator<Property> it = g.getPropertyIterator();
-        if(!it.hasNext()){
-            // empty iterator, probably the more usual case
-            return;
-        }
-        
-        final String propOut = outFolder + File.separator + "geometry" + g.getID() + ".properties";
-        String s = "";
-        while(it.hasNext()){
-            final Property p = it.next();
-            s += p.name() + "\n\t" + p.printableProperty() + "\n\n";
-        }
-        
-        try{
-            OutputPrimitives.writeOut(propOut, s, true);
-        } catch(Exception e){
-            System.err.println("WARNING: Couldn't write properties of geometry " + g.getID() + ". " + e.toString());
-        }
+
+    final String propOut = outFolder + File.separator + "geometry" + g.getID() + ".properties";
+    String s = "";
+    while (it.hasNext()) {
+      final Property p = it.next();
+      s += p.name() + "\n\t" + p.printableProperty() + "\n\n";
     }
-    
-    @Override
-    public void writeIndividual(final Geometry g, final String toFile){
-        // write xyz out
-        try {
-            final String[] dat = g.makePrintableAbsoluteCoord(true);
-            OutputPrimitives.writeOut(toFile + ".xyz", dat, true);
-        } catch (Exception e) {
-            System.err.println("WARNING: Couldn't write geometry " + g.getID() + ". " + e.toString());
-        }
-        
-        // see about properties
-        final Iterator<Property> it = g.getPropertyIterator();
-        if(!it.hasNext()){
-            // empty iterator, probably the more usual case
-            return;
-        }
-        
-        final String propOut = toFile + ".properties";
-        String s = "";
-        while(it.hasNext()){
-            final Property p = it.next();
-            s += p.name() + "\n\t" + p.printableProperty() + "\n\n";
-        }
-        
-        try{
-            OutputPrimitives.writeOut(propOut, s, true);
-        } catch(Exception e){
-            System.err.println("WARNING: Couldn't write properties of geometry " + g.getID() + ". " + e.toString());
-        }
+
+    try {
+      OutputPrimitives.writeOut(propOut, s, true);
+    } catch (Exception e) {
+      System.err.println(
+          "WARNING: Couldn't write properties of geometry " + g.getID() + ". " + e.toString());
     }
+  }
+
+  @Override
+  public void writeIndividual(final Geometry g, final String toFile) {
+    // write xyz out
+    try {
+      final String[] dat = g.makePrintableAbsoluteCoord(true);
+      OutputPrimitives.writeOut(toFile + ".xyz", dat, true);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't write geometry " + g.getID() + ". " + e.toString());
+    }
+
+    // see about properties
+    final Iterator<Property> it = g.getPropertyIterator();
+    if (!it.hasNext()) {
+      // empty iterator, probably the more usual case
+      return;
+    }
+
+    final String propOut = toFile + ".properties";
+    String s = "";
+    while (it.hasNext()) {
+      final Property p = it.next();
+      s += p.name() + "\n\t" + p.printableProperty() + "\n\n";
+    }
+
+    try {
+      OutputPrimitives.writeOut(propOut, s, true);
+    } catch (Exception e) {
+      System.err.println(
+          "WARNING: Couldn't write properties of geometry " + g.getID() + ". " + e.toString());
+    }
+  }
 }

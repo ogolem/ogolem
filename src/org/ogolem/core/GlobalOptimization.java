@@ -1,6 +1,7 @@
-/**
-Copyright (c) 2009 - 2010, J. M. Dieterich and B. Hartke
-              2010       , J. M. Dieterich
+/*
+Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
+              2010, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,19 +39,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
- * Defines what all global optimization routines (independent of being
- * genetic algorithms or not) need to be capable of.
+ * Defines what all global optimization routines (independent of being genetic algorithms or not)
+ * need to be capable of.
+ *
  * @author Johannes Dieterich
- * @version 2010-12-07
+ * @version 2020-12-30
  */
-public interface GlobalOptimization extends Cloneable, Serializable{
+public interface GlobalOptimization extends Copyable, Serializable {
 
-    GlobalOptimization clone();
+  @Override
+  GlobalOptimization copy();
 
-    String getMyID();
+  String getMyID();
 
-    Geometry doTheGlobOpt(long lFutureID, Geometry gMother, Geometry gFather);
-
+  Geometry doTheGlobOpt(long lFutureID, Geometry gMother, Geometry gFather);
 }

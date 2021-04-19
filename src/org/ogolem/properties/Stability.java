@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,56 +40,62 @@ package org.ogolem.properties;
 import org.ogolem.core.FixedValues;
 
 /**
- *
  * @author Johannes Dieterich
- * @version 2015-03-03
+ * @version 2020-12-29
  */
 public class Stability implements Property {
-    
-    private static final long serialVersionUID = (long) 20130104;
-    private final boolean stable;
-    
-    public Stability(final boolean stable){
-        this.stable = stable;
-    }
-    
-    @Override
-    public Stability clone(){
-        return new Stability(stable);
-    }
-    
-    @Override
-    public double getValue(){
-        return (stable) ? 0.0 : FixedValues.NONCONVERGEDENERGY;
-    }
-    
-    @Override
-    public double signedDifference(Property p){
-        if(!(p instanceof Stability)) {throw new IllegalArgumentException("Property should be an instance of Stability!");}
-        return (getValue() - p.getValue());
-    }
-    
-    @Override
-    public double absoluteDifference(Property p){
-        if(!(p instanceof Stability)) {throw new IllegalArgumentException("Property should be an instance of Stability!");}
-        final Stability sp = (Stability) p;
-        if(stable == sp.stable) {return 0.0;}
-        else {return FixedValues.NONCONVERGEDENERGY;}
-    }
-    
-    @Override
-    public boolean makeSensible(){
-        // per definition, either is sensible
-        return false;
-    }
-    
-    @Override
-    public String printableProperty(){
-        return "" + stable;
-    }
 
-    @Override
-    public String name() {
-        return "STABILITY";
+  private static final long serialVersionUID = (long) 20130104;
+  private final boolean stable;
+
+  public Stability(final boolean stable) {
+    this.stable = stable;
+  }
+
+  @Override
+  public Stability copy() {
+    return new Stability(stable);
+  }
+
+  @Override
+  public double getValue() {
+    return (stable) ? 0.0 : FixedValues.NONCONVERGEDENERGY;
+  }
+
+  @Override
+  public double signedDifference(Property p) {
+    if (!(p instanceof Stability)) {
+      throw new IllegalArgumentException("Property should be an instance of Stability!");
     }
+    return (getValue() - p.getValue());
+  }
+
+  @Override
+  public double absoluteDifference(Property p) {
+    if (!(p instanceof Stability)) {
+      throw new IllegalArgumentException("Property should be an instance of Stability!");
+    }
+    final Stability sp = (Stability) p;
+    if (stable == sp.stable) {
+      return 0.0;
+    } else {
+      return FixedValues.NONCONVERGEDENERGY;
+    }
+  }
+
+  @Override
+  public boolean makeSensible() {
+    // per definition, either is sensible
+    return false;
+  }
+
+  @Override
+  public String printableProperty() {
+    return "" + stable;
+  }
+
+  @Override
+  public String name() {
+    return "STABILITY";
+  }
 }

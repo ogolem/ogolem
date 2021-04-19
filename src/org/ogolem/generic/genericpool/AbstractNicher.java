@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2012-2013, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,135 +44,155 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * An abstract implementation of the nicher.
+ *
  * @author Johannes Dieterich
- * @version 2016-01-14
+ * @version 2020-12-30
  */
-abstract class AbstractNicher<E,T extends Optimizable<E>>  implements Nicher<E,T> {
+abstract class AbstractNicher<E, T extends Optimizable<E>> implements Nicher<E, T> {
 
-    private static final long serialVersionUID = (long) 20130403;
-    protected static final boolean DEBUG = false;
-    protected final List<Tuple<Niche,Integer>> nichePopulation;
-    
-    public AbstractNicher(){
-        this.nichePopulation = new ArrayList<>();
+  private static final long serialVersionUID = (long) 20130403;
+  protected static final boolean DEBUG = false;
+  protected final List<Tuple<Niche, Integer>> nichePopulation;
+
+  public AbstractNicher() {
+    this.nichePopulation = new ArrayList<>();
+  }
+
+  @Override
+  public void report(final Niche added) {
+
+    for (final Tuple<Niche, Integer> tup : nichePopulation) {
+      if (tup.getObject1().comp(added)) {
+        final int curr = tup.getObject2();
+        tup.setObject2(curr + 1);
+        return;
+      }
     }
-    
-    @Override
-    public void report(final Niche added){
-        
-        for(final Tuple<Niche,Integer> tup : nichePopulation){
-            if(tup.getObject1().comp(added)){
-                final int curr = tup.getObject2();
-                tup.setObject2(curr + 1);
-                return;
-            }
+
+    // apparently unknown so far
+    final Tuple<Niche, Integer> tup = new Tuple<>(added.copy(), 1);
+    nichePopulation.add(tup);
+  }
+
+  @Override
+  public void delete(final Niche deleted) {
+
+    for (int i = 0; i < nichePopulation.size(); i++) {
+      final Tuple<Niche, Integer> tup = nichePopulation.get(i);
+      if (tup.getObject1().comp(deleted)) {
+        final int curr = tup.getObject2();
+        if (curr == 1) {
+          // after the decrement this niche would vanish
+          nichePopulation.remove(i);
+          return;
+        } else {
+          tup.setObject2(curr - 1);
+          return;
         }
-        
-        // apparently unknown so far
-        final Tuple<Niche, Integer> tup = new Tuple<>(added.clone(),1);
-        nichePopulation.add(tup);
+      }
     }
-    
-    @Override
-    public void delete(final Niche deleted){
-        
-        for(int i = 0; i < nichePopulation.size(); i++){
-            final Tuple<Niche,Integer> tup = nichePopulation.get(i);
-            if(tup.getObject1().comp(deleted)){
-                final int curr = tup.getObject2();
-                if(curr == 1){
-                    // after the decrement this niche would vanish
-                    nichePopulation.remove(i);
-                    return;
-                } else {
-                    tup.setObject2(curr - 1);
-                    return;
-                }
-            }
-        }
-        
-        // apparently unknown so far, which shouldn't happen
-        System.err.println("ERROR: Trying to delete a niche unknown to the nicher. This is a bug, notify the author(s).");
-        System.err.println("Niche: " + deleted.getID());
-        nichePopulation.forEach((tup) -> {
-            System.err.println(" Niche pop: " + tup.getObject1().getID() + " " + tup.getObject2());
+
+    // apparently unknown so far, which shouldn't happen
+    System.err.println(
+        "ERROR: Trying to delete a niche unknown to the nicher. This is a bug, notify the author(s).");
+    System.err.println("Niche: " + deleted.getID());
+    nichePopulation.forEach(
+        (tup) -> {
+          System.err.println(" Niche pop: " + tup.getObject1().getID() + " " + tup.getObject2());
         });
-        System.exit(84);
-    }
-        
-    @Override
-    public List<Tuple<Niche,Integer>> calculateNichePopulation(final boolean print, final GenericPool<E,T> pool){
+    System.exit(84);
+  }
 
-        assert(pool != null);
-        assert(pool.getNicheOfIndividualAtPos(0) != null);
-        
-        final List<Tuple<Niche,Integer>> niches = new ArrayList<>();
-        for(final Tuple<Niche,Integer> tup : nichePopulation){
-            final Tuple<Niche,Integer> copy = new Tuple<>(tup.getObject1().clone(),tup.getObject2());
-            niches.add(copy);
-        }
-        
-        if(DEBUG){
-            final List<Niche> alNiches = new ArrayList<>();
-            final List<Integer> alPops = new ArrayList<>();
-        
-            alNiches.add(pool.getNicheOfIndividualAtPos(0).clone());
+  @Override
+  public List<Tuple<Niche, Integer>> calculateNichePopulation(
+      final boolean print, final GenericPool<E, T> pool) {
+
+    assert (pool != null);
+    assert (pool.getNicheOfIndividualAtPos(0) != null);
+
+    final List<Tuple<Niche, Integer>> niches = new ArrayList<>();
+    for (final Tuple<Niche, Integer> tup : nichePopulation) {
+      final Tuple<Niche, Integer> copy = new Tuple<>(tup.getObject1().copy(), tup.getObject2());
+      niches.add(copy);
+    }
+
+    if (DEBUG) {
+      final List<Niche> alNiches = new ArrayList<>();
+      final List<Integer> alPops = new ArrayList<>();
+
+      alNiches.add(pool.getNicheOfIndividualAtPos(0).copy());
+      alPops.add(1);
+
+      PopLoop:
+      for (int i = 1; i < pool.getCurrentPoolSize(); i++) {
+        final Niche niche = pool.getNicheOfIndividualAtPos(i);
+        for (int j = 0; j < alNiches.size(); j++) {
+          final Niche compNiche = alNiches.get(j);
+          if (compNiche.comp(niche)) {
+            int iPop = alPops.get(j);
+            iPop++;
+            alPops.set(j, iPop);
+            continue PopLoop;
+          }
+
+          if (j == alNiches.size() - 1) {
+            // new niche
+            alNiches.add(niche.copy());
             alPops.add(1);
-
-            PopLoop:
-            for(int i = 1; i < pool.getCurrentPoolSize(); i++){
-                final Niche niche = pool.getNicheOfIndividualAtPos(i);
-                for(int j = 0; j < alNiches.size(); j++){
-                    final Niche compNiche = alNiches.get(j);
-                    if(compNiche.comp(niche)){
-                        int iPop = alPops.get(j);
-                        iPop++;
-                        alPops.set(j, iPop);
-                        continue PopLoop;
-                    }
-
-                    if(j == alNiches.size() -1){
-                        // new niche
-                        alNiches.add(niche.clone());
-                        alPops.add(1);
-                        continue PopLoop;
-                    }
-                }
-            }
-            
-            // compare niche population with this fresh thing
-            TupLoop: for(final Tuple<Niche,Integer> tup : niches){
-                final Niche n = tup.getObject1();
-                for(int i = 0; i < alNiches.size(); i++){
-                    if(n.comp(alNiches.get(i))){
-                        // let's see...
-                        final int pop = tup.getObject2();
-                        final int freshPop = alPops.get(i);
-                        if(pop != freshPop){
-                            System.err.println("ERROR: Something wrong in niche housekeeping. For niche " + n.getID() + " fresh number " + freshPop + " vs. " + pop + ".");
-                            nichePopulation.forEach((tup2) -> {
-                                System.err.println(" Niche pop: " + tup2.getObject1().getID() + " " + tup2.getObject2());
-                            });
-                            System.exit(126);
-                        }
-                        continue TupLoop;
-                    }
-                    if(i == alNiches.size()-1){
-                        System.err.println("ERROR: Niche " + n.getID() + " vanished from niches!");
-                        System.exit(168);
-                    }
-                }
-            }
+            continue PopLoop;
+          }
         }
+      }
 
-        if(print){
-            System.out.println("*********************************************");
-            for(int i = 0; i < niches.size(); i++){
-                System.out.println("Niche " + i + " has a population of " + niches.get(i).getObject2() + ". Identifier: " + niches.get(i).getObject1().getID());
+      // compare niche population with this fresh thing
+      TupLoop:
+      for (final Tuple<Niche, Integer> tup : niches) {
+        final Niche n = tup.getObject1();
+        for (int i = 0; i < alNiches.size(); i++) {
+          if (n.comp(alNiches.get(i))) {
+            // let's see...
+            final int pop = tup.getObject2();
+            final int freshPop = alPops.get(i);
+            if (pop != freshPop) {
+              System.err.println(
+                  "ERROR: Something wrong in niche housekeeping. For niche "
+                      + n.getID()
+                      + " fresh number "
+                      + freshPop
+                      + " vs. "
+                      + pop
+                      + ".");
+              nichePopulation.forEach(
+                  (tup2) -> {
+                    System.err.println(
+                        " Niche pop: " + tup2.getObject1().getID() + " " + tup2.getObject2());
+                  });
+              System.exit(126);
             }
-            System.out.println("*********************************************");
+            continue TupLoop;
+          }
+          if (i == alNiches.size() - 1) {
+            System.err.println("ERROR: Niche " + n.getID() + " vanished from niches!");
+            System.exit(168);
+          }
         }
-
-        return niches;
+      }
     }
+
+    if (print) {
+      System.out.println("*********************************************");
+      for (int i = 0; i < niches.size(); i++) {
+        System.out.println(
+            "Niche "
+                + i
+                + " has a population of "
+                + niches.get(i).getObject2()
+                + ". Identifier: "
+                + niches.get(i).getObject1().getID());
+      }
+      System.out.println("*********************************************");
+    }
+
+    return niches;
+  }
 }

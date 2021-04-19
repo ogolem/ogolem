@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
@@ -40,46 +40,53 @@ package org.ogolem.core;
 
 import java.io.Serializable;
 import java.util.List;
+import org.ogolem.generic.Copyable;
 import org.ogolem.helpers.Tuple;
 
 /**
  * Defines what all potential types of environments need to be capable of.
+ *
  * @author Johannes Dieterich
- * @version 2017-01-01
+ * @version 2020-12-30
  */
-public interface Environment extends Cloneable, Serializable{
+public interface Environment extends Copyable, Serializable {
 
-    public static enum ENVIRONMENTTYPE {SURFACE, CAVITY};
-    
-    Environment clone();
+  public static enum ENVIRONMENTTYPE {
+    SURFACE,
+    CAVITY
+  };
 
-    boolean doesItFit(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
+  @Override
+  Environment copy();
 
-    Tuple<CartesianCoordinates, BondInfo> marryThem(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
-    
-    CartesianCoordinates marryThem(final CartesianCoordinates clusterCartes);
+  boolean doesItFit(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
-    CartesianCoordinates divorceThem(final CartesianCoordinates completeCartes);
+  Tuple<CartesianCoordinates, BondInfo> marryThem(
+      final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
-    void initializeConnections(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
+  CartesianCoordinates marryThem(final CartesianCoordinates clusterCartes);
 
-    void mutateConnections(final CartesianCoordinates clusterCartes);
+  CartesianCoordinates divorceThem(final CartesianCoordinates completeCartes);
 
-    List<Environment> createOffspring(final Environment father);
+  void initializeConnections(final CartesianCoordinates clusterCartes, final BondInfo clusterBonds);
 
-    List<Integer> whichSecondaryAtoms();
+  void mutateConnections(final CartesianCoordinates clusterCartes);
 
-    boolean isEnvironmentRigid();
+  List<Environment> createOffspring(final Environment father);
 
-    double[] returnMyGenom();
+  List<Integer> whichSecondaryAtoms();
 
-    void putGenomIn(double[] genom);
+  boolean isEnvironmentRigid();
 
-    int atomsInEnv();
-    
-    void moveCluster(final int direction, final double move);
-    
-    CartesianCoordinates getEnvironmentCartes();
-    
-    ENVIRONMENTTYPE getEnvironmentType();
+  double[] returnMyGenom();
+
+  void putGenomIn(double[] genom);
+
+  int atomsInEnv();
+
+  void moveCluster(final int direction, final double move);
+
+  CartesianCoordinates getEnvironmentCartes();
+
+  ENVIRONMENTTYPE getEnvironmentType();
 }

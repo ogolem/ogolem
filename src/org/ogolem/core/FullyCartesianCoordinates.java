@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
               2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -42,159 +42,197 @@ import org.ogolem.generic.stats.GenericDetailStatistics;
 
 /**
  * A simple adapter for the geometry to gradient/energy provider.
+ *
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-12-29
  */
-public class FullyCartesianCoordinates implements GenericBackend<Molecule,Geometry> {
-    
-    private static final long serialVersionUID = (long) 20200429;
-    
-    public static final double MAXINCREMENTBOUNDS = 10.0; // in bohr
-    
-    private final CartesianFullBackend back;
-    
-    private Gradient grad;
-    private long id;
-    private String[] atoms;
-    private short[] atomNos;
-    private float[] charges;
-    private short[] spins;
-    private BondInfo bonds;
-    private int[] atsPerMol;
-    private double[] energyparts;
-    private boolean hasRigidEnv;
-    
-    public FullyCartesianCoordinates(final CartesianFullBackend back){
-        this.back = back;
-    }
-    
-    public FullyCartesianCoordinates(final FullyCartesianCoordinates orig){
-        this.back = orig.back.clone();
-    }
-    
-    @Override
-    public FullyCartesianCoordinates copy(){
-        return new FullyCartesianCoordinates(this);
-    }
-    
-    @Override
-    public String getMyID() {
-        return back.getMethodID();
-    }
-    
-    @Override
-    public int numberOfActiveCoordinates(final Geometry individual) {
-        return individual.getNumberOfAtoms()*3;
-    }
+public class FullyCartesianCoordinates implements GenericBackend<Molecule, Geometry> {
 
-    @Override
-    public double[] getActiveCoordinates(final Geometry individual) {
-        
-        final CartesianCoordinates cartes = individual.getCartesians();
-        
-        this.atomNos = cartes.getAllAtomNumbers();
-        this.atoms = cartes.getAllAtomTypes();
-        this.atsPerMol = cartes.getAllAtomsPerMol();
-        this.bonds = individual.getBondInfo();
-        this.charges = cartes.getAllCharges();
-        this.spins = cartes.getAllSpins();
-        this.energyparts = new double[individual.getNumberOfIndieParticles()];
-        this.grad = new Gradient(3,atomNos.length);
-        this.hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
-        
-        return cartes.getAll1DCartes();
-    }
-    
-    @Override
-    public void resetToStable(final double[] coordinates){
-        // nothing
-    }
+  private static final long serialVersionUID = (long) 20200429;
 
-    @Override
-    public void updateActiveCoordinates(final Geometry individual, final double[] coordinates) {
-        
-        final CartesianCoordinates cartes = individual.getCartesians();
-        cartes.setAll1DCartes(coordinates, cartes.getNoOfAtoms());
-        
-        CoordTranslation.updateGeometryFromCartesian(cartes, individual);
-    }
-    
-    @Override
-    public double gradient(final double[] currCoords, final double[] gradient, final int iteration) {
-        
-        GenericDetailStatistics.incrementFitnessEvals();
-        
-        assert(currCoords.length == gradient.length);
-        assert(currCoords.length == atoms.length*3);
-        
-        back.gradientCalculation(id, iteration, currCoords, atoms, atomNos, atsPerMol, energyparts, atomNos.length, charges, spins, bonds, grad, hasRigidEnv);
-        grad.getGradientData(gradient);
-        
-        final double e = grad.getTotalEnergy();
-        
-        assert(!Double.isInfinite(e));
-        assert(!Double.isNaN(e));
+  public static final double MAXINCREMENTBOUNDS = 10.0; // in bohr
 
-        return e;
-    }
+  private final CartesianFullBackend back;
 
+  private Gradient grad;
+  private long id;
+  private String[] atoms;
+  private short[] atomNos;
+  private float[] charges;
+  private short[] spins;
+  private BondInfo bonds;
+  private int[] atsPerMol;
+  private double[] energyparts;
+  private boolean hasRigidEnv;
 
-    @Override
-    public double fitness(final double[] currCoords, final int iteration) {
-        GenericDetailStatistics.incrementFitnessEvals();
-        assert(currCoords.length == atoms.length*3);
-        
-        final double e = back.energyCalculation(id, iteration, currCoords, atoms, atomNos, atsPerMol, energyparts, atoms.length, charges, spins, bonds, hasRigidEnv);
-        
-        assert(!Double.isInfinite(e));
-        assert(!Double.isNaN(e));
-        
-        return e;
-    }
+  public FullyCartesianCoordinates(final CartesianFullBackend back) {
+    this.back = back;
+  }
 
-    @Override
-    public Geometry fitness(final Geometry individual, final boolean forceOneEval) {
+  public FullyCartesianCoordinates(final FullyCartesianCoordinates orig) {
+    this.back = orig.back.copy();
+  }
 
-        GenericDetailStatistics.incrementFitnessEvals();
-        
-        final CartesianCoordinates c = individual.getCartesians();
-        
-        double[] eparts;
-        if(energyparts != null && energyparts.length == c.getNoOfMolecules()){
-            eparts = energyparts;
-        } else{
-            eparts = new double[c.getNoOfMolecules()];
-        }
-        final double e = back.energyCalculation(id, 42, c.getAll1DCartes(), c.getAllAtomTypes(),
-                c.getAllAtomNumbers(), c.getAllAtomsPerMol(), eparts, c.getNoOfAtoms(),
-                c.getAllCharges(), c.getAllSpins(), individual.getBondInfo(), c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
-        
-        assert(!Double.isInfinite(e));
-        assert(!Double.isNaN(e));
-        
-        individual.setFitness(e);
-        
-        return individual;
-    }
-    
-    CartesianFullBackend getMyBackend(){
-        return back;
-    }
+  @Override
+  public FullyCartesianCoordinates copy() {
+    return new FullyCartesianCoordinates(this);
+  }
 
-    @Override
-    public BOUNDSTYPE boundariesInRepresentation(final Geometry individual) {
-        return BOUNDSTYPE.NONE;
-    }
+  @Override
+  public String getMyID() {
+    return back.getMethodID();
+  }
 
-    @Override
-    public void bestEstimateBoundaries(final double[] currCoords, final double[] low, final double[] high) {
-        
-        assert(low.length == high.length);
-        assert(low.length == currCoords.length);
-        
-        for(int i = 0; i < high.length; i++){
-            high[i] = currCoords[i] + MAXINCREMENTBOUNDS;
-            low[i] = currCoords[i] - MAXINCREMENTBOUNDS;
-        }
+  @Override
+  public int numberOfActiveCoordinates(final Geometry individual) {
+    return individual.getNumberOfAtoms() * 3;
+  }
+
+  @Override
+  public double[] getActiveCoordinates(final Geometry individual) {
+
+    final CartesianCoordinates cartes = individual.getCartesians();
+
+    this.atomNos = cartes.getAllAtomNumbers();
+    this.atoms = cartes.getAllAtomTypes();
+    this.atsPerMol = cartes.getAllAtomsPerMol();
+    this.bonds = individual.getBondInfo();
+    this.charges = cartes.getAllCharges();
+    this.spins = cartes.getAllSpins();
+    this.energyparts = new double[individual.getNumberOfIndieParticles()];
+    this.grad = new Gradient(3, atomNos.length);
+    this.hasRigidEnv = cartes.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID;
+
+    return cartes.getAll1DCartes();
+  }
+
+  @Override
+  public void resetToStable(final double[] coordinates) {
+    // nothing
+  }
+
+  @Override
+  public void updateActiveCoordinates(final Geometry individual, final double[] coordinates) {
+
+    final CartesianCoordinates cartes = individual.getCartesians();
+    cartes.setAll1DCartes(coordinates, cartes.getNoOfAtoms());
+
+    CoordTranslation.updateGeometryFromCartesian(cartes, individual);
+  }
+
+  @Override
+  public double gradient(final double[] currCoords, final double[] gradient, final int iteration) {
+
+    GenericDetailStatistics.incrementFitnessEvals();
+
+    assert (currCoords.length == gradient.length);
+    assert (currCoords.length == atoms.length * 3);
+
+    back.gradientCalculation(
+        id,
+        iteration,
+        currCoords,
+        atoms,
+        atomNos,
+        atsPerMol,
+        energyparts,
+        atomNos.length,
+        charges,
+        spins,
+        bonds,
+        grad,
+        hasRigidEnv);
+    grad.getGradientData(gradient);
+
+    final double e = grad.getTotalEnergy();
+
+    assert (!Double.isInfinite(e));
+    assert (!Double.isNaN(e));
+
+    return e;
+  }
+
+  @Override
+  public double fitness(final double[] currCoords, final int iteration) {
+    GenericDetailStatistics.incrementFitnessEvals();
+    assert (currCoords.length == atoms.length * 3);
+
+    final double e =
+        back.energyCalculation(
+            id,
+            iteration,
+            currCoords,
+            atoms,
+            atomNos,
+            atsPerMol,
+            energyparts,
+            atoms.length,
+            charges,
+            spins,
+            bonds,
+            hasRigidEnv);
+
+    assert (!Double.isInfinite(e));
+    assert (!Double.isNaN(e));
+
+    return e;
+  }
+
+  @Override
+  public Geometry fitness(final Geometry individual, final boolean forceOneEval) {
+
+    GenericDetailStatistics.incrementFitnessEvals();
+
+    final CartesianCoordinates c = individual.getCartesians();
+
+    double[] eparts;
+    if (energyparts != null && energyparts.length == c.getNoOfMolecules()) {
+      eparts = energyparts;
+    } else {
+      eparts = new double[c.getNoOfMolecules()];
     }
+    final double e =
+        back.energyCalculation(
+            id,
+            42,
+            c.getAll1DCartes(),
+            c.getAllAtomTypes(),
+            c.getAllAtomNumbers(),
+            c.getAllAtomsPerMol(),
+            eparts,
+            c.getNoOfAtoms(),
+            c.getAllCharges(),
+            c.getAllSpins(),
+            individual.getBondInfo(),
+            c.containedEnvType() == CartesianCoordinates.ENVTYPE.RIGID);
+
+    assert (!Double.isInfinite(e));
+    assert (!Double.isNaN(e));
+
+    individual.setFitness(e);
+
+    return individual;
+  }
+
+  CartesianFullBackend getMyBackend() {
+    return back;
+  }
+
+  @Override
+  public BOUNDSTYPE boundariesInRepresentation(final Geometry individual) {
+    return BOUNDSTYPE.NONE;
+  }
+
+  @Override
+  public void bestEstimateBoundaries(
+      final double[] currCoords, final double[] low, final double[] high) {
+
+    assert (low.length == high.length);
+    assert (low.length == currCoords.length);
+
+    for (int i = 0; i < high.length; i++) {
+      high[i] = currCoords[i] + MAXINCREMENTBOUNDS;
+      low[i] = currCoords[i] - MAXINCREMENTBOUNDS;
+    }
+  }
 }

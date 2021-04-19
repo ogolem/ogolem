@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich and B. Hartke
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,20 +39,21 @@ package org.ogolem.generic;
 
 /**
  * An empty sanity check (will always mark the individual as sane).
+ *
  * @author Johannes Dieterich
- * @version 2013-11-22
+ * @version 2020-12-30
  */
-public class EmptySanityCheck<E, T extends Optimizable<E>> implements GenericSanityCheck<E,T> {
-    
-    private static final long serialVersionUID = (long) 20131122;
-    
-    @Override
-    public EmptySanityCheck<E,T> clone(){
-        return new EmptySanityCheck<>();
-    }
+public class EmptySanityCheck<E, T extends Optimizable<E>> implements GenericSanityCheck<E, T> {
 
-    @Override
-    public boolean isSane(final T individual){
-        return true;
-    }
+  private static final long serialVersionUID = (long) 20131122;
+
+  @Override
+  public EmptySanityCheck<E, T> copy() {
+    return new EmptySanityCheck<>();
+  }
+
+  @Override
+  public boolean isSane(final T individual) {
+    return true;
+  }
 }

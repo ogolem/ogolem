@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,39 +41,41 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * A not-crossing crossover.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class GenericHollandCrossover <E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
-    
-    private static final long serialVersionUID = (long) 20200429;
+public class GenericHollandCrossover<E, T extends Optimizable<E>>
+    implements GenericCrossover<E, T> {
 
-    @Override
-    public GenericHollandCrossover<E,T> clone(){
-        return new GenericHollandCrossover<>();
-    }
-    
-    @Override
-    public String getMyID(){
-        return "holland";
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public Tuple<T,T> crossover(final T mother, final T father, final long futureID){
-        
-        final T t1 = (T)mother.copy();
-        final T t2 = (T)father.copy();
-        t1.setID(futureID);
-        t2.setID(futureID);
-        
-        final Tuple<T,T> tup = new Tuple<>(t1,t2);
-        
-        return tup;
-    }
+  private static final long serialVersionUID = (long) 20200429;
 
-    @Override
-    public short hasPriority() {
-        return -1;
-    }
+  @Override
+  public GenericHollandCrossover<E, T> copy() {
+    return new GenericHollandCrossover<>();
+  }
+
+  @Override
+  public String getMyID() {
+    return "holland";
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    final T t1 = (T) mother.copy();
+    final T t2 = (T) father.copy();
+    t1.setID(futureID);
+    t2.setID(futureID);
+
+    final Tuple<T, T> tup = new Tuple<>(t1, t2);
+
+    return tup;
+  }
+
+  @Override
+  public short hasPriority() {
+    return -1;
+  }
 }

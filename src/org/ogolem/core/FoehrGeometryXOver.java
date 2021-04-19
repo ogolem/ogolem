@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2015, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -45,76 +45,84 @@ import org.ogolem.random.RandomUtils;
 
 /**
  * A genotype crossover only taking the molecular orientations into account.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class FoehrGeometryXOver implements GenericCrossover<Molecule,Geometry>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    
-    private final int noCuts;
-    
-    FoehrGeometryXOver(final int noCuts){
-        this.noCuts = noCuts;
-    }
-    
-    FoehrGeometryXOver(final FoehrGeometryXOver orig){
-        this.noCuts = orig.noCuts;
+public class FoehrGeometryXOver implements GenericCrossover<Molecule, Geometry> {
+
+  private static final long serialVersionUID = (long) 20200429;
+
+  private final int noCuts;
+
+  FoehrGeometryXOver(final int noCuts) {
+    this.noCuts = noCuts;
+  }
+
+  FoehrGeometryXOver(final FoehrGeometryXOver orig) {
+    this.noCuts = orig.noCuts;
+  }
+
+  @Override
+  public FoehrGeometryXOver copy() {
+    return new FoehrGeometryXOver(this);
+  }
+
+  @Override
+  public String getMyID() {
+
+    String s = "FOEHR GEOMETRY X-OVER\n";
+    s += "\t no. of cuts " + noCuts;
+
+    return s;
+  }
+
+  @Override
+  public Tuple<Geometry, Geometry> crossover(
+      final Geometry mother, final Geometry father, final long futureID) {
+
+    final int noMols = mother.getNumberOfIndieParticles();
+    if (noCuts >= noMols) {
+      System.err.println(
+          "ERROR: Too many cutting points for the number of mols ("
+              + noCuts
+              + " vs "
+              + noMols
+              + ").");
+      return new Tuple<>(null, null);
     }
 
-    @Override
-    public FoehrGeometryXOver clone() {
-        return new FoehrGeometryXOver(this);
+    // get cutting points
+    final List<Integer> cutPoints =
+        RandomUtils.listOfPoints(noCuts, mother.getNumberOfIndieParticles());
+
+    final Geometry gChild1 = mother.copy();
+    final Geometry gChild2 = father.copy();
+    gChild1.setID(futureID);
+    gChild2.setID(futureID);
+
+    int cutter = 0;
+    boolean swap = false;
+    for (int mol = 0; mol < noMols; mol++) {
+      if (cutter < noCuts && cutPoints.get(cutter) == mol) {
+        swap = !swap;
+        cutter++;
+      }
+
+      if (swap) {
+        final double[] eulers1 = gChild1.getMoleculeAtPosition(mol).getOrientation().clone();
+        final double[] eulers2 = gChild2.getMoleculeAtPosition(mol).getOrientation().clone();
+
+        gChild1.getMoleculeAtPosition(mol).setOrientation(eulers2);
+        gChild2.getMoleculeAtPosition(mol).setOrientation(eulers1);
+      }
     }
 
-    @Override
-    public String getMyID() {
-        
-        String s = "FOEHR GEOMETRY X-OVER\n";
-        s += "\t no. of cuts " + noCuts;
-        
-        return s;
-    }
+    return new Tuple<>(gChild1, gChild2);
+  }
 
-    @Override
-    public Tuple<Geometry, Geometry> crossover(final Geometry mother, final Geometry father, final long futureID) {
-        
-        final int noMols = mother.getNumberOfIndieParticles();
-        if(noCuts >= noMols){
-            System.err.println("ERROR: Too many cutting points for the number of mols (" + noCuts + " vs " + noMols + ").");
-            return new Tuple<>(null,null);
-        }
-
-        // get cutting points
-        final List<Integer> cutPoints = RandomUtils.listOfPoints(noCuts, mother.getNumberOfIndieParticles());
-        
-        final Geometry gChild1 = mother.copy();
-        final Geometry gChild2 = father.copy();
-        gChild1.setID(futureID);
-        gChild2.setID(futureID);
-                
-        int cutter = 0;
-        boolean swap = false;
-        for(int mol = 0; mol < noMols; mol++){
-            if(cutter < noCuts && cutPoints.get(cutter) == mol){
-                swap = !swap;
-                cutter++;
-            }
-            
-            if(swap){
-                final double[] eulers1 = gChild1.getMoleculeAtPosition(mol).getOrientation().clone();
-                final double[] eulers2 = gChild2.getMoleculeAtPosition(mol).getOrientation().clone();
-                
-                gChild1.getMoleculeAtPosition(mol).setOrientation(eulers2);
-                gChild2.getMoleculeAtPosition(mol).setOrientation(eulers1);
-            }
-        }
-        
-        return new Tuple<>(gChild1, gChild2);
-    }
-
-    @Override
-    public short hasPriority() {
-        return 0;
-    }
+  @Override
+  public short hasPriority() {
+    return 0;
+  }
 }

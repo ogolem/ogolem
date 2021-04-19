@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2010-2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,31 +42,37 @@ import java.util.ArrayList;
 import org.ogolem.core.CartesianCoordinates;
 import org.ogolem.core.Gradient;
 import org.ogolem.core.Topology;
+import org.ogolem.generic.Copyable;
 import org.ogolem.helpers.Tuple3D;
 
 /**
  * Defines an adaptive interaction term.
+ *
  * @author Johannes Dieterich
- * @version 2012-03-08
+ * @version 2020-12-29
  */
-public interface AdaptiveInteractionTerm extends Serializable, Cloneable {
+public interface AdaptiveInteractionTerm extends Serializable, Copyable {
 
-    AdaptiveInteractionTerm clone();
+  @Override
+  AdaptiveInteractionTerm copy();
 
-    double partialInteraction(Topology topology, AdaptiveParameters params);
+  double partialInteraction(Topology topology, AdaptiveParameters params);
 
-    double partialParamGradient(Topology topology, AdaptiveParameters params, double[] grad);
+  double partialParamGradient(Topology topology, AdaptiveParameters params, double[] grad);
 
-    Gradient partialCartesianGradient(Topology topo, AdaptiveParameters params);
+  Gradient partialCartesianGradient(Topology topo, AdaptiveParameters params);
 
-    /**
-     * Reports which parameters are required for this set of geometries.
-     * @param cartesians
-     * @param topologies List of topologies in the reference data. Size may be (depending on the implementation) different then the one of the list of cartesians.
-     * @param sMethod
-     * @return A 3D-Tupel, which parameters are required (names, number per key, total number).
-     */
-    Tuple3D<String[],int[],Integer> requiredParams(ArrayList<CartesianCoordinates> cartesians, ArrayList<Topology> topologies, String sMethod);
+  /**
+   * Reports which parameters are required for this set of geometries.
+   *
+   * @param cartesians
+   * @param topologies List of topologies in the reference data. Size may be (depending on the
+   *     implementation) different then the one of the list of cartesians.
+   * @param sMethod
+   * @return A 3D-Tupel, which parameters are required (names, number per key, total number).
+   */
+  Tuple3D<String[], int[], Integer> requiredParams(
+      ArrayList<CartesianCoordinates> cartesians, ArrayList<Topology> topologies, String sMethod);
 
-    double[][] bordersForMyParams(AdaptiveParameters params);
+  double[][] bordersForMyParams(AdaptiveParameters params);
 }

@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,40 +38,45 @@ package org.ogolem.properties;
 
 /**
  * The base class for a scalar property
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
 public abstract class ScalarProperty implements Property {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected double scalar;
-    
-    protected ScalarProperty (final double scalar){
-        assert(!Double.isNaN(scalar));
-        this.scalar = scalar;
+
+  private static final long serialVersionUID = (long) 20171215;
+
+  protected double scalar;
+
+  protected ScalarProperty(final double scalar) {
+    assert (!Double.isNaN(scalar));
+    this.scalar = scalar;
+  }
+
+  @Override
+  public abstract ScalarProperty copy();
+
+  @Override
+  public double getValue() {
+    return scalar;
+  }
+
+  @Override
+  public double signedDifference(final Property p) {
+
+    if (!ensureCorrectProperty(p)) {
+      throw new IllegalArgumentException("Property should be an instance of " + name());
     }
-    
-    @Override
-    public abstract ScalarProperty clone();
-    
-    @Override
-    public double getValue(){
-        return scalar;
+    return (this.getValue() - p.getValue());
+  }
+
+  @Override
+  public double absoluteDifference(final Property p) {
+    if (!ensureCorrectProperty(p)) {
+      throw new IllegalArgumentException("Property should be an instance of " + name());
     }
-    
-    @Override
-    public double signedDifference(final Property p){
-        
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return (this.getValue() - p.getValue());
-    }
-    
-    @Override
-    public double absoluteDifference(final Property p){
-        if(!ensureCorrectProperty(p)){throw new IllegalArgumentException("Property should be an instance of " + name());}
-        return Math.abs(this.getValue() - p.getValue());
-    }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
+    return Math.abs(this.getValue() - p.getValue());
+  }
+
+  protected abstract boolean ensureCorrectProperty(final Property p);
 }

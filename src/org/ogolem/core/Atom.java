@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2016-2017, J. M. Dieterich and B. Hartke
+              2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,134 +43,134 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import org.ogolem.generic.Copyable;
 
 /**
  * This defines an atom.
+ *
  * @author Johannes Dieterich
- * @version 2017-01-29
+ * @version 2020-12-30
  */
-class Atom implements Serializable{
-		
-    private static final long serialVersionUID = (long) 20170130;
-    // which name is it supposed to have?
-    private final String sID;
-    // which atom number
-    private final short atomNo;
-    // assign another ID in the molecule, integer should be enough
-    private final int iID;
-    // energy part of the atom
-    private double energyPart;
-    // the position in an arbitrary cartesian coordinate system
-    private double[] position;
-	
-    /**
-     * Constructor filling all the fields but the derived ones...
-     */
-    Atom(final AtomConfig ac) {
-        this.sID = ac.sID;
-        this.iID = ac.iID;
-        this.atomNo = ac.atomNo;
-        assert(ac.atomNo == AtomicProperties.giveAtomicNumber(sID));
-        this.energyPart = ac.energypart;
-        this.position = ac.position;
-    }
+class Atom implements Serializable, Copyable {
 
-    /**
-     * A copy constructor.
-     */
-    Atom (final Atom original){
-        this.energyPart = original.energyPart;
-        this.sID = original.sID;
-        this.iID = original.iID;
-        this.atomNo = original.atomNo;
-        assert(original.atomNo == AtomicProperties.giveAtomicNumber(sID));
-        this.position = original.position.clone();
-    }
-    
-    public Atom clone(){
-        return new Atom(this);
-    }
-	
-    /*
-     * Getters and Setters
-     */
-    String getSID() {
-        return sID;
-    }
+  private static final long serialVersionUID = (long) 20170130;
+  // which name is it supposed to have?
+  private final String sID;
+  // which atom number
+  private final short atomNo;
+  // assign another ID in the molecule, integer should be enough
+  private final int iID;
+  // energy part of the atom
+  private double energyPart;
+  // the position in an arbitrary cartesian coordinate system
+  private double[] position;
 
-    double getWeight() {
-        return AtomicProperties.giveWeight(atomNo);
-    }
+  /** Constructor filling all the fields but the derived ones... */
+  Atom(final AtomConfig ac) {
+    this.sID = ac.sID;
+    this.iID = ac.iID;
+    this.atomNo = ac.atomNo;
+    assert (ac.atomNo == AtomicProperties.giveAtomicNumber(sID));
+    this.energyPart = ac.energypart;
+    this.position = ac.position;
+  }
 
-    int getID() {
-        return iID;
-    }
+  /** A copy constructor. */
+  Atom(final Atom original) {
+    this.energyPart = original.energyPart;
+    this.sID = original.sID;
+    this.iID = original.iID;
+    this.atomNo = original.atomNo;
+    assert (original.atomNo == AtomicProperties.giveAtomicNumber(sID));
+    this.position = original.position.clone();
+  }
 
-    double getEnergyPart() {
-        return energyPart;
-    }
+  @Override
+  public Atom copy() {
+    return new Atom(this);
+  }
 
-    double[] getPosition() {
-        return position;
-    }
+  /*
+   * Getters and Setters
+   */
+  String getSID() {
+    return sID;
+  }
 
-    void setEnergyPart(double energypart) {
-        this.energyPart = energypart;
-    }
+  double getWeight() {
+    return AtomicProperties.giveWeight(atomNo);
+  }
 
-    double getRadius() {
-        return AtomicProperties.giveRadius(atomNo);
-    }
+  int getID() {
+    return iID;
+  }
 
-    /*
-     * Methods
-     */
-    /**
-     * Returns its own atomic configuration as an {@code AtomConfig} object.
-     * @return ac
-     */
-    AtomConfig returnMyConfig() {
-        AtomConfig ac = new AtomConfig();
-        ac.iID = iID;
-        ac.sID = sID;
-        return ac;
-    }
+  double getEnergyPart() {
+    return energyPart;
+  }
 
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.writeDouble(energyPart);
-        oos.writeInt(iID);
-        oos.writeShort(atomNo);
-        oos.writeUTF(sID);
-        oos.writeDouble(position[0]);
-        oos.writeDouble(position[1]);
-        oos.writeDouble(position[2]);
-    }
+  double[] getPosition() {
+    return position;
+  }
 
-    private void readObject(ObjectInputStream ois) throws IOException,
-            ClassNotFoundException, ClassCastException,
-            IllegalAccessException, NoSuchFieldException {
+  void setEnergyPart(double energypart) {
+    this.energyPart = energypart;
+  }
 
-        energyPart = ois.readDouble();
+  double getRadius() {
+    return AtomicProperties.giveRadius(atomNo);
+  }
 
-        final Class<? extends Atom> cl = this.getClass();
-        final Field f = cl.getDeclaredField("iID");
-        final int tempID = ois.readInt();
-        f.setAccessible(true);
-        f.set(this, tempID);
-        
-        final Field f1 = cl.getDeclaredField("atomNo");
-        final short tempNo = ois.readShort();
-        f1.setAccessible(true);
-        f1.set(this, tempNo);
+  /*
+   * Methods
+   */
+  /**
+   * Returns its own atomic configuration as an {@code AtomConfig} object.
+   *
+   * @return ac
+   */
+  AtomConfig returnMyConfig() {
+    AtomConfig ac = new AtomConfig();
+    ac.iID = iID;
+    ac.sID = sID;
+    return ac;
+  }
 
-        final Field f2 = cl.getDeclaredField("sID");
-        final String tempSID = ois.readUTF();
-        f2.setAccessible(true);
-        f2.set(this, tempSID);
+  private void writeObject(ObjectOutputStream oos) throws IOException {
+    oos.writeDouble(energyPart);
+    oos.writeInt(iID);
+    oos.writeShort(atomNo);
+    oos.writeUTF(sID);
+    oos.writeDouble(position[0]);
+    oos.writeDouble(position[1]);
+    oos.writeDouble(position[2]);
+  }
 
-        position = new double[3];
-        position[0] = ois.readDouble();
-        position[1] = ois.readDouble();
-        position[2] = ois.readDouble();
-    }
+  private void readObject(ObjectInputStream ois)
+      throws IOException, ClassNotFoundException, ClassCastException, IllegalAccessException,
+          NoSuchFieldException {
+
+    energyPart = ois.readDouble();
+
+    final Class<? extends Atom> cl = this.getClass();
+    final Field f = cl.getDeclaredField("iID");
+    final int tempID = ois.readInt();
+    f.setAccessible(true);
+    f.set(this, tempID);
+
+    final Field f1 = cl.getDeclaredField("atomNo");
+    final short tempNo = ois.readShort();
+    f1.setAccessible(true);
+    f1.set(this, tempNo);
+
+    final Field f2 = cl.getDeclaredField("sID");
+    final String tempSID = ois.readUTF();
+    f2.setAccessible(true);
+    f2.set(this, tempSID);
+
+    position = new double[3];
+    position[0] = ois.readDouble();
+    position[1] = ois.readDouble();
+    position[2] = ois.readDouble();
+  }
 }

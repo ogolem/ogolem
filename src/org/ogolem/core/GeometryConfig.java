@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,81 +44,82 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.ogolem.generic.Copyable;
 
 /**
- * This is the configuration object for the Geometry class and provides default
- * values.
+ * This is the configuration object for the Geometry class and provides default values.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-26
+ * @version 2020-12-30
  */
-public final class GeometryConfig implements Serializable, Cloneable {
+public final class GeometryConfig implements Serializable, Copyable {
 
-    // the serial version ID
-    private static final long serialVersionUID = (long) 20130926;
+  // the serial version ID
+  private static final long serialVersionUID = (long) 20130926;
 
-    // long ID
-    long lID;
-    // ID of "father" geometry
-    long fatherID;
-    // ID of "mother" geometry
-    long motherID;
-    // Number of independent particles
-    public int noOfParticles;
-    // Fitness of this Geometry
-    double fitness;
-    // ArrayList of MoleculeConfigs
-    public List<MoleculeConfig> geomMCs;
-    // the environment
-    public Environment env = null;
-    // the bonds
-    public BondInfo bonds;
-    
-    public GeometryConfig(){      
-    }
+  // long ID
+  long lID;
+  // ID of "father" geometry
+  long fatherID;
+  // ID of "mother" geometry
+  long motherID;
+  // Number of independent particles
+  public int noOfParticles;
+  // Fitness of this Geometry
+  double fitness;
+  // ArrayList of MoleculeConfigs
+  public List<MoleculeConfig> geomMCs;
+  // the environment
+  public Environment env = null;
+  // the bonds
+  public BondInfo bonds;
 
-    @Override
-    public GeometryConfig clone(){
-        
-        final GeometryConfig gc = new GeometryConfig();
-        gc.lID = this.lID;
-        gc.motherID = this.motherID;
-        gc.fatherID = this.fatherID;
-        assert(this.noOfParticles > 0);
-        gc.noOfParticles = this.noOfParticles;
-        gc.fitness = this.fitness;
-        gc.env = (this.env == null) ? null : this.env.clone();
-        gc.geomMCs = new ArrayList<>();
-        assert(geomMCs.size() == this.noOfParticles);
-        this.geomMCs.forEach((mc) -> {
-            gc.geomMCs.add(mc.clone());
+  public GeometryConfig() {}
+
+  @Override
+  public GeometryConfig copy() {
+
+    final GeometryConfig gc = new GeometryConfig();
+    gc.lID = this.lID;
+    gc.motherID = this.motherID;
+    gc.fatherID = this.fatherID;
+    assert (this.noOfParticles > 0);
+    gc.noOfParticles = this.noOfParticles;
+    gc.fitness = this.fitness;
+    gc.env = (this.env == null) ? null : this.env.copy();
+    gc.geomMCs = new ArrayList<>();
+    assert (geomMCs.size() == this.noOfParticles);
+    this.geomMCs.forEach(
+        (mc) -> {
+          gc.geomMCs.add(mc.copy());
         });
-        assert(this.bonds != null);
-        gc.bonds = this.bonds.clone();
-        
-        return gc;
-    }
+    assert (this.bonds != null);
+    gc.bonds = this.bonds.copy();
 
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.writeLong(lID);
-        oos.writeLong(fatherID);
-        oos.writeLong(motherID);
-        oos.writeInt(noOfParticles);
-        oos.writeDouble(fitness);
-        oos.writeObject(geomMCs);
-        oos.writeObject(env);
-        oos.writeObject(bonds);
-    }
+    return gc;
+  }
 
-    @SuppressWarnings(value = "unchecked")
-    private void readObject(ObjectInputStream ois) throws IOException,
-            ClassNotFoundException, ClassCastException {
-        lID = ois.readLong();
-        fatherID = ois.readLong();
-        motherID = ois.readLong();
-        noOfParticles = ois.readInt();
-        fitness = ois.readDouble();
-        geomMCs = (ArrayList<MoleculeConfig>) ois.readObject();
-        env = (Environment) ois.readObject();
-        bonds = (BondInfo) ois.readObject();
-    }
+  private void writeObject(ObjectOutputStream oos) throws IOException {
+    oos.writeLong(lID);
+    oos.writeLong(fatherID);
+    oos.writeLong(motherID);
+    oos.writeInt(noOfParticles);
+    oos.writeDouble(fitness);
+    oos.writeObject(geomMCs);
+    oos.writeObject(env);
+    oos.writeObject(bonds);
+  }
+
+  @SuppressWarnings(value = "unchecked")
+  private void readObject(ObjectInputStream ois)
+      throws IOException, ClassNotFoundException, ClassCastException {
+    lID = ois.readLong();
+    fatherID = ois.readLong();
+    motherID = ois.readLong();
+    noOfParticles = ois.readInt();
+    fitness = ois.readDouble();
+    geomMCs = (ArrayList<MoleculeConfig>) ois.readObject();
+    env = (Environment) ois.readObject();
+    bonds = (BondInfo) ois.readObject();
+  }
 }

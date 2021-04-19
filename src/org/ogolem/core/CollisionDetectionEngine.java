@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
               2015-2020, J. M. Dieterich and B. Hartke
@@ -39,39 +39,47 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * The interface defining what ALL the collision detection engines need to know.
+ *
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2020-12-30
  */
-public interface CollisionDetectionEngine extends Serializable, Cloneable {
-	
-    CollisionDetectionEngine clone();
-    
-    CollisionInfo checkForCollision(final CartesianCoordinates cartesians,
-                final double blowFactor, final BondInfo bonds);
-    
-    void checkForCollision(final CartesianCoordinates cartesians,
-                final double blowFactor, final BondInfo bonds,
-                final CollisionInfo info);
-    
-    boolean checkOnlyForCollision(final CartesianCoordinates cartesians,
-                final double blowFactor, final BondInfo bonds);
-    
-    /**
-     * Check only for collisions in - presumably - a changed part of the Cartesian.
-     * Note that this routine is specified to check collisions of the changed part
-     * WITH the rest of the Cartesian (i.e., it will check before offset and after
-     * endset if applicable)
-     * @param cartesians the Cartesian coordinates to be checked
-     * @param blowFactor the blow factor to be used to scale atomic radii
-     * @param bonds the known bonds in this Cartesian set
-     * @param offset the offset from which collisions should be checked (inclusive)
-     * @param endset the endset towards which collisions should be checked (exclusive)
-     * @return whether a collision was found or not
-     */
-    boolean checkOnlyForCollision(final CartesianCoordinates cartesians,
-                final double blowFactor, final BondInfo bonds, final int offset,
-                final int endset);
+public interface CollisionDetectionEngine extends Serializable, Copyable {
+
+  @Override
+  CollisionDetectionEngine copy();
+
+  CollisionInfo checkForCollision(
+      final CartesianCoordinates cartesians, final double blowFactor, final BondInfo bonds);
+
+  void checkForCollision(
+      final CartesianCoordinates cartesians,
+      final double blowFactor,
+      final BondInfo bonds,
+      final CollisionInfo info);
+
+  boolean checkOnlyForCollision(
+      final CartesianCoordinates cartesians, final double blowFactor, final BondInfo bonds);
+
+  /**
+   * Check only for collisions in - presumably - a changed part of the Cartesian. Note that this
+   * routine is specified to check collisions of the changed part WITH the rest of the Cartesian
+   * (i.e., it will check before offset and after endset if applicable)
+   *
+   * @param cartesians the Cartesian coordinates to be checked
+   * @param blowFactor the blow factor to be used to scale atomic radii
+   * @param bonds the known bonds in this Cartesian set
+   * @param offset the offset from which collisions should be checked (inclusive)
+   * @param endset the endset towards which collisions should be checked (exclusive)
+   * @return whether a collision was found or not
+   */
+  boolean checkOnlyForCollision(
+      final CartesianCoordinates cartesians,
+      final double blowFactor,
+      final BondInfo bonds,
+      final int offset,
+      final int endset);
 }

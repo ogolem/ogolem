@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,80 +44,82 @@ import org.ogolem.random.Lottery;
 
 /**
  * Wraps multiple X-overs and assings execution probabilities to them.
+ *
  * @author Johannes Dieterich
- * @version 2014-03-28
+ * @version 2020-12-29
  */
-public class MultipleXOverWrapper<E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
+public class MultipleXOverWrapper<E, T extends Optimizable<E>> implements GenericCrossover<E, T> {
 
-    private static final long serialVersionUID = (long) 20140328;
-    private final Lottery random = Lottery.getInstance();
-    private final List<GenericCrossover<E,T>> xovers;
-    private final double[] probabilities;
-    private int lastXOver;
-    
-    public MultipleXOverWrapper(final List<GenericCrossover<E,T>> xovers,
-            final List<Double> probs){
-        
-        assert(xovers.size() == probs.size());
-        this.xovers = xovers;
-        this.probabilities = new double[xovers.size()];
-        double currProb = 0.0;
-        int i = 0;
-        for(final double prob : probs){
-            currProb += prob;
-            probabilities[i] = currProb;
-            i++;
-        }
-        
-        if(Math.abs(1.0-currProb) >= 1E-3){
-            throw new RuntimeException("Probabilites for XOvers do not add up to 1.0 (100%) within a reasonable criterion.");
-        }
+  private static final long serialVersionUID = (long) 20140328;
+  private final Lottery random = Lottery.getInstance();
+  private final List<GenericCrossover<E, T>> xovers;
+  private final double[] probabilities;
+  private int lastXOver;
+
+  public MultipleXOverWrapper(final List<GenericCrossover<E, T>> xovers, final List<Double> probs) {
+
+    assert (xovers.size() == probs.size());
+    this.xovers = xovers;
+    this.probabilities = new double[xovers.size()];
+    double currProb = 0.0;
+    int i = 0;
+    for (final double prob : probs) {
+      currProb += prob;
+      probabilities[i] = currProb;
+      i++;
     }
-    
-    public MultipleXOverWrapper(final MultipleXOverWrapper<E,T> orig){
-        this.probabilities = orig.probabilities.clone();
-        this.xovers = new ArrayList<>(orig.xovers.size());
-        orig.xovers.forEach((mut) -> {
-            this.xovers.add(mut.clone());
+
+    if (Math.abs(1.0 - currProb) >= 1E-3) {
+      throw new RuntimeException(
+          "Probabilites for XOvers do not add up to 1.0 (100%) within a reasonable criterion.");
+    }
+  }
+
+  public MultipleXOverWrapper(final MultipleXOverWrapper<E, T> orig) {
+    this.probabilities = orig.probabilities.clone();
+    this.xovers = new ArrayList<>(orig.xovers.size());
+    orig.xovers.forEach(
+        (mut) -> {
+          this.xovers.add(mut.copy());
         });
-    }
-    
-    @Override
-    public MultipleXOverWrapper<E, T> clone() {
-        return new MultipleXOverWrapper<>(this);
+  }
+
+  @Override
+  public MultipleXOverWrapper<E, T> copy() {
+    return new MultipleXOverWrapper<>(this);
+  }
+
+  @Override
+  public String getMyID() {
+    String s = "MULTIPLE XOVER WRAPPER\n";
+    int i = 0;
+    for (final GenericCrossover<E, T> xover : xovers) {
+      final double prev = (i == 0) ? 0.0 : probabilities[i - 1];
+      s += (probabilities[i] - prev) * 100 + "% of \t" + xover.getMyID() + "\n\t";
+      i++;
     }
 
-    @Override
-    public String getMyID() {
-        String s = "MULTIPLE XOVER WRAPPER\n";
-        int i = 0;
-        for(final GenericCrossover<E,T> xover : xovers){
-            final double prev = (i==0) ? 0.0 : probabilities[i-1];
-            s += (probabilities[i]-prev)*100 + "% of \t" + xover.getMyID() + "\n\t";
-            i++;
-        }
-        
-        return s;
+    return s;
+  }
+
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    assert (probabilities.length == xovers.size());
+    final double r = random.nextDouble();
+    for (int i = 0; i < probabilities.length; i++) {
+      if (r <= probabilities[i]) {
+        lastXOver = i;
+        return xovers.get(i).crossover(mother, father, futureID);
+      }
     }
 
-    @Override
-    public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
-        
-        assert(probabilities.length == xovers.size());
-        final double r = random.nextDouble();
-        for(int i = 0; i < probabilities.length; i++){
-            if(r <= probabilities[i]){
-                lastXOver = i;
-                return xovers.get(i).crossover(mother, father, futureID);
-            }
-        }
-        
-        // numerical inaccuracies and stuff;
-        return xovers.get(xovers.size()-1).crossover(mother, father, futureID);
-    }
+    // numerical inaccuracies and stuff;
+    return xovers.get(xovers.size() - 1).crossover(mother, father, futureID);
+  }
 
-    @Override
-    public short hasPriority() {
-        return xovers.get(lastXOver).hasPriority();
-    }
+  @Override
+  public short hasPriority() {
+    return xovers.get(lastXOver).hasPriority();
+  }
 }

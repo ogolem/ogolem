@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,37 +41,40 @@ import org.ogolem.properties.StressTensor;
 
 /**
  * Data for stress tensor calculations.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-23
+ * @version 2020-12-30
  */
-public class ReferenceStressTensorData<V extends StructuralData> implements ReferenceInputData<StressTensor>{
+public class ReferenceStressTensorData<V extends StructuralData>
+    implements ReferenceInputData<StressTensor> {
 
-    private static final long serialVersionUID = (long) 20160716;
-    
-    private final ReferenceGeomData<StressTensor,V> geom;
-    private final int refPoint;
-    
-    public ReferenceStressTensorData(final int refPoint, final ReferenceGeomData<StressTensor,V> geom){
-        this.geom = geom;
-        this.refPoint = refPoint;
-    }
-    
-    private ReferenceStressTensorData(final ReferenceStressTensorData<V> orig){
-        this.geom = orig.geom.clone();
-        this.refPoint = orig.refPoint;
-    }
-    
-    @Override
-    public ReferenceStressTensorData<V> clone() {
-        return new ReferenceStressTensorData<>(this);
-    }
-    
-    public ReferenceGeomData<StressTensor,V> getGeomData(){
-        return geom;
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return refPoint;
-    }
+  private static final long serialVersionUID = (long) 20160716;
+
+  private final ReferenceGeomData<StressTensor, V> geom;
+  private final int refPoint;
+
+  public ReferenceStressTensorData(
+      final int refPoint, final ReferenceGeomData<StressTensor, V> geom) {
+    this.geom = geom;
+    this.refPoint = refPoint;
+  }
+
+  private ReferenceStressTensorData(final ReferenceStressTensorData<V> orig) {
+    this.geom = orig.geom.copy();
+    this.refPoint = orig.refPoint;
+  }
+
+  @Override
+  public ReferenceStressTensorData<V> copy() {
+    return new ReferenceStressTensorData<>(this);
+  }
+
+  public ReferenceGeomData<StressTensor, V> getGeomData() {
+    return geom;
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return refPoint;
+  }
 }

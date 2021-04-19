@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,79 +46,89 @@ import org.ogolem.io.InputPrimitives;
 import org.ogolem.io.OutputPrimitives;
 
 /**
- * Scans a set of explicit degrees of freedom and (if wished) quench the resulting
- * structures.
+ * Scans a set of explicit degrees of freedom and (if wished) quench the resulting structures.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-22
+ * @version 2020-12-29
  */
 public class MainScanner {
-    
-    public static void run(String args[]) {
-        
-        if(args[0].equalsIgnoreCase("help")){
-            System.out.println("This is the scanning functionality. We only need a global config as the argument.");
-            System.out.println("Inside the global config, we need:");
-            System.out.println(" * ONE molecule which must be flexible");
-            System.out.println(" * a <SCANCONF> block containing at least one DoF scanning specification.");
-            return;
-        }
-        
-        final String globConf = args[0];
-        final int dotPart = args[0].lastIndexOf(".ogo");
-        final String outFolder = args[0].substring(0,dotPart) + "-scan";
-        final String outputPrefix = outFolder + File.separator + "scangeom";
-        GlobalConfig config = null;
-        try{
-            config = Input.ConfigureMe(globConf);
-        } catch(Exception e){
-            System.err.println("ERROR: Couldn't read global config.");
-            e.printStackTrace(System.err);
-            System.exit(1);
-        }
-        
-        // create a reference geometry
-        final Geometry refGeom = new Geometry(config.geoConfCopy());
-        if(!refGeom.isThereAFlexy()){
-            System.err.println("ERROR: No flexible molecule in parsed config. Therefore: no scanning.");
-            System.exit(2);
-        }
-        
-        if(refGeom.getNumberOfIndieParticles() != 1){
-            System.err.println("ERROR: Unfortunately, we do not support geometries with more than one molecule for scanning currently. Inform author(s) if you are stuck here.");
-            System.exit(3);
-        }
-        
-        // create our scanner config
-        ScannerConfig scanConf = null;
-        try{
-            final String[] inp = InputPrimitives.readFileIn(globConf);
-            scanConf = new ScannerConfig(inp);
-        } catch(Exception e){
-            System.err.println("ERROR: Failure to configure scanner.");
-            e.printStackTrace(System.err);
-            System.exit(4);
-        }
-        
-        // get our cartesians and all the other stuff
-        final CartesianCoordinates cartes = refGeom.getCartesians();
-        final boolean[][] constraints = refGeom.getAllConstraintsXYZ(true);
-        final boolean isConstricted = refGeom.isThereAConstraint();
-        
-        // create the folder for our output
-        try {
-            final File f = new File(outFolder);
-            if(f.exists() && f.isDirectory()){
-                System.out.println("INFO: Output folder exists. This will overwrite whatever is in there!");
-            } else{
-                OutputPrimitives.createAFolder(outFolder);
-            }
-        } catch(Exception e){
-            System.out.println("ERROR: Couldn't create output folder for scanned geometries.");
-            e.printStackTrace(System.err);
-            System.exit(5);
-        }
-        
-        // dunk the first one (yeah, here is our limitation) into the scanner core
-        ScannerCore.scan(scanConf, cartes.giveMolecularCartes(0, true), config.getRefNewton().clone(), outputPrefix, constraints, isConstricted, refGeom.getBondInfo());
+
+  public static void run(String args[]) {
+
+    if (args[0].equalsIgnoreCase("help")) {
+      System.out.println(
+          "This is the scanning functionality. We only need a global config as the argument.");
+      System.out.println("Inside the global config, we need:");
+      System.out.println(" * ONE molecule which must be flexible");
+      System.out.println(
+          " * a <SCANCONF> block containing at least one DoF scanning specification.");
+      return;
     }
+
+    final String globConf = args[0];
+    final int dotPart = args[0].lastIndexOf(".ogo");
+    final String outFolder = args[0].substring(0, dotPart) + "-scan";
+    final String outputPrefix = outFolder + File.separator + "scangeom";
+    GlobalConfig config = null;
+    try {
+      config = Input.ConfigureMe(globConf);
+    } catch (Exception e) {
+      System.err.println("ERROR: Couldn't read global config.");
+      e.printStackTrace(System.err);
+      System.exit(1);
+    }
+
+    // create a reference geometry
+    final Geometry refGeom = new Geometry(config.geoConfCopy());
+    if (!refGeom.isThereAFlexy()) {
+      System.err.println("ERROR: No flexible molecule in parsed config. Therefore: no scanning.");
+      System.exit(2);
+    }
+
+    if (refGeom.getNumberOfIndieParticles() != 1) {
+      System.err.println(
+          "ERROR: Unfortunately, we do not support geometries with more than one molecule for scanning currently. Inform author(s) if you are stuck here.");
+      System.exit(3);
+    }
+
+    // create our scanner config
+    ScannerConfig scanConf = null;
+    try {
+      final String[] inp = InputPrimitives.readFileIn(globConf);
+      scanConf = new ScannerConfig(inp);
+    } catch (Exception e) {
+      System.err.println("ERROR: Failure to configure scanner.");
+      e.printStackTrace(System.err);
+      System.exit(4);
+    }
+
+    // get our cartesians and all the other stuff
+    final CartesianCoordinates cartes = refGeom.getCartesians();
+    final boolean[][] constraints = refGeom.getAllConstraintsXYZ(true);
+    final boolean isConstricted = refGeom.isThereAConstraint();
+
+    // create the folder for our output
+    try {
+      final File f = new File(outFolder);
+      if (f.exists() && f.isDirectory()) {
+        System.out.println("INFO: Output folder exists. This will overwrite whatever is in there!");
+      } else {
+        OutputPrimitives.createAFolder(outFolder);
+      }
+    } catch (Exception e) {
+      System.out.println("ERROR: Couldn't create output folder for scanned geometries.");
+      e.printStackTrace(System.err);
+      System.exit(5);
+    }
+
+    // dunk the first one (yeah, here is our limitation) into the scanner core
+    ScannerCore.scan(
+        scanConf,
+        cartes.giveMolecularCartes(0, true),
+        config.getRefNewton().copy(),
+        outputPrefix,
+        constraints,
+        isConstricted,
+        refGeom.getBondInfo());
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,50 +41,51 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * Adaptor to translate turn a mutation into a crossover.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class GenericMutationAsXOver<E, T extends Optimizable<E>> implements GenericCrossover<E,T> {
+public class GenericMutationAsXOver<E, T extends Optimizable<E>> implements GenericCrossover<E, T> {
 
-    private static final long serialVersionUID = (long) 20200429;
-    private final GenericMutation<E,T> mutation;
-    
-    public GenericMutationAsXOver(final GenericMutation<E,T> mut){
-        this.mutation = mut;
-    }
-    
-    public GenericMutationAsXOver(final GenericMutationAsXOver<E,T> orig){
-        this.mutation = orig.mutation.clone();
-    }
-    
-    @Override
-    public GenericMutationAsXOver<E,T> clone() {
-        return new GenericMutationAsXOver<>(this);
-    }
+  private static final long serialVersionUID = (long) 20200429;
+  private final GenericMutation<E, T> mutation;
 
-    @Override
-    public String getMyID() {
-        return "MUTATION AS CROSSOVER ADAPTOR\n\tmutation: " + mutation.getMyID();
-    }
+  public GenericMutationAsXOver(final GenericMutation<E, T> mut) {
+    this.mutation = mut;
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
-        
-        final T work1 = (T) mother.copy();
-        work1.setID(futureID);
-        final T work2 = (T) father.copy();
-        work2.setID(futureID);
-        
-        final T child1 = mutation.mutate(work1);
-        final T child2 = mutation.mutate(work2);
-        
-        return new Tuple<>(child1,child2);
-    }
+  public GenericMutationAsXOver(final GenericMutationAsXOver<E, T> orig) {
+    this.mutation = orig.mutation.copy();
+  }
 
-    @Override
-    public short hasPriority() {
-        // odds are: no
-        return -1;
-    }
+  @Override
+  public GenericMutationAsXOver<E, T> copy() {
+    return new GenericMutationAsXOver<>(this);
+  }
+
+  @Override
+  public String getMyID() {
+    return "MUTATION AS CROSSOVER ADAPTOR\n\tmutation: " + mutation.getMyID();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    final T work1 = (T) mother.copy();
+    work1.setID(futureID);
+    final T work2 = (T) father.copy();
+    work2.setID(futureID);
+
+    final T child1 = mutation.mutate(work1);
+    final T child2 = mutation.mutate(work2);
+
+    return new Tuple<>(child1, child2);
+  }
+
+  @Override
+  public short hasPriority() {
+    // odds are: no
+    return -1;
+  }
 }

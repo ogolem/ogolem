@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2015, J. M. Dieterich
               2016-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -43,119 +43,135 @@ import org.ogolem.generic.GenericBackend;
 import org.ogolem.generic.GenericLocOpt;
 
 /**
- * Translates a generic fitness function based local optimization to the Newton
- * interface.
+ * Translates a generic fitness function based local optimization to the Newton interface.
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
 public class InverseNewtonAdapter implements Newton {
 
-    private static final long serialVersionUID = (long) 20200429;
-    
-    private final GenericLocOpt<Molecule,Geometry> locopt;
-    private long countGeomOpts = 0l;
-    private long countMolOpts = 0l;
-    
-    public InverseNewtonAdapter(final GenericLocOpt<Molecule,Geometry> locopt){
-        this.locopt = locopt;
-    }
-    
-    InverseNewtonAdapter(final InverseNewtonAdapter orig){
-        this.locopt = orig.locopt.copy();
-    }
-    
-    @Override
-    public Newton clone() {
-        return new InverseNewtonAdapter(this);
-    }
-    
-    @Override
-    public String myIDandMethod() {
-        return locopt.getMyID();
+  private static final long serialVersionUID = (long) 20200429;
+
+  private final GenericLocOpt<Molecule, Geometry> locopt;
+  private long countGeomOpts = 0l;
+  private long countMolOpts = 0l;
+
+  public InverseNewtonAdapter(final GenericLocOpt<Molecule, Geometry> locopt) {
+    this.locopt = locopt;
+  }
+
+  InverseNewtonAdapter(final InverseNewtonAdapter orig) {
+    this.locopt = orig.locopt.copy();
+  }
+
+  @Override
+  public Newton copy() {
+    return new InverseNewtonAdapter(this);
+  }
+
+  @Override
+  public String myIDandMethod() {
+    return locopt.getMyID();
+  }
+
+  @Override
+  public CartesianFullBackend getBackend() {
+
+    final GenericBackend<Molecule, Geometry> coordinates = locopt.getBackend();
+    if (coordinates instanceof FullyCartesianCoordinates) {
+      final FullyCartesianCoordinates fully = (FullyCartesianCoordinates) coordinates;
+      final CartesianFullBackend backend = fully.getMyBackend();
+      return backend;
+    } else if (coordinates instanceof RigidBodyCoordinates) {
+      final RigidBodyCoordinates rigid = (RigidBodyCoordinates) coordinates;
+      final RigidBodyBackend backend = rigid.getMyBackend();
+      // TODO currently not implemented...
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public CartesianFullBackend getBackend() {
-        
-        final GenericBackend<Molecule,Geometry> coordinates = locopt.getBackend();
-        if(coordinates instanceof FullyCartesianCoordinates){
-            final FullyCartesianCoordinates fully = (FullyCartesianCoordinates) coordinates;
-            final CartesianFullBackend backend = fully.getMyBackend();
-            return backend;
-        } else if (coordinates instanceof RigidBodyCoordinates){
-            final RigidBodyCoordinates rigid = (RigidBodyCoordinates) coordinates;
-            final RigidBodyBackend backend = rigid.getMyBackend();
-            // TODO currently not implemented...
-            throw new UnsupportedOperationException("Not supported yet.");
+    return null;
+  }
+
+  @Override
+  public Molecule localOptimization(Molecule mStartMolecule) {
+    countMolOpts++;
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public Geometry localOptimization(final Geometry gStartGeometry) {
+    countGeomOpts++;
+
+    return locopt.fitness(gStartGeometry, false);
+  }
+
+  @Override
+  public CartesianCoordinates cartesToCartes(
+      final long id,
+      final CartesianCoordinates cartes,
+      final boolean[][] constraints,
+      final boolean isConstricted,
+      final BondInfo bonds)
+      throws Exception {
+
+    // translate to a geometry
+    final boolean hasEnv = cartes.containsEnvironment();
+    final int noMols = cartes.getNoOfMolecules();
+    final String[] sids = new String[noMols];
+    final boolean[] molFlexies = new boolean[noMols];
+    final boolean[] molConstraints = new boolean[noMols];
+    final int[] atsPerMol = cartes.getAllAtomsPerMol();
+    final List<boolean[][]> allFlexies = new ArrayList<>();
+    int offset = 0;
+    for (int mol = 0; mol < noMols; mol++) {
+      final CartesianCoordinates molCartes = cartes.giveMolecularCartes(mol, false);
+      sids[mol] = molCartes.createDefaultMolecularType();
+      molFlexies[mol] = (molCartes.getMolecularRefZMatrix(mol) != null);
+      if (molFlexies[mol]) {
+        // actually it does not matter what we fill in here. we will translate it to cartesians
+        // again. so anything does
+        final int noAtoms = molCartes.getNoOfAtoms();
+        final boolean[][] myFlexies = new boolean[noAtoms][3];
+        allFlexies.add(myFlexies);
+      } else {
+        allFlexies.add(null);
+      }
+      boolean hasConstr = false;
+      for (int i = 0; i < 3; i++) {
+        for (int at = offset; at < offset + atsPerMol[mol]; at++) {
+          if (constraints[i][at]) {
+            hasConstr = false;
+          }
         }
-        
-        return null;
-    }
-    
-    @Override
-    public Molecule localOptimization(Molecule mStartMolecule) {
-        countMolOpts++;
-        throw new UnsupportedOperationException("Not supported yet.");
+      }
+      molConstraints[mol] = hasConstr;
+      offset += atsPerMol[mol];
     }
 
-    @Override
-    public Geometry localOptimization(final Geometry gStartGeometry) {
-        countGeomOpts++;
-        
-        return locopt.fitness(gStartGeometry, false);
-    }
+    final Geometry work =
+        CoordTranslation.cartesianToGeometry(
+            cartes,
+            noMols,
+            atsPerMol,
+            molFlexies,
+            allFlexies,
+            molConstraints,
+            constraints,
+            sids,
+            bonds);
 
-    @Override
-    public CartesianCoordinates cartesToCartes(final long id, final CartesianCoordinates cartes,
-            final boolean[][] constraints, final boolean isConstricted, final BondInfo bonds)
-            throws Exception {
-        
-        // translate to a geometry
-        final boolean hasEnv = cartes.containsEnvironment();
-        final int noMols = cartes.getNoOfMolecules();
-        final String[] sids = new String[noMols];
-        final boolean[] molFlexies = new boolean[noMols];
-        final boolean[] molConstraints = new boolean[noMols];
-        final int[] atsPerMol = cartes.getAllAtomsPerMol();
-        final List<boolean[][]> allFlexies = new ArrayList<>();
-        int offset = 0;
-        for(int mol = 0; mol < noMols; mol++){
-            final CartesianCoordinates molCartes = cartes.giveMolecularCartes(mol, false);
-            sids[mol] = molCartes.createDefaultMolecularType();
-            molFlexies[mol] = (molCartes.getMolecularRefZMatrix(mol) != null);
-            if(molFlexies[mol]){
-                // actually it does not matter what we fill in here. we will translate it to cartesians again. so anything does
-                final int noAtoms = molCartes.getNoOfAtoms();
-                final boolean[][] myFlexies = new boolean[noAtoms][3];
-                allFlexies.add(myFlexies);
-            } else {
-                allFlexies.add(null);
-            }
-            boolean hasConstr = false;
-            for(int i = 0; i < 3; i++){
-                for(int at = offset; at < offset+atsPerMol[mol]; at++){
-                    if(constraints[i][at]){hasConstr = false;}
-                }
-            }
-            molConstraints[mol] = hasConstr;
-            offset += atsPerMol[mol];
-        }
-        
-        final Geometry work = CoordTranslation.cartesianToGeometry(cartes, noMols,
-                atsPerMol, molFlexies, allFlexies, molConstraints, constraints, sids, bonds);
-        
-        final Geometry opt = locopt.fitness(work, false);
-        
-        return (hasEnv) ? opt.getCartesiansWithEnvironment() : opt.getCartesians();
-    }
+    final Geometry opt = locopt.fitness(work, false);
 
-    @Override
-    public long getNumberOfGeomLocalOpts() {
-        return countGeomOpts;
-    }
+    return (hasEnv) ? opt.getCartesiansWithEnvironment() : opt.getCartesians();
+  }
 
-    @Override
-    public long getNumberOfMolLocalOpts() {
-        return countMolOpts;
-    }
+  @Override
+  public long getNumberOfGeomLocalOpts() {
+    return countGeomOpts;
+  }
+
+  @Override
+  public long getNumberOfMolLocalOpts() {
+    return countMolOpts;
+  }
 }

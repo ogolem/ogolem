@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2013-2014, J. M. Dieterich and B. Hartke
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -37,68 +37,69 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic;
 
-import org.ogolem.random.RandomUtils;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.random.RandomUtils;
 
 /**
- * A generic genotype crossover using real numbers (you can't get much easier
- * than that).
+ * A generic genotype crossover using real numbers (you can't get much easier than that).
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-29
  */
-public class GenericGermanyCrossover <E,T extends Optimizable<E>> implements GenericCrossover<E,T>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    private final double gaussWidth;
-    
-    public GenericGermanyCrossover(final double gaussWidth){
-        this.gaussWidth = gaussWidth;
-    }
-    
-    @Override
-    public GenericGermanyCrossover<E,T> clone(){
-        return new GenericGermanyCrossover<>(gaussWidth);
-    }
-    
-    @Override
-    public String getMyID(){
-        return "germany, width: " + gaussWidth;
-    }
-    
-    @Override
-    public Tuple<T,T> crossover(final T mother, final T father, final long futureID){
-        
-        @SuppressWarnings("unchecked")
-        final T child1 = (T) mother.copy();
-        @SuppressWarnings("unchecked")
-        final T child2 = (T) father.copy();
-        final E[] genomeChild1 = child1.getGenomeCopy();
-        final E[] genomeChild2 = child2.getGenomeCopy();
-        
-        if(genomeChild1 == null || genomeChild2 == null){
-            return new Tuple<>(null,null);
-        }
-        
-        assert(genomeChild1.length == genomeChild2.length);
-        
-        final int cutPoint = (int) RandomUtils.gaussDouble(0, genomeChild1.length, gaussWidth);
-        
-        // swap it
-        for(int i = cutPoint; i < genomeChild1.length; i++){
-            final E mo = genomeChild1[i];
-            genomeChild1[i] = genomeChild2[i];
-            genomeChild2[i] = mo;
-        }
-        
-        // put back in
-        child1.setGenome(genomeChild1);
-        child2.setGenome(genomeChild2);
-        
-        return new Tuple<>(child1,child2);    
+public class GenericGermanyCrossover<E, T extends Optimizable<E>>
+    implements GenericCrossover<E, T> {
+
+  private static final long serialVersionUID = (long) 20200429;
+  private final double gaussWidth;
+
+  public GenericGermanyCrossover(final double gaussWidth) {
+    this.gaussWidth = gaussWidth;
+  }
+
+  @Override
+  public GenericGermanyCrossover<E, T> copy() {
+    return new GenericGermanyCrossover<>(gaussWidth);
+  }
+
+  @Override
+  public String getMyID() {
+    return "germany, width: " + gaussWidth;
+  }
+
+  @Override
+  public Tuple<T, T> crossover(final T mother, final T father, final long futureID) {
+
+    @SuppressWarnings("unchecked")
+    final T child1 = (T) mother.copy();
+    @SuppressWarnings("unchecked")
+    final T child2 = (T) father.copy();
+    final E[] genomeChild1 = child1.getGenomeCopy();
+    final E[] genomeChild2 = child2.getGenomeCopy();
+
+    if (genomeChild1 == null || genomeChild2 == null) {
+      return new Tuple<>(null, null);
     }
 
-    @Override
-    public short hasPriority() {
-        return -1;
+    assert (genomeChild1.length == genomeChild2.length);
+
+    final int cutPoint = (int) RandomUtils.gaussDouble(0, genomeChild1.length, gaussWidth);
+
+    // swap it
+    for (int i = cutPoint; i < genomeChild1.length; i++) {
+      final E mo = genomeChild1[i];
+      genomeChild1[i] = genomeChild2[i];
+      genomeChild2[i] = mo;
     }
+
+    // put back in
+    child1.setGenome(genomeChild1);
+    child2.setGenome(genomeChild2);
+
+    return new Tuple<>(child1, child2);
+  }
+
+  @Override
+  public short hasPriority() {
+    return -1;
+  }
 }

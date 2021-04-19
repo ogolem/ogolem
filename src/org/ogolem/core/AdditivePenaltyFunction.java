@@ -1,5 +1,6 @@
-/**
-Copyright (c) 2010     , J. M. Dieterich
+/*
+Copyright (c) 2010, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,19 +38,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * Defines penalty functions.
+ *
  * @author Johannes Dieterich
- * @version 2010-12-25
+ * @version 2020-12-230
  */
-public interface AdditivePenaltyFunction extends Cloneable, Serializable{
+public interface AdditivePenaltyFunction extends Copyable, Serializable {
 
-    AdditivePenaltyFunction clone();
+  @Override
+  AdditivePenaltyFunction copy();
 
-    double penalty(Geometry geom);
+  double penalty(Geometry geom);
 
-    double penalty(Molecule mol);
+  double penalty(Molecule mol);
 
-    double penalty(CartesianCoordinates cartes);
+  double penalty(CartesianCoordinates cartes);
 }

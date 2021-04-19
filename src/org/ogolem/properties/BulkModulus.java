@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2015, J. M. Dieterich and B. Hartke
-              2017, J. M. Dieterich and B. Hartke
+              2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,50 +39,53 @@ package org.ogolem.properties;
 
 /**
  * A bulk modulus property.
+ *
  * @author Johannes Dieterich
- * @version 2017-12-15
+ * @version 2020-12-29
  */
 public class BulkModulus extends ScalarProperty {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    public static final long DEFAULTBULKMODULUS = 0;
-    
-    public BulkModulus(final double bulkModulus){
-        super(bulkModulus);
-    }
-    
-    private BulkModulus(final BulkModulus orig){
-        super(orig.getValue());
+
+  private static final long serialVersionUID = (long) 20171215;
+  public static final long DEFAULTBULKMODULUS = 0;
+
+  public BulkModulus(final double bulkModulus) {
+    super(bulkModulus);
+  }
+
+  private BulkModulus(final BulkModulus orig) {
+    super(orig.getValue());
+  }
+
+  @Override
+  public BulkModulus copy() {
+    return new BulkModulus(this);
+  }
+
+  @Override
+  public boolean makeSensible() {
+
+    if (Double.isInfinite(this.getValue())
+        || Double.isNaN(this.getValue())
+        || this.getValue() < DEFAULTBULKMODULUS) {
+      this.scalar = DEFAULTBULKMODULUS;
+      return true;
     }
 
-    @Override
-    public BulkModulus clone() {
-        return new BulkModulus(this);
-    }
+    return false;
+  }
 
-    @Override
-    public boolean makeSensible() {
-        
-        if(Double.isInfinite(this.getValue()) || Double.isNaN(this.getValue()) || this.getValue() < DEFAULTBULKMODULUS){
-            this.scalar = DEFAULTBULKMODULUS;
-            return true;
-        }
-        
-        return false;
-    }
+  @Override
+  public String printableProperty() {
+    return "" + this.scalar;
+  }
 
-    @Override
-    public String printableProperty() {
-        return "" + this.scalar;
-    }
+  @Override
+  public String name() {
+    return "BULK MODULUS";
+  }
 
-    @Override
-    public String name() {
-        return "BULK MODULUS";
-    }
-
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        return (p instanceof BulkModulus);
-    }
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    return (p instanceof BulkModulus);
+  }
 }

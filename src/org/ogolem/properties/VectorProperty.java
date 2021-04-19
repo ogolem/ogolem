@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2017-2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,90 +40,113 @@ import org.ogolem.core.FixedValues;
 
 /**
  * The base class for a vector property
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-29
  */
 public abstract class VectorProperty implements Property {
-    
-    private static final long serialVersionUID = (long) 20171215;
-    
-    protected final boolean normDifferences;
-    protected final double[] data;
-    
-    protected VectorProperty(final double[] data, final boolean normDifferences){
-        assert(data != null);
-        this.data = data;
-        this.normDifferences = normDifferences;
-    }
-    
-    protected VectorProperty(final VectorProperty orig){
-        this.data = orig.data.clone();
-        this.normDifferences = orig.normDifferences;
-    }
-    
-    @Override
-    public abstract VectorProperty clone();
-    
-    /**
-     * Return the value of a vector property as its vectors norm. If this is not wanted: overriding is necessary.
-     * @return the vector norm
-     */
-    @Override
-    public double getValue(){
-        
-        if(data == null){return FixedValues.NONCONVERGEDENERGY;}
-        
-        double sum = 0.0;
-        for(int i = 0; i < data.length; i++){
-            sum += data[i]*data[i];
-        }
-        
-        return Math.sqrt(sum);
-    }
-    
-    @Override
-    public double signedDifference(Property p){
-        
-        if (!ensureCorrectProperty(p)) {throw new IllegalArgumentException("Property should be an instance of " + name());}
 
-        final VectorProperty vp = (VectorProperty) p;
-        if(data == null || vp.data == null){return FixedValues.NONCONVERGEDENERGY;}
-        
-        if(vp.data.length != this.data.length){throw new RuntimeException("Vector properties differ in lengths: " + vp.data.length + " vs " + this.data.length);}
-        
-        double diff = 0.0;
-        for (int i = 0; i < data.length; i++) {
-            diff += (this.data[i] - vp.data[i]); // XXX this is suboptimal, but for the time being I have no better definition in my head
-        }
-        
-        if(this.normDifferences){
-            diff /= data.length;
-        }
+  private static final long serialVersionUID = (long) 20171215;
 
-        return diff;
+  protected final boolean normDifferences;
+  protected final double[] data;
+
+  protected VectorProperty(final double[] data, final boolean normDifferences) {
+    assert (data != null);
+    this.data = data;
+    this.normDifferences = normDifferences;
+  }
+
+  protected VectorProperty(final VectorProperty orig) {
+    this.data = orig.data.clone();
+    this.normDifferences = orig.normDifferences;
+  }
+
+  @Override
+  public abstract VectorProperty copy();
+
+  /**
+   * Return the value of a vector property as its vectors norm. If this is not wanted: overriding is
+   * necessary.
+   *
+   * @return the vector norm
+   */
+  @Override
+  public double getValue() {
+
+    if (data == null) {
+      return FixedValues.NONCONVERGEDENERGY;
     }
-    
-    @Override
-    public double absoluteDifference(Property p){
-        
-        if (!ensureCorrectProperty(p)) {throw new IllegalArgumentException("Property should be an instance of " + name());}
 
-        final VectorProperty vp = (VectorProperty) p;
-        if(data == null || vp.data == null){return FixedValues.NONCONVERGEDENERGY;}        
-        
-        if(vp.data.length != this.data.length){throw new RuntimeException("Vector properties differ in lengths: " + vp.data.length + " vs " + this.data.length);}
-        
-        double diff = 0.0;
-        for (int i = 0; i < data.length; i++) {
-            diff += Math.abs(this.data[i] - vp.data[i]);
-        }
-        
-        if(this.normDifferences){
-            diff /= data.length;
-        }
-
-        return diff;
+    double sum = 0.0;
+    for (int i = 0; i < data.length; i++) {
+      sum += data[i] * data[i];
     }
-    
-    protected abstract boolean ensureCorrectProperty(final Property p);
+
+    return Math.sqrt(sum);
+  }
+
+  @Override
+  public double signedDifference(Property p) {
+
+    if (!ensureCorrectProperty(p)) {
+      throw new IllegalArgumentException("Property should be an instance of " + name());
+    }
+
+    final VectorProperty vp = (VectorProperty) p;
+    if (data == null || vp.data == null) {
+      return FixedValues.NONCONVERGEDENERGY;
+    }
+
+    if (vp.data.length != this.data.length) {
+      throw new RuntimeException(
+          "Vector properties differ in lengths: " + vp.data.length + " vs " + this.data.length);
+    }
+
+    double diff = 0.0;
+    for (int i = 0; i < data.length; i++) {
+      diff +=
+          (this.data[i]
+              - vp.data[
+                  i]); // XXX this is suboptimal, but for the time being I have no better definition
+      // in my head
+    }
+
+    if (this.normDifferences) {
+      diff /= data.length;
+    }
+
+    return diff;
+  }
+
+  @Override
+  public double absoluteDifference(Property p) {
+
+    if (!ensureCorrectProperty(p)) {
+      throw new IllegalArgumentException("Property should be an instance of " + name());
+    }
+
+    final VectorProperty vp = (VectorProperty) p;
+    if (data == null || vp.data == null) {
+      return FixedValues.NONCONVERGEDENERGY;
+    }
+
+    if (vp.data.length != this.data.length) {
+      throw new RuntimeException(
+          "Vector properties differ in lengths: " + vp.data.length + " vs " + this.data.length);
+    }
+
+    double diff = 0.0;
+    for (int i = 0; i < data.length; i++) {
+      diff += Math.abs(this.data[i] - vp.data[i]);
+    }
+
+    if (this.normDifferences) {
+      diff /= data.length;
+    }
+
+    return diff;
+  }
+
+  protected abstract boolean ensureCorrectProperty(final Property p);
 }

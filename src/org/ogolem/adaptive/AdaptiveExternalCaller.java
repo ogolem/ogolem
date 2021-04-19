@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -37,68 +37,74 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import java.util.ArrayList;
-
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
 
 /**
  * Calls an external code to be an "adaptivable".
+ *
  * @author Johannes Dieterich
- * @version 2020-07-25
+ * @version 2020-12-29
  */
 class AdaptiveExternalCaller extends AbstractAdaptivable {
 
-	private static final long serialVersionUID = (long) 20200725;
-	
-	private final int noParams;	
-	
-	AdaptiveExternalCaller(final int noParameters){
-		this.noParams = noParameters;
-	}
-	
-	AdaptiveExternalCaller(final AdaptiveExternalCaller orig){
-		this.noParams = orig.noParams;
-	}
-	
-	@Override
-	public AdaptiveExternalCaller clone() {
-		return new AdaptiveExternalCaller(this);
-	}
-	
-	@Override
-	public double energyOfStructWithParams(CartesianCoordinates cartes, AdaptiveParameters params, int geomID,
-			BondInfo bonds) {
-		throw new RuntimeException("not supported by external adaptivable.");
-	}
+  private static final long serialVersionUID = (long) 20200725;
 
-	@Override
-	public double gradientOfStructWithParams(CartesianCoordinates cartes, AdaptiveParameters params, int geomID,
-			BondInfo bonds, double[] grad) {
-		throw new RuntimeException("not supported by external adaptivable.");
-	}
+  private final int noParams;
 
-	@Override
-	public double[][] minMaxBordersForParams(AdaptiveParameters params) {
-		
-		// really should never be used, instead specify custom parameter bounds in the input.
-		
-		final double[][] minMax = new double[2][noParams];
+  AdaptiveExternalCaller(final int noParameters) {
+    this.noParams = noParameters;
+  }
 
-        for(int i = 0; i < noParams; i++){
-            minMax[0][i] = -1000.0;
-            minMax[1][i] = 1000.0;
-        }
+  AdaptiveExternalCaller(final AdaptiveExternalCaller orig) {
+    this.noParams = orig.noParams;
+  }
 
-        return minMax;
-	}
+  @Override
+  public AdaptiveExternalCaller copy() {
+    return new AdaptiveExternalCaller(this);
+  }
 
-	@Override
-	public AdaptiveParameters createInitialParameterStub(ArrayList<CartesianCoordinates> refCartes, String sMethod) {
-		
-		final String[] saAtoms = {"XX"};
-        final int[] iaParamsPerAt = {noParams};
-        final AdaptiveParameters paramStub = new AdaptiveParameters(noParams, -1, saAtoms, iaParamsPerAt, sMethod);
+  @Override
+  public double energyOfStructWithParams(
+      CartesianCoordinates cartes, AdaptiveParameters params, int geomID, BondInfo bonds) {
+    throw new RuntimeException("not supported by external adaptivable.");
+  }
 
-        return paramStub;
-	}
+  @Override
+  public double gradientOfStructWithParams(
+      CartesianCoordinates cartes,
+      AdaptiveParameters params,
+      int geomID,
+      BondInfo bonds,
+      double[] grad) {
+    throw new RuntimeException("not supported by external adaptivable.");
+  }
+
+  @Override
+  public double[][] minMaxBordersForParams(AdaptiveParameters params) {
+
+    // really should never be used, instead specify custom parameter bounds in the input.
+
+    final double[][] minMax = new double[2][noParams];
+
+    for (int i = 0; i < noParams; i++) {
+      minMax[0][i] = -1000.0;
+      minMax[1][i] = 1000.0;
+    }
+
+    return minMax;
+  }
+
+  @Override
+  public AdaptiveParameters createInitialParameterStub(
+      ArrayList<CartesianCoordinates> refCartes, String sMethod) {
+
+    final String[] saAtoms = {"XX"};
+    final int[] iaParamsPerAt = {noParams};
+    final AdaptiveParameters paramStub =
+        new AdaptiveParameters(noParams, -1, saAtoms, iaParamsPerAt, sMethod);
+
+    return paramStub;
+  }
 }

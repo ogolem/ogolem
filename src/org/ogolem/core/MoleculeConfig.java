@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,163 +42,171 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * The configuration object for a Molecules class providing default values.
+ *
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2020-12-30
  */
-public class MoleculeConfig implements Serializable, Cloneable {
-	
-    //the serial version ID
-    private static final long serialVersionUID = (long) 20130925;
-	
-    // String ID
-    String sID = "N/A";
-    // the energy of this particular molcule
-    double molecularEnergy = Double.MAX_VALUE;
-    // Integer ID
-    int iID = 0;
-    // boolean semi-stiff or flexible molecule
-    boolean flexy = false;
-    // boolean stiff parts or not?
-    public boolean constricted = false;
-    // external center of mass as array of doubles
-    double[] externalCOM = new double[3];
-    // orientation
-    double[] externalOrient = new double[3];
-    // number of atoms in molecule
-    public int noOfAtoms = 1;
-    // the cartesian coordinates
-    double[][] refXYZ;
-    // the atom types
-    String[] atomTypes;
-    // the atom numbers
-    short[] atomNumbers;
-    // the z matrix
-    ZMatrix zmat = null;
-    // to support charges
-    public float[] charges;
-    // to support spins
-    public short[] spins;
-    // represents the degrees of freedom in the molecule
-    public boolean[][] degreesOfFreedom = null;
-    // represents the constrains in the molecules (based on XYZ!!!)
-    public boolean[][] constraints = null;
-    
-    MoleculeConfig(final boolean dontAlloc){
-        if(!dontAlloc) {
-            this.externalCOM = new double[3];
-            this.externalOrient = new double[3];
-        }
-    }
+public class MoleculeConfig implements Serializable, Copyable {
 
-    MoleculeConfig(final MoleculeConfig orig){
-        this.constricted = orig.constricted;
-        this.flexy = orig.flexy;
-        if(orig.constraints != null){
-            this.constraints = orig.constraints.clone();
-        }
-        if(orig.degreesOfFreedom != null){
-            this.degreesOfFreedom = orig.degreesOfFreedom.clone();
-        }
-        this.molecularEnergy = orig.molecularEnergy;
-        this.externalCOM = orig.externalCOM.clone();
-        this.externalOrient = orig.externalOrient.clone();
-        this.charges = orig.charges.clone();
-        this.iID = orig.iID;
-        this.noOfAtoms = orig.noOfAtoms;
-        this.spins = orig.spins.clone();
-        this.atomTypes = orig.atomTypes.clone();
-        this.atomNumbers = (orig.atomNumbers == null) ? null : orig.atomNumbers.clone();
-        this.refXYZ = new double[3][this.noOfAtoms];
-        System.arraycopy(orig.refXYZ[0], 0, this.refXYZ[0], 0, this.noOfAtoms);
-        System.arraycopy(orig.refXYZ[1], 0, this.refXYZ[1], 0, this.noOfAtoms);
-        System.arraycopy(orig.refXYZ[2], 0, this.refXYZ[2], 0, this.noOfAtoms);
-        this.sID = orig.sID;
-        this.zmat = (orig.zmat == null) ? null : new ZMatrix(orig.zmat);
-    }
-    
-    MoleculeConfig(final MoleculeConfig orig, boolean deep){
-        this.constricted = orig.constricted;
-        this.flexy = orig.flexy;
-        if(orig.constraints != null){
-            if(!deep) {this.constraints = orig.constraints.clone();}
-            else{
-                this.constraints = new boolean[orig.constraints.length][];
-                for(int i = 0; i < orig.constraints.length; i++) {this.constraints[i] = orig.constraints[i].clone();}
-            }
-        }
-        if(orig.degreesOfFreedom != null){
-            if(!deep) {this.degreesOfFreedom = orig.degreesOfFreedom.clone();}
-            else{
-                this.degreesOfFreedom = new boolean[orig.degreesOfFreedom.length][];
-                for(int i = 0 ; i < orig.degreesOfFreedom.length; i++) {this.degreesOfFreedom[i] = orig.degreesOfFreedom[i].clone();}
-            }
-        }
-        this.molecularEnergy = orig.molecularEnergy;
-        this.externalCOM = orig.externalCOM.clone();
-        this.externalOrient = orig.externalOrient.clone();
-        this.charges = orig.charges.clone();
-        this.iID = orig.iID;
-        this.noOfAtoms = orig.noOfAtoms;
-        this.spins = orig.spins;
-        this.atomTypes = orig.atomTypes.clone();
-        this.atomNumbers = (orig.atomNumbers == null) ? null : orig.atomNumbers.clone();
-        this.refXYZ = new double[3][this.noOfAtoms];
-        System.arraycopy(orig.refXYZ[0], 0, this.refXYZ[0], 0, this.noOfAtoms);
-        System.arraycopy(orig.refXYZ[1], 0, this.refXYZ[1], 0, this.noOfAtoms);
-        System.arraycopy(orig.refXYZ[2], 0, this.refXYZ[2], 0, this.noOfAtoms);
-        this.sID = orig.sID;
-        this.zmat = (orig.zmat == null) ? null : new ZMatrix(orig.zmat);
-    }
-    
-    @Override
-    public MoleculeConfig clone(){
-        return new MoleculeConfig(this, true);
-    }
-    
-    public CartesianCoordinates toCartesians(){
-        return CoordTranslation.moleculeToCartesian(new Molecule(this),false);
-    }
+  // the serial version ID
+  private static final long serialVersionUID = (long) 20130925;
 
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.writeInt(iID);
-        oos.writeObject(sID);
-        oos.writeInt(noOfAtoms);
-        oos.writeDouble(molecularEnergy);
-        oos.writeBoolean(flexy);
-        oos.writeBoolean(constricted);
-        oos.writeObject(externalCOM);
-        oos.writeObject(externalOrient);
-        oos.writeObject(zmat);
-        oos.writeObject(charges);
-        oos.writeObject(spins);
-        oos.writeObject(degreesOfFreedom);
-        oos.writeObject(constraints);
-        oos.writeObject(atomTypes);
-        oos.writeObject(atomNumbers);
-        oos.writeObject(refXYZ);
-    }
+  // String ID
+  String sID = "N/A";
+  // the energy of this particular molcule
+  double molecularEnergy = Double.MAX_VALUE;
+  // Integer ID
+  int iID = 0;
+  // boolean semi-stiff or flexible molecule
+  boolean flexy = false;
+  // boolean stiff parts or not?
+  public boolean constricted = false;
+  // external center of mass as array of doubles
+  double[] externalCOM = new double[3];
+  // orientation
+  double[] externalOrient = new double[3];
+  // number of atoms in molecule
+  public int noOfAtoms = 1;
+  // the cartesian coordinates
+  double[][] refXYZ;
+  // the atom types
+  String[] atomTypes;
+  // the atom numbers
+  short[] atomNumbers;
+  // the z matrix
+  ZMatrix zmat = null;
+  // to support charges
+  public float[] charges;
+  // to support spins
+  public short[] spins;
+  // represents the degrees of freedom in the molecule
+  public boolean[][] degreesOfFreedom = null;
+  // represents the constrains in the molecules (based on XYZ!!!)
+  public boolean[][] constraints = null;
 
-    private void readObject(ObjectInputStream ois) throws IOException,
-            ClassNotFoundException, ClassCastException {
-
-        iID = ois.readInt();
-        sID = (String) ois.readObject();
-        noOfAtoms = ois.readInt();
-        molecularEnergy = ois.readDouble();
-        flexy = ois.readBoolean();
-        constricted = ois.readBoolean();
-        externalCOM = (double[]) ois.readObject();
-        externalOrient = (double[]) ois.readObject();
-        zmat = (ZMatrix) ois.readObject();
-        charges = (float[]) ois.readObject();
-        spins = (short[]) ois.readObject();
-        degreesOfFreedom = (boolean[][]) ois.readObject();
-        constraints = (boolean[][]) ois.readObject();
-        atomTypes = (String[]) ois.readObject();
-        atomNumbers = (short[]) ois.readObject();
-        refXYZ = (double[][]) ois.readObject();
+  MoleculeConfig(final boolean dontAlloc) {
+    if (!dontAlloc) {
+      this.externalCOM = new double[3];
+      this.externalOrient = new double[3];
     }
+  }
+
+  MoleculeConfig(final MoleculeConfig orig) {
+    this.constricted = orig.constricted;
+    this.flexy = orig.flexy;
+    if (orig.constraints != null) {
+      this.constraints = orig.constraints.clone();
+    }
+    if (orig.degreesOfFreedom != null) {
+      this.degreesOfFreedom = orig.degreesOfFreedom.clone();
+    }
+    this.molecularEnergy = orig.molecularEnergy;
+    this.externalCOM = orig.externalCOM.clone();
+    this.externalOrient = orig.externalOrient.clone();
+    this.charges = orig.charges.clone();
+    this.iID = orig.iID;
+    this.noOfAtoms = orig.noOfAtoms;
+    this.spins = orig.spins.clone();
+    this.atomTypes = orig.atomTypes.clone();
+    this.atomNumbers = (orig.atomNumbers == null) ? null : orig.atomNumbers.clone();
+    this.refXYZ = new double[3][this.noOfAtoms];
+    System.arraycopy(orig.refXYZ[0], 0, this.refXYZ[0], 0, this.noOfAtoms);
+    System.arraycopy(orig.refXYZ[1], 0, this.refXYZ[1], 0, this.noOfAtoms);
+    System.arraycopy(orig.refXYZ[2], 0, this.refXYZ[2], 0, this.noOfAtoms);
+    this.sID = orig.sID;
+    this.zmat = (orig.zmat == null) ? null : new ZMatrix(orig.zmat);
+  }
+
+  MoleculeConfig(final MoleculeConfig orig, boolean deep) {
+    this.constricted = orig.constricted;
+    this.flexy = orig.flexy;
+    if (orig.constraints != null) {
+      if (!deep) {
+        this.constraints = orig.constraints.clone();
+      } else {
+        this.constraints = new boolean[orig.constraints.length][];
+        for (int i = 0; i < orig.constraints.length; i++) {
+          this.constraints[i] = orig.constraints[i].clone();
+        }
+      }
+    }
+    if (orig.degreesOfFreedom != null) {
+      if (!deep) {
+        this.degreesOfFreedom = orig.degreesOfFreedom.clone();
+      } else {
+        this.degreesOfFreedom = new boolean[orig.degreesOfFreedom.length][];
+        for (int i = 0; i < orig.degreesOfFreedom.length; i++) {
+          this.degreesOfFreedom[i] = orig.degreesOfFreedom[i].clone();
+        }
+      }
+    }
+    this.molecularEnergy = orig.molecularEnergy;
+    this.externalCOM = orig.externalCOM.clone();
+    this.externalOrient = orig.externalOrient.clone();
+    this.charges = orig.charges.clone();
+    this.iID = orig.iID;
+    this.noOfAtoms = orig.noOfAtoms;
+    this.spins = orig.spins;
+    this.atomTypes = orig.atomTypes.clone();
+    this.atomNumbers = (orig.atomNumbers == null) ? null : orig.atomNumbers.clone();
+    this.refXYZ = new double[3][this.noOfAtoms];
+    System.arraycopy(orig.refXYZ[0], 0, this.refXYZ[0], 0, this.noOfAtoms);
+    System.arraycopy(orig.refXYZ[1], 0, this.refXYZ[1], 0, this.noOfAtoms);
+    System.arraycopy(orig.refXYZ[2], 0, this.refXYZ[2], 0, this.noOfAtoms);
+    this.sID = orig.sID;
+    this.zmat = (orig.zmat == null) ? null : new ZMatrix(orig.zmat);
+  }
+
+  @Override
+  public MoleculeConfig copy() {
+    return new MoleculeConfig(this, true);
+  }
+
+  public CartesianCoordinates toCartesians() {
+    return CoordTranslation.moleculeToCartesian(new Molecule(this), false);
+  }
+
+  private void writeObject(ObjectOutputStream oos) throws IOException {
+    oos.writeInt(iID);
+    oos.writeObject(sID);
+    oos.writeInt(noOfAtoms);
+    oos.writeDouble(molecularEnergy);
+    oos.writeBoolean(flexy);
+    oos.writeBoolean(constricted);
+    oos.writeObject(externalCOM);
+    oos.writeObject(externalOrient);
+    oos.writeObject(zmat);
+    oos.writeObject(charges);
+    oos.writeObject(spins);
+    oos.writeObject(degreesOfFreedom);
+    oos.writeObject(constraints);
+    oos.writeObject(atomTypes);
+    oos.writeObject(atomNumbers);
+    oos.writeObject(refXYZ);
+  }
+
+  private void readObject(ObjectInputStream ois)
+      throws IOException, ClassNotFoundException, ClassCastException {
+
+    iID = ois.readInt();
+    sID = (String) ois.readObject();
+    noOfAtoms = ois.readInt();
+    molecularEnergy = ois.readDouble();
+    flexy = ois.readBoolean();
+    constricted = ois.readBoolean();
+    externalCOM = (double[]) ois.readObject();
+    externalOrient = (double[]) ois.readObject();
+    zmat = (ZMatrix) ois.readObject();
+    charges = (float[]) ois.readObject();
+    spins = (short[]) ois.readObject();
+    degreesOfFreedom = (boolean[][]) ois.readObject();
+    constraints = (boolean[][]) ois.readObject();
+    atomTypes = (String[]) ois.readObject();
+    atomNumbers = (short[]) ois.readObject();
+    refXYZ = (double[][]) ois.readObject();
+  }
 }

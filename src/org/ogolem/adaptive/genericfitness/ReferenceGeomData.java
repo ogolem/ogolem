@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015-2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,37 +42,39 @@ import org.ogolem.properties.Property;
 
 /**
  * Reference geometrical data, never hurts to have, right? :-)
+ *
  * @author Johannes Dieterich
- * @version 2016-07-15
+ * @version 2020-12-30
  */
-public class ReferenceGeomData<T extends Property, V extends StructuralData> implements ReferenceInputData<T> {
-    
-    private static final long serialVersionUID = (long) 20160716;
-    
-    public final V c;
-    public final BondInfo bonds;
-    public final int id;
+public class ReferenceGeomData<T extends Property, V extends StructuralData>
+    implements ReferenceInputData<T> {
 
-    public ReferenceGeomData(final V c, final BondInfo bonds, final int id) {
-        this.c = c;
-        this.bonds = bonds;
-        this.id = id;
-    }
-    
-    @SuppressWarnings("unchecked") // no generic clone
-    private ReferenceGeomData(final ReferenceGeomData<T,V> orig) {
-        this.c = (V) orig.c.clone();
-        this.bonds = orig.bonds.clone();
-        this.id = orig.id;
-    }
+  private static final long serialVersionUID = (long) 20160716;
 
-    @Override
-    public ReferenceGeomData<T,V> clone() {
-        return new ReferenceGeomData<>(this);
-    }
-    
-    @Override
-    public int belongsToReferencePoint() {
-        return id;
-    }
+  public final V c;
+  public final BondInfo bonds;
+  public final int id;
+
+  public ReferenceGeomData(final V c, final BondInfo bonds, final int id) {
+    this.c = c;
+    this.bonds = bonds;
+    this.id = id;
+  }
+
+  @SuppressWarnings("unchecked") // no generic clone
+  private ReferenceGeomData(final ReferenceGeomData<T, V> orig) {
+    this.c = (V) orig.c.copy();
+    this.bonds = orig.bonds.copy();
+    this.id = orig.id;
+  }
+
+  @Override
+  public ReferenceGeomData<T, V> copy() {
+    return new ReferenceGeomData<>(this);
+  }
+
+  @Override
+  public int belongsToReferencePoint() {
+    return id;
+  }
 }

@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,15 +38,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.math;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * An interface for any f(x) type function to be put into a lookup table.
+ *
  * @author Johannes Dieterich
- * @version 2014-12-21
+ * @version 2020-12-30
  */
-public interface LookupedFunction extends Serializable, Cloneable {
-    
-    LookupedFunction clone();
-    
-    double func(final double x);
+public interface LookupedFunction extends Serializable, Copyable {
+
+  @Override
+  LookupedFunction copy();
+
+  double func(final double x);
 }

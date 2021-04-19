@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2012-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,36 +39,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic.genericpool;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * An encapsulation of a niche.
+ *
  * @author Johannes Dieterich
- * @version 2013-04-01
+ * @version 2020-12-30
  */
-public class Niche implements Cloneable, Serializable {
+public class Niche implements Copyable, Serializable {
 
-    private static final long serialVersionUID = (long) 20120220;
+  private static final long serialVersionUID = (long) 20120220;
 
-    private final String sID;
+  private final String sID;
 
-    public Niche(final String id){
-        this.sID = id;
-    }
-    
-    public Niche(final Niche orig){
-        this.sID = orig.sID;
-    }
-    
-    @Override
-    public Niche clone(){
-        return new Niche(this);
-    }
+  public Niche(final String id) {
+    this.sID = id;
+  }
 
-    public String getID(){
-        return sID;
-    }
+  public Niche(final Niche orig) {
+    this.sID = orig.sID;
+  }
 
-    public boolean comp(final Niche niche){
-        return sID.equalsIgnoreCase(niche.sID);
-    }
+  @Override
+  public Niche copy() {
+    return new Niche(this);
+  }
+
+  public String getID() {
+    return sID;
+  }
+
+  public boolean comp(final Niche niche) {
+    return sID.equalsIgnoreCase(niche.sID);
+  }
 }

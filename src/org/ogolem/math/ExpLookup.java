@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2011-2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,46 +39,49 @@ package org.ogolem.math;
 
 /**
  * A lookup table for the exp function.
+ *
  * @author Johannes Dieterich
- * @version 2012-06-12
+ * @version 2020-12-30
  */
 public class ExpLookup extends AbstractLookup {
-       
-    private static final long serialVersionUID = (long) 20120612;
-    
-    public ExpLookup(final int entries, final double start, final double end){
-        super(entries, start, end);
-    }
-    
-    public ExpLookup(final ExpLookup orig){
-        super(orig);
-    }
-    
-    @Override
-    public ExpLookup clone(){
-        return new ExpLookup(this);
-    }
-    
-    /**
-     * A lookup function for the exp including linear interpolation.
-     * @param x Must be in the interval [end,start]
-     * @return The looked up and interpolated exp(x). Canonical exp(x) if x is outside the interval.
-     */
-    public double expInter(final double x){
-        return funcInter(x);
-    }
-    
-    /**
-     * A lookup function for the exp without interpolation.
-     * @param x Must be in the interval [start,end]
-     * @return The looked up exp(x). Canonical exp(x) if x is outside the interval.
-     */
-    public double expNonInter(final double x){
-        return funcNonInter(x);
-    }
-    
-    @Override
-    protected double func(final double x){
-        return Math.exp(x);
-    }
+
+  private static final long serialVersionUID = (long) 20120612;
+
+  public ExpLookup(final int entries, final double start, final double end) {
+    super(entries, start, end);
+  }
+
+  public ExpLookup(final ExpLookup orig) {
+    super(orig);
+  }
+
+  @Override
+  public ExpLookup copy() {
+    return new ExpLookup(this);
+  }
+
+  /**
+   * A lookup function for the exp including linear interpolation.
+   *
+   * @param x Must be in the interval [end,start]
+   * @return The looked up and interpolated exp(x). Canonical exp(x) if x is outside the interval.
+   */
+  public double expInter(final double x) {
+    return funcInter(x);
+  }
+
+  /**
+   * A lookup function for the exp without interpolation.
+   *
+   * @param x Must be in the interval [start,end]
+   * @return The looked up exp(x). Canonical exp(x) if x is outside the interval.
+   */
+  public double expNonInter(final double x) {
+    return funcNonInter(x);
+  }
+
+  @Override
+  protected double func(final double x) {
+    return Math.exp(x);
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2011-2015, J. M. Dieterich
               2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -43,161 +43,233 @@ import org.ogolem.helpers.Machine;
 
 /**
  * Gradients using numerical algorithms.
+ *
  * @author Johannes Dieterich
- * @version 2020-05-25
+ * @version 2020-12-30
  */
 public class NumericalGradients {
 
-    private static final double numericalPrecision = Math.sqrt(Machine.calcMachinePrecision());
+  private static final double numericalPrecision = Math.sqrt(Machine.calcMachinePrecision());
 
-    public static Gradient numericalGradient(final long id, final int iteration, final double[] xyz,
-            final String[] atoms, final short[] atomNos, final int[] atsPerMol, final double[] energyparts,
-            final int noOfAtoms, final float[] charges, final short[] spins,
-            final BondInfo bonds, CartesianFullBackend backend, final boolean hasRigidEnv){
+  public static Gradient numericalGradient(
+      final long id,
+      final int iteration,
+      final double[] xyz,
+      final String[] atoms,
+      final short[] atomNos,
+      final int[] atsPerMol,
+      final double[] energyparts,
+      final int noOfAtoms,
+      final float[] charges,
+      final short[] spins,
+      final BondInfo bonds,
+      CartesianFullBackend backend,
+      final boolean hasRigidEnv) {
 
-        // the matrix for the gradient
-        final double[][] gradientMat = new double[3][noOfAtoms];
-        // a 1D version
-        final double[] gradient1D = new double[3 * noOfAtoms];
-        // working copy of the coordinates
-        final double[] xyzCopy = xyz.clone();
+    // the matrix for the gradient
+    final double[][] gradientMat = new double[3][noOfAtoms];
+    // a 1D version
+    final double[] gradient1D = new double[3 * noOfAtoms];
+    // working copy of the coordinates
+    final double[] xyzCopy = xyz.clone();
 
-        for(int i = 0; i < gradient1D.length; i++){
+    for (int i = 0; i < gradient1D.length; i++) {
 
-            // increment
-            final double h = (xyzCopy[i] == 0.0) ? 100*numericalPrecision : 100 * numericalPrecision * xyzCopy[i];
+      // increment
+      final double h =
+          (xyzCopy[i] == 0.0) ? 100 * numericalPrecision : 100 * numericalPrecision * xyzCopy[i];
 
-            // first plus it
-            xyzCopy[i] += h;
-            final double energy1 = backend.energyCalculation(id, iteration, xyzCopy,
-                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
+      // first plus it
+      xyzCopy[i] += h;
+      final double energy1 =
+          backend.energyCalculation(
+              id,
+              iteration,
+              xyzCopy,
+              atoms,
+              atomNos,
+              atsPerMol,
+              energyparts,
+              noOfAtoms,
+              charges,
+              spins,
+              bonds,
+              hasRigidEnv);
 
-            // then minus it (there was the dH left from the step before)
-            xyzCopy[i] -=  2*h;
-            final double energy2 = backend.energyCalculation(id, iteration, xyzCopy,
-                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
-            
-            xyzCopy[i] = xyz[i];
+      // then minus it (there was the dH left from the step before)
+      xyzCopy[i] -= 2 * h;
+      final double energy2 =
+          backend.energyCalculation(
+              id,
+              iteration,
+              xyzCopy,
+              atoms,
+              atomNos,
+              atsPerMol,
+              energyparts,
+              noOfAtoms,
+              charges,
+              spins,
+              bonds,
+              hasRigidEnv);
 
-            // also checks for NaN and other cases cases
-            if(energy1 > FixedValues.NONCONVERGEDENERGY || energy2 > FixedValues.NONCONVERGEDENERGY
-                    || Double.isNaN(energy1) || Double.isNaN(energy2)){
-                // we have at least one non converged result
-                System.err.println("WARNING: Numerical gradient fails at "
-                        + i +" for id " + id);
-                gradient1D[i] = 0.0;
-            } else {
-                // calculate the three point stencil
-                gradient1D[i] = (energy1 - energy2) / (2 * h);
-            }
-        }
+      xyzCopy[i] = xyz[i];
 
-        // now one last energy calculation
-        final double totEnergy = backend.energyCalculation(id, iteration, xyzCopy,
-                    atoms, atomNos, atsPerMol, energyparts, noOfAtoms, charges, spins, bonds, hasRigidEnv);
-        
-        // copy the arrays
-        System.arraycopy(gradient1D, 0            , gradientMat[0], 0, noOfAtoms);
-        System.arraycopy(gradient1D, noOfAtoms    , gradientMat[1], 0, noOfAtoms);
-        System.arraycopy(gradient1D, noOfAtoms * 2, gradientMat[2], 0, noOfAtoms);
-
-        // put the information in
-        final Gradient gradient = new Gradient();
-        gradient.setGradientTotal(gradientMat);
-        gradient.setTotalEnergy(totEnergy);
-
-        // return it
-        return gradient;
+      // also checks for NaN and other cases cases
+      if (energy1 > FixedValues.NONCONVERGEDENERGY
+          || energy2 > FixedValues.NONCONVERGEDENERGY
+          || Double.isNaN(energy1)
+          || Double.isNaN(energy2)) {
+        // we have at least one non converged result
+        System.err.println("WARNING: Numerical gradient fails at " + i + " for id " + id);
+        gradient1D[i] = 0.0;
+      } else {
+        // calculate the three point stencil
+        gradient1D[i] = (energy1 - energy2) / (2 * h);
+      }
     }
-    
-    public static double gradientForRigidBody(final Geometry ref, final List<CartesianCoordinates> origCartes,
-            final double[][] coms, final double[][] eulers, final double[] gradient, final RigidBodyBackend backend, final int counter){
-        
-        // get a copy of the cartesians for work
-        final List<CartesianCoordinates> copyCartes = new ArrayList<>();
-        for(int mol = 0; mol < origCartes.size(); mol++){
-            final CartesianCoordinates clone = origCartes.get(mol).clone();
-            copyCartes.add(clone);
-        }
-        
-        // zero: get one energy (need to rotate stuff for that)
-        int iter = counter;
-        // rotate once
-        rotateCartesians(origCartes,copyCartes,eulers);
-        final double energy = backend.energy(ref, copyCartes, coms, iter);
-        
-        final double hDef = 100*numericalPrecision;
+
+    // now one last energy calculation
+    final double totEnergy =
+        backend.energyCalculation(
+            id,
+            iteration,
+            xyzCopy,
+            atoms,
+            atomNos,
+            atsPerMol,
+            energyparts,
+            noOfAtoms,
+            charges,
+            spins,
+            bonds,
+            hasRigidEnv);
+
+    // copy the arrays
+    System.arraycopy(gradient1D, 0, gradientMat[0], 0, noOfAtoms);
+    System.arraycopy(gradient1D, noOfAtoms, gradientMat[1], 0, noOfAtoms);
+    System.arraycopy(gradient1D, noOfAtoms * 2, gradientMat[2], 0, noOfAtoms);
+
+    // put the information in
+    final Gradient gradient = new Gradient();
+    gradient.setGradientTotal(gradientMat);
+    gradient.setTotalEnergy(totEnergy);
+
+    // return it
+    return gradient;
+  }
+
+  public static double gradientForRigidBody(
+      final Geometry ref,
+      final List<CartesianCoordinates> origCartes,
+      final double[][] coms,
+      final double[][] eulers,
+      final double[] gradient,
+      final RigidBodyBackend backend,
+      final int counter) {
+
+    // get a copy of the cartesians for work
+    final List<CartesianCoordinates> copyCartes = new ArrayList<>();
+    for (int mol = 0; mol < origCartes.size(); mol++) {
+      final CartesianCoordinates clone = origCartes.get(mol).copy();
+      copyCartes.add(clone);
+    }
+
+    // zero: get one energy (need to rotate stuff for that)
+    int iter = counter;
+    // rotate once
+    rotateCartesians(origCartes, copyCartes, eulers);
+    final double energy = backend.energy(ref, copyCartes, coms, iter);
+
+    final double hDef = 100 * numericalPrecision;
+    iter++;
+
+    // first take care of all the COM gradient elements
+    for (int mol = 0; mol < origCartes.size(); mol++) {
+
+      for (int coord = 0; coord < 3; coord++) {
+        // increment
+        final double h = (coms[mol][coord] == 0.0) ? hDef : hDef * coms[mol][coord];
+        // first plus it
+        final double comOld = coms[mol][coord];
+        coms[mol][coord] += h;
+        final double eCoordP = backend.energy(ref, copyCartes, coms, iter);
         iter++;
-        
-        // first take care of all the COM gradient elements
-        for(int mol = 0; mol < origCartes.size(); mol++){
-            
-            for(int coord = 0; coord < 3; coord++){
-                // increment
-                final double h = (coms[mol][coord] == 0.0) ? hDef : hDef * coms[mol][coord];
-                // first plus it
-                final double comOld = coms[mol][coord];
-                coms[mol][coord] += h;
-                final double eCoordP = backend.energy(ref, copyCartes, coms, iter);
-                iter++;
-                // then minus it
-                coms[mol][coord] = comOld - h;
-                final double eCoordM = backend.energy(ref, copyCartes, coms, iter);
-                iter++;
-                // then reset and calculate element
-                coms[mol][coord] = comOld;
-                gradient[mol*6+coord] = (eCoordP - eCoordM) / (2 * h);
-                
-                if(false){
-                    System.out.println("DEBUG: Individual " + ref.getID() + " Molecule " + mol + " COM coordinate " + coord + " gradient " + gradient[mol*6+coord]);
-                }
-            
-            }
-            
+        // then minus it
+        coms[mol][coord] = comOld - h;
+        final double eCoordM = backend.energy(ref, copyCartes, coms, iter);
+        iter++;
+        // then reset and calculate element
+        coms[mol][coord] = comOld;
+        gradient[mol * 6 + coord] = (eCoordP - eCoordM) / (2 * h);
+
+        if (false) {
+          System.out.println(
+              "DEBUG: Individual "
+                  + ref.getID()
+                  + " Molecule "
+                  + mol
+                  + " COM coordinate "
+                  + coord
+                  + " gradient "
+                  + gradient[mol * 6 + coord]);
         }
-        
-        for(int mol = 0; mol < origCartes.size(); mol++){
-            
-            // now the eulers, slightly more involved
-            
-            for(int euler = 0; euler < 3; euler++){
-            
-                // increment Euler and rotate
-                final double eulerBak = eulers[mol][euler];
-                eulers[mol][euler] += hDef;
-                rotateCartesians(origCartes,copyCartes,eulers);
-                final double eP = backend.energy(ref, copyCartes, coms, iter);
-                iter++;
-            
-                // decrement Euler and rotate
-                eulers[mol][euler] -= 2*hDef;
-                rotateCartesians(origCartes,copyCartes,eulers);
-                final double eM = backend.energy(ref, copyCartes, coms, iter);
-                iter++;
-                
-                // reset and calculate gradient
-                eulers[mol][euler] = eulerBak;
-                gradient[mol*6+3+euler] = (eP - eM) / (2 * hDef);
-                
-                if(false){
-                    System.out.println("DEBUG: Individual " + ref.getID() + " Molecule " + mol + " Euler orientation " + euler + " gradient " + gradient[mol*6+3+euler]);
-                }
-            }
-        }
-        
-        return energy;
+      }
     }
-    
-    private static void rotateCartesians(final List<CartesianCoordinates> origCartes, final List<CartesianCoordinates> rotated,
-            final double[][] eulers){
-        
-        assert(origCartes.size() == rotated.size());
-        assert(eulers.length == origCartes.size());
-        
-        for(int mol = 0; mol < origCartes.size(); mol++){
-        
-            final double[][] rotP = CoordTranslation.rotateXYZ(origCartes.get(mol).getAllXYZCoord(), eulers[mol]);
-            rotated.get(mol).setAllXYZ(rotP);
+
+    for (int mol = 0; mol < origCartes.size(); mol++) {
+
+      // now the eulers, slightly more involved
+
+      for (int euler = 0; euler < 3; euler++) {
+
+        // increment Euler and rotate
+        final double eulerBak = eulers[mol][euler];
+        eulers[mol][euler] += hDef;
+        rotateCartesians(origCartes, copyCartes, eulers);
+        final double eP = backend.energy(ref, copyCartes, coms, iter);
+        iter++;
+
+        // decrement Euler and rotate
+        eulers[mol][euler] -= 2 * hDef;
+        rotateCartesians(origCartes, copyCartes, eulers);
+        final double eM = backend.energy(ref, copyCartes, coms, iter);
+        iter++;
+
+        // reset and calculate gradient
+        eulers[mol][euler] = eulerBak;
+        gradient[mol * 6 + 3 + euler] = (eP - eM) / (2 * hDef);
+
+        if (false) {
+          System.out.println(
+              "DEBUG: Individual "
+                  + ref.getID()
+                  + " Molecule "
+                  + mol
+                  + " Euler orientation "
+                  + euler
+                  + " gradient "
+                  + gradient[mol * 6 + 3 + euler]);
         }
+      }
     }
+
+    return energy;
+  }
+
+  private static void rotateCartesians(
+      final List<CartesianCoordinates> origCartes,
+      final List<CartesianCoordinates> rotated,
+      final double[][] eulers) {
+
+    assert (origCartes.size() == rotated.size());
+    assert (eulers.length == origCartes.size());
+
+    for (int mol = 0; mol < origCartes.size(); mol++) {
+
+      final double[][] rotP =
+          CoordTranslation.rotateXYZ(origCartes.get(mol).getAllXYZCoord(), eulers[mol]);
+      rotated.get(mol).setAllXYZ(rotP);
+    }
+  }
 }

@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,110 +44,119 @@ import org.ogolem.core.CartesianCoordinates;
 
 /**
  * Rastrigins benchmark function in nD. Global minimum: f(x)=0; xi=0.
+ *
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2020-12-29
  */
 final class BenchRastrigin extends AbstractAdaptivable {
 
-    private static final long serialVersionUID = (long) 20150727;
-    public static final boolean DEBUG = false;
+  private static final long serialVersionUID = (long) 20150727;
+  public static final boolean DEBUG = false;
 
-    private final int iDims;
+  private final int iDims;
 
-    BenchRastrigin(final int dims){
-        this.iDims = dims;
+  BenchRastrigin(final int dims) {
+    this.iDims = dims;
+  }
+
+  @Override
+  public BenchRastrigin copy() {
+    return new BenchRastrigin(iDims);
+  }
+
+  @Override
+  public double energyOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds) {
+
+    final double[] daParams = params.getAllParamters();
+
+    double dEnergy = 10.0 * iDims;
+
+    for (int i = 0; i < daParams.length; i++) {
+      if (daParams[i] > 5.12 || daParams[i] < -5.12) {
+        // take the cutoff potential
+        dEnergy += 10.0 * daParams[i] * daParams[i];
+      } else {
+        dEnergy += daParams[i] * daParams[i] - 10.0 * Math.cos(2.0 * Math.PI * daParams[i]);
+      }
     }
 
-    @Override
-    public BenchRastrigin clone(){
-        return new BenchRastrigin(iDims);
+    return dEnergy;
+  }
+
+  @Override
+  public double gradientOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds,
+      final double[] daGrad) {
+
+    final double[] daParams = params.getAllParamters();
+
+    final int iNoOfParams = params.getNumberOfParamters();
+
+    double dEnergy = 10.0 * iDims;
+    for (int i = 0; i < iNoOfParams; i++) {
+      if (daParams[i] > 5.12 || daParams[i] < -5.12) {
+        // take the deviation of the cutoff potential
+        daGrad[i] = 10.0 * daParams[i];
+        dEnergy += 10.0 * daParams[i] * daParams[i];
+      } else {
+        /*
+         * f'(x(i)) = 2x_i + 20pi*sin(2pi x_i)
+         */
+        final double t1 = 2.0 * Math.PI * daParams[i];
+        daGrad[i] = 2.0 * daParams[i] + 20.0 * Math.PI * Math.sin(t1);
+        dEnergy += daParams[i] * daParams[i] - 10.0 * Math.cos(t1);
+      }
     }
 
-    @Override
-    public double energyOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, final int geomID, final BondInfo bonds){
+    if (DEBUG) {
+      // calculate a numerical gradient and compare it to the analytical one
+      final double[] daNumGrad = new double[iNoOfParams];
+      final double numE =
+          NumericalGradients.calculateParamGrad(cartes, params, this, geomID, bonds, daNumGrad);
 
-        final double[] daParams = params.getAllParamters();
-
-        double dEnergy = 10.0*iDims;
-
-        for(int i = 0; i < daParams.length; i++){
-            if(daParams[i] > 5.12 || daParams[i] < -5.12){
-                // take the cutoff potential
-                dEnergy += 10.0*daParams[i]*daParams[i];
-            } else {
-                dEnergy += daParams[i]*daParams[i]-10.0*Math.cos(2.0*Math.PI*daParams[i]);
-            }
+      for (int i = 0; i < daNumGrad.length; i++) {
+        if (Math.abs(daNumGrad[i] - daGrad[i]) >= 1E-7) {
+          // we have a noticable difference
+          System.err.println(
+              "DEBUG: Analytical vs numerical gradient is: " + daGrad[i] + " vs " + daNumGrad[i]);
+        } else {
+          System.out.println("DEBUG: Analytical vs numerical gradient was fine. :-)");
         }
-
-        return dEnergy;
+      }
     }
 
-    @Override
-    public double gradientOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, final int geomID, final BondInfo bonds,
-            final double[] daGrad){
+    return dEnergy;
+  }
 
-        final double[] daParams = params.getAllParamters();
+  @Override
+  public AdaptiveParameters createInitialParameterStub(
+      final ArrayList<CartesianCoordinates> refCartes, final String sMethod) {
 
-        final int iNoOfParams = params.getNumberOfParamters();
+    final String[] saAtoms = {"XX"};
+    final int[] iaParamsPerAt = {iDims};
+    final AdaptiveParameters paramStub =
+        new AdaptiveParameters(iDims, -1, saAtoms, iaParamsPerAt, sMethod);
 
-        double dEnergy = 10.0*iDims;
-        for(int i = 0; i < iNoOfParams; i++){
-            if(daParams[i] > 5.12 || daParams[i] < -5.12){
-                // take the deviation of the cutoff potential
-                daGrad[i] = 10.0 * daParams[i];
-                dEnergy += 10.0*daParams[i]*daParams[i];
-            } else {
-                /*
-                 * f'(x(i)) = 2x_i + 20pi*sin(2pi x_i)
-                 */
-                final double t1 = 2.0*Math.PI*daParams[i];
-                daGrad[i] = 2.0*daParams[i] + 20.0 * Math.PI*Math.sin(t1);
-                dEnergy += daParams[i]*daParams[i]-10.0*Math.cos(t1);
-            }
-        }
+    return paramStub;
+  }
 
-        if(DEBUG){
-            // calculate a numerical gradient and compare it to the analytical one
-            final double[] daNumGrad = new double[iNoOfParams];
-            final double numE = NumericalGradients.calculateParamGrad(cartes, params, this, geomID, bonds, daNumGrad);
+  @Override
+  public double[][] minMaxBordersForParams(final AdaptiveParameters params) {
 
-            for(int i = 0; i < daNumGrad.length; i++){
-                if(Math.abs(daNumGrad[i]-daGrad[i]) >= 1E-7){
-                    // we have a noticable difference
-                    System.err.println("DEBUG: Analytical vs numerical gradient is: "
-                            + daGrad[i] + " vs " + daNumGrad[i]);
-                } else {
-                    System.out.println("DEBUG: Analytical vs numerical gradient was fine. :-)");
-                }
-            }
-        }
+    final double[][] daMinMax = new double[2][iDims];
 
-        return dEnergy;
+    for (int i = 0; i < iDims; i++) {
+      daMinMax[0][i] = -5.12;
+      daMinMax[1][i] = 5.12;
     }
 
-    @Override
-    public AdaptiveParameters createInitialParameterStub(final ArrayList<CartesianCoordinates> refCartes,
-            final String sMethod){
-
-        final String[] saAtoms = {"XX"};
-        final int[] iaParamsPerAt = {iDims};
-        final AdaptiveParameters paramStub = new AdaptiveParameters(iDims, -1, saAtoms, iaParamsPerAt, sMethod);
-
-        return paramStub;
-    }
-
-    @Override
-    public double[][] minMaxBordersForParams(final AdaptiveParameters params){
-
-        final double[][] daMinMax = new double[2][iDims];
-
-        for(int i = 0; i < iDims; i++){
-            daMinMax[0][i] = -5.12;
-            daMinMax[1][i] = 5.12;
-        }
-
-        return daMinMax;
-    }
+    return daMinMax;
+  }
 }

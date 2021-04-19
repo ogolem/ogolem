@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,64 +39,70 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 /**
- * This uses an external engine (which is specified through the constructor) 
- * to do a local optimization of a molecule or a geometry.
+ * This uses an external engine (which is specified through the constructor) to do a local
+ * optimization of a molecule or a geometry.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-23
+ * @version 2020-12-29
  */
-class ExternalLocOpt implements Newton{
+class ExternalLocOpt implements Newton {
 
-    // the ID
-    private static final long serialVersionUID = (long) 20101108;
-	
-    private final FFEngineWrapper ffeng;
+  // the ID
+  private static final long serialVersionUID = (long) 20101108;
 
-    ExternalLocOpt(GlobalConfig globConf, int ffID, double cutE) {
-        ffeng = new FFEngineWrapper(globConf, ffID, cutE);
-    }
+  private final FFEngineWrapper ffeng;
 
-    private ExternalLocOpt(final ExternalLocOpt orig){
-        ffeng = orig.ffeng.clone();
-    }
+  ExternalLocOpt(GlobalConfig globConf, int ffID, double cutE) {
+    ffeng = new FFEngineWrapper(globConf, ffID, cutE);
+  }
 
-    @Override
-    public ExternalLocOpt clone(){
-        return new ExternalLocOpt(this);
-    }
+  private ExternalLocOpt(final ExternalLocOpt orig) {
+    ffeng = orig.ffeng.copy();
+  }
 
-    @Override
-    public String myIDandMethod(){
-        return "external LocOpt";
-    }
+  @Override
+  public ExternalLocOpt copy() {
+    return new ExternalLocOpt(this);
+  }
 
-    @Override
-    public Molecule localOptimization(Molecule mStartMolecule) {
-        return ffeng.localOptimization(mStartMolecule);
-    }
+  @Override
+  public String myIDandMethod() {
+    return "external LocOpt";
+  }
 
-    @Override
-    public Geometry localOptimization(Geometry gStartGeometry) {
-        return ffeng.localOptimization(gStartGeometry);
-    }
+  @Override
+  public Molecule localOptimization(Molecule mStartMolecule) {
+    return ffeng.localOptimization(mStartMolecule);
+  }
 
-    @Override
-    public CartesianCoordinates cartesToCartes(long id, CartesianCoordinates cartes,
-            boolean[][] constraints, boolean isConstricted, final BondInfo bonds) throws Exception{
-        return ffeng.cartesToCartes(id, cartes, constraints, isConstricted, bonds);
-    }
-    
-    @Override
-    public CartesianFullBackend getBackend(){
-        return ffeng.getBackend();
-    }
-    
-    @Override
-    public long getNumberOfGeomLocalOpts(){
-        return ffeng.getNumberOfGeomLocalOpts();
-    }
-    
-    @Override
-    public long getNumberOfMolLocalOpts(){
-        return ffeng.getNumberOfMolLocalOpts();
-    }
+  @Override
+  public Geometry localOptimization(Geometry gStartGeometry) {
+    return ffeng.localOptimization(gStartGeometry);
+  }
+
+  @Override
+  public CartesianCoordinates cartesToCartes(
+      long id,
+      CartesianCoordinates cartes,
+      boolean[][] constraints,
+      boolean isConstricted,
+      final BondInfo bonds)
+      throws Exception {
+    return ffeng.cartesToCartes(id, cartes, constraints, isConstricted, bonds);
+  }
+
+  @Override
+  public CartesianFullBackend getBackend() {
+    return ffeng.getBackend();
+  }
+
+  @Override
+  public long getNumberOfGeomLocalOpts() {
+    return ffeng.getNumberOfGeomLocalOpts();
+  }
+
+  @Override
+  public long getNumberOfMolLocalOpts() {
+    return ffeng.getNumberOfMolLocalOpts();
+  }
 }

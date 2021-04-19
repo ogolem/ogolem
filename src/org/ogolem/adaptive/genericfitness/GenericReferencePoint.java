@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,24 +37,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive.genericfitness;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 import org.ogolem.properties.Property;
 
 /**
  * An interface for a single reference point
+ *
  * @author Johannes Dieterich
- * @version 2015-10-28
+ * @version 2020-12-30
  */
-public interface GenericReferencePoint<T extends Property, V extends ReferenceInputData<T>> extends Serializable, Cloneable {
-    
-    GenericReferencePoint<T,V> clone();
-    
-    T getReferenceProperty();
-    
-    V getReferenceInputData();
-    
-    int getReferenceID();
-    
-    double getRefWeight();
-    
-    double getMaxAllowedDiff();
+public interface GenericReferencePoint<T extends Property, V extends ReferenceInputData<T>>
+    extends Serializable, Copyable {
+
+  @Override
+  GenericReferencePoint<T, V> copy();
+
+  T getReferenceProperty();
+
+  V getReferenceInputData();
+
+  int getReferenceID();
+
+  double getRefWeight();
+
+  double getMaxAllowedDiff();
 }

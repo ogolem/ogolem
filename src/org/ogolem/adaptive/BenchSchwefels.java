@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,128 +43,136 @@ import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
 
 /**
- * A benchmark function, Schwefels function in n-D. Optimal solution: 420.9687.
- * Requires a single reference geometry with a single dummy atom. Benchmarks are
- * always ugly. ;-)
+ * A benchmark function, Schwefels function in n-D. Optimal solution: 420.9687. Requires a single
+ * reference geometry with a single dummy atom. Benchmarks are always ugly. ;-)
+ *
  * @author Johannes Dieterich
- * @version 2015-07-27
+ * @version 2020-12-29
  */
 class BenchSchwefels extends AbstractAdaptivable {
 
-    private static final long serialVersionUID = (long) 20150727;
-    private final static boolean DEBUG = false;
-    private final int iDims;
+  private static final long serialVersionUID = (long) 20150727;
+  private static final boolean DEBUG = false;
+  private final int iDims;
 
-    BenchSchwefels(final int iDimensionality){
-        this.iDims = iDimensionality;
+  BenchSchwefels(final int iDimensionality) {
+    this.iDims = iDimensionality;
+  }
+
+  @Override
+  public BenchSchwefels copy() {
+    return new BenchSchwefels(iDims);
+  }
+
+  @Override
+  public double energyOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds) {
+    // f(x(0)...x(n)) = 418.9829*n + sum(-x(i)*sin(sqrt(abs(x(i))))
+
+    // we of course do not actually use the cartesian coordinates, just the
+    // parameters
+    final double[] daParams = params.getAllParamters();
+
+    double dEnergy = 418.9829 * iDims;
+
+    for (int i = 0; i < iDims; i++) {
+      if (daParams[i] > 500.0 || daParams[i] < -500.0) {
+        // take the cutoff potential
+        dEnergy += 0.02 * daParams[i] * daParams[i];
+      } else {
+        dEnergy -= daParams[i] * Math.sin(Math.sqrt(Math.abs(daParams[i])));
+      }
     }
 
-    @Override
-    public BenchSchwefels clone(){
-        return new BenchSchwefels(iDims);
+    return dEnergy;
+  }
+
+  @Override
+  public double gradientOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds,
+      final double[] daGrad) {
+
+    // we of course do not actually use the cartesian coordinates, just the
+    // parameters
+
+    final int iNoOfParams = params.getNumberOfParamters();
+
+    final double[] daParams = params.getAllParamters();
+
+    double dEnergy = 418.9829 * iDims;
+    for (int i = 0; i < iNoOfParams; i++) {
+
+      if (daParams[i] > 500.0 || daParams[i] < -500.0) {
+        // take the deviation of the cutoff potential
+        daGrad[i] = 0.04 * daParams[i];
+        dEnergy += 0.02 * daParams[i] * daParams[i];
+      } else {
+        /*
+         * f'(x(i)) = -(sqrt(x^2) cos(sqrt(|x|)))/(2 sqrt(|x|))-sin(sqrt(|x|))
+         * done using wolframalpha
+         */
+
+        final double pi = daParams[i];
+        final double piAbs = Math.abs(pi);
+        final double piAbsR = Math.sqrt(piAbs);
+        final double t1 = Math.sin(piAbsR);
+
+        final double dNumSecTerm = -piAbs * Math.cos(piAbsR);
+        final double dDenomSecTerm = 2.0 * piAbsR;
+
+        final double dAnalyticalVal = -t1 + dNumSecTerm / dDenomSecTerm;
+
+        daGrad[i] = dAnalyticalVal;
+        dEnergy -= daParams[i] * t1;
+      }
     }
 
-    @Override
-    public double energyOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, final int geomID, final BondInfo bonds){
-        //f(x(0)...x(n)) = 418.9829*n + sum(-x(i)*sin(sqrt(abs(x(i))))
+    if (DEBUG) {
+      final double[] numGrad = new double[daGrad.length];
 
-        // we of course do not actually use the cartesian coordinates, just the
-        // parameters
-        final double[] daParams = params.getAllParamters();
+      final double numFunc =
+          NumericalGradients.calculateParamGrad(cartes, params, this, geomID, bonds, numGrad);
+      System.out.println("DEBUG OUTPUT FOR NUMGRAD");
+      System.out.println("Func " + numFunc + "\t" + dEnergy + "\t" + (numFunc - dEnergy));
+      for (int i = 0; i < daGrad.length; i++) {
+        System.out.println(numGrad[i] + "\t" + daGrad[i] + "\t" + (numGrad[i] - daGrad[i]));
+        daGrad[i] = numGrad[i];
+      }
 
-        double dEnergy = 418.9829*iDims;
-
-        for(int i = 0; i < iDims; i++){
-            if(daParams[i] > 500.0 || daParams[i] < -500.0){
-                // take the cutoff potential
-                dEnergy += 0.02*daParams[i]*daParams[i];
-            } else {
-                dEnergy -= daParams[i] * Math.sin(Math.sqrt(Math.abs(daParams[i])));
-            }
-        }
-
-        return dEnergy;
+      return numFunc;
     }
 
-    @Override
-    public double gradientOfStructWithParams(final CartesianCoordinates cartes,
-            final AdaptiveParameters params, final int geomID, final BondInfo bonds,
-            final double[] daGrad){
+    return dEnergy;
+  }
 
-        // we of course do not actually use the cartesian coordinates, just the
-        // parameters
-        
-        final int iNoOfParams = params.getNumberOfParamters();
+  @Override
+  public AdaptiveParameters createInitialParameterStub(
+      final ArrayList<CartesianCoordinates> refCartes, final String sMethod) {
 
-        final double[] daParams = params.getAllParamters();
+    final String[] saAtoms = {"XX"};
+    final int[] iaParamsPerAt = {iDims};
+    final AdaptiveParameters paramStub =
+        new AdaptiveParameters(iDims, -1, saAtoms, iaParamsPerAt, sMethod);
 
-        double dEnergy = 418.9829*iDims;
-        for(int i = 0; i < iNoOfParams; i++){
+    return paramStub;
+  }
 
-            if(daParams[i] > 500.0 || daParams[i] < -500.0){
-                // take the deviation of the cutoff potential
-                daGrad[i] = 0.04 * daParams[i];
-                dEnergy += 0.02*daParams[i]*daParams[i];
-            } else {
-                /*
-                 * f'(x(i)) = -(sqrt(x^2) cos(sqrt(|x|)))/(2 sqrt(|x|))-sin(sqrt(|x|))
-                 * done using wolframalpha
-                 */
+  @Override
+  public double[][] minMaxBordersForParams(final AdaptiveParameters params) {
 
-                final double pi = daParams[i];
-                final double piAbs = Math.abs(pi);
-                final double piAbsR = Math.sqrt(piAbs);
-                final double t1 = Math.sin(piAbsR);
-                
-                final double dNumSecTerm = -piAbs* Math.cos(piAbsR);
-                final double dDenomSecTerm = 2.0 * piAbsR;
+    final double[][] daMinMax = new double[2][iDims];
 
-                final double dAnalyticalVal = -t1 + dNumSecTerm/dDenomSecTerm;
-
-                daGrad[i] = dAnalyticalVal;
-                dEnergy -= daParams[i] * t1;
-            }
-        }
-        
-        if(DEBUG){
-            final double[] numGrad = new double[daGrad.length];
-
-            final double numFunc = NumericalGradients.calculateParamGrad(cartes, params, this, geomID, bonds, numGrad);
-            System.out.println("DEBUG OUTPUT FOR NUMGRAD");
-            System.out.println("Func " + numFunc + "\t" + dEnergy + "\t" + (numFunc-dEnergy));
-            for(int i = 0; i < daGrad.length; i++){
-                System.out.println(numGrad[i]+ "\t" + daGrad[i] + "\t" + (numGrad[i]-daGrad[i]));
-                daGrad[i] = numGrad[i];
-            }
-                
-            return numFunc;
-        }
-
-        return dEnergy;
+    for (int i = 0; i < iDims; i++) {
+      daMinMax[0][i] = -500;
+      daMinMax[1][i] = 500;
     }
 
-    @Override
-    public AdaptiveParameters createInitialParameterStub(final ArrayList<CartesianCoordinates> refCartes,
-            final String sMethod){
-
-        final String[] saAtoms = {"XX"};
-        final int[] iaParamsPerAt = {iDims};
-        final AdaptiveParameters paramStub = new AdaptiveParameters(iDims, -1, saAtoms, iaParamsPerAt, sMethod);
-
-        return paramStub;
-    }
-
-    @Override
-    public double[][] minMaxBordersForParams(final AdaptiveParameters params){
-
-        final double[][] daMinMax = new double[2][iDims];
-
-        for(int i = 0; i < iDims; i++){
-            daMinMax[0][i] = -500;
-            daMinMax[1][i] = 500;
-        }
-
-        return daMinMax;
-    }
+    return daMinMax;
+  }
 }

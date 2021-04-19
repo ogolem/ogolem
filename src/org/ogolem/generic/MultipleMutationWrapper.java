@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,74 +43,75 @@ import org.ogolem.random.Lottery;
 
 /**
  * Wraps multiple mutations and assings execution probabilities to them.
+ *
  * @author Johannes Dieterich
- * @version 2014-03-28
+ * @version 2020-12-29
  */
-public class MultipleMutationWrapper<E,T extends Optimizable<E>> implements GenericMutation<E,T>{
+public class MultipleMutationWrapper<E, T extends Optimizable<E>> implements GenericMutation<E, T> {
 
-    private static final long serialVersionUID = (long) 20140328;
-    private final Lottery random = Lottery.getInstance();
-    private final List<GenericMutation<E,T>> mutations;
-    private final double[] probabilities;
-    
-    public MultipleMutationWrapper(final List<GenericMutation<E,T>> muts,
-            final List<Double> probs){
-        
-        assert(muts.size() == probs.size());
-        this.mutations = muts;
-        this.probabilities = new double[muts.size()];
-        double currProb = 0.0;
-        int i = 0;
-        for(final double prob : probs){
-            currProb += prob;
-            probabilities[i] = currProb;
-            i++;
-        }
-        
-        if(Math.abs(1.0-currProb) >= 1E-3){
-            throw new RuntimeException("Probabilites for Mutations do not add up to 1.0 (100%) within a reasonable criterion.");
-        }
+  private static final long serialVersionUID = (long) 20140328;
+  private final Lottery random = Lottery.getInstance();
+  private final List<GenericMutation<E, T>> mutations;
+  private final double[] probabilities;
+
+  public MultipleMutationWrapper(final List<GenericMutation<E, T>> muts, final List<Double> probs) {
+
+    assert (muts.size() == probs.size());
+    this.mutations = muts;
+    this.probabilities = new double[muts.size()];
+    double currProb = 0.0;
+    int i = 0;
+    for (final double prob : probs) {
+      currProb += prob;
+      probabilities[i] = currProb;
+      i++;
     }
-    
-    public MultipleMutationWrapper(final MultipleMutationWrapper<E,T> orig){
-        this.probabilities = orig.probabilities.clone();
-        this.mutations = new ArrayList<>(orig.mutations.size());
-        orig.mutations.forEach((mut) -> {
-            this.mutations.add(mut.clone());
+
+    if (Math.abs(1.0 - currProb) >= 1E-3) {
+      throw new RuntimeException(
+          "Probabilites for Mutations do not add up to 1.0 (100%) within a reasonable criterion.");
+    }
+  }
+
+  public MultipleMutationWrapper(final MultipleMutationWrapper<E, T> orig) {
+    this.probabilities = orig.probabilities.clone();
+    this.mutations = new ArrayList<>(orig.mutations.size());
+    orig.mutations.forEach(
+        (mut) -> {
+          this.mutations.add(mut.copy());
         });
-    }
-    
-    @Override
-    public MultipleMutationWrapper<E,T> clone() {
-        return new MultipleMutationWrapper<>(this);
+  }
+
+  @Override
+  public MultipleMutationWrapper<E, T> copy() {
+    return new MultipleMutationWrapper<>(this);
+  }
+
+  @Override
+  public String getMyID() {
+    String s = "MULTIPLE MUTATION WRAPPER\n";
+    int i = 0;
+    for (final GenericMutation<E, T> mutation : mutations) {
+      final double prev = (i == 0) ? 0.0 : probabilities[i - 1];
+      s += (probabilities[i] - prev) * 100 + "% of \t" + mutation.getMyID() + "\n\t";
+      i++;
     }
 
-    @Override
-    public String getMyID() {
-        String s = "MULTIPLE MUTATION WRAPPER\n";
-        int i = 0;
-        for(final GenericMutation<E,T> mutation : mutations){
-            final double prev = (i==0) ? 0.0 : probabilities[i-1];
-            s += (probabilities[i]-prev)*100 + "% of \t" + mutation.getMyID() + "\n\t";
-            i++;
-        }
-        
-        return s;
+    return s;
+  }
+
+  @Override
+  public T mutate(final T individual) {
+
+    assert (probabilities.length == mutations.size());
+    final double r = random.nextDouble();
+    for (int i = 0; i < probabilities.length; i++) {
+      if (r <= probabilities[i]) {
+        return mutations.get(i).mutate(individual);
+      }
     }
 
-    @Override
-    public T mutate(final T individual) {
-        
-        assert(probabilities.length == mutations.size());
-        final double r = random.nextDouble();
-        for(int i = 0; i < probabilities.length; i++){
-            if(r <= probabilities[i]){
-                return mutations.get(i).mutate(individual);
-            }
-        }
-        
-        // numerical inaccuracies and stuff;
-        return mutations.get(mutations.size()-1).mutate(individual);
-    }
-    
+    // numerical inaccuracies and stuff;
+    return mutations.get(mutations.size() - 1).mutate(individual);
+  }
 }

@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,32 +38,34 @@ package org.ogolem.core;
 
 /**
  * A sigmoid function as the strength computer.
+ *
  * @author Johannes Dieterich
- * @version 2015-07-20
+ * @version 2020-12-30
  */
 public class SigmoidCollisionStrengthComputer implements CollisionStrengthComputer {
 
-    private static final long serialVersionUID = (long) 20150720;
-    
-    private final double prefix;
-    
-    SigmoidCollisionStrengthComputer(final double prefix){
-        this.prefix = prefix;
-    }
-    
-    private SigmoidCollisionStrengthComputer(final SigmoidCollisionStrengthComputer orig){
-        this.prefix = orig.prefix;
-    }
-    
-    @Override
-    public SigmoidCollisionStrengthComputer clone() {
-        return new SigmoidCollisionStrengthComputer(this);
-    }
+  private static final long serialVersionUID = (long) 20150720;
 
-    @Override
-    public double calculateCollisionStrength(final int atom1, final int atom2, final double distance, final double idealDistance) {
-        final double strength = 1 / (1 + Math.exp(prefix * distance + idealDistance));
-        
-        return strength;
-    }
+  private final double prefix;
+
+  SigmoidCollisionStrengthComputer(final double prefix) {
+    this.prefix = prefix;
+  }
+
+  private SigmoidCollisionStrengthComputer(final SigmoidCollisionStrengthComputer orig) {
+    this.prefix = orig.prefix;
+  }
+
+  @Override
+  public SigmoidCollisionStrengthComputer copy() {
+    return new SigmoidCollisionStrengthComputer(this);
+  }
+
+  @Override
+  public double calculateCollisionStrength(
+      final int atom1, final int atom2, final double distance, final double idealDistance) {
+    final double strength = 1 / (1 + Math.exp(prefix * distance + idealDistance));
+
+    return strength;
+  }
 }

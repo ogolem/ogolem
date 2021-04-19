@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, 2017, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015, 2017-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -52,122 +52,148 @@ import org.ogolem.properties.Property;
 
 /**
  * An abstract adaptivable.
+ *
  * @author Johannes Dieterich
- * @version 2017-09-14
+ * @version 2020-12-29
  */
 public abstract class AbstractAdaptiveBackend implements AdaptiveBackend {
 
-    private static final long serialVersionUID = (long) 20151028;
-    
-    AbstractAdaptiveBackend(){
-    }
-    
-    @Override
-    public abstract AbstractAdaptiveBackend clone();
+  private static final long serialVersionUID = (long) 20151028;
 
-    @Override
-    public abstract double energyOfStructWithParams(final CartesianCoordinates cartes, final AdaptiveParameters params, final int geomID, final BondInfo bonds);
+  AbstractAdaptiveBackend() {}
 
-    @Override
-    public abstract double gradientOfStructWithParams(final CartesianCoordinates cartes, final AdaptiveParameters params, final int geomID, final BondInfo bonds, final double[] grad);
+  @Override
+  public abstract AbstractAdaptiveBackend copy();
 
-    @Override
-    public abstract double[][] minMaxBordersForParams(final AdaptiveParameters params);
+  @Override
+  public abstract double energyOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds);
 
-    @Override
-    public abstract AdaptiveParameters createInitialParameterStub(final ArrayList<CartesianCoordinates> refCartes, final String sMethod);
+  @Override
+  public abstract double gradientOfStructWithParams(
+      final CartesianCoordinates cartes,
+      final AdaptiveParameters params,
+      final int geomID,
+      final BondInfo bonds,
+      final double[] grad);
 
-    @Override
-    public <T extends Property, V extends ReferenceInputData<T>> PropertyCalculator<T,V> getCalculatorForProperty(final T property, final V data) {
-        System.out.println("INFO: Default implementation of getCalculatorForProperty from abstract super class AbstractAdaptiveBackend called.");
-        return null;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<? extends Property> runAllPropertyCalcs(final AdaptiveParameters params, final List<GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>>> referencePoints){
-        
-        final List<Property> allProps = new ArrayList<>();
-        
-        referencePoints.forEach((refPoint) -> {
-            // figure type of property out
-            final Property p = refPoint.getReferenceProperty();
-            if(p instanceof Energy){
-                
-                final Energy typedP = (Energy) p;
-                final ReferenceInputData<Energy> data = (ReferenceInputData<Energy>) refPoint.getReferenceInputData();
-                
-                // get the property calculator
-                final PropertyCalculator<Energy,ReferenceInputData<Energy>> calc = getCalculatorForProperty(typedP,data);
-                
-                // calculate property
-                final Energy calcP = calc.calculateProperty(params, data);
-            
-                // add
-                allProps.add(calcP);
+  @Override
+  public abstract double[][] minMaxBordersForParams(final AdaptiveParameters params);
 
-            } else if(p instanceof Forces){
-                
-                final Forces typedP = (Forces) p;
-                final ReferenceInputData<Forces> data = (ReferenceInputData<Forces>) refPoint.getReferenceInputData();
-                
-                // get the property calculator
-                final PropertyCalculator<Forces,ReferenceInputData<Forces>> calc = getCalculatorForProperty(typedP,data);
-                
-                // calculate property
-                final Forces calcP = calc.calculateProperty(params, data);
-            
-                // add
-                allProps.add(calcP);
-                
-            } else if(p instanceof BulkModulus){
-                
-                final BulkModulus typedP = (BulkModulus) p;
-                final ReferenceInputData<BulkModulus> data = (ReferenceInputData<BulkModulus>) refPoint.getReferenceInputData();
-                
-                // get the property calculator
-                final PropertyCalculator<BulkModulus,ReferenceInputData<BulkModulus>> calc = getCalculatorForProperty(typedP,data);
-                
-                // calculate property
-                final BulkModulus calcP = calc.calculateProperty(params, data);
-            
-                // add
-                allProps.add(calcP);
-                
-            } else if(p instanceof CellVolume){
-                
-                final CellVolume typedP = (CellVolume) p;
-                final ReferenceInputData<CellVolume> data = (ReferenceInputData<CellVolume>) refPoint.getReferenceInputData();
-                
-                // get the property calculator
-                final PropertyCalculator<CellVolume,ReferenceInputData<CellVolume>> calc = getCalculatorForProperty(typedP,data);
-                
-                // calculate property
-                final CellVolume calcP = calc.calculateProperty(params, data);
-            
-                // add
-                allProps.add(calcP);
-                
-            } else if(p instanceof DeltaGauge){
-                
-                final DeltaGauge typedP = (DeltaGauge) p;
-                final ReferenceInputData<DeltaGauge> data = (ReferenceInputData<DeltaGauge>) refPoint.getReferenceInputData();
-                
-                // get the property calculator
-                final PropertyCalculator<DeltaGauge,ReferenceInputData<DeltaGauge>> calc = getCalculatorForProperty(typedP,data);
-                
-                // calculate property
-                final DeltaGauge calcP = calc.calculateProperty(params, data);
-            
-                // add
-                allProps.add(calcP);
-                
-            } else {
-                // error
-                throw new RuntimeException("Unknown property type " + p.printableProperty() + ".");
-            }
+  @Override
+  public abstract AdaptiveParameters createInitialParameterStub(
+      final ArrayList<CartesianCoordinates> refCartes, final String sMethod);
+
+  @Override
+  public <T extends Property, V extends ReferenceInputData<T>>
+      PropertyCalculator<T, V> getCalculatorForProperty(final T property, final V data) {
+    System.out.println(
+        "INFO: Default implementation of getCalculatorForProperty from abstract super class AbstractAdaptiveBackend called.");
+    return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<? extends Property> runAllPropertyCalcs(
+      final AdaptiveParameters params,
+      final List<GenericReferencePoint<? extends Property, ? extends ReferenceInputData<?>>>
+          referencePoints) {
+
+    final List<Property> allProps = new ArrayList<>();
+
+    referencePoints.forEach(
+        (refPoint) -> {
+          // figure type of property out
+          final Property p = refPoint.getReferenceProperty();
+          if (p instanceof Energy) {
+
+            final Energy typedP = (Energy) p;
+            final ReferenceInputData<Energy> data =
+                (ReferenceInputData<Energy>) refPoint.getReferenceInputData();
+
+            // get the property calculator
+            final PropertyCalculator<Energy, ReferenceInputData<Energy>> calc =
+                getCalculatorForProperty(typedP, data);
+
+            // calculate property
+            final Energy calcP = calc.calculateProperty(params, data);
+
+            // add
+            allProps.add(calcP);
+
+          } else if (p instanceof Forces) {
+
+            final Forces typedP = (Forces) p;
+            final ReferenceInputData<Forces> data =
+                (ReferenceInputData<Forces>) refPoint.getReferenceInputData();
+
+            // get the property calculator
+            final PropertyCalculator<Forces, ReferenceInputData<Forces>> calc =
+                getCalculatorForProperty(typedP, data);
+
+            // calculate property
+            final Forces calcP = calc.calculateProperty(params, data);
+
+            // add
+            allProps.add(calcP);
+
+          } else if (p instanceof BulkModulus) {
+
+            final BulkModulus typedP = (BulkModulus) p;
+            final ReferenceInputData<BulkModulus> data =
+                (ReferenceInputData<BulkModulus>) refPoint.getReferenceInputData();
+
+            // get the property calculator
+            final PropertyCalculator<BulkModulus, ReferenceInputData<BulkModulus>> calc =
+                getCalculatorForProperty(typedP, data);
+
+            // calculate property
+            final BulkModulus calcP = calc.calculateProperty(params, data);
+
+            // add
+            allProps.add(calcP);
+
+          } else if (p instanceof CellVolume) {
+
+            final CellVolume typedP = (CellVolume) p;
+            final ReferenceInputData<CellVolume> data =
+                (ReferenceInputData<CellVolume>) refPoint.getReferenceInputData();
+
+            // get the property calculator
+            final PropertyCalculator<CellVolume, ReferenceInputData<CellVolume>> calc =
+                getCalculatorForProperty(typedP, data);
+
+            // calculate property
+            final CellVolume calcP = calc.calculateProperty(params, data);
+
+            // add
+            allProps.add(calcP);
+
+          } else if (p instanceof DeltaGauge) {
+
+            final DeltaGauge typedP = (DeltaGauge) p;
+            final ReferenceInputData<DeltaGauge> data =
+                (ReferenceInputData<DeltaGauge>) refPoint.getReferenceInputData();
+
+            // get the property calculator
+            final PropertyCalculator<DeltaGauge, ReferenceInputData<DeltaGauge>> calc =
+                getCalculatorForProperty(typedP, data);
+
+            // calculate property
+            final DeltaGauge calcP = calc.calculateProperty(params, data);
+
+            // add
+            allProps.add(calcP);
+
+          } else {
+            // error
+            throw new RuntimeException("Unknown property type " + p.printableProperty() + ".");
+          }
         });
-        
-        return allProps;
-    }
+
+    return allProps;
+  }
 }

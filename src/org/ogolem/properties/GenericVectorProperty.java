@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2018, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2018-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,69 +38,76 @@ package org.ogolem.properties;
 
 /**
  * A generic vector property, i.e., a bare bones implementation.
+ *
  * @author Johannes Dieterich
- * @version 2018-01-02
+ * @version 2020-12-29
  */
 public class GenericVectorProperty extends VectorProperty {
 
-    private static final long serialVersionUID = (long) 20180102;
-    
-    private final long id;
-    
-    public GenericVectorProperty(final double[] data, final boolean normDifferences, final long id){
-        super(data, normDifferences);
-        this.id = id;
-    }
-    
-    private GenericVectorProperty(final GenericVectorProperty orig){
-        super(orig);
-        this.id = orig.id;
-    }
-    
-    @Override
-    public GenericVectorProperty clone() {
-        return new GenericVectorProperty(this);
+  private static final long serialVersionUID = (long) 20180102;
+
+  private final long id;
+
+  public GenericVectorProperty(final double[] data, final boolean normDifferences, final long id) {
+    super(data, normDifferences);
+    this.id = id;
+  }
+
+  private GenericVectorProperty(final GenericVectorProperty orig) {
+    super(orig);
+    this.id = orig.id;
+  }
+
+  @Override
+  public GenericVectorProperty copy() {
+    return new GenericVectorProperty(this);
+  }
+
+  @Override
+  protected boolean ensureCorrectProperty(Property p) {
+    if (!(p instanceof GenericVectorProperty)) {
+      return false;
     }
 
-    @Override
-    protected boolean ensureCorrectProperty(Property p) {
-        if(!(p instanceof GenericVectorProperty)) {return false;}
-        
-        final GenericVectorProperty gp = (GenericVectorProperty) p;
-        return (gp.id == id);
+    final GenericVectorProperty gp = (GenericVectorProperty) p;
+    return (gp.id == id);
+  }
+
+  @Override
+  public boolean makeSensible() {
+
+    if (data == null) {
+      return false;
     }
 
-    @Override
-    public boolean makeSensible() {
-        
-        if(data == null){return false;}
-        
-        boolean manip = false;
-        for(int i = 0; i < data.length; i++){
-            if(Double.isInfinite(data[i]) || Double.isNaN(data[i])){
-                this.data[i] = 0.0;
-                manip = true;
-            }
-        }
-        
-        return manip;
+    boolean manip = false;
+    for (int i = 0; i < data.length; i++) {
+      if (Double.isInfinite(data[i]) || Double.isNaN(data[i])) {
+        this.data[i] = 0.0;
+        manip = true;
+      }
     }
 
-    @Override
-    public String printableProperty() {
-        
-        if(data == null){return "NULL'D";}
-        
-        String s = "";
-        for(int i = 0; i < data.length; i++){
-            s += data[i] + "\n";
-        }
-        
-        return s;
+    return manip;
+  }
+
+  @Override
+  public String printableProperty() {
+
+    if (data == null) {
+      return "NULL'D";
     }
 
-    @Override
-    public String name() {
-        return "GENERICVECTOR" + id;
+    String s = "";
+    for (int i = 0; i < data.length; i++) {
+      s += data[i] + "\n";
     }
+
+    return s;
+  }
+
+  @Override
+  public String name() {
+    return "GENERICVECTOR" + id;
+  }
 }
