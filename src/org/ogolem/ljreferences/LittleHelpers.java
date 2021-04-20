@@ -1,4 +1,6 @@
-/**
+/*
+Copyright (c) 2010, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,84 +37,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.ljreferences;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import org.ogolem.io.InputPrimitives;
+import org.ogolem.io.OutputPrimitives;
 
 /**
- *
  * @author Johannes Dieterich
- * @version 2010-03-08
+ * @version 2020-12-30
  */
 final class LittleHelpers {
 
-    static String[] readFileIn(final String sFileName) throws IOException{
-        
-        BufferedReader buffreader = null;
-        String line;
-        int iNumberOfRows = 0;
-        try {
-            buffreader = new BufferedReader(new FileReader(sFileName));
-            while ((line = buffreader.readLine()) != null) {
-                iNumberOfRows++;
-            }
-        } catch (IOException e) {
-            throw new IOException("Error occured during reading in file!", e);
-        } finally {
-            if (buffreader != null) {
-                try {
-                    buffreader.close();
-                } catch (IOException e) {
-                    throw new IOException("Error occured during closing file!", e);
-                }
-            }
-        }
-        String[] saInputData = new String[iNumberOfRows];
-        int i = 0;
-        try {
-            buffreader = new BufferedReader(new FileReader(sFileName));
-            while ((line = buffreader.readLine()) != null) {
-                saInputData[i] = line;
-                i++;
-            }
-        } catch (IOException e) {
-            throw new IOException("Error occured during reading in file!", e);
-        } finally {
-            if (buffreader != null) {
-                try {
-                    buffreader.close();
-                } catch (IOException e) {
-                    throw new IOException("Error occured during closing file!", e);
-                }
-            }
-        }
-        return saInputData;
-    }
+  static String[] readFileIn(final String sFileName) throws IOException {
+    return InputPrimitives.readFileIn(sFileName);
+  }
 
-
-    static void writeNow(String sOutputPath, String[] saToWrite) throws IOException {
-
-        BufferedWriter buffwriter = null;
-        int iLength = saToWrite.length;
-
-        try {
-            buffwriter = new BufferedWriter(new FileWriter(sOutputPath, true));
-            for (int i = 0; i < iLength; i++) {
-                buffwriter.write(saToWrite[i]);
-                buffwriter.write(System.getProperty("line.separator"));
-            }
-        } catch (IOException e) {
-            throw new IOException("Error occured during writing!", e);
-        } finally {
-            if (buffwriter != null) {
-                try {
-                    buffwriter.close();
-                } catch (IOException e) {
-                    throw new IOException("Error occured after writing, when trying to close files!", e);
-                }
-            }
-        }
-    }
+  static void writeNow(String sOutputPath, String[] saToWrite) throws IOException {
+    OutputPrimitives.writeOut(sOutputPath, saToWrite, false);
+  }
 }

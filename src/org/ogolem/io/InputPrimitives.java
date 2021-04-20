@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2010-2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,76 +38,84 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.io;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
  * All input wrapped up.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-27
+ * @version 2020-12-30
  */
 public final class InputPrimitives {
 
-    /**
-     * Reads a serialized object.
-     * @param fileName
-     * @return an object for the serialized data
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public static Object readBinInput(final String fileName) throws IOException, ClassNotFoundException {
+  /**
+   * Reads a serialized object.
+   *
+   * @param fileName
+   * @return an object for the serialized data
+   * @throws IOException
+   * @throws ClassNotFoundException
+   */
+  public static Object readBinInput(final String fileName)
+      throws IOException, ClassNotFoundException {
 
-        final File file = new File(fileName);
-        if(!file.exists()){
-            throw new IOException("File does not exist.");
-        } else if(file.length() > FixedValues.MAXFILESIZEREADING){
-            throw new IOException("File way bigger than expected. Must be garbage.");
-        }
-
-        Object obj = null;
-        try(final ObjectInputStream objectStream = new ObjectInputStream(new FileInputStream(fileName))){
-            obj = objectStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw e;
-        }
-
-        return obj;
+    final File file = new File(fileName);
+    if (!file.exists()) {
+      throw new IOException("File does not exist.");
+    } else if (file.length() > FixedValues.MAXFILESIZEREADING) {
+      throw new IOException("File way bigger than expected. Must be garbage.");
     }
 
-    /**
-     * Reads a file into memory.
-     * @param fileName
-     * @return the complete file content as a String array
-     * @throws IOException
-     */
-    public static String[] readFileIn(final String fileName) throws IOException {
-
-        final File file = new File(fileName);
-        if(!file.exists()){
-            throw new IOException("File " + fileName + " does not exist.");
-        } else if(file.length() > FixedValues.MAXFILESIZEREADING){
-            throw new IOException("File " + fileName + " way bigger than expected. Must be garbage.");
-        }
-
-        String line;
-        final LinkedList<String> ll = new LinkedList<>();
-        try(final BufferedReader buffreader = new BufferedReader(new FileReader(fileName))){
-            while ((line = buffreader.readLine()) != null) {
-                ll.add(line);
-            }
-        } catch (IOException e) {
-            throw e;
-        }
-
-        final Iterator<String> it = ll.iterator();
-        final String[] data = new String[ll.size()];
-
-        int counter = 0;
-        while(it.hasNext()){
-            data[counter] = it.next();
-            counter++;
-        }
-
-        return data;
+    Object obj = null;
+    try (final ObjectInputStream objectStream =
+        new ObjectInputStream(new FileInputStream(fileName))) {
+      obj = objectStream.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      throw e;
     }
+
+    return obj;
+  }
+
+  /**
+   * Reads a file into memory.
+   *
+   * @param fileName
+   * @return the complete file content as a String array
+   * @throws IOException
+   */
+  public static String[] readFileIn(final String fileName) throws IOException {
+
+    final File file = new File(fileName);
+    if (!file.exists()) {
+      throw new IOException("File " + fileName + " does not exist.");
+    } else if (file.length() > FixedValues.MAXFILESIZEREADING) {
+      throw new IOException("File " + fileName + " way bigger than expected. Must be garbage.");
+    }
+
+    String line;
+    final LinkedList<String> ll = new LinkedList<>();
+    try (final BufferedReader buffreader =
+        new BufferedReader(
+            new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")))) {
+      while ((line = buffreader.readLine()) != null) {
+        ll.add(line);
+      }
+    } catch (IOException e) {
+      throw e;
+    }
+
+    final Iterator<String> it = ll.iterator();
+    final String[] data = new String[ll.size()];
+
+    int counter = 0;
+    while (it.hasNext()) {
+      data[counter] = it.next();
+      counter++;
+    }
+
+    return data;
+  }
 }

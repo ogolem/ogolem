@@ -39,11 +39,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.generic.generichistory;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -245,7 +247,10 @@ public final class GenericHistory<E, T extends Optimizable<E>> implements Serial
     final String sep = System.getProperty("line.separator");
     BufferedWriter buffwriter = null;
     try {
-      buffwriter = new BufferedWriter(new FileWriter(whereToAppendASCII, true));
+      buffwriter =
+          new BufferedWriter(
+              new OutputStreamWriter(
+                  new FileOutputStream(whereToAppendASCII, true), Charset.forName("UTF-8")));
 
       if (firstASCII) {
         buffwriter.write("The following genetic history was created during the run.");
@@ -292,7 +297,10 @@ public final class GenericHistory<E, T extends Optimizable<E>> implements Serial
       final String sep = System.getProperty("line.separator");
       BufferedWriter buffwriter = null;
       try {
-        buffwriter = new BufferedWriter(new FileWriter(whereToAppendASCII, true));
+        buffwriter =
+            new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream(whereToAppendASCII, true), Charset.forName("UTF-8")));
         buffwriter.write("-----------------------------------------------------------" + sep);
         buffwriter.write("Overall genetic history" + sep);
         buffwriter.write("\ttotal number of trial genetic pool entries:    " + totalCounter + sep);

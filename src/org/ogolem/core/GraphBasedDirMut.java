@@ -43,6 +43,7 @@ import contrib.bobyqa.AbstractBOBYQAMethod;
 import contrib.bobyqa.BOBYQAOptimizer;
 import java.awt.Color;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -752,14 +753,15 @@ public class GraphBasedDirMut implements GenericMutation<Molecule, Geometry> {
     Arrays.sort(allCOMdists);
 
     if (DEBUG) {
-      try (final PrintWriter comOutput = new PrintWriter("com.distances")) {
+      try (final PrintWriter comOutput =
+          new PrintWriter("com.distances", Charset.forName("UTF-8"))) {
         System.out.println("DEBUG: COM-COM distances: written to file com.distances.");
         for (int i = 0; i < counter - 1; i++) {
           comOutput.println(
               " " + i + "\t" + allCOMdists[i] + "\t" + (allCOMdists[i + 1] - allCOMdists[i]));
         }
-      } catch (FileNotFoundException e) {
-        System.out.println("FileNotFoundException: probably this file could not be created.");
+      } catch (IOException e) {
+        System.out.println("IOException: probably this file could not be created.");
         System.out.println(e.getMessage());
         e.printStackTrace(System.err);
       }

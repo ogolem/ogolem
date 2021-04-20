@@ -1,6 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2012, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,57 +42,58 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Used if some System calls produce either output on the command line or errors.
+ *
  * @author Johannes Dieterich
- * @version 2012-11-05
+ * @version 2020-12-30
  */
-public class StreamGobbler extends Thread{
-    
-    private static final boolean DEBUG = true;
-    private final InputStream is;
-    final String type;
-    private final List<String> llData = new LinkedList<>();
+public class StreamGobbler extends Thread {
 
-    public StreamGobbler(InputStream is, String type) {
-        this.is = is;
-        this.type = type;
+  private final InputStream is;
+  final String type;
+  private final List<String> llData = new LinkedList<>();
+
+  public StreamGobbler(InputStream is, String type) {
+    this.is = is;
+    this.type = type;
+  }
+
+  @Override
+  public void run() {
+    try (final BufferedReader br =
+        new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
+      String line;
+      // if(br.ready()){
+      while ((line = br.readLine()) != null) {
+        addToList(line);
+      }
+      /*} else {
+          // else: nothing in there
+          if(DEBUG){
+              System.out.println("DEBUG: Nothing in stream " + type);
+          }
+      }*/
+    } catch (IOException ioe) {
+      ioe.printStackTrace(System.err);
+    }
+  }
+
+  private void addToList(final String s) {
+    llData.add(s);
+  }
+
+  public String[] getData() {
+
+    final String[] sa = new String[llData.size()];
+    for (int i = 0; i < sa.length; i++) {
+      sa[i] = llData.get(i);
     }
 
-    @Override
-    public void run() {
-        try (final BufferedReader br =
-                   new BufferedReader(new InputStreamReader(is))) {
-            String line;
-            //if(br.ready()){
-               while ((line = br.readLine()) != null) {
-                    addToList(line);
-                }
-	    /*} else {
-                // else: nothing in there
-                if(DEBUG){
-                    System.out.println("DEBUG: Nothing in stream " + type);
-                }
-            }*/
-        } catch (IOException ioe) {
-            ioe.printStackTrace(System.err);
-        }
-    }
-
-    private void addToList(final String s){
-        llData.add(s);
-    }
-
-    public String[] getData(){
-        
-        final String[] sa = new String[llData.size()];
-        for(int i = 0; i < sa.length; i++) {
-            sa[i] = llData.get(i);
-        }
-
-        return sa;
-    }
+    return sa;
+  }
 }

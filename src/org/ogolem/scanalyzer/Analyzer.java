@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,8 +39,10 @@ package org.ogolem.scanalyzer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.core.Constants;
@@ -48,47 +51,69 @@ import org.ogolem.helpers.Tuple;
 
 /**
  * Analyzes a set of structures for typical energies etc pp.
+ *
  * @author Johannes Dieterich
- * @version 2013-09-23
+ * @version 2020-12-30
  */
 class Analyzer {
-    private static final boolean DEBUG = false;
-    private Analyzer(){}
-    
-    static void analyze(final String folderName, final String[] fileList, final int noBins, final double cutoff) throws Exception {
-        
-        final List<Double> energies = new ArrayList<>(fileList.length);
-        
-        // parse all the energies, kind of tedious...
-        for(int i = 0; i < fileList.length; i++){
-            final String fileName = folderName + File.separator + fileList[i];
-            if(DEBUG){System.out.println("DEBUG: Reading in " + fileName);}
-            try(final BufferedReader buffreader = new BufferedReader(new FileReader(fileName))){
-                buffreader.readLine(); // number of atoms, who cares
-                final String line = buffreader.readLine();
-                if(line == null) {throw new RuntimeException("Line should be non-null, is null.");}
-                final String[] sa = line.trim().split("\\s+");
-                final double e = Double.parseDouble(sa[1])*Constants.KJTOHARTREE;
-                if(DEBUG){System.out.println("DEBUG: read in energy " + e + " in kj/mol " + e*Constants.HARTREETOKJ);}
-                if(e >= cutoff){continue;}
-                energies.add(e);
-            } catch (IOException e) {
-                throw e;
-            }
-            
+  private static final boolean DEBUG = false;
+
+  private Analyzer() {}
+
+  static void analyze(
+      final String folderName, final String[] fileList, final int noBins, final double cutoff)
+      throws Exception {
+
+    final List<Double> energies = new ArrayList<>(fileList.length);
+
+    // parse all the energies, kind of tedious...
+    for (int i = 0; i < fileList.length; i++) {
+      final String fileName = folderName + File.separator + fileList[i];
+      if (DEBUG) {
+        System.out.println("DEBUG: Reading in " + fileName);
+      }
+      try (final BufferedReader buffreader =
+          new BufferedReader(
+              new InputStreamReader(new FileInputStream(fileName), Charset.forName("UTF-8")))) {
+        buffreader.readLine(); // number of atoms, who cares
+        final String line = buffreader.readLine();
+        if (line == null) {
+          throw new RuntimeException("Line should be non-null, is null.");
         }
-        
-        // now do some basic analyzation of them
-        final Tuple<Double,Double> tup = StatisticUtils.meanAndStdDev(energies);
-        System.out.println("  mean:    " + tup.getObject1()*Constants.HARTREETOKJ + " kJ/mol");
-        System.out.println("  std.dev: " + tup.getObject2()*Constants.HARTREETOKJ + " kJ/mol");
-        
-        // lets see if we could bin?
-        final Tuple<int[],double[]> tup2 = StatisticUtils.binData(energies, noBins);
-        final int[] binned = tup2.getObject1();
-        final double[] binOffs = tup2.getObject2();
-        for(int i = 0; i < noBins; i++){
-            System.out.println("  bin " + i + " start " + binOffs[i] + " population " + binned[i] + " percents " + (binned[i]*100.0/energies.size()));
+        final String[] sa = line.trim().split("\\s+");
+        final double e = Double.parseDouble(sa[1]) * Constants.KJTOHARTREE;
+        if (DEBUG) {
+          System.out.println(
+              "DEBUG: read in energy " + e + " in kj/mol " + e * Constants.HARTREETOKJ);
         }
+        if (e >= cutoff) {
+          continue;
+        }
+        energies.add(e);
+      } catch (IOException e) {
+        throw e;
+      }
     }
+
+    // now do some basic analyzation of them
+    final Tuple<Double, Double> tup = StatisticUtils.meanAndStdDev(energies);
+    System.out.println("  mean:    " + tup.getObject1() * Constants.HARTREETOKJ + " kJ/mol");
+    System.out.println("  std.dev: " + tup.getObject2() * Constants.HARTREETOKJ + " kJ/mol");
+
+    // lets see if we could bin?
+    final Tuple<int[], double[]> tup2 = StatisticUtils.binData(energies, noBins);
+    final int[] binned = tup2.getObject1();
+    final double[] binOffs = tup2.getObject2();
+    for (int i = 0; i < noBins; i++) {
+      System.out.println(
+          "  bin "
+              + i
+              + " start "
+              + binOffs[i]
+              + " population "
+              + binned[i]
+              + " percents "
+              + (binned[i] * 100.0 / energies.size()));
+    }
+  }
 }
