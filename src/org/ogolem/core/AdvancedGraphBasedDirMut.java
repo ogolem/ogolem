@@ -621,7 +621,10 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule, Geome
     boolean doCDEveryTrial = true;
   }
 
-  private static class MolConnComparator implements Comparator<Tuple<Integer, Integer>> {
+  private static class MolConnComparator
+      implements Comparator<Tuple<Integer, Integer>>, Serializable {
+
+    private static final long serialVersionUID = (long) 20201230;
 
     @Override
     public int compare(final Tuple<Integer, Integer> t, final Tuple<Integer, Integer> t1) {

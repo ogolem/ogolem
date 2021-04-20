@@ -84,23 +84,14 @@ public class Peak implements Comparable<Peak>, Serializable, Copyable {
   @Override
   public int compareTo(final Peak p) {
 
-    final int BEFORE = -1;
-    final int EQUAL = 0;
-    final int AFTER = 1;
-
     // optimization
     if (this == p) {
-      return EQUAL;
+      return 0;
     }
 
-    if (p.getLocation() > this.getLocation()) {
-      return BEFORE;
-    } else if (p.getLocation() < this.getLocation()) {
-      return AFTER;
-    } else if (p.getLocation() == this.getLocation()) {
-      return EQUAL;
-    } else {
-      throw new RuntimeException("ERROR: WTF situation in peak!");
-    }
+    final double d1 = this.getLocation();
+    final double d2 = p.getLocation();
+
+    return Double.compare(d1, d2);
   }
 }

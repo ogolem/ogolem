@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.properties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,7 +48,7 @@ import org.ogolem.helpers.Tuple;
  * The energy ordering of a few structures (including their gaps).
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2020-12-30
  */
 public class EnergyOrder implements Property {
 
@@ -229,21 +230,17 @@ public class EnergyOrder implements Property {
     return "ENERGY ORDER";
   }
 
-  private static class EnergyComparator implements Comparator<Tuple<String, Double>> {
+  private static class EnergyComparator implements Comparator<Tuple<String, Double>>, Serializable {
+
+    private static final long serialVersionUID = (long) 20201230;
 
     @Override
     public int compare(Tuple<String, Double> o1, Tuple<String, Double> o2) {
 
       final double e1 = o1.getObject2();
       final double e2 = o2.getObject2();
-      if (e1 < e2) {
-        return -1;
-      } else if (e1 == e2) {
-        // unlikely...
-        return 0;
-      } else {
-        return 1;
-      }
+
+      return Double.compare(e1, e2);
     }
   }
 
