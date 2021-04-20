@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ import org.ogolem.random.StandardRNG;
  * and configures a GlobalConfig object.
  *
  * @author Johannes Dieterich
- * @version 2020-07-29
+ * @version 2021-04-19
  */
 public final class Input {
 
@@ -2362,13 +2362,33 @@ public final class Input {
     return cartes;
   }
 
+  /**
+   * Read a geometry from a Tinker run.
+   *
+   * @param cartesianFile the Cartesian file containing the geometry.
+   * @param iNoOfAtoms the number of atoms in the geometry.
+   * @param iNoOfMolecules the number of molecules in the geometry.
+   * @param iaAtomsPerMol the number of atoms per molecule in the geometry.
+   * @param refEnvironment environment (if applicable). Can be null to signal no environment in use.
+   * @return A CartesianCoordinates object containing the geometry.
+   * @throws IOException if an input operation fails.
+   * @throws CastException if a cast fails.
+   */
   static CartesianCoordinates ReadXYZTinker(
-      String sCartesianFile, int iNoOfAtoms, int iNoOfMolecules, int[] iaAtomsPerMol)
+      final String cartesianFile,
+      final int iNoOfAtoms,
+      final int iNoOfMolecules,
+      final int[] iaAtomsPerMol,
+      final Environment refEnvironment)
       throws IOException, CastException {
 
     final CartesianCoordinates cartes =
         new CartesianCoordinates(iNoOfAtoms, iNoOfMolecules, iaAtomsPerMol);
-    final String[] saTinkerXYZOut = InputPrimitives.readFileIn(sCartesianFile);
+    if (refEnvironment != null) {
+      cartes.setRefEnvironment(refEnvironment);
+    }
+
+    final String[] saTinkerXYZOut = InputPrimitives.readFileIn(cartesianFile);
 
     assert (saTinkerXYZOut != null);
     assert (saTinkerXYZOut.length >= iNoOfAtoms + 1);

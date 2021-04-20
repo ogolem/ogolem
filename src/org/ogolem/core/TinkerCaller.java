@@ -1,7 +1,8 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015, J. M. Dieterich and B. Hartke
+              2017-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.util.ArrayList;
+import org.ogolem.helpers.Tuple;
 import org.ogolem.io.OutputPrimitives;
 
 /**
@@ -50,8 +52,8 @@ import org.ogolem.io.OutputPrimitives;
  * Tinker can be used as a backend. But this is highly discouraged for normal application as the
  * calling overhead is significant in comparison to the force field execution time!
  *
- * @author Johannes Dieterich
- * @version 2020-12-29
+ * @author Johannes Dieterich, Bernd Hartke
+ * @version 2021-04-19
  */
 class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
   // TODO delete always all files...
@@ -79,6 +81,11 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
   private final boolean useFileOut;
 
   private final boolean uberCustom;
+
+  private final int noAtomsCluster;
+  private final int noAtomsEnvironment;
+  private final int noAtomsTotal;
+  private final boolean envIsRigid;
 
   /**
    * The constructor for usage as a local optimizing engine.
@@ -121,8 +128,15 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
     this.uberCustom = customKey;
     this.sWhichParameters = null;
 
-    final boolean[][] baBonds = globconf.geoConf.bonds.getFullBondMatrix();
-    saTinkerSecondHalf = new String[baBonds.length + 1];
+    final Geometry gTmp = new Geometry(globconf.geoConf);
+
+    this.noAtomsCluster = gTmp.getNumberOfAtoms();
+    this.noAtomsEnvironment = (gTmp.containsEnvironment()) ? gTmp.getEnvironment().atomsInEnv() : 0;
+    this.noAtomsTotal = noAtomsCluster + noAtomsEnvironment;
+    this.envIsRigid =
+        (gTmp.containsEnvironment()) ? gTmp.getEnvironment().isEnvironmentRigid() : false;
+
+    saTinkerSecondHalf = new String[noAtomsTotal + 1];
     saTinkerSecondHalf[0] = " ";
 
     String[] saAuxInput;
@@ -149,31 +163,41 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
     sWhichParameters = saAuxInput[1].trim();
 
     if (customBonds && customKey) {
-      for (int i = 2; i < baBonds.length + 2; i++) {
+      for (int i = 2; i < noAtomsTotal + 2; i++) {
         final String[] sa = saAuxInput[i].trim().split("\\s", 2);
         saTinkerSecondHalf[i - 1] = sa[1];
       }
     } else {
-      for (int i = 2; i < baBonds.length + 2; i++) {
+      for (int i = 2; i < noAtomsTotal + 2; i++) {
         // get the force field parameter code in every single line
-        saAuxInput[i] = saAuxInput[i].trim();
-        saAuxInput[i] = saAuxInput[i].substring(saAuxInput[i].indexOf(" "));
-        saAuxInput[i] = saAuxInput[i].trim();
-        saTinkerSecondHalf[i - 1] = saAuxInput[i] + "\t";
+        final String[] sa = saAuxInput[i].trim().split("\\s", 2);
+        saTinkerSecondHalf[i - 1] = sa[1] + "\t";
       }
 
       // once more ugly java code! ;-)
-      final String[] atoms = new Geometry(globconf.geoConf).getCartesians().getAllAtomTypes();
+      CartesianCoordinates cartes;
+      BondInfo bonds;
+      if (gTmp.containsEnvironment()) {
+        final Tuple<CartesianCoordinates, BondInfo> tup =
+            gTmp.getCartesiansAndBondsWithEnvironment();
+        cartes = tup.getObject1();
+        bonds = tup.getObject2();
+      } else {
+        cartes = gTmp.getCartesians();
+        bonds = gTmp.getBondInfo();
+      }
+      final boolean[][] bondMat = bonds.getFullBondMatrix();
+      final String[] atoms = cartes.getAllAtomTypes();
 
       // now we act on the boolean[][] bond information
-      for (int i = 0; i < baBonds.length; i++) {
+      for (int i = 0; i < bondMat.length; i++) {
 
         if (atoms[i].equalsIgnoreCase("DM")) {
           // real dummy for TIP5P
           continue;
         }
 
-        for (int j = 0; j < baBonds.length; j++) {
+        for (int j = 0; j < bondMat.length; j++) {
 
           if (atoms[j].equalsIgnoreCase("DM")) {
             // real dummy for TIP5P
@@ -192,7 +216,7 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
           if (i == j) {
             continue;
           }
-          if (baBonds[i][j]) {
+          if (bondMat[i][j]) {
             // bond, add that to the connectivity info
             int k = j + 1;
             saTinkerSecondHalf[i + 1] += k + "\t";
@@ -214,6 +238,10 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
     if (orig.saTinkerSecondHalf != null) {
       this.saTinkerSecondHalf = orig.saTinkerSecondHalf.clone();
     }
+    this.noAtomsCluster = orig.noAtomsCluster;
+    this.noAtomsEnvironment = orig.noAtomsEnvironment;
+    this.noAtomsTotal = orig.noAtomsTotal;
+    this.envIsRigid = orig.envIsRigid;
   }
 
   @Override
@@ -304,20 +332,14 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
         alKeywords.add("SOLVATE ASP");
       }
 
-      for (int i = 0; i < baConstraints[0].length; i++) {
+      if (envIsRigid) {
+        // mark the environment atoms as inactive
+        alKeywords.add("INACTIVE -" + (this.noAtomsCluster + 1) + " " + this.noAtomsTotal);
+      }
+
+      for (int i = 0; i < this.noAtomsCluster; i++) {
         if (baConstraints[0][i] && baConstraints[1][i] && baConstraints[2][i]) {
-          alKeywords.add(
-              "RESTRAIN-POSITION "
-                  + (i + 1)
-                  + " "
-                  + daXYZ[0][i] * Constants.BOHRTOANG
-                  + "  "
-                  + daXYZ[1][i] * Constants.BOHRTOANG
-                  + "  "
-                  + daXYZ[2][i] * Constants.BOHRTOANG
-                  + "  10000");
-          // we use a higher (aka steeper) potential here to turn the restraint more into a
-          // constraint
+          alKeywords.add("INACTIVE " + (i + 1));
         } else if (!baConstraints[0][i] && !baConstraints[1][i] && !baConstraints[2][i]) {
           continue;
         } else {
@@ -409,7 +431,8 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
               sTinkerOutput + "_2",
               cartes.getNoOfAtoms(),
               cartes.getNoOfMolecules(),
-              cartes.getAllAtomsPerMol());
+              cartes.getAllAtomsPerMol(),
+              cartes.getReferenceEnvironmentCopy());
     } catch (Exception e) {
       throw new ConvergenceException("Problem in reading the output of tinker.", e);
     }
