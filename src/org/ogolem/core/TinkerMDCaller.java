@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2010-2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2018-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import org.ogolem.io.OutputPrimitives;
  * Calls the MD parts of Tinker for a pseudo local optimization.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2021-04-19
  */
 final class TinkerMDCaller extends AbstractLocOpt {
 
@@ -65,6 +65,11 @@ final class TinkerMDCaller extends AbstractLocOpt {
 
   private final String[] saTinkerSecondHalf;
   private final String sWhichParameters;
+
+  private final int noAtomsCluster;
+  private final int noAtomsEnvironment;
+  private final int noAtomsTotal;
+  private final boolean envIsRigid;
 
   TinkerMDCaller(GlobalConfig conf, METHOD whichMethod, boolean useSolv) {
     super(conf);
@@ -119,6 +124,14 @@ final class TinkerMDCaller extends AbstractLocOpt {
       saTinkerSecondHalf[i - 1] = saAuxInput[i] + "\t";
     }
 
+    final Geometry gTmp = new Geometry(conf.geoConf);
+
+    this.noAtomsCluster = gTmp.getNumberOfAtoms();
+    this.noAtomsEnvironment = (gTmp.containsEnvironment()) ? gTmp.getEnvironment().atomsInEnv() : 0;
+    this.noAtomsTotal = noAtomsCluster + noAtomsEnvironment;
+    this.envIsRigid =
+        (gTmp.containsEnvironment()) ? gTmp.getEnvironment().isEnvironmentRigid() : false;
+
     // now we act on the boolean[][] bond information
     for (int i = 0; i < bonds.length; i++) {
       for (int j = 0; j < bonds.length; j++) {
@@ -144,6 +157,10 @@ final class TinkerMDCaller extends AbstractLocOpt {
     this.useSolvation = orig.useSolvation;
     this.saTinkerSecondHalf = orig.saTinkerSecondHalf.clone();
     this.sWhichParameters = orig.sWhichParameters;
+    this.noAtomsCluster = orig.noAtomsCluster;
+    this.noAtomsEnvironment = orig.noAtomsEnvironment;
+    this.noAtomsTotal = orig.noAtomsTotal;
+    this.envIsRigid = orig.envIsRigid;
   }
 
   @Override
@@ -249,19 +266,14 @@ final class TinkerMDCaller extends AbstractLocOpt {
       alKeywords.add("SOLVATE ASP");
     }
 
-    for (int i = 0; i < baConstraints[0].length; i++) {
+    if (envIsRigid) {
+      // mark the environment atoms as inactive
+      alKeywords.add("INACTIVE -" + (this.noAtomsCluster + 1) + " " + this.noAtomsTotal);
+    }
+
+    for (int i = 0; i < this.noAtomsCluster; i++) {
       if (baConstraints[0][i] && baConstraints[1][i] && baConstraints[2][i]) {
-        alKeywords.add(
-            "RESTRAIN-POSITION "
-                + (i + 1)
-                + " "
-                + daXYZ[0][i] * Constants.BOHRTOANG
-                + "  "
-                + daXYZ[1][i] * Constants.BOHRTOANG
-                + "  "
-                + daXYZ[2][i] * Constants.BOHRTOANG
-                + "  10000");
-        // we use a higher (aka steeper) potential here to turn the restraint more into a constraint
+        alKeywords.add("INACTIVE " + (i + 1));
       } else if (!baConstraints[0][i] && !baConstraints[1][i] && !baConstraints[2][i]) {
         continue;
       } else {
@@ -369,7 +381,8 @@ final class TinkerMDCaller extends AbstractLocOpt {
               outGeoFile,
               cartes.getNoOfAtoms(),
               cartes.getNoOfMolecules(),
-              cartes.getAllAtomsPerMol());
+              cartes.getAllAtomsPerMol(),
+              cartes.getReferenceEnvironmentCopy());
     } catch (Exception e) {
       throw new ConvergenceException("Problem in reading the output of tinker.", e);
     }
