@@ -174,7 +174,7 @@ public class FullSpectrum implements Spectrum {
     for (int i = 0; i < getIntensities().length; i++) {
       out +=
           String.format(
-              Locale.US, "%8.1f      %7.5e\n", (getOffset() + getIncr() * i), getIntensities()[i]);
+              Locale.US, "%8.1f      %7.5e%n", (getOffset() + getIncr() * i), getIntensities()[i]);
     }
 
     return out;

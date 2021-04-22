@@ -97,6 +97,8 @@ public class MainPowerSpec {
       } catch (Exception e) {
         System.err.println("Failure to open PrintStream for output file " + outFile);
         e.printStackTrace(System.err);
+      } finally {
+        ps.close();
       }
     }
 

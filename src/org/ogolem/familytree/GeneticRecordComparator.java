@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,23 +36,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.familytree;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * A comparator to sort the genetic records by ID
+ *
  * @author Johannes Dieterich
- * @version 2015-07-16
+ * @version 2020-12-30
  */
-class GeneticRecordComparator implements Comparator<GeneticRecord>{
+class GeneticRecordComparator implements Comparator<GeneticRecord>, Serializable {
 
-    @Override
-    public int compare(final GeneticRecord o1, final GeneticRecord o2) {
-        
-        final int id1 = o1.id();
-        final int id2 = o2.id();
-        
-        final int diff = id1-id2;
-        
-        return diff;
-    }
+  private static final long serialVersionUID = (long) 20201230;
+
+  @Override
+  public int compare(final GeneticRecord o1, final GeneticRecord o2) {
+
+    final int id1 = o1.id();
+    final int id2 = o2.id();
+
+    final int diff = id1 - id2;
+
+    return diff;
+  }
 }

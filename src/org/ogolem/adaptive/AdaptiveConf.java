@@ -100,7 +100,7 @@ import org.ogolem.properties.StressTensor;
  * A configuration object for the adaptive package.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2020-12-31
  */
 public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
 
@@ -551,10 +551,10 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
               "No fitness function specified in fitness function definition block.");
         }
 
-        GenericBackend<Double, AdaptiveParameters> func = null;
         if (fitFuncStyle.equalsIgnoreCase("full")) {
-          func =
+          final var func =
               new FitFuncToBackend(fitFunc, normParams, lowerParameterBorder, upperParameterBorder);
+          backendDict.put(tag, func);
         } else if (fitFuncStyle.startsWith("ranged:")) {
 
           final String rangeDef = fitFuncStyle.substring(7).trim();
@@ -579,14 +579,13 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
             }
           }
 
-          func =
+          final var func =
               new RangedFitFuncToBackend(
                   fitFunc, normParams, ranges, lowerParameterBorder, upperParameterBorder);
+          backendDict.put(tag, func);
         } else {
           throw new RuntimeException("Unknown fitness function style: " + fitFuncStyle);
         }
-
-        backendDict.put(tag, func);
       }
     }
   }
@@ -778,7 +777,8 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
   /** Debug option to print fitness contributions. PrintFitnessContributions TODO doc */
   boolean printContributions = false;
 
-  private HashMap<String, GenericBackend<Double, AdaptiveParameters>> backendDict = null;
+  private final HashMap<String, GenericBackend<Double, AdaptiveParameters>> backendDict =
+      new HashMap<>();
 
   public static org.ogolem.helpers.Tuple<Adaptivable, String> mapStringToAdaptivable(
       final String s, final GlobalConfig globConf) throws Exception {
