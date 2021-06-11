@@ -20,6 +20,7 @@ GeneticRecordsToSerial=10000
 GeometriesToSerial=10000
 InitialFillAlgo=packlayerbysize
 AcceptableFitness=-0.019703
+WhichClusterNicher=coulomb;number=2;width=0.05
 <GEOMETRY>
 NumberOfParticles=10
 <MOLECULE>

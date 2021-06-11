@@ -674,7 +674,6 @@ public class GlobalConfig implements Configuration<Molecule, Geometry> {
 
   private NicheComputer<Molecule, Geometry> mapStringToNicheComp(final String fullNicherString)
       throws Exception {
-
     /*
      * Syntax is as follows: NICHERNAME:NICHEROPT1;NICHEROPT2;NICHEROPT3
      */
@@ -777,7 +776,31 @@ public class GlobalConfig implements Configuration<Molecule, Geometry> {
         final LJNeighborNicheComp ljneigh = new LJNeighborNicheComp(width, mode);
         nicher = ljneigh;
         break;
+      case "coulomb":
+        double cwidth = CoulombMatrixNicheComp.DEFAULTWIDTH;
+        int cnumber = CoulombMatrixNicheComp.DEFAULTNUMBER;
 
+        final String[] optionsCoul = nicherOptions.trim().split("\\;");
+        for (final String opt : optionsCoul) {
+          if (opt.isEmpty()) {
+            continue;
+          } else if (opt.trim().startsWith("width=")) {
+            final String wide = opt.substring(6).trim();
+            cwidth = Math.abs(Double.parseDouble(wide));
+          } else if (opt.trim().startsWith("number=")) {
+            final String numb = opt.substring(7).trim();
+            cnumber = Integer.parseInt(numb);
+            if (cnumber < 1) {
+              throw new RuntimeException("cnumber < 1 makes no sense in Coulomb Matrix nicher.");
+            }
+          } else {
+            throw new RuntimeException("Illegal option " + opt + " for Coulomb Matrix nicher.");
+          }
+        }
+
+        final CoulombMatrixNicheComp cmatrix = new CoulombMatrixNicheComp(cwidth, cnumber);
+        nicher = cmatrix;
+        break;
       default:
         throw new RuntimeException("No such nicher " + whichNicher + ".");
     }
