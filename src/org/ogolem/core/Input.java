@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorSpecies;
 import org.ogolem.adaptive.AdaptiveParameters;
 import org.ogolem.generic.GenericBackend;
 import org.ogolem.generic.GenericFitnessFunction;
@@ -62,15 +64,19 @@ import org.ogolem.md.MDConfig;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RNGenerator;
 import org.ogolem.random.StandardRNG;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This invokes the IOHandler and checks the resulting array of Strings for configuration options
  * and configures a GlobalConfig object.
  *
  * @author Johannes Dieterich
- * @version 2021-04-19
+ * @version 2021-07-04
  */
 public final class Input {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Input.class);
 
   public static GlobalConfig ConfigureMe(final String inputPath)
       throws InitIOException, CastException, Exception {
@@ -99,6 +105,14 @@ public final class Input {
   public static GlobalConfig configureFromBlock(
       final String[] configInput, final String inputPath, final boolean failOnMissingGeom)
       throws InitIOException, CastException, Exception {
+
+    // since vectorapi is an incubating feature and we otherwise only use it within a
+    // threading environment that swallows exceptions (such as: add the incubator module)
+    // excplicitly use it here so that errors are user visible
+    final VectorSpecies<Double> species = DoubleVector.SPECIES_PREFERRED;
+    LOG.info(
+        "Vectorization through incubating vectorapi is accessible with a preferred vector length of : "
+            + species.length());
 
     final GlobalConfig globConf = new GlobalConfig();
 

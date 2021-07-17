@@ -1,15 +1,16 @@
 plugins {
-  id 'com.github.johnrengelman.shadow' version '6.1.0'
-  id 'com.diffplug.spotless' version '5.1.1'
+  id 'com.github.johnrengelman.shadow' version '7.0.0'
+  id 'com.diffplug.spotless' version '5.12.4'
   id 'com.github.spotbugs' version '4.6.1'
   id 'java'
   id 'application'
 }
 
-sourceCompatibility = '11'
-targetCompatibility = '11'
+//sourceCompatibility = '16'
+//targetCompatibility = '16'
 
 mainClassName = 'org.ogolem.general.MainOgolem'
+applicationDefaultJvmArgs = ["--add-modules=jdk.incubator.foreign", "--add-modules=jdk.incubator.vector"]
 
 version = 'snapshot'
 
@@ -45,6 +46,12 @@ dependencies {
   )
 }
 
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(16)
+  }
+}
+
 sourceSets {
   main {
     java {
@@ -63,6 +70,8 @@ compileJava {
   options.warnings = true
   options.deprecation = true
   options.debug = true
+  options.compilerArgs += ["--add-modules=jdk.incubator.foreign"]
+  options.compilerArgs += ["--add-modules=jdk.incubator.vector"]
 }
 
 // This debug target can be used from within Netbeans. Note that the "Debug Project"
@@ -88,6 +97,7 @@ test {
   exclude 'org/ogolem/locopt/FleminLocOptTest*'
   exclude 'org/ogolem/locopt/PraxisLocOptTest*'
   exclude 'org/ogolem/locopt/RNK1MinLocOptTest*'
+  jvmArgs '--add-modules=jdk.incubator.foreign', '--add-modules=jdk.incubator.vector'
 }
 
 shadowJar {
@@ -107,5 +117,15 @@ spotless {
 
 spotbugs {
     ignoreFailures = true
+    effort = 'more'
     onlyAnalyze = [ 'org.ogolem.*' ]
 }
+
+//spotbugsMain {
+//  reports {
+//    html {
+//      enabled = true
+//      stylesheet = 'fancy-hist.xsl'
+//    }
+//  }
+//}
