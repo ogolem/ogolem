@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building ogolem and running unit tests'
-                sh 'gradle build -i'
+                sh 'gradle build -i -Dorg.gradle.java.home=/usr/local/openjdk16'
             }
         }
         stage('Build ogolem manual') {
@@ -17,19 +17,19 @@ pipeline {
         stage('Microbenchmark') {
             steps {
 	        echo 'Running ogolem internal microbenchmarks'
-                sh 'java -jar build/libs/ogolem-snapshot.jar --microbenchmarks'
+                sh '/usr/local/openjdk16/bin/java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --microbenchmarks'
             }
         }
         stage('Macrobenchmark - clusters') {
             steps {
 	        echo 'Running ogolem internal macrobenchmarks for cluster structure optimization'
-                sh 'java -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -cluster cluster-macrobenchs.csv 2'
+                sh '/usr/local/openjdk16/bin/java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -cluster cluster-macrobenchs.csv 2'
             }
         }
         stage('Macrobenchmark - adaptive') {
             steps {
 	        echo 'Running ogolem internal macrobenchmarks for adaptive parameter optimization'
-                sh 'java -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -adaptive adaptive-macrobenchs.csv 2'
+                sh '/usr/local/openjdk16/bin/java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -adaptive adaptive-macrobenchs.csv 2'
             }
         }
     }

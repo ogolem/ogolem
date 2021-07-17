@@ -10,8 +10,8 @@ AdaptivableChoice=ackleybench:10D
 ParameterGlobOpt=parameters{xover(portugal:nocuts=1)mutation(germany:)}
 ParamGlobOptIter=19000
 PopulationSize=1000
-ParamThreshLocOptParam=1e-4
-ParamThreshLocOptGradient=1e-4
+ParamThreshLocOptParam=1e-7
+ParamThreshLocOptGradient=1e-7
 ParameterLocOpt=lbfgs:backend=alldefault
 AcceptableFitness=1e-6
 <REFERENCE>

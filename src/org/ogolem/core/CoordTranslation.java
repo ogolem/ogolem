@@ -57,7 +57,8 @@ public final class CoordTranslation {
 
   private static final boolean DEBUG = false;
 
-  private CoordTranslation() {};
+  private CoordTranslation() {}
+  ;
 
   /**
    * Translates a Geometry into a CartesianCoordinates object.

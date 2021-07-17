@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2020, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2020-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,49 +46,57 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Some helpers solely for the macrobenchmarks
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2021-06-29
  */
 class Helpers {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(Helpers.class);    
-    private static final boolean DEBUG = false;
 
-    static int executeJavaProcess(final String workDir, final String[] args) throws Exception {
-        
-        final String javaHome = System.getProperty("java.home");
-        final String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
-        final String pathToOurJar = new File(System.getProperty("java.class.path")).getAbsolutePath();
- 
-        if(DEBUG){
-            final Properties p = System.getProperties();
-            p.list(System.out);
-        }
+  private static final Logger LOG = LoggerFactory.getLogger(Helpers.class);
+  private static final boolean DEBUG = false;
 
-        final List<String> command = new ArrayList<>();
-        command.add(javaBin);
-        command.add("-ea");
-        command.add("-jar");
-        command.add(pathToOurJar);
-        
-        for(final String arg : args){
-            command.add(arg);
-        }
-        
-        LOG.debug("Executing " + javaBin + " with jar " + pathToOurJar);
-        
-        final ProcessBuilder builder = new ProcessBuilder(command);
-        final Process proc = builder.directory(new File(workDir)).redirectOutput(new File(workDir + File.separator + "bench.out")).redirectError(new File(workDir + File.separator + "bench.err")).start();
-        proc.waitFor();
-                
-        return proc.exitValue();
+  static int executeJavaProcess(final String workDir, final String[] args) throws Exception {
+
+    final String javaHome = System.getProperty("java.home");
+    final String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
+    final String pathToOurJar = new File(System.getProperty("java.class.path")).getAbsolutePath();
+
+    if (DEBUG) {
+      final Properties p = System.getProperties();
+      p.list(System.out);
     }
-    
-    static class Rank0Filter implements FilenameFilter {
 
-        @Override
-        public boolean accept(File arg0, String arg1) {
-            return (arg1.startsWith("rank0individual"));
-        }
+    final List<String> command = new ArrayList<>();
+    command.add(javaBin);
+    command.add("-ea");
+    command.add("--add-modules");
+    command.add("jdk.incubator.vector");
+    command.add("-jar");
+    command.add(pathToOurJar);
+
+    for (final String arg : args) {
+      command.add(arg);
     }
+
+    LOG.debug("Executing " + javaBin + " with jar " + pathToOurJar);
+
+    final ProcessBuilder builder = new ProcessBuilder(command);
+    final Process proc =
+        builder
+            .directory(new File(workDir))
+            .redirectOutput(new File(workDir + File.separator + "bench.out"))
+            .redirectError(new File(workDir + File.separator + "bench.err"))
+            .start();
+    proc.waitFor();
+
+    return proc.exitValue();
+  }
+
+  static class Rank0Filter implements FilenameFilter {
+
+    @Override
+    public boolean accept(File arg0, String arg1) {
+      return (arg1.startsWith("rank0individual"));
+    }
+  }
 }
