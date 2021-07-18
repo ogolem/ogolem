@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
-              2019, J. M. Dieterich and B. Hartke
+              2019-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,252 +37,240 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Random;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
- *
  * @author Johannes Dieterich
- * @version 2019-12-30
+ * @version 2021-07-17
  */
 public class CoordTranslationTest {
-    
-    private static final double NUMACC = 1e-10;
-    private final Random r;
-    
-    public CoordTranslationTest(){
-        this.r = new Random();
-    }
-    
-    /**
-     * Test of sanitizePhi method, of class CoordTranslation.
-     */
-    @Test
-    public void testSanitizePhi() {
-        System.out.println("sanitizePhi");
-        
-        final int TRIALS = 1000;
-        final double lower = -Math.PI;
-        final double upper = Math.PI;
-        final double period = 2*Math.PI;
-        final int maxPer = 10;
-        
-        for(int i = 0; i < TRIALS; i++){
-            final double ang1 = lower + r.nextDouble()*period;
-            final double san1 = CoordTranslation.sanitizePhi(ang1);
-            assertEquals(ang1,san1,NUMACC);
-            
-            // now one period on top
-            final double ang2 = ang1+period;
-            final double san2 = CoordTranslation.sanitizePhi(ang2);
-            assertEquals(ang1,san2,NUMACC);
-            
-            // remove one period
-            final double ang3 = ang1-period;
-            final double san3 = CoordTranslation.sanitizePhi(ang3);
-            assertEquals(ang1,san3,NUMACC);
-            
-            // add rnd periods
-            final int pers1 = r.nextInt(maxPer);
-            final double ang4 = ang1+pers1*period;
-            final double san4 = CoordTranslation.sanitizePhi(ang4);
-            assertEquals(ang1,san4,NUMACC);
-            
-            
-            // remove rnd periods
-            final int pers2 = r.nextInt(maxPer);
-            final double ang5 = ang1-pers2*period;
-            final double san5 = CoordTranslation.sanitizePhi(ang5);
-            assertEquals(ang1,san5,NUMACC);
-            
-        }        
-    }
 
-    /**
-     * Test of sanitizeOmega method, of class CoordTranslation.
-     */
-    @Test
-    public void testSanitizeOmega() {
-        System.out.println("sanitizeOmega");
-        final int TRIALS = 1000;
-        final double lower = -0.5*Math.PI;
-        final double upper = 0.5*Math.PI;
-        final double period = Math.PI;
-        final int maxPer = 10;
-        
-        for(int i = 0; i < TRIALS; i++){
-            final double ang1 = lower + r.nextDouble()*period;
-            final double san1 = CoordTranslation.sanitizeOmega(ang1);
-            assertEquals(ang1,san1,NUMACC);
-            
-            // now one period on top
-            final double ang2 = ang1+period;
-            final double san2 = CoordTranslation.sanitizeOmega(ang2);
-            assertEquals(ang1,san2,NUMACC);
-            
-            // remove one period
-            final double ang3 = ang1-period;
-            final double san3 = CoordTranslation.sanitizeOmega(ang3);
-            assertEquals(ang1,san3,NUMACC);
-            
-            // add rnd periods
-            final int pers1 = r.nextInt(maxPer);
-            final double ang4 = ang1+pers1*period;
-            final double san4 = CoordTranslation.sanitizeOmega(ang4);
-            assertEquals(ang1,san4,NUMACC);
-            
-            
-            // remove rnd periods
-            final int pers2 = r.nextInt(maxPer);
-            final double ang5 = ang1-pers2*period;
-            final double san5 = CoordTranslation.sanitizeOmega(ang5);
-            assertEquals(ang1,san5,NUMACC);
-            
-        }        
-    }
+  private static final double NUMACC = 1e-10;
+  private final Random r;
 
-    /**
-     * Test of sanitizePsi method, of class CoordTranslation.
-     */
-    @Test
-    public void testSanitizePsi() {
-        System.out.println("sanitizePsi");
-        
-        final int TRIALS = 1000;
-        final double lower = -Math.PI;
-        final double upper = Math.PI;
-        final double period = 2*Math.PI;
-        final int maxPer = 10;
-        
-        for(int i = 0; i < TRIALS; i++){
-            final double ang1 = lower + r.nextDouble()*period;
-            final double san1 = CoordTranslation.sanitizePsi(ang1);
-            assertEquals(ang1,san1,NUMACC);
-            
-            // now one period on top
-            final double ang2 = ang1+period;
-            final double san2 = CoordTranslation.sanitizePsi(ang2);
-            assertEquals(ang1,san2,NUMACC);
-            
-            // remove one period
-            final double ang3 = ang1-period;
-            final double san3 = CoordTranslation.sanitizePsi(ang3);
-            assertEquals(ang1,san3,NUMACC);
-            
-            // add rnd periods
-            final int pers1 = r.nextInt(maxPer);
-            final double ang4 = ang1+pers1*period;
-            final double san4 = CoordTranslation.sanitizePsi(ang4);
-            assertEquals(ang1,san4,NUMACC);
-            
-            
-            // remove rnd periods
-            final int pers2 = r.nextInt(maxPer);
-            final double ang5 = ang1-pers2*period;
-            final double san5 = CoordTranslation.sanitizePsi(ang5);
-            assertEquals(ang1,san5,NUMACC);
-            
-        }
+  public CoordTranslationTest() {
+    this.r = new Random();
+  }
+
+  /** Test of sanitizePhi method, of class CoordTranslation. */
+  @Test
+  public void testSanitizePhi() {
+    System.out.println("sanitizePhi");
+
+    final int TRIALS = 1000;
+    final double lower = -Math.PI;
+    final double upper = Math.PI;
+    final double period = 2 * Math.PI;
+    final int maxPer = 10;
+
+    for (int i = 0; i < TRIALS; i++) {
+      final double ang1 = lower + r.nextDouble() * period;
+      final double san1 = CoordTranslation.sanitizePhi(ang1);
+      assertEquals(ang1, san1, NUMACC);
+
+      // now one period on top
+      final double ang2 = ang1 + period;
+      final double san2 = CoordTranslation.sanitizePhi(ang2);
+      assertEquals(ang1, san2, NUMACC);
+
+      // remove one period
+      final double ang3 = ang1 - period;
+      final double san3 = CoordTranslation.sanitizePhi(ang3);
+      assertEquals(ang1, san3, NUMACC);
+
+      // add rnd periods
+      final int pers1 = r.nextInt(maxPer);
+      final double ang4 = ang1 + pers1 * period;
+      final double san4 = CoordTranslation.sanitizePhi(ang4);
+      assertEquals(ang1, san4, NUMACC);
+
+      // remove rnd periods
+      final int pers2 = r.nextInt(maxPer);
+      final double ang5 = ang1 - pers2 * period;
+      final double san5 = CoordTranslation.sanitizePhi(ang5);
+      assertEquals(ang1, san5, NUMACC);
     }
-    
-    @Test
-    public void testCalcAngle() {
-        
-        double[][] xyz = new double[3][3];
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        double angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
-        assertEquals(Math.PI,angle,NUMACC);
-        
-        xyz = new double[3][3];
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 1.0;
-        xyz[1][2] = 1.0;
-        angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
-        assertEquals(Math.PI/2,angle,NUMACC);
-        
-        xyz = new double[3][3];
-        xyz[0][1] = 1.0;
-        angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
-        assertEquals(0.0,angle,NUMACC);
-        
-        xyz = new double[3][3];
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 1.0;
-        xyz[1][2] = -1.0;
-        angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
-        assertEquals(Math.PI/2,angle,NUMACC);
+  }
+
+  /** Test of sanitizeOmega method, of class CoordTranslation. */
+  @Test
+  public void testSanitizeOmega() {
+    System.out.println("sanitizeOmega");
+    final int TRIALS = 1000;
+    final double lower = -0.5 * Math.PI;
+    final double upper = 0.5 * Math.PI;
+    final double period = Math.PI;
+    final int maxPer = 10;
+
+    for (int i = 0; i < TRIALS; i++) {
+      final double ang1 = lower + r.nextDouble() * period;
+      final double san1 = CoordTranslation.sanitizeOmega(ang1);
+      assertEquals(ang1, san1, NUMACC);
+
+      // now one period on top
+      final double ang2 = ang1 + period;
+      final double san2 = CoordTranslation.sanitizeOmega(ang2);
+      assertEquals(ang1, san2, NUMACC);
+
+      // remove one period
+      final double ang3 = ang1 - period;
+      final double san3 = CoordTranslation.sanitizeOmega(ang3);
+      assertEquals(ang1, san3, NUMACC);
+
+      // add rnd periods
+      final int pers1 = r.nextInt(maxPer);
+      final double ang4 = ang1 + pers1 * period;
+      final double san4 = CoordTranslation.sanitizeOmega(ang4);
+      assertEquals(ang1, san4, NUMACC);
+
+      // remove rnd periods
+      final int pers2 = r.nextInt(maxPer);
+      final double ang5 = ang1 - pers2 * period;
+      final double san5 = CoordTranslation.sanitizeOmega(ang5);
+      assertEquals(ang1, san5, NUMACC);
     }
-    
-    @Test
-    public void testCalcDihedral() {
-        
-        double[][] xyz = new double[3][4];
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 3.0;
-        double dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(0.0,dihedral,NUMACC);
-        
-        xyz = new double[3][4];
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 2.0;
-        xyz[1][3] = 1.0;
-        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(0.0,dihedral,NUMACC);
-        
-        xyz = new double[3][4];
-        xyz[1][0] = -1.0;
-        xyz[0][0] = 1.0;
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 2.0;
-        xyz[1][3] = 1.0;
-        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(Math.PI,dihedral,NUMACC);
-        
-        xyz = new double[3][4];
-        xyz[1][0] = -1.0;
-        xyz[0][0] = 1.0;
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 2.0;
-        xyz[2][3] = 1.0;
-        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(-Math.PI/2,dihedral,NUMACC);
-        
-        xyz = new double[3][4];
-        xyz[1][0] = -1.0;
-        xyz[0][0] = 1.0;
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 2.0;
-        xyz[2][3] = -1.0;
-        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(Math.PI/2,dihedral,NUMACC);
-        
-        xyz = new double[3][4];
-        xyz[1][0] = -1.0;
-        xyz[0][0] = 1.0;
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 2.0;
-        xyz[1][3] = -1.0;
-        xyz[2][3] = -1.0;
-        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(Math.PI/4,dihedral,NUMACC);
-        
-        xyz = new double[3][4];
-        xyz[1][0] = -1.0;
-        xyz[0][0] = 1.0;
-        xyz[0][1] = 1.0;
-        xyz[0][2] = 2.0;
-        xyz[0][3] = 2.0;
-        xyz[1][3] = 1.0;
-        xyz[2][3] = -1.0;
-        dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
-        assertEquals(3*Math.PI/4,dihedral,NUMACC);
+  }
+
+  /** Test of sanitizePsi method, of class CoordTranslation. */
+  @Test
+  public void testSanitizePsi() {
+    System.out.println("sanitizePsi");
+
+    final int TRIALS = 1000;
+    final double lower = -Math.PI;
+    final double upper = Math.PI;
+    final double period = 2 * Math.PI;
+    final int maxPer = 10;
+
+    for (int i = 0; i < TRIALS; i++) {
+      final double ang1 = lower + r.nextDouble() * period;
+      final double san1 = CoordTranslation.sanitizePsi(ang1);
+      assertEquals(ang1, san1, NUMACC);
+
+      // now one period on top
+      final double ang2 = ang1 + period;
+      final double san2 = CoordTranslation.sanitizePsi(ang2);
+      assertEquals(ang1, san2, NUMACC);
+
+      // remove one period
+      final double ang3 = ang1 - period;
+      final double san3 = CoordTranslation.sanitizePsi(ang3);
+      assertEquals(ang1, san3, NUMACC);
+
+      // add rnd periods
+      final int pers1 = r.nextInt(maxPer);
+      final double ang4 = ang1 + pers1 * period;
+      final double san4 = CoordTranslation.sanitizePsi(ang4);
+      assertEquals(ang1, san4, NUMACC);
+
+      // remove rnd periods
+      final int pers2 = r.nextInt(maxPer);
+      final double ang5 = ang1 - pers2 * period;
+      final double san5 = CoordTranslation.sanitizePsi(ang5);
+      assertEquals(ang1, san5, NUMACC);
     }
+  }
+
+  @Test
+  public void testCalcAngle() {
+
+    double[][] xyz = new double[3][3];
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    double angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+    assertEquals(Math.PI, angle, NUMACC);
+
+    xyz = new double[3][3];
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 1.0;
+    xyz[1][2] = 1.0;
+    angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+    assertEquals(Math.PI / 2, angle, NUMACC);
+
+    xyz = new double[3][3];
+    xyz[0][1] = 1.0;
+    angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+    assertEquals(0.0, angle, NUMACC);
+
+    xyz = new double[3][3];
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 1.0;
+    xyz[1][2] = -1.0;
+    angle = CoordTranslation.calcAngle(xyz, 0, 1, 2);
+    assertEquals(Math.PI / 2, angle, NUMACC);
+  }
+
+  @Test
+  public void testCalcDihedral() {
+
+    double[][] xyz = new double[3][4];
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 3.0;
+    double dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(0.0, dihedral, NUMACC);
+
+    xyz = new double[3][4];
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 2.0;
+    xyz[1][3] = 1.0;
+    dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(0.0, dihedral, NUMACC);
+
+    xyz = new double[3][4];
+    xyz[1][0] = -1.0;
+    xyz[0][0] = 1.0;
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 2.0;
+    xyz[1][3] = 1.0;
+    dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(Math.PI, dihedral, NUMACC);
+
+    xyz = new double[3][4];
+    xyz[1][0] = -1.0;
+    xyz[0][0] = 1.0;
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 2.0;
+    xyz[2][3] = 1.0;
+    dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(-Math.PI / 2, dihedral, NUMACC);
+
+    xyz = new double[3][4];
+    xyz[1][0] = -1.0;
+    xyz[0][0] = 1.0;
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 2.0;
+    xyz[2][3] = -1.0;
+    dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(Math.PI / 2, dihedral, NUMACC);
+
+    xyz = new double[3][4];
+    xyz[1][0] = -1.0;
+    xyz[0][0] = 1.0;
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 2.0;
+    xyz[1][3] = -1.0;
+    xyz[2][3] = -1.0;
+    dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(Math.PI / 4, dihedral, NUMACC);
+
+    xyz = new double[3][4];
+    xyz[1][0] = -1.0;
+    xyz[0][0] = 1.0;
+    xyz[0][1] = 1.0;
+    xyz[0][2] = 2.0;
+    xyz[0][3] = 2.0;
+    xyz[1][3] = 1.0;
+    xyz[2][3] = -1.0;
+    dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
+    assertEquals(3 * Math.PI / 4, dihedral, NUMACC);
+  }
 }

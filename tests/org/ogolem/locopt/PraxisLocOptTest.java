@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
-              2016, J. M. Dieterich and B. Hartke
+              2016-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,57 +37,63 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.locopt;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Random;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test class for NUMAL's gradient-free Praxis optimizer.
+ *
  * @author Johannes Dieterich
- * @version 2016-03-15
+ * @version 2021-07-17
  */
 public class PraxisLocOptTest {
-    
-    /**
-     * Test of optimize method, of class PraxisLocOpt.
-     */
-    @Test
-    public void testOptimize() {
-        System.out.println("optimize");
-        final Random r = new Random();
-        final double a = 0.01;
-        final double shift = 4.2;
-        final double b = 0.0;
-        final double numAcc = 1e-3; // this is really loose, I didn't manage to make Praxis any more reliable
-        final double maxStep = 1.0;
-        final double maxScaleFac = 1.0; // numal claims that this is the best choice
-        final int maxIter = 99999;
-        final int noTrials = 100;
-        final int dim = 42;
-        final HarmonicFunction func = new HarmonicFunction(a,shift,b);
-        
-        final PraxisLocOpt<Double,BasicOptimizableType> instance1 = new PraxisLocOpt<>(func,numAcc,maxStep,maxScaleFac,maxIter);
-        
-        for(int trial = 0; trial < noTrials; trial++){
-            final double[] gen1 = new double[dim];
-        
-            // random init
-            for(int x = 0; x < dim; x++){
-                gen1[x] = 42.0*r.nextDouble()+shift;
-            }
-        
-            final BasicOptimizableType ind1 = new BasicOptimizableType(gen1);
-        
-            final BasicOptimizableType res1 = instance1.optimize(ind1);
-            
-            // check
-            assertTrue("Fitness (I) wrong: " + res1.getFitness(), Math.abs(res1.getFitness()) <= numAcc);
-            
-            final double[] res1Dat = res1.getGenomeAsDouble();
-            for(int x = 0; x < dim; x++){
-                assertTrue("Error (I) from correct solution: " + Math.abs(res1Dat[x]-shift) + " in " + x, Math.abs(res1Dat[x]-shift) <= 10*numAcc); // make it a bit bigger
-            }
-        }
+
+  /** Test of optimize method, of class PraxisLocOpt. */
+  @Test
+  public void testOptimize() {
+    System.out.println("optimize");
+    final Random r = new Random();
+    final double a = 0.01;
+    final double shift = 4.2;
+    final double b = 0.0;
+    final double numAcc =
+        1e-3; // this is really loose, I didn't manage to make Praxis any more reliable
+    final double maxStep = 1.0;
+    final double maxScaleFac = 1.0; // numal claims that this is the best choice
+    final int maxIter = 99999;
+    final int noTrials = 100;
+    final int dim = 42;
+    final HarmonicFunction func = new HarmonicFunction(a, shift, b);
+
+    final PraxisLocOpt<Double, BasicOptimizableType> instance1 =
+        new PraxisLocOpt<>(func, numAcc, maxStep, maxScaleFac, maxIter);
+
+    for (int trial = 0; trial < noTrials; trial++) {
+      final double[] gen1 = new double[dim];
+
+      // random init
+      for (int x = 0; x < dim; x++) {
+        gen1[x] = 42.0 * r.nextDouble() + shift;
+      }
+
+      final BasicOptimizableType ind1 = new BasicOptimizableType(gen1);
+
+      final BasicOptimizableType res1 = instance1.optimize(ind1);
+
+      // check
+      assertTrue(Math.abs(res1.getFitness()) <= numAcc, "Fitness (I) wrong: " + res1.getFitness());
+
+      final double[] res1Dat = res1.getGenomeAsDouble();
+      for (int x = 0; x < dim; x++) {
+        assertTrue(
+            Math.abs(res1Dat[x] - shift) <= 10 * numAcc,
+            "Error (I) from correct solution: "
+                + Math.abs(res1Dat[x] - shift)
+                + " in "
+                + x); // make it a bit bigger
+      }
     }
-    
+  }
 }

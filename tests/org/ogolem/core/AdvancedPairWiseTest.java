@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2020, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2020-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,73 +36,73 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
- * 
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2021-07-17
  */
 public class AdvancedPairWiseTest {
-   
-    @Test
-    public void testCheckOnlyForCollision() {
-        
-        final int noLJAtoms = 4;
-        final int[] atsPerMol = new int[noLJAtoms];
-        
-        for(int i = 0; i < noLJAtoms; i++){
-            atsPerMol[i] = 1;
-        }
-        
-        final CartesianCoordinates cartes = new CartesianCoordinates(noLJAtoms, noLJAtoms, atsPerMol);
-        final String[] atoms = cartes.getAllAtomTypes();
-        final double[][] xyz = cartes.getAllXYZCoord();
-        
-        for(int i = 0; i < noLJAtoms; i++){
-            atoms[i] = "Ar";
-            xyz[0][i] = 4*i;
-        }
-        cartes.recalcAtomNumbersForced();
-        
-        final BondInfo bonds = new SimpleBondInfo(4);
-        
-        final AdvancedPairWise cd = new AdvancedPairWise(true, new DummyCollisionStrengthComputer());
-        
-        System.out.println("check only for collision: no collision");
-        final boolean res1 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
-        assertTrue(!res1); // no collision
 
-        System.out.println("check only for collision: no collision in window");
-        xyz[0][1] = 0.0;
-        final boolean res2 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
-        xyz[0][1] = 4.0;
-        assertTrue(!res2); // no collision
-        
-        System.out.println("check only for collision: collision with outside window");
-        xyz[0][3] = 4*2.0;
-        final boolean res3 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
-        xyz[0][3] = 4*3.0;
-        assertTrue(res3); // collision
-        
-        System.out.println("check only for collision: collision with outside window 2");
-        xyz[0][0] = 8.0;
-        final boolean res4 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
-        xyz[0][0] = 0.0;
-        assertTrue(res4); // collision
-        
-        System.out.println("check only for collision: collision inside window");
-        xyz[0][2] = 4*3.0;
-        final boolean res5 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
-        xyz[0][2] = 4*2.0;
-        assertTrue(res5); // collision
-        
-        System.out.println("check only for collision: collision inside window but bond");
-        xyz[0][2] = 4*3.0;
-        bonds.setBond(2,3,(short)1);
-        final boolean res6 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
-        xyz[0][2] = 4*2.0;
-        assertTrue(!res6); // no collision
+  @Test
+  public void testCheckOnlyForCollision() {
+
+    final int noLJAtoms = 4;
+    final int[] atsPerMol = new int[noLJAtoms];
+
+    for (int i = 0; i < noLJAtoms; i++) {
+      atsPerMol[i] = 1;
     }
+
+    final CartesianCoordinates cartes = new CartesianCoordinates(noLJAtoms, noLJAtoms, atsPerMol);
+    final String[] atoms = cartes.getAllAtomTypes();
+    final double[][] xyz = cartes.getAllXYZCoord();
+
+    for (int i = 0; i < noLJAtoms; i++) {
+      atoms[i] = "Ar";
+      xyz[0][i] = 4 * i;
+    }
+    cartes.recalcAtomNumbersForced();
+
+    final BondInfo bonds = new SimpleBondInfo(4);
+
+    final AdvancedPairWise cd = new AdvancedPairWise(true, new DummyCollisionStrengthComputer());
+
+    System.out.println("check only for collision: no collision");
+    final boolean res1 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
+    assertTrue(!res1); // no collision
+
+    System.out.println("check only for collision: no collision in window");
+    xyz[0][1] = 0.0;
+    final boolean res2 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
+    xyz[0][1] = 4.0;
+    assertTrue(!res2); // no collision
+
+    System.out.println("check only for collision: collision with outside window");
+    xyz[0][3] = 4 * 2.0;
+    final boolean res3 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
+    xyz[0][3] = 4 * 3.0;
+    assertTrue(res3); // collision
+
+    System.out.println("check only for collision: collision with outside window 2");
+    xyz[0][0] = 8.0;
+    final boolean res4 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
+    xyz[0][0] = 0.0;
+    assertTrue(res4); // collision
+
+    System.out.println("check only for collision: collision inside window");
+    xyz[0][2] = 4 * 3.0;
+    final boolean res5 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
+    xyz[0][2] = 4 * 2.0;
+    assertTrue(res5); // collision
+
+    System.out.println("check only for collision: collision inside window but bond");
+    xyz[0][2] = 4 * 3.0;
+    bonds.setBond(2, 3, (short) 1);
+    final boolean res6 = cd.checkOnlyForCollision(cartes, 1.0, bonds, 2, 3);
+    xyz[0][2] = 4 * 2.0;
+    assertTrue(!res6); // no collision
+  }
 }
