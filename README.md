@@ -3,14 +3,14 @@
 The Java source of the OGOLEM framework for global optimization.
 
 ## To build OGOLEM
-Prerequisits:
+Prerequisites:
 * Java16+ JDK
 * gradle7+
 
 Invoke `gradle build` and a shadowjar will be created in `build/libs/ogolem-snapshot.jar`.
 
 ## To run OGOLEM
-Prerequisits:
+Prerequisites:
 * Java16+ JRE
 * the OGOLEM shadowjar - either from building or from downloading a Jenkins artifact
 
