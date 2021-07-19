@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2016, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2016-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,290 +36,306 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.adaptive;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.ogolem.core.BondInfo;
-import org.ogolem.core.CartesianCoordinates;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.ogolem.core.Constants.ANGTOBOHR;
 import static org.ogolem.core.Constants.EVTOHARTREE;
+
+import org.junit.jupiter.api.Test;
+import org.ogolem.core.BondInfo;
+import org.ogolem.core.CartesianCoordinates;
 import org.ogolem.core.Gradient;
 import org.ogolem.core.SimpleBondInfo;
 import org.ogolem.core.Topology;
 
 /**
- *
  * @author Johannes Dieterich
- * @version 2016-02-25
+ * @version 2021-07-17
  */
 public class AdaptiveSWG2BodyTermTest {
-    
-    /**
-     * Test of partialInteraction method, of class AdaptiveSWG3BodyTerm.
-     */
-    @Test
-    public void testPartialInteraction1NC() {
-        
-        System.out.println("partialInteraction topo 1 no caching");
-        final Topology topology = setupTopo1();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false,0.2);
-        final double expResult = 0.579173;
-        final double result = instance.partialInteraction(topology, params);
-        assertEquals(expResult, result, 1e-6);
-    }
-    
-    @Test
-    public void testPartialInteraction1WC() {
-        
-        System.out.println("partialInteraction topo 1 with caching");
-        final Topology topology = setupTopo1();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true,0.2);
-        final double expResult = 0.579173;
-        final double result = instance.partialInteraction(topology, params);
-        assertEquals(expResult, result, 1e-6);
-    }
-    
-    @Test
-    public void testPartialInteraction2NC() {
-        
-        System.out.println("partialInteraction topo 2 no caching");
-        final Topology topology = setupTopo2();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false,0.2);
-        final double expResult = 0.266691;
-        final double result = instance.partialInteraction(topology, params);
-        assertEquals(expResult, result, 1e-6);
-    }
-    
-    @Test
-    public void testPartialInteraction2WC() {
-        
-        System.out.println("partialInteraction topo 2 with caching");
-        final Topology topology = setupTopo2();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true,0.2);
-        final double expResult = 0.266691;
-        final double result = instance.partialInteraction(topology, params);
-        assertEquals(expResult, result, 1e-6);
-    }
-    
-    @Test
-    public void testPartialInteraction3NC() {
-        
-        System.out.println("partialInteraction topo 3 no caching");
-        final Topology topology = setupTopo3();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false,0.2);
-        final double expResult = 1.967588;
-        final double result = instance.partialInteraction(topology, params);
-        assertEquals(expResult, result, 1e-6);
-    }
-    
-    @Test
-    public void testPartialInteraction3WC() {
-        
-        System.out.println("partialInteraction topo 3 with caching");
-        final Topology topology = setupTopo3();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true,0.2);
-        final double expResult = 1.967588;
-        final double result = instance.partialInteraction(topology, params);
-        assertEquals(expResult, result, 1e-6);
-    }
-    
-    @Test
-    public void testPartialCartesianGradient1NC() {
-        
-        System.out.println("partialCartesianGradient topo 1 no caching");
-        final Topology topology = setupTopo1();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false,0.2);
-        final double expResult = 0.579173;
-        final Gradient g = instance.partialCartesianGradient(topology, params);
-        final double result = g.getTotalEnergy();
-        assertEquals(expResult, result, 1e-6);
-        
-        final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
-                
-        final boolean same = g.compare(numGrad, 1e-6, true);
-        assertTrue(same);
-    }
-    
-    @Test
-    public void testPartialCartesianGradient1WC() {
-        
-        System.out.println("partialCartesianGradient topo 1 with caching");
-        final Topology topology = setupTopo1();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true,0.2);
-        final double expResult = 0.579173;
-        final Gradient g = instance.partialCartesianGradient(topology, params);
-        final double result = g.getTotalEnergy();
-        assertEquals(expResult, result, 1e-6);
-                
-        final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
-        
-        final boolean same = g.compare(numGrad, 1e-6, true);
-        assertTrue(same);
-    }
-    
-    @Test
-    public void testPartialCartesianGradient2NC() {
-        
-        System.out.println("partialCartesianGradient topo 2 no caching");
-        final Topology topology = setupTopo2();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false,0.2);
-        final double expResult = 0.266691;
-        final Gradient g = instance.partialCartesianGradient(topology, params);
-        final double result = g.getTotalEnergy();
-        assertEquals(expResult, result, 1e-6);
-        
-        final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
-        
-        final boolean same = g.compare(numGrad, 1e-6, true);
-        assertTrue(same);
-    }
-    
-    @Test
-    public void testPartialCartesianGradient2WC() {
-        
-        System.out.println("partialCartesianGradient topo 2 with caching");
-        final Topology topology = setupTopo2();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true,0.2);
-        final double expResult = 0.266691;
-        final Gradient g = instance.partialCartesianGradient(topology, params);
-        final double result = g.getTotalEnergy();
-        assertEquals(expResult, result, 1e-6);
-                
-        final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
-                
-        final boolean same = g.compare(numGrad, 1e-6, true);
-        assertTrue(same);
-    }
-    
-    @Test
-    public void testPartialCartesianGradient3NC() {
-        
-        System.out.println("partialCartesianGradient topo 3 no caching");
-        final Topology topology = setupTopo3();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false,0.2);
-        final double expResult = 1.967588;
-        final Gradient g = instance.partialCartesianGradient(topology, params);
-        final double result = g.getTotalEnergy();
-        assertEquals(expResult, result, 1e-6);
-        
-        final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
-        
-        final boolean same = g.compare(numGrad, 1e-6, true);
-        assertTrue(same);
-    }
-    
-    @Test
-    public void testPartialCartesianGradient3WC() {
-        
-        System.out.println("partialCartesianGradient topo 3 with caching");
-        final Topology topology = setupTopo3();
-        final AdaptiveParameters params = setupParam1();
-        final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true,0.2);
-        final double expResult = 1.967588;
-        final Gradient g = instance.partialCartesianGradient(topology, params);
-        final double result = g.getTotalEnergy();
-        assertEquals(expResult, result, 1e-6);
-                
-        final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
-        
-        final boolean same = g.compare(numGrad, 1e-6, true);
-        assertTrue(same);
-    }
-    
-    private Topology setupTopo1(){
-        
-        final CartesianCoordinates cartes = new CartesianCoordinates(3,3,new int[]{1,1,1});
-        final String[] atoms = cartes.getAllAtomTypes();
-        atoms[0] = "Si";
-        atoms[1] = "Si";
-        atoms[2] = "Si";
-        cartes.recalcAtomNumbers();
-        
-        final double[][] xyz = cartes.getAllXYZCoord();
-        xyz[0][0] = 0.0; xyz[1][0] = 0.0; xyz[2][0] = 1.5*ANGTOBOHR;
-        xyz[0][1] = 0.0; xyz[1][1] = 0.0; xyz[2][1] = 0.0;
-        xyz[0][2] = 0.0; xyz[1][2] = 0.0; xyz[2][2] = -1.5*ANGTOBOHR;
-        
-        final BondInfo bonds = new SimpleBondInfo(3);
-        
-        final Topology topo = new Topology(cartes, bonds);
-        
-        return topo;
-    }
-    
-    private Topology setupTopo2(){
-        
-        final CartesianCoordinates cartes = new CartesianCoordinates(3,3,new int[]{1,1,1});
-        final String[] atoms = cartes.getAllAtomTypes();
-        atoms[0] = "Si";
-        atoms[1] = "Si";
-        atoms[2] = "Si";
-        cartes.recalcAtomNumbers();
-        
-        final double[][] xyz = cartes.getAllXYZCoord();
-        xyz[0][0] = 0.0; xyz[1][0] = 0.0; xyz[2][0] = 1.6*ANGTOBOHR;
-        xyz[0][1] = 0.0; xyz[1][1] = 0.0; xyz[2][1] = 0.0;
-        xyz[0][2] = 0.0; xyz[1][2] = 1.6*ANGTOBOHR; xyz[2][2] = 0.0;
-        
-        final BondInfo bonds = new SimpleBondInfo(3);
-        
-        final Topology topo = new Topology(cartes, bonds);
-        
-        return topo;
-    }
-    
-    private Topology setupTopo3(){
-        
-        final CartesianCoordinates cartes = new CartesianCoordinates(3,3,new int[]{1,1,1});
-        final String[] atoms = cartes.getAllAtomTypes();
-        atoms[0] = "Si";
-        atoms[1] = "Si";
-        atoms[2] = "Si";
-        cartes.recalcAtomNumbers();
-        
-        final double[][] xyz = cartes.getAllXYZCoord();
-        xyz[0][0] = 0.0; xyz[1][0] = 0.0; xyz[2][0] = 1.5*ANGTOBOHR;
-        xyz[0][1] = 0.0; xyz[1][1] = 0.0; xyz[2][1] = 0.0;
-        xyz[0][2] = 1.0*ANGTOBOHR; xyz[1][2] = 0.0; xyz[2][2] = 2.0*ANGTOBOHR;
-        
-        final BondInfo bonds = new SimpleBondInfo(3);
-        
-        final Topology topo = new Topology(cartes, bonds);
-        
-        return topo;
-    }
-    
-    private AdaptiveParameters setupParam1(){
-        
-        final int numberOfParameters = 4;
-        final int id = -1;
-        
-        final String[] keys = new String[1];
-        keys[0] = "adaptiveswg2b:SiSi";
-        
-        final int[] noOfParamsPerKey = new int[]{4};
-        
-        final String paramsForMethod = "ADAPTIVESWGTESTONLY";
-        
-        final AdaptiveParameters params = new AdaptiveParameters(numberOfParameters, id, keys,
-            noOfParamsPerKey, paramsForMethod);
-        
-        final double[] p = params.getAllParamters();
-        p[0] = 3.77*ANGTOBOHR;
-        p[1] = 16.3*EVTOHARTREE;
-        p[2] = 11.581*ANGTOBOHR*ANGTOBOHR*ANGTOBOHR*ANGTOBOHR;
-        p[3] = 2.095*ANGTOBOHR;
-        
-        return params;
-    }
+
+  /** Test of partialInteraction method, of class AdaptiveSWG3BodyTerm. */
+  @Test
+  public void testPartialInteraction1NC() {
+
+    System.out.println("partialInteraction topo 1 no caching");
+    final Topology topology = setupTopo1();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false, 0.2);
+    final double expResult = 0.579173;
+    final double result = instance.partialInteraction(topology, params);
+    assertEquals(expResult, result, 1e-6);
+  }
+
+  @Test
+  public void testPartialInteraction1WC() {
+
+    System.out.println("partialInteraction topo 1 with caching");
+    final Topology topology = setupTopo1();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true, 0.2);
+    final double expResult = 0.579173;
+    final double result = instance.partialInteraction(topology, params);
+    assertEquals(expResult, result, 1e-6);
+  }
+
+  @Test
+  public void testPartialInteraction2NC() {
+
+    System.out.println("partialInteraction topo 2 no caching");
+    final Topology topology = setupTopo2();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false, 0.2);
+    final double expResult = 0.266691;
+    final double result = instance.partialInteraction(topology, params);
+    assertEquals(expResult, result, 1e-6);
+  }
+
+  @Test
+  public void testPartialInteraction2WC() {
+
+    System.out.println("partialInteraction topo 2 with caching");
+    final Topology topology = setupTopo2();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true, 0.2);
+    final double expResult = 0.266691;
+    final double result = instance.partialInteraction(topology, params);
+    assertEquals(expResult, result, 1e-6);
+  }
+
+  @Test
+  public void testPartialInteraction3NC() {
+
+    System.out.println("partialInteraction topo 3 no caching");
+    final Topology topology = setupTopo3();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false, 0.2);
+    final double expResult = 1.967588;
+    final double result = instance.partialInteraction(topology, params);
+    assertEquals(expResult, result, 1e-6);
+  }
+
+  @Test
+  public void testPartialInteraction3WC() {
+
+    System.out.println("partialInteraction topo 3 with caching");
+    final Topology topology = setupTopo3();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true, 0.2);
+    final double expResult = 1.967588;
+    final double result = instance.partialInteraction(topology, params);
+    assertEquals(expResult, result, 1e-6);
+  }
+
+  @Test
+  public void testPartialCartesianGradient1NC() {
+
+    System.out.println("partialCartesianGradient topo 1 no caching");
+    final Topology topology = setupTopo1();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false, 0.2);
+    final double expResult = 0.579173;
+    final Gradient g = instance.partialCartesianGradient(topology, params);
+    final double result = g.getTotalEnergy();
+    assertEquals(expResult, result, 1e-6);
+
+    final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
+
+    final boolean same = g.compare(numGrad, 1e-6, true);
+    assertTrue(same);
+  }
+
+  @Test
+  public void testPartialCartesianGradient1WC() {
+
+    System.out.println("partialCartesianGradient topo 1 with caching");
+    final Topology topology = setupTopo1();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true, 0.2);
+    final double expResult = 0.579173;
+    final Gradient g = instance.partialCartesianGradient(topology, params);
+    final double result = g.getTotalEnergy();
+    assertEquals(expResult, result, 1e-6);
+
+    final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
+
+    final boolean same = g.compare(numGrad, 1e-6, true);
+    assertTrue(same);
+  }
+
+  @Test
+  public void testPartialCartesianGradient2NC() {
+
+    System.out.println("partialCartesianGradient topo 2 no caching");
+    final Topology topology = setupTopo2();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false, 0.2);
+    final double expResult = 0.266691;
+    final Gradient g = instance.partialCartesianGradient(topology, params);
+    final double result = g.getTotalEnergy();
+    assertEquals(expResult, result, 1e-6);
+
+    final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
+
+    final boolean same = g.compare(numGrad, 1e-6, true);
+    assertTrue(same);
+  }
+
+  @Test
+  public void testPartialCartesianGradient2WC() {
+
+    System.out.println("partialCartesianGradient topo 2 with caching");
+    final Topology topology = setupTopo2();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true, 0.2);
+    final double expResult = 0.266691;
+    final Gradient g = instance.partialCartesianGradient(topology, params);
+    final double result = g.getTotalEnergy();
+    assertEquals(expResult, result, 1e-6);
+
+    final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
+
+    final boolean same = g.compare(numGrad, 1e-6, true);
+    assertTrue(same);
+  }
+
+  @Test
+  public void testPartialCartesianGradient3NC() {
+
+    System.out.println("partialCartesianGradient topo 3 no caching");
+    final Topology topology = setupTopo3();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(false, 0.2);
+    final double expResult = 1.967588;
+    final Gradient g = instance.partialCartesianGradient(topology, params);
+    final double result = g.getTotalEnergy();
+    assertEquals(expResult, result, 1e-6);
+
+    final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
+
+    final boolean same = g.compare(numGrad, 1e-6, true);
+    assertTrue(same);
+  }
+
+  @Test
+  public void testPartialCartesianGradient3WC() {
+
+    System.out.println("partialCartesianGradient topo 3 with caching");
+    final Topology topology = setupTopo3();
+    final AdaptiveParameters params = setupParam1();
+    final AdaptiveSWG2BodyTerm instance = new AdaptiveSWG2BodyTerm(true, 0.2);
+    final double expResult = 1.967588;
+    final Gradient g = instance.partialCartesianGradient(topology, params);
+    final double result = g.getTotalEnergy();
+    assertEquals(expResult, result, 1e-6);
+
+    final Gradient numGrad = NumericalGradients.calculateGrad(params, instance, topology);
+
+    final boolean same = g.compare(numGrad, 1e-6, true);
+    assertTrue(same);
+  }
+
+  private Topology setupTopo1() {
+
+    final CartesianCoordinates cartes = new CartesianCoordinates(3, 3, new int[] {1, 1, 1});
+    final String[] atoms = cartes.getAllAtomTypes();
+    atoms[0] = "Si";
+    atoms[1] = "Si";
+    atoms[2] = "Si";
+    cartes.recalcAtomNumbers();
+
+    final double[][] xyz = cartes.getAllXYZCoord();
+    xyz[0][0] = 0.0;
+    xyz[1][0] = 0.0;
+    xyz[2][0] = 1.5 * ANGTOBOHR;
+    xyz[0][1] = 0.0;
+    xyz[1][1] = 0.0;
+    xyz[2][1] = 0.0;
+    xyz[0][2] = 0.0;
+    xyz[1][2] = 0.0;
+    xyz[2][2] = -1.5 * ANGTOBOHR;
+
+    final BondInfo bonds = new SimpleBondInfo(3);
+
+    final Topology topo = new Topology(cartes, bonds);
+
+    return topo;
+  }
+
+  private Topology setupTopo2() {
+
+    final CartesianCoordinates cartes = new CartesianCoordinates(3, 3, new int[] {1, 1, 1});
+    final String[] atoms = cartes.getAllAtomTypes();
+    atoms[0] = "Si";
+    atoms[1] = "Si";
+    atoms[2] = "Si";
+    cartes.recalcAtomNumbers();
+
+    final double[][] xyz = cartes.getAllXYZCoord();
+    xyz[0][0] = 0.0;
+    xyz[1][0] = 0.0;
+    xyz[2][0] = 1.6 * ANGTOBOHR;
+    xyz[0][1] = 0.0;
+    xyz[1][1] = 0.0;
+    xyz[2][1] = 0.0;
+    xyz[0][2] = 0.0;
+    xyz[1][2] = 1.6 * ANGTOBOHR;
+    xyz[2][2] = 0.0;
+
+    final BondInfo bonds = new SimpleBondInfo(3);
+
+    final Topology topo = new Topology(cartes, bonds);
+
+    return topo;
+  }
+
+  private Topology setupTopo3() {
+
+    final CartesianCoordinates cartes = new CartesianCoordinates(3, 3, new int[] {1, 1, 1});
+    final String[] atoms = cartes.getAllAtomTypes();
+    atoms[0] = "Si";
+    atoms[1] = "Si";
+    atoms[2] = "Si";
+    cartes.recalcAtomNumbers();
+
+    final double[][] xyz = cartes.getAllXYZCoord();
+    xyz[0][0] = 0.0;
+    xyz[1][0] = 0.0;
+    xyz[2][0] = 1.5 * ANGTOBOHR;
+    xyz[0][1] = 0.0;
+    xyz[1][1] = 0.0;
+    xyz[2][1] = 0.0;
+    xyz[0][2] = 1.0 * ANGTOBOHR;
+    xyz[1][2] = 0.0;
+    xyz[2][2] = 2.0 * ANGTOBOHR;
+
+    final BondInfo bonds = new SimpleBondInfo(3);
+
+    final Topology topo = new Topology(cartes, bonds);
+
+    return topo;
+  }
+
+  private AdaptiveParameters setupParam1() {
+
+    final int numberOfParameters = 4;
+    final int id = -1;
+
+    final String[] keys = new String[1];
+    keys[0] = "adaptiveswg2b:SiSi";
+
+    final int[] noOfParamsPerKey = new int[] {4};
+
+    final String paramsForMethod = "ADAPTIVESWGTESTONLY";
+
+    final AdaptiveParameters params =
+        new AdaptiveParameters(numberOfParameters, id, keys, noOfParamsPerKey, paramsForMethod);
+
+    final double[] p = params.getAllParamters();
+    p[0] = 3.77 * ANGTOBOHR;
+    p[1] = 16.3 * EVTOHARTREE;
+    p[2] = 11.581 * ANGTOBOHR * ANGTOBOHR * ANGTOBOHR * ANGTOBOHR;
+    p[3] = 2.095 * ANGTOBOHR;
+
+    return params;
+  }
 }

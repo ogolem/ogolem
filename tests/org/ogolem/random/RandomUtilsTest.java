@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
+              2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,190 +37,217 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.random;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the random utilities.
+ *
  * @author Johannes Dieterich
  * @author Mark Dittner
- * @version 2020-01-07
+ * @version 2021-07-17
  */
 public class RandomUtilsTest {
-    
-    public RandomUtilsTest(){}
-    
-    /**
-     * Test of gaussDouble method, of class RandomUtils
-     */
-    @Test
-    public void testGaussDouble(){
-        System.out.println("gaussDouble");
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDouble(-5.0, 5.0, 2.0);
-            if(d > 5.0 || d < -5.0){fail("gaussDouble outside valid range I.");}
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDouble(-5.0, 10.0, 4.0);
-            if(d > 10.0 || d < -5.0){fail("gaussDouble outside valid range II.");}
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDouble(0.0, 5.0, 0.4);
-            if(d > 5.0 || d < 0.0){fail("gaussDouble outside valid range III.");}
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDouble(-5.0, -1.0, 1.4);
-            if(d > -1.0 || d < -5.0){fail("gaussDouble outside valid range IV.");}
-        }
+
+  public RandomUtilsTest() {}
+
+  /** Test of gaussDouble method, of class RandomUtils */
+  @Test
+  public void testGaussDouble() {
+    System.out.println("gaussDouble");
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDouble(-5.0, 5.0, 2.0);
+      if (d > 5.0 || d < -5.0) {
+        fail("gaussDouble outside valid range I.");
+      }
     }
 
-    @Test
-    public void testGaussDoubleAroundVal(){
-        System.out.println("gaussDoubleAroundVal");
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDoubleAroundVal(-5.0, 5.0, 2.0, 0.0);
-            if(d > 5.0 || d < -5.0){fail("gaussDoubleAroundVal outside valid range I.");}
-        }
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDouble(-5.0, 10.0, 4.0);
+      if (d > 10.0 || d < -5.0) {
+        fail("gaussDouble outside valid range II.");
+      }
+    }
 
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDoubleAroundVal(-5.0, 10.0, 4.0, 7.0);
-            if(d > 10.0 || d < -5.0){fail("gaussDoubleAroundVal outside valid range II.");}
-        }
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDouble(0.0, 5.0, 0.4);
+      if (d > 5.0 || d < 0.0) {
+        fail("gaussDouble outside valid range III.");
+      }
+    }
 
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDoubleAroundVal(0.0, 5.0, 0.4, 1.0);
-            if(d > 5.0 || d < 0.0){fail("gaussDoubleAroundVal outside valid range III.");}
-        }
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDouble(-5.0, -1.0, 1.4);
+      if (d > -1.0 || d < -5.0) {
+        fail("gaussDouble outside valid range IV.");
+      }
+    }
+  }
 
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.gaussDoubleAroundVal(-5.0, -1.0, 1.4, -1.42);
-            if(d > -1.0 || d < -5.0){fail("gaussDoubleAroundVal outside valid range IV.");}
-        }
+  @Test
+  public void testGaussDoubleAroundVal() {
+    System.out.println("gaussDoubleAroundVal");
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDoubleAroundVal(-5.0, 5.0, 2.0, 0.0);
+      if (d > 5.0 || d < -5.0) {
+        fail("gaussDoubleAroundVal outside valid range I.");
+      }
     }
-    
-    @Test
-    public void testHalfgaussDouble(){
-        System.out.println("halfgaussDouble");
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.halfgaussDouble(-5.0, 5.0, 2.0);
-            if(d > 5.0 || d < -5.0){fail("halfgaussDouble outside valid range I.");}
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.halfgaussDouble(-5.0, 10.0, 4.0);
-            if(d > 10.0 || d < -5.0){fail("halfgaussDouble outside valid range II.");}
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.halfgaussDouble(0.0, 5.0, 0.4);
-            if(d > 5.0 || d < 0.0){fail("halfgaussDouble outside valid range III.");}
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final double d = RandomUtils.halfgaussDouble(-5.0, -1.0, 1.4);
-            if(d > -1.0 || d < -5.0){fail("halfgaussDouble outside valid range IV.");}
-        }
+
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDoubleAroundVal(-5.0, 10.0, 4.0, 7.0);
+      if (d > 10.0 || d < -5.0) {
+        fail("gaussDoubleAroundVal outside valid range II.");
+      }
     }
-    
-    @Test
-    public void testListOfPoints(){
-        System.out.println("listOfPoints");
-        for(int it = 0; it < 100; it++){
-            final int low = 0;
-            final int high = 10;
-            final int no = 3;
-            final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
-            if(points.size() != no){
-                fail("Wrong number of points returned I. " + points.size());
-            }
-            for(final int i : points){
-                if(i < low || i >= high){
-                    fail("Wrong point inside test I." + i);
-                }
-            }
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final int low = -10;
-            final int high = -2;
-            final int no = 4;
-            final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
-            if(points.size() != no){
-                fail("Wrong number of points returned I. " + points.size());
-            }
-            for(final int i : points){
-                if(i < low || i >= high){
-                    fail("Wrong point inside test I." + i);
-                }
-            }
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final int low = -5;
-            final int high = 10;
-            final int no = 7;
-            final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
-            if(points.size() != no){
-                fail("Wrong number of points returned I. " + points.size());
-            }
-            for(final int i : points){
-                if(i < low || i >= high){
-                    fail("Wrong point inside test I." + i);
-                }
-            }
-        }
-        
-        for(int it = 0; it < 100; it++){
-            final int low = 5;
-            final int high = 10;
-            final int no = 1;
-            final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
-            if(points.size() != no){
-                fail("Wrong number of points returned I. " + points.size());
-            }
-            for(final int i : points){
-                if(i < low || i >= high){
-                    fail("Wrong point inside test I." + i);
-                }
-            }
-        }
+
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDoubleAroundVal(0.0, 5.0, 0.4, 1.0);
+      if (d > 5.0 || d < 0.0) {
+        fail("gaussDoubleAroundVal outside valid range III.");
+      }
     }
-    
-    @Test
-    public void testVector(){
-        System.out.println("testVector");
-        for(int it = 1; it < 100; it++){
-            final double[] x = new double[it];
-            RandomUtils.randomVector(x);
-            
-            // get the norm
-            double d = 0.0;
-            for(int i = 0; i < it; i++){
-                d += x[i]*x[i];
-            }
-            final double norm = Math.sqrt(d);
-            if(Math.abs(norm-1.0) > 1E-8){
-                fail("Norm of vector not one " + norm + " length " + it);
-            }
-        }
+
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.gaussDoubleAroundVal(-5.0, -1.0, 1.4, -1.42);
+      if (d > -1.0 || d < -5.0) {
+        fail("gaussDoubleAroundVal outside valid range IV.");
+      }
     }
-    
-    @Test
-    public void testEulers(){
-        System.out.println("testEulers");
-        final double[] x = new double[3];
-        for(int it = 1; it < 1000; it++){
-            RandomUtils.randomEulers(x);
-            
-            if(x[0] > Math.PI || x[0] < -Math.PI
-                    || x[1] > 0.5*Math.PI || x[1] < -0.5*Math.PI
-                    || x[2] > Math.PI || x[2] < -Math.PI){
-                fail("Something is wrong with Euler angles " + x[0] + " " + x[1] + " " + x[2]);
-            }
-        }
+  }
+
+  @Test
+  public void testHalfgaussDouble() {
+    System.out.println("halfgaussDouble");
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.halfgaussDouble(-5.0, 5.0, 2.0);
+      if (d > 5.0 || d < -5.0) {
+        fail("halfgaussDouble outside valid range I.");
+      }
     }
+
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.halfgaussDouble(-5.0, 10.0, 4.0);
+      if (d > 10.0 || d < -5.0) {
+        fail("halfgaussDouble outside valid range II.");
+      }
+    }
+
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.halfgaussDouble(0.0, 5.0, 0.4);
+      if (d > 5.0 || d < 0.0) {
+        fail("halfgaussDouble outside valid range III.");
+      }
+    }
+
+    for (int it = 0; it < 100; it++) {
+      final double d = RandomUtils.halfgaussDouble(-5.0, -1.0, 1.4);
+      if (d > -1.0 || d < -5.0) {
+        fail("halfgaussDouble outside valid range IV.");
+      }
+    }
+  }
+
+  @Test
+  public void testListOfPoints() {
+    System.out.println("listOfPoints");
+    for (int it = 0; it < 100; it++) {
+      final int low = 0;
+      final int high = 10;
+      final int no = 3;
+      final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
+      if (points.size() != no) {
+        fail("Wrong number of points returned I. " + points.size());
+      }
+      for (final int i : points) {
+        if (i < low || i >= high) {
+          fail("Wrong point inside test I." + i);
+        }
+      }
+    }
+
+    for (int it = 0; it < 100; it++) {
+      final int low = -10;
+      final int high = -2;
+      final int no = 4;
+      final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
+      if (points.size() != no) {
+        fail("Wrong number of points returned I. " + points.size());
+      }
+      for (final int i : points) {
+        if (i < low || i >= high) {
+          fail("Wrong point inside test I." + i);
+        }
+      }
+    }
+
+    for (int it = 0; it < 100; it++) {
+      final int low = -5;
+      final int high = 10;
+      final int no = 7;
+      final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
+      if (points.size() != no) {
+        fail("Wrong number of points returned I. " + points.size());
+      }
+      for (final int i : points) {
+        if (i < low || i >= high) {
+          fail("Wrong point inside test I." + i);
+        }
+      }
+    }
+
+    for (int it = 0; it < 100; it++) {
+      final int low = 5;
+      final int high = 10;
+      final int no = 1;
+      final List<Integer> points = RandomUtils.listOfPoints(no, low, high);
+      if (points.size() != no) {
+        fail("Wrong number of points returned I. " + points.size());
+      }
+      for (final int i : points) {
+        if (i < low || i >= high) {
+          fail("Wrong point inside test I." + i);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testVector() {
+    System.out.println("testVector");
+    for (int it = 1; it < 100; it++) {
+      final double[] x = new double[it];
+      RandomUtils.randomVector(x);
+
+      // get the norm
+      double d = 0.0;
+      for (int i = 0; i < it; i++) {
+        d += x[i] * x[i];
+      }
+      final double norm = Math.sqrt(d);
+      if (Math.abs(norm - 1.0) > 1E-8) {
+        fail("Norm of vector not one " + norm + " length " + it);
+      }
+    }
+  }
+
+  @Test
+  public void testEulers() {
+    System.out.println("testEulers");
+    final double[] x = new double[3];
+    for (int it = 1; it < 1000; it++) {
+      RandomUtils.randomEulers(x);
+
+      if (x[0] > Math.PI
+          || x[0] < -Math.PI
+          || x[1] > 0.5 * Math.PI
+          || x[1] < -0.5 * Math.PI
+          || x[2] > Math.PI
+          || x[2] < -Math.PI) {
+        fail("Something is wrong with Euler angles " + x[0] + " " + x[1] + " " + x[2]);
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
+              2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,186 +37,175 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.math;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
- *
  * @author Johannes Dieterich
- * @version 2013-03-27
+ * @version 2021-07-17
  */
 public class FastFunctionsTest {
-    
-    public static final double LOWACC = 1E-3;
-    public static final double MEDACC = 5E-4;
-    public static final double MEDPLUSACC = 1E-4;
-    public static final double HIGHACC = 1E-8;
-    
-    public FastFunctionsTest() {
-    }
-    
-    /**
-     * Test of fastExp method, of class FastFunctions.
-     */
-    @Test
-    public void testFastExp() {
-        System.out.println("fastExp");
-        double x = -20.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.fastExp(x);
-            assertEquals(expResult, result, Math.max(MEDACC,Math.abs(0.05*expResult))); // maximum of 5E-4 or 2%
-            x += 0.05;
-        }
-    }
 
-    /**
-     * Test of fastExp2 method, of class FastFunctions.
-     */
-    @Test
-    public void testFastExp2() {
-        System.out.println("fastExp2");
-        double x = -20.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.fastExp2(x);
-            assertEquals(expResult, result, Math.max(MEDACC,Math.abs(0.05*expResult))); // maximum of 5E-4 or 2%
-            x += 0.05;
-        }
-    }
+  public static final double LOWACC = 1E-3;
+  public static final double MEDACC = 5E-4;
+  public static final double MEDPLUSACC = 1E-4;
+  public static final double HIGHACC = 1E-8;
 
-    /**
-     * Test of fastCorrExp method, of class FastFunctions.
-     */
-    // currently, fastCorrExp() is broken and returns Math.exp()
-    /*@Test
-    public void testFastCorrExp() {
-        System.out.println("fastCorrExp");
-        double x = 0.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.fastCorrExp(x);
-            assertEquals(expResult, result, Math.max(MEDPLUSACC,Math.abs(0.01*expResult))); // maximum of 1E-4 or 1%
-            System.out.println("fine: " + x + " " + expResult);
-            x += 0.05;
-        }
-    }
+  public FastFunctionsTest() {}
 
-    /**
-     * Test of lim128Exp method, of class FastFunctions.
-     */
-    @Test
-    public void testLim128Exp() {
-        System.out.println("lim128Exp");
-        double x = -10.0;
-        while(x < 5.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.lim128Exp(x);
-            assertEquals(expResult, result, Math.max(LOWACC,Math.abs(0.1*expResult))); // maximum of 1E-3 or 10%
-            x += 0.05;
-        }
+  /** Test of fastExp method, of class FastFunctions. */
+  @Test
+  public void testFastExp() {
+    System.out.println("fastExp");
+    double x = -20.0;
+    while (x < 10.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.fastExp(x);
+      assertEquals(
+          expResult, result, Math.max(MEDACC, Math.abs(0.05 * expResult))); // maximum of 5E-4 or 2%
+      x += 0.05;
     }
+  }
 
-    /**
-     * Test of lim256Exp method, of class FastFunctions.
-     */
-    @Test
-    public void testLim256Exp() {
-        System.out.println("lim256Exp");
-        double x = -20.0;
-        while(x < 7.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.lim256Exp(x);
-            assertEquals(expResult, result, Math.max(LOWACC,Math.abs(0.1*expResult))); // maximum of 1E-3 or 10%
-            x += 0.05;
-        }
+  /** Test of fastExp2 method, of class FastFunctions. */
+  @Test
+  public void testFastExp2() {
+    System.out.println("fastExp2");
+    double x = -20.0;
+    while (x < 10.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.fastExp2(x);
+      assertEquals(
+          expResult, result, Math.max(MEDACC, Math.abs(0.05 * expResult))); // maximum of 5E-4 or 2%
+      x += 0.05;
     }
+  }
 
-    /**
-     * Test of lim512Exp method, of class FastFunctions.
-     */
-    @Test
-    public void testLim512Exp() {
-        System.out.println("lim512Exp");
-        double x = -20.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.lim512Exp(x);
-            assertEquals(expResult, result, Math.max(LOWACC,Math.abs(0.1*expResult))); // maximum of 1E-3 or 10%
-            x += 0.05;
-        }
-    }
+  /** Test of fastCorrExp method, of class FastFunctions. */
+  // currently, fastCorrExp() is broken and returns Math.exp()
+  /*@Test
+  public void testFastCorrExp() {
+      System.out.println("fastCorrExp");
+      double x = 0.0;
+      while(x < 10.0){
+          final double expResult = Math.exp(x);
+          final double result = FastFunctions.fastCorrExp(x);
+          assertEquals(expResult, result, Math.max(MEDPLUSACC,Math.abs(0.01*expResult))); // maximum of 1E-4 or 1%
+          System.out.println("fine: " + x + " " + expResult);
+          x += 0.05;
+      }
+  }
 
-    /**
-     * Test of lim1024Exp method, of class FastFunctions.
-     */
-    @Test
-    public void testLim1024Exp() {
-        System.out.println("lim1024Exp");
-        double x = -20.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.lim1024Exp(x);
-            assertEquals(expResult, result, Math.max(MEDACC,Math.abs(0.05*expResult))); // maximum of 5E-4 or 5%
-            x += 0.05;
-        }
+  /**
+   * Test of lim128Exp method, of class FastFunctions.
+   */
+  @Test
+  public void testLim128Exp() {
+    System.out.println("lim128Exp");
+    double x = -10.0;
+    while (x < 5.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.lim128Exp(x);
+      assertEquals(
+          expResult, result, Math.max(LOWACC, Math.abs(0.1 * expResult))); // maximum of 1E-3 or 10%
+      x += 0.05;
     }
+  }
 
-    /**
-     * Test of lim2048Exp method, of class FastFunctions.
-     */
-    @Test
-    public void testLim2048Exp() {
-        System.out.println("lim2048Exp");
-        double x = -20.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.lim2048Exp(x);
-            assertEquals(expResult, result, Math.max(MEDACC,Math.abs(0.03*expResult))); // maximum of 5E-4 or 3%
-            x += 0.05;
-        }
+  /** Test of lim256Exp method, of class FastFunctions. */
+  @Test
+  public void testLim256Exp() {
+    System.out.println("lim256Exp");
+    double x = -20.0;
+    while (x < 7.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.lim256Exp(x);
+      assertEquals(
+          expResult, result, Math.max(LOWACC, Math.abs(0.1 * expResult))); // maximum of 1E-3 or 10%
+      x += 0.05;
     }
+  }
 
-    /**
-     * Test of lim4096Exp method, of class FastFunctions.
-     */
-    @Test
-    public void testLim4096Exp() {
-        System.out.println("lim4096Exp");
-        double x = -20.0;
-        while(x < 10.0){
-            final double expResult = Math.exp(x);
-            final double result = FastFunctions.lim4096Exp(x);
-            assertEquals(expResult, result, Math.max(MEDPLUSACC,Math.abs(0.02*expResult))); // maximum of 1E-4 or 2%
-            x += 0.05;
-        }
+  /** Test of lim512Exp method, of class FastFunctions. */
+  @Test
+  public void testLim512Exp() {
+    System.out.println("lim512Exp");
+    double x = -20.0;
+    while (x < 10.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.lim512Exp(x);
+      assertEquals(
+          expResult, result, Math.max(LOWACC, Math.abs(0.1 * expResult))); // maximum of 1E-3 or 10%
+      x += 0.05;
     }
+  }
 
-    /**
-     * Test of sq method, of class FastFunctions.
-     */
-    @Test
-    public void testSq() {
-        System.out.println("sq");
-        assertEquals(0.0, FastFunctions.sq(0.0), HIGHACC);
-        assertEquals(4.0, FastFunctions.sq(2.0), HIGHACC);
-        assertEquals(9.0, FastFunctions.sq(3.0), HIGHACC);
-        assertEquals(2.5*2.5, FastFunctions.sq(2.5), HIGHACC);
-        assertEquals(1.0, FastFunctions.sq(-1.0), HIGHACC);
-        assertEquals(4.0, FastFunctions.sq(-2.0), HIGHACC);
-        assertEquals(0.01, FastFunctions.sq(0.1), HIGHACC);
+  /** Test of lim1024Exp method, of class FastFunctions. */
+  @Test
+  public void testLim1024Exp() {
+    System.out.println("lim1024Exp");
+    double x = -20.0;
+    while (x < 10.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.lim1024Exp(x);
+      assertEquals(
+          expResult, result, Math.max(MEDACC, Math.abs(0.05 * expResult))); // maximum of 5E-4 or 5%
+      x += 0.05;
     }
+  }
 
-    /**
-     * Test of pow method, of class FastFunctions.
-     */
-    @Test
-    public void testPow() {
-        System.out.println("pow");
-        assertEquals(1.0, FastFunctions.pow(0.0, 0), HIGHACC);
-        assertEquals(1.0, FastFunctions.pow(1.0, 0), HIGHACC);
-        assertEquals(1.0, FastFunctions.pow(1.0, 1), HIGHACC);
-        assertEquals(4.0, FastFunctions.pow(2.0, 2), HIGHACC);
-        assertEquals(27.0, FastFunctions.pow(3.0, 3), HIGHACC);
+  /** Test of lim2048Exp method, of class FastFunctions. */
+  @Test
+  public void testLim2048Exp() {
+    System.out.println("lim2048Exp");
+    double x = -20.0;
+    while (x < 10.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.lim2048Exp(x);
+      assertEquals(
+          expResult, result, Math.max(MEDACC, Math.abs(0.03 * expResult))); // maximum of 5E-4 or 3%
+      x += 0.05;
     }
+  }
+
+  /** Test of lim4096Exp method, of class FastFunctions. */
+  @Test
+  public void testLim4096Exp() {
+    System.out.println("lim4096Exp");
+    double x = -20.0;
+    while (x < 10.0) {
+      final double expResult = Math.exp(x);
+      final double result = FastFunctions.lim4096Exp(x);
+      assertEquals(
+          expResult,
+          result,
+          Math.max(MEDPLUSACC, Math.abs(0.02 * expResult))); // maximum of 1E-4 or 2%
+      x += 0.05;
+    }
+  }
+
+  /** Test of sq method, of class FastFunctions. */
+  @Test
+  public void testSq() {
+    System.out.println("sq");
+    assertEquals(0.0, FastFunctions.sq(0.0), HIGHACC);
+    assertEquals(4.0, FastFunctions.sq(2.0), HIGHACC);
+    assertEquals(9.0, FastFunctions.sq(3.0), HIGHACC);
+    assertEquals(2.5 * 2.5, FastFunctions.sq(2.5), HIGHACC);
+    assertEquals(1.0, FastFunctions.sq(-1.0), HIGHACC);
+    assertEquals(4.0, FastFunctions.sq(-2.0), HIGHACC);
+    assertEquals(0.01, FastFunctions.sq(0.1), HIGHACC);
+  }
+
+  /** Test of pow method, of class FastFunctions. */
+  @Test
+  public void testPow() {
+    System.out.println("pow");
+    assertEquals(1.0, FastFunctions.pow(0.0, 0), HIGHACC);
+    assertEquals(1.0, FastFunctions.pow(1.0, 0), HIGHACC);
+    assertEquals(1.0, FastFunctions.pow(1.0, 1), HIGHACC);
+    assertEquals(4.0, FastFunctions.pow(2.0, 2), HIGHACC);
+    assertEquals(27.0, FastFunctions.pow(3.0, 3), HIGHACC);
+  }
 }

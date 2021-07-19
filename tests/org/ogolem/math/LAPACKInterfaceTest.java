@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,58 +36,58 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.math;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import contrib.jama.Matrix;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test class for the LAPACK-style interface
+ *
  * @author Johannes Dieterich
- * @version 2015-03-14
+ * @version 2021-07-17
  */
 public class LAPACKInterfaceTest {
-    
-    public LAPACKInterfaceTest() {
-    }
 
-    /**
-     * Test of invertMatrix method, of class LAPACKInterface.
-     */
-    @Test
-    public void testInvertMatrix() {
-        System.out.println("invertMatrix");
-        
-        final double[] matrix = new double[]{
-            1, 0, 5,
-            2, 1, 6,
-            3, 4, 0
+  public LAPACKInterfaceTest() {}
+
+  /** Test of invertMatrix method, of class LAPACKInterface. */
+  @Test
+  public void testInvertMatrix() {
+    System.out.println("invertMatrix");
+
+    final double[] matrix =
+        new double[] {
+          1, 0, 5,
+          2, 1, 6,
+          3, 4, 0
         };
-        
-        final double[][] matJama = new double[][]{
-            new double[]{1, 2, 3},
-            new double[]{0, 1, 4},
-            new double[]{5, 6, 0}
+
+    final double[][] matJama =
+        new double[][] {
+          new double[] {1, 2, 3},
+          new double[] {0, 1, 4},
+          new double[] {5, 6, 0}
         };
-        final Matrix mat = new Matrix(matJama);
-        final Matrix inv = mat.inverse();
-        final double[][] invMat = inv.getArray();
-        
-        final int dim = 3;
-        final double[] work = new double[dim*dim];
-        final int[] piv = new int[dim];
-        
-        LAPACKInterface.invertMatrix(dim, matrix, work, piv);
-        
-        final double thresh = 1e-7;
-        assertEquals(invMat[0][0],matrix[0],thresh);
-        assertEquals(invMat[1][0],matrix[1],thresh);
-        assertEquals(invMat[2][0],matrix[2],thresh);
-        assertEquals(invMat[0][1],matrix[3],thresh);
-        assertEquals(invMat[1][1],matrix[4],thresh);
-        assertEquals(invMat[2][1],matrix[5],thresh);
-        assertEquals(invMat[0][2],matrix[6],thresh);
-        assertEquals(invMat[1][2],matrix[7],thresh);
-        assertEquals(invMat[2][2],matrix[8],thresh);
-    }
-    
+    final Matrix mat = new Matrix(matJama);
+    final Matrix inv = mat.inverse();
+    final double[][] invMat = inv.getArray();
+
+    final int dim = 3;
+    final double[] work = new double[dim * dim];
+    final int[] piv = new int[dim];
+
+    LAPACKInterface.invertMatrix(dim, matrix, work, piv);
+
+    final double thresh = 1e-7;
+    assertEquals(invMat[0][0], matrix[0], thresh);
+    assertEquals(invMat[1][0], matrix[1], thresh);
+    assertEquals(invMat[2][0], matrix[2], thresh);
+    assertEquals(invMat[0][1], matrix[3], thresh);
+    assertEquals(invMat[1][1], matrix[4], thresh);
+    assertEquals(invMat[2][1], matrix[5], thresh);
+    assertEquals(invMat[0][2], matrix[6], thresh);
+    assertEquals(invMat[1][2], matrix[7], thresh);
+    assertEquals(invMat[2][2], matrix[8], thresh);
+  }
 }

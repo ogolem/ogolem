@@ -1,5 +1,5 @@
-/**
-Copyright (c) 2020, J. M. Dieterich and B. Hartke
+/*
+Copyright (c) 2020-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,53 +36,55 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.math;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import contrib.jama.Matrix;
 import java.util.Random;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for trivial linear algebra
+ *
  * @author Johannes Dieterich
- * @version 2020-03-01
+ * @version 2021-07-17
  */
 public class TrivialLinearAlgebraTest {
-    
-    @Test
-    public void testMatMult() {
-        System.out.println("matMult");
-        
-        final Matrix matA = new Matrix(3,3);
-        final Matrix matB = new Matrix(3,1000);
-        
-        final Random r = new Random(42);
-        
-        final double[][] matADat = matA.getArray();
-        final double[][] matBDat = matB.getArray();
-        
-        for(int i = 0; i < matADat.length; i++){
-            for(int j = 0; j < matADat[i].length; j++){
-                matADat[i][j] = r.nextDouble();
-            }
-        }
-        
-        for(int i = 0; i < matBDat.length; i++){
-            for(int j = 0; j < matBDat[i].length; j++){
-                matBDat[i][j] = r.nextDouble();
-            }
-        }
-        
-        // Jama reference path
-        final Matrix matC = matA.times(matB);
-        final double[][] matCDat = matC.getArray();
-        
-        // our implementation
-        final double[][] matCOurDat = TrivialLinearAlgebra.matMult(matADat, matBDat);
-        
-        assertEquals(matCDat.length, matCOurDat.length);
-        
-        for(int i = 0; i < matCOurDat.length; i++){
-            assertArrayEquals(matCDat[i], matCOurDat[i], 1e-20);
-        }
+
+  @Test
+  public void testMatMult() {
+    System.out.println("matMult");
+
+    final Matrix matA = new Matrix(3, 3);
+    final Matrix matB = new Matrix(3, 1000);
+
+    final Random r = new Random(42);
+
+    final double[][] matADat = matA.getArray();
+    final double[][] matBDat = matB.getArray();
+
+    for (int i = 0; i < matADat.length; i++) {
+      for (int j = 0; j < matADat[i].length; j++) {
+        matADat[i][j] = r.nextDouble();
+      }
     }
+
+    for (int i = 0; i < matBDat.length; i++) {
+      for (int j = 0; j < matBDat[i].length; j++) {
+        matBDat[i][j] = r.nextDouble();
+      }
+    }
+
+    // Jama reference path
+    final Matrix matC = matA.times(matB);
+    final double[][] matCDat = matC.getArray();
+
+    // our implementation
+    final double[][] matCOurDat = TrivialLinearAlgebra.matMult(matADat, matBDat);
+
+    assertEquals(matCDat.length, matCOurDat.length);
+
+    for (int i = 0; i < matCOurDat.length; i++) {
+      assertArrayEquals(matCDat[i], matCOurDat[i], 1e-20);
+    }
+  }
 }

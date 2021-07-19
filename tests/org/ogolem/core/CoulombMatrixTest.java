@@ -30,21 +30,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import java.util.ArrayList;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ogolem.generic.genericpool.Niche;
 
 /**
  * Test Class for Coulomb-Matrix
  *
  * @author Dominik Behrens
- * @version 2021-07-06
+ * @version 2021-07-17
  */
 public class CoulombMatrixTest {
   private CoulombMatrixNicheComp comp;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     comp =
         new CoulombMatrixNicheComp(
@@ -55,28 +55,28 @@ public class CoulombMatrixTest {
   public void testSetupAllSameSpot() {
     Geometry sample = constructGoldCube(0, 0);
     Niche niche = comp.computeNiche(sample);
-    Assert.assertEquals("cmat-0", niche.getID());
+    Assertions.assertEquals("cmat-0", niche.getID());
   }
 
   @Test
   public void testSetupWidthLower() {
     Geometry sample = constructGoldCube(5, -0.219);
     Niche niche = comp.computeNiche(sample);
-    Assert.assertEquals("cmat-45", niche.getID());
+    Assertions.assertEquals("cmat-45", niche.getID());
   }
 
   @Test
   public void testSetupWidthUpper() {
     Geometry sample = constructGoldCube(5, 0.228);
     Niche niche = comp.computeNiche(sample);
-    Assert.assertEquals("cmat-45", niche.getID());
+    Assertions.assertEquals("cmat-45", niche.getID());
   }
 
   @Test
   public void testSetupJustOutWidthLower() {
     Geometry sample = constructGoldCube(5, -0.220);
     Niche niche = comp.computeNiche(sample);
-    Assert.assertEquals("cmat-44", niche.getID());
+    Assertions.assertEquals("cmat-44", niche.getID());
   }
 
   @Test
@@ -84,7 +84,7 @@ public class CoulombMatrixTest {
     Geometry sample = constructGoldCube(5, 0.229);
     CartesianCoordinates dfv = sample.getCartesians();
     Niche niche = comp.computeNiche(sample);
-    Assert.assertEquals("cmat-44", niche.getID());
+    Assertions.assertEquals("cmat-44", niche.getID());
   }
 
   private Geometry constructGoldCube(double a, double b) {
