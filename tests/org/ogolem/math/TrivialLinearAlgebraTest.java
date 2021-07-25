@@ -84,7 +84,7 @@ public class TrivialLinearAlgebraTest {
     assertEquals(matCDat.length, matCOurDat.length);
 
     for (int i = 0; i < matCOurDat.length; i++) {
-      assertArrayEquals(matCDat[i], matCOurDat[i], 1e-20);
+      assertArrayEquals(matCDat[i], matCOurDat[i], 1e-10);
     }
   }
 }
