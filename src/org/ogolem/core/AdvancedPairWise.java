@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorMask;
+import jdk.incubator.vector.VectorSpecies;
 import org.ogolem.math.SymmetricMatrixNoDiag;
 
 /**
@@ -46,11 +49,13 @@ import org.ogolem.math.SymmetricMatrixNoDiag;
  * cases a pairwise checking.
  *
  * @author Johannes Dieterich
- * @version 2020-02-01
+ * @version 2021-04-22
  */
 public class AdvancedPairWise implements CollisionDetectionEngine {
 
-  private static final long serialVersionUID = (long) 20200201;
+  private static final long serialVersionUID = (long) 20210422;
+
+  private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
   private final boolean exit;
   private final CollisionStrengthComputer comp;
@@ -145,10 +150,62 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
     Outer:
     for (int i = 0; i < noOfAtoms - 1; i++) {
       final double rad1 = radii[i];
+      final var vRad1 = DoubleVector.broadcast(SPECIES, rad1);
       final double x = xyz[0][i];
       final double y = xyz[1][i];
       final double z = xyz[2][i];
-      for (int j = i + 1; j < noOfAtoms; j++) {
+      final var vX = DoubleVector.broadcast(SPECIES, x);
+      final var vY = DoubleVector.broadcast(SPECIES, y);
+      final var vZ = DoubleVector.broadcast(SPECIES, z);
+
+      final boolean[] bondRow = bondMat[i];
+
+      final int loopBound = SPECIES.loopBound(noOfAtoms - i - 1);
+      int j = i + 1;
+
+      // vector loop
+      for (; j < loopBound + i + 1; j += SPECIES.length()) {
+
+        final var vRad2 = DoubleVector.fromArray(SPECIES, radii, j);
+        final var vRadiiAdd = vRad2.add(vRad1);
+        final var vDX = DoubleVector.fromArray(SPECIES, xyz[0], j).sub(vX);
+        final var vDY = DoubleVector.fromArray(SPECIES, xyz[1], j).sub(vY);
+        final var vDZ = DoubleVector.fromArray(SPECIES, xyz[2], j).sub(vZ);
+        final var vFirst = vDX.fma(vDX, vDY.mul(vDY));
+        final var vDistSq = vDZ.fma(vDZ, vFirst);
+        final var vDist = vDistSq.sqrt();
+        final var vComp = vDist.lt(vRadiiAdd);
+        final var vNotBond = VectorMask.fromArray(SPECIES, bondRow, j).not();
+        final var vMask = vComp.and(vNotBond);
+
+        vDist.intoArray(distsBuffer, distsIdx);
+        distsIdx += SPECIES.length();
+
+        final boolean anyColl = vMask.anyTrue();
+
+        if (anyColl) {
+          // collision - loop over mask and add collisions
+          for (int v = 0; v < SPECIES.length(); v++) {
+            if (!vMask.laneIsSet(v)) continue;
+            final double strength =
+                comp.calculateCollisionStrength(i, j, vDist.lane(v), vRadiiAdd.lane(v));
+            final boolean succ = info.reportCollision(i, j, strength);
+            if (!succ) {
+              System.err.println("No success setting collision!");
+            }
+          }
+
+          // increment the noOfCollisions AFTER setting the collision info since arrays start from
+          // 0.
+          if (exit) {
+            distCompl = false;
+            break Outer;
+          }
+        }
+      }
+
+      // cleanup loop
+      for (; j < noOfAtoms; j++) {
 
         final double rad2 = radii[j];
         final double radiiAdd = rad1 + rad2;
@@ -159,7 +216,7 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
         distsBuffer[distsIdx] = dist;
         distsIdx++;
 
-        if (dist < radiiAdd && !bondMat[i][j]) {
+        if (dist < radiiAdd && !bondRow[j]) {
           // collision
           final double strength = comp.calculateCollisionStrength(i, j, dist, radiiAdd);
           final boolean succ = info.reportCollision(i, j, strength);
@@ -231,26 +288,57 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
 
     // prefetch the radii in O(N) - the allocation here is not ideal
     // but caching it would make this whole object thread-unsafe
+    // and fold blowfactor in
     final double[] radii = new double[noOfAtoms];
     for (int i = 0; i < noOfAtoms; i++) {
-      radii[i] = blowFactor * AtomicProperties.giveRadius(numbers[i]);
+      radii[i] = AtomicProperties.giveRadius(numbers[i]) * blowFactor;
     }
 
-    final int end = Math.min(noOfAtoms, endset);
+    final int end = Math.min(noOfAtoms - 1, endset);
     for (int i = 0; i < end; i++) { // note: this is by spec
       final double rad1 = radii[i];
+      final var vRad1 = DoubleVector.broadcast(SPECIES, rad1);
       final double x = xyz[0][i];
       final double y = xyz[1][i];
       final double z = xyz[2][i];
+      final var vX = DoubleVector.broadcast(SPECIES, x);
+      final var vY = DoubleVector.broadcast(SPECIES, y);
+      final var vZ = DoubleVector.broadcast(SPECIES, z);
       final int start = Math.max(offset, i + 1);
-      for (int j = start; j < noOfAtoms; j++) {
+
+      final boolean[] bondRow = bondMat[i];
+
+      final int loopBound = SPECIES.loopBound(noOfAtoms - start);
+      int j = start;
+
+      // vector loop
+      for (; j < loopBound + start; j += SPECIES.length()) {
+        final var vRad2 = DoubleVector.fromArray(SPECIES, radii, j);
+        final var vRadiiAdd = vRad2.add(vRad1);
+        final var vDX = DoubleVector.fromArray(SPECIES, xyz[0], j).sub(vX);
+        final var vDY = DoubleVector.fromArray(SPECIES, xyz[1], j).sub(vY);
+        final var vDZ = DoubleVector.fromArray(SPECIES, xyz[2], j).sub(vZ);
+        final var vFirst = vDX.fma(vDX, vDY.mul(vDY));
+        final var vDistSq = vDZ.fma(vDZ, vFirst);
+        final var vComp = vDistSq.lt(vRadiiAdd.mul(vRadiiAdd));
+        final var vNotBond = VectorMask.fromArray(SPECIES, bondRow, j).not();
+        final var vMask = vComp.and(vNotBond);
+        // one might think andNot() would be reasonable here - performance craters then (4x in
+        // microbench) - this may be a temporary issue, reevaluate later
+        // final var vMask = vComp.andNot(VectorMask.fromArray(SPECIES, bondRow, j));
+        final boolean anyColl = vMask.anyTrue();
+        if (anyColl) return true; // at least one collision
+      }
+
+      // cleanup loop
+      for (; j < noOfAtoms; j++) {
         final double rad2 = radii[j];
         final double radiiAdd = rad1 + rad2;
         final double dX = x - xyz[0][j];
         final double dY = y - xyz[1][j];
         final double dZ = z - xyz[2][j];
         final double distSq = dX * dX + dY * dY + dZ * dZ;
-        if (distSq < radiiAdd * radiiAdd && !bondMat[i][j]) {
+        if (distSq < radiiAdd * radiiAdd && !bondRow[j]) {
           // collision
           return true;
         }
