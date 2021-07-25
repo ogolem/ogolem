@@ -38,6 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import org.ogolem.math.SymmetricMatrixNoDiag;
+
 /**
  * This, in difference to the SimplePairWise collision detection engine does NOT exit on the first
  * collision detected but goes on and gathers more information together. The algorithm is in both
@@ -110,7 +112,7 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
     info.resizeDistsAndClearState(cartesians.getNoOfAtoms());
 
     final int noOfAtoms = cartesians.getNoOfAtoms();
-    final double[][] dists = info.getPairWiseDistances();
+    final SymmetricMatrixNoDiag dists = info.getPairWiseDistances();
 
     final double[][] xyz = cartesians.getAllXYZCoord();
     final short[] numbers = cartesians.getAllAtomNumbers();
@@ -133,8 +135,11 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
     // but caching it would make this whole object thread-unsafe
     final double[] radii = new double[noOfAtoms];
     for (int i = 0; i < noOfAtoms; i++) {
-      radii[i] = AtomicProperties.giveRadius(numbers[i]);
+      radii[i] = blowFactor * AtomicProperties.giveRadius(numbers[i]);
     }
+
+    final double[] distsBuffer = dists.underlyingStorageBuffer();
+    int distsIdx = 0;
 
     boolean distCompl = true;
     Outer:
@@ -146,13 +151,14 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       for (int j = i + 1; j < noOfAtoms; j++) {
 
         final double rad2 = radii[j];
-        final double radiiAdd = blowFactor * (rad1 + rad2);
+        final double radiiAdd = rad1 + rad2;
         final double dX = x - xyz[0][j];
         final double dY = y - xyz[1][j];
         final double dZ = z - xyz[2][j];
         final double dist = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
-        dists[i][j] = dist;
-        dists[j][i] = dist;
+        distsBuffer[distsIdx] = dist;
+        distsIdx++;
+
         if (dist < radiiAdd && !bondMat[i][j]) {
           // collision
           final double strength = comp.calculateCollisionStrength(i, j, dist, radiiAdd);
@@ -227,7 +233,7 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
     // but caching it would make this whole object thread-unsafe
     final double[] radii = new double[noOfAtoms];
     for (int i = 0; i < noOfAtoms; i++) {
-      radii[i] = AtomicProperties.giveRadius(numbers[i]);
+      radii[i] = blowFactor * AtomicProperties.giveRadius(numbers[i]);
     }
 
     final int end = Math.min(noOfAtoms, endset);
@@ -239,7 +245,7 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       final int start = Math.max(offset, i + 1);
       for (int j = start; j < noOfAtoms; j++) {
         final double rad2 = radii[j];
-        final double radiiAdd = blowFactor * (rad1 + rad2);
+        final double radiiAdd = rad1 + rad2;
         final double dX = x - xyz[0][j];
         final double dY = y - xyz[1][j];
         final double dZ = z - xyz[2][j];

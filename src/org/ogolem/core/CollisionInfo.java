@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2012, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,14 @@ package org.ogolem.core;
 
 import java.io.Serializable;
 import java.util.List;
+import org.ogolem.math.SymmetricMatrixNoDiag;
 
 /**
  * Interface for a value object holding all information on detected collision(s). It keeps the
  * pairwise distances.
  *
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-12-21
  */
 public interface CollisionInfo extends Serializable {
 
@@ -94,11 +95,11 @@ public interface CollisionInfo extends Serializable {
   /**
    * Set the pairwise distances.
    *
-   * @param distances the pairwise distances as a full matrix
+   * @param distances the pairwise distances as a symmetric matrix w/o diagonal
    * @param areComplete whether the pairwise distances are complete.
    * @return true if the set was successful, false otherwise
    */
-  boolean setPairWiseDistances(final double[][] distances, final boolean areComplete);
+  boolean setPairWiseDistances(final SymmetricMatrixNoDiag distances, final boolean areComplete);
 
   /**
    * Get the pairwise distances.
@@ -106,7 +107,7 @@ public interface CollisionInfo extends Serializable {
    * @return the pairwise distances. May be not complete. May be null if no storage of distances
    *     happened.
    */
-  double[][] getPairWiseDistances();
+  SymmetricMatrixNoDiag getPairWiseDistances();
 
   /**
    * Resize the pairwise matrix and clean state for reuse. Will NOT clean the pairwise distance

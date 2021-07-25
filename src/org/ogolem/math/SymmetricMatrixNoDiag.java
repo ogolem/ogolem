@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,66 +34,74 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
-
-import org.ogolem.math.SymmetricMatrixNoDiag;
+package org.ogolem.math;
 
 /**
- * An abstract collision info object.
+ * A matrix implementation for a symmetric matrix without diagonal.
  *
  * @author Johannes Dieterich
  * @version 2020-12-21
  */
-abstract class AbstractCollisionInfo implements CollisionInfo {
+public class SymmetricMatrixNoDiag implements Matrix {
 
   private static final long serialVersionUID = (long) 20201221;
 
-  protected boolean distsComplete = false;
-  protected SymmetricMatrixNoDiag pairwiseDistances = null;
-  protected int noCollisions = 0;
+  private final int noRowsCols;
+  private final double[] buffer;
 
-  @Override
-  public boolean hasCollision() {
-    return noCollisions > 0;
+  public SymmetricMatrixNoDiag(final int noRowsCols) {
+    assert (noRowsCols >= 0);
+    this.noRowsCols = noRowsCols;
+    this.buffer = new double[noRowsCols * (noRowsCols - 1) / 2];
   }
 
   @Override
-  public int getNumberOfStoredCollisions() {
-    return noCollisions;
+  public int noRows() {
+    return noRowsCols;
   }
 
   @Override
-  public boolean pairWiseDistsComplete() {
-    return distsComplete;
+  public int noCols() {
+    return noRowsCols;
   }
 
   @Override
-  public boolean setPairWiseDistances(
-      final SymmetricMatrixNoDiag distances, final boolean areComplete) {
+  public void setElement(final int i, final int j, final double val) {
 
-    this.pairwiseDistances = distances;
-    this.distsComplete = areComplete;
+    // we always assume j > i
+    final int row = Math.min(j, i);
+    final int col = Math.max(j, i);
 
-    return true;
+    final int idx =
+        (noRowsCols * (noRowsCols - 1) / 2)
+            - (noRowsCols - row) * ((noRowsCols - row) - 1) / 2
+            + col
+            - row
+            - 1;
+
+    buffer[idx] = val;
   }
 
   @Override
-  public SymmetricMatrixNoDiag getPairWiseDistances() {
-    return pairwiseDistances;
+  public double getElement(final int i, final int j) {
+
+    // we always assume j > i
+    final int row = Math.min(j, i);
+    final int col = Math.max(j, i);
+
+    final int idx =
+        (noRowsCols * (noRowsCols - 1) / 2)
+            - (noRowsCols - row) * ((noRowsCols - row) - 1) / 2
+            + col
+            - row
+            - 1;
+
+    return buffer[idx];
   }
 
+  /** Returns the n*(n-1)/2 storage buffer where j > i always. */
   @Override
-  public void resizeDistsAndClearState(final int size) {
-
-    if (pairwiseDistances == null || pairwiseDistances.noRows() != size) {
-      // resize
-      this.pairwiseDistances = new SymmetricMatrixNoDiag(size);
-    }
-    noCollisions = 0;
-    distsComplete = false;
-
-    cleanState();
+  public double[] underlyingStorageBuffer() {
+    return buffer;
   }
-
-  protected abstract void cleanState();
 }
