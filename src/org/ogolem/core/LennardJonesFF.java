@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,18 +38,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorOperators;
+import jdk.incubator.vector.VectorSpecies;
+
 /**
  * This provides an implementation of a backend for Lennard-Jones clusters. For the time being it is
  * NOT possible for this force field to calculate heterogeneous clusters. Besides, as described by
  * the Backend interface, it depends on a 1D array of coordinates for calculation.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2021-04-22
  */
 public class LennardJonesFF implements CartesianFullBackend {
 
   // the ID
-  private static final long serialVersionUID = (long) 20200201;
+  private static final long serialVersionUID = (long) 20210422;
+
+  private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
   private final boolean cache;
   private double eps;
@@ -108,10 +114,12 @@ public class LennardJonesFF implements CartesianFullBackend {
       d4Epsilon = eps;
       dSigma = sig;
     }
+    final var vSigmaSq = DoubleVector.broadcast(SPECIES, dSigma).mul(dSigma);
 
     // the cutoff distance
     final double dSeam = 0.64 * dSigma;
     final double dSeamSquared = dSeam * dSeam;
+    final var vSeamSq = DoubleVector.broadcast(SPECIES, dSeamSquared);
 
     // more constants... needed for cutting off the potential
     final double t = 1.0 / 0.64;
@@ -120,6 +128,8 @@ public class LennardJonesFF implements CartesianFullBackend {
     final double t12 = t6 * t6;
     final double dConst1 = (4.0 * (t12 - t6) - 10000.0) / dSeam;
     final double dConst2 = 10000.0;
+    final var vConst1 = DoubleVector.broadcast(SPECIES, dConst1);
+    final var vConst2 = DoubleVector.broadcast(SPECIES, dConst2);
 
     // get the squared distances between all atoms
     double dPotEnergyAdded = 0.0;
@@ -137,9 +147,46 @@ public class LennardJonesFF implements CartesianFullBackend {
       } // dummy
 
       final double x0 = xyz1D[i];
+      final var vX0 = DoubleVector.broadcast(SPECIES, x0);
       final double y0 = xyz1D[i + iNoOfAtoms];
+      final var vY0 = DoubleVector.broadcast(SPECIES, y0);
       final double z0 = xyz1D[i + 2 * iNoOfAtoms];
-      for (int j = i + 1; j < iNoOfAtoms; j++) {
+      final var vZ0 = DoubleVector.broadcast(SPECIES, z0);
+
+      var vPotEnergy = DoubleVector.zero(SPECIES);
+
+      final int loopBound = SPECIES.loopBound(iNoOfAtoms - i - 1);
+      int j = i + 1;
+      for (; j < loopBound + i + 1; j += SPECIES.length()) {
+        final var vDX = vX0.sub(DoubleVector.fromArray(SPECIES, xyz1D, j));
+        final var vDXSq = vDX.mul(vDX);
+        final var vDY = vY0.sub(DoubleVector.fromArray(SPECIES, xyz1D, j + iNoOfAtoms));
+        final var vDXYSq = vDY.fma(vDY, vDXSq);
+        final var vDZ = vZ0.sub(DoubleVector.fromArray(SPECIES, xyz1D, j + 2 * iNoOfAtoms));
+        final var vDistSq = vDZ.fma(vDZ, vDXYSq);
+        final var vComp = vDistSq.lt(vSeamSq);
+        final boolean anyLower = vComp.anyTrue();
+        final var vInvRPow2 = vSigmaSq.div(vDistSq);
+        final var vInvRPow6 = vInvRPow2.mul(vInvRPow2).mul(vInvRPow2);
+        final var vInvRPow12 = vInvRPow6.mul(vInvRPow6);
+        var vVecTmp = vInvRPow12.sub(vInvRPow6).mul(d4Epsilon);
+        final var vEP = DoubleVector.fromArray(SPECIES, energyparts, j);
+        if (anyLower) {
+          // the unlikely case
+          final var vDist = vDistSq.lanewise(VectorOperators.SQRT);
+          final var vCutTmp = vDist.fma(vConst1, vConst2);
+          vVecTmp = vVecTmp.blend(vCutTmp, vComp);
+        }
+        final var vEPAdd = vEP.add(vVecTmp);
+        vEPAdd.intoArray(energyparts, j);
+        vPotEnergy = vPotEnergy.add(vVecTmp);
+      }
+
+      final double redEnergy = vPotEnergy.reduceLanes(VectorOperators.ADD);
+      energyparts[i] += redEnergy;
+      dPotEnergyAdded += redEnergy;
+
+      for (; j < iNoOfAtoms; j++) {
         // calculate pair distance
         final double dDistX = x0 - xyz1D[j];
         final double dDistY = y0 - xyz1D[j + iNoOfAtoms];
@@ -218,10 +265,12 @@ public class LennardJonesFF implements CartesianFullBackend {
     }
     final double d24Epsilon = d4Epsilon * 6.0;
     final double d48Epsilon = d24Epsilon * 2.0;
+    final var vSigmaSq = DoubleVector.broadcast(SPECIES, dSigma).mul(dSigma);
 
     // the cutoff distance
     final double dSeam = 0.64 * dSigma;
     final double dSeamSquared = dSeam * dSeam;
+    final var vSeamSq = DoubleVector.broadcast(SPECIES, dSeamSquared);
 
     // more constants... needed for cutting off the potential
     final double t = 1.0 / 0.64;
@@ -230,9 +279,14 @@ public class LennardJonesFF implements CartesianFullBackend {
     final double t12 = t6 * t6;
     final double dConst1 = (4.0 * (t12 - t6) - 10000.0) / dSeam;
     final double dConst2 = 10000.0;
+    final var vConst1 = DoubleVector.broadcast(SPECIES, dConst1);
+    final var vConst2 = DoubleVector.broadcast(SPECIES, dConst2);
+
+    final var one = DoubleVector.broadcast(SPECIES, 1.0);
 
     // calculate all pair distances
     double dPotEnergyAdded = 0.0;
+
     int lastOffset = 0;
     for (int i = 0; i < atsPerMol.length - 1; i++) {
       lastOffset += atsPerMol[i];
@@ -240,16 +294,100 @@ public class LennardJonesFF implements CartesianFullBackend {
 
     final int firstLoopAtomNo = (hasRigidEnv) ? lastOffset - 1 : iNoOfAtoms - 1;
     for (int i = 0; i < firstLoopAtomNo; i++) {
-
       final double x0 = xyz1D[i];
+      final var vX0 = DoubleVector.broadcast(SPECIES, x0);
       final double y0 = xyz1D[i + iNoOfAtoms];
+      final var vY0 = DoubleVector.broadcast(SPECIES, y0);
       final double z0 = xyz1D[i + 2 * iNoOfAtoms];
+      final var vZ0 = DoubleVector.broadcast(SPECIES, z0);
 
-      double gradXI = daGradientMat[0][i];
-      double gradYI = daGradientMat[1][i];
-      double gradZI = daGradientMat[2][i];
+      var vGradXI = DoubleVector.zero(SPECIES);
+      var vGradYI = DoubleVector.zero(SPECIES);
+      var vGradZI = DoubleVector.zero(SPECIES);
 
-      for (int j = (i + 1); j < iNoOfAtoms; j++) {
+      var vPotEnergy = DoubleVector.zero(SPECIES);
+
+      final int loopBound = SPECIES.loopBound(iNoOfAtoms - i - 1);
+      int j = i + 1;
+      for (; j < loopBound + i + 1; j += SPECIES.length()) {
+
+        final var vDX = vX0.sub(DoubleVector.fromArray(SPECIES, xyz1D, j));
+        final var vDXSq = vDX.mul(vDX);
+        final var vDY = vY0.sub(DoubleVector.fromArray(SPECIES, xyz1D, j + iNoOfAtoms));
+        final var vDXYSq = vDY.fma(vDY, vDXSq);
+        final var vDZ = vZ0.sub(DoubleVector.fromArray(SPECIES, xyz1D, j + 2 * iNoOfAtoms));
+        final var vDistSq = vDZ.fma(vDZ, vDXYSq);
+        final var vDist = vDistSq.lanewise(VectorOperators.SQRT);
+        final var vDistInv = one.div(vDist);
+        final var vDivProdX = vDX.mul(vDistInv);
+        final var vDivProdY = vDY.mul(vDistInv);
+        final var vDivProdZ = vDZ.mul(vDistInv);
+        final var vComp = vDistSq.lt(vSeamSq);
+        final boolean anyLower = vComp.anyTrue();
+        if (anyLower) {
+          // any atoms too close - the unlikely case
+          final var vCutTmp = vDist.fma(vConst1, vConst2);
+          final var vInvRPow2 = vSigmaSq.div(vDistSq);
+          final var vInvRPow6 = vInvRPow2.mul(vInvRPow2).mul(vInvRPow2);
+          final var vInvRPow12 = vInvRPow6.mul(vInvRPow6);
+          final var vVecTmp = vInvRPow12.sub(vInvRPow6).mul(d4Epsilon).blend(vCutTmp, vComp);
+          final var vEP = DoubleVector.fromArray(SPECIES, energyparts, j);
+          final var vEPAdd = vEP.add(vVecTmp);
+          vEPAdd.intoArray(energyparts, j);
+          vPotEnergy = vPotEnergy.add(vVecTmp);
+          final var vGrad1 = vInvRPow6.mul(vDistInv).mul(d24Epsilon);
+          final var vGrad2 = vInvRPow12.mul(-d48Epsilon);
+          final var vGradTmp = vGrad2.fma(vDistInv, vGrad1).blend(vCutTmp, vComp);
+          final var vNegGradTmp = vGradTmp.neg();
+
+          vGradXI = vGradTmp.fma(vDivProdX, vGradXI);
+          final var vGOJ = DoubleVector.fromArray(SPECIES, daGradientMat[0], j);
+          vNegGradTmp.fma(vDivProdX, vGOJ).intoArray(daGradientMat[0], j);
+
+          vGradYI = vGradTmp.fma(vDivProdY, vGradYI);
+          final var vG1J = DoubleVector.fromArray(SPECIES, daGradientMat[1], j);
+          vNegGradTmp.fma(vDivProdY, vG1J).intoArray(daGradientMat[1], j);
+
+          vGradZI = vGradTmp.fma(vDivProdZ, vGradZI);
+          final var vG2J = DoubleVector.fromArray(SPECIES, daGradientMat[2], j);
+          vNegGradTmp.fma(vDivProdZ, vG2J).intoArray(daGradientMat[2], j);
+
+        } else {
+          final var vInvRPow2 = vSigmaSq.div(vDistSq);
+          final var vInvRPow6 = vInvRPow2.mul(vInvRPow2).mul(vInvRPow2);
+          final var vInvRPow12 = vInvRPow6.mul(vInvRPow6);
+          final var vVecTmp = vInvRPow12.sub(vInvRPow6).mul(d4Epsilon);
+          final var vEP = DoubleVector.fromArray(SPECIES, energyparts, j);
+          final var vEPAdd = vEP.add(vVecTmp);
+          vEPAdd.intoArray(energyparts, j);
+          vPotEnergy = vPotEnergy.add(vVecTmp);
+          final var vGrad1 = vInvRPow6.mul(vDistInv).mul(d24Epsilon);
+          final var vGrad2 = vInvRPow12.mul(-d48Epsilon);
+          final var vGradTmp = vGrad2.fma(vDistInv, vGrad1);
+          final var vNegGradTmp = vGradTmp.neg();
+
+          vGradXI = vGradTmp.fma(vDivProdX, vGradXI);
+          final var vGOJ = DoubleVector.fromArray(SPECIES, daGradientMat[0], j);
+          vNegGradTmp.fma(vDivProdX, vGOJ).intoArray(daGradientMat[0], j);
+
+          vGradYI = vGradTmp.fma(vDivProdY, vGradYI);
+          final var vG1J = DoubleVector.fromArray(SPECIES, daGradientMat[1], j);
+          vNegGradTmp.fma(vDivProdY, vG1J).intoArray(daGradientMat[1], j);
+
+          vGradZI = vGradTmp.fma(vDivProdZ, vGradZI);
+          final var vG2J = DoubleVector.fromArray(SPECIES, daGradientMat[2], j);
+          vNegGradTmp.fma(vDivProdZ, vG2J).intoArray(daGradientMat[2], j);
+        }
+      }
+      double gradXI = daGradientMat[0][i] + vGradXI.reduceLanes(VectorOperators.ADD);
+      double gradYI = daGradientMat[1][i] + vGradYI.reduceLanes(VectorOperators.ADD);
+      double gradZI = daGradientMat[2][i] + vGradZI.reduceLanes(VectorOperators.ADD);
+
+      final double redEnergy = vPotEnergy.reduceLanes(VectorOperators.ADD);
+      energyparts[i] += redEnergy;
+      dPotEnergyAdded += redEnergy;
+
+      for (; j < iNoOfAtoms; j++) {
 
         final double dDistX = x0 - xyz1D[j];
         final double dDistY = y0 - xyz1D[j + iNoOfAtoms];
