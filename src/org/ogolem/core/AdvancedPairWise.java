@@ -49,7 +49,7 @@ import org.ogolem.math.SymmetricMatrixNoDiag;
  * cases a pairwise checking.
  *
  * @author Johannes Dieterich
- * @version 2021-04-22
+ * @version 2021-07-25
  */
 public class AdvancedPairWise implements CollisionDetectionEngine {
 
@@ -193,6 +193,7 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
             if (!succ) {
               System.err.println("No success setting collision!");
             }
+            if (exit) break; // just in case there is more than one collision in this vector lane
           }
 
           // increment the noOfCollisions AFTER setting the collision info since arrays start from
