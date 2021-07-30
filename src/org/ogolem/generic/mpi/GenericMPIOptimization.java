@@ -1,6 +1,6 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2020-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,12 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic.mpi;
 
+import java.util.Random;
 import org.ogolem.generic.Optimizable;
-import mpi.MPI;
-import mpi.Status;
+import org.ogolem.helpers.Tuple;
 import org.ogolem.io.InputPrimitives;
-import org.ogolem.io.ManipulationPrimitives;
 import org.ogolem.io.OutputPrimitives;
+import org.ogolem.random.Lottery;
+import org.ogolem.random.RNGenerator;
+import org.ogolem.random.StandardRNG;
 import org.ogolem.rmi.Job;
 import org.ogolem.rmi.Result;
 import org.ogolem.rmi.Task;
@@ -50,152 +52,237 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A generic class for MPI based parallelization of our optimization problems.
- * Please note: you must call MPI_INIT from OUTSIDE this and decide already,
- * if the process is queen (rank 0) or drone (rank 1 - N)! Note that the queen
- * does NOT do any quantum of work herself here.
+ * A generic class for MPI based parallelization of our optimization problems. Please note: you must
+ * call MPI_INIT from OUTSIDE this and decide already, if the process is queen (rank 0) or drone
+ * (rank 1 - N)! Note that the queen does NOT do any quantum of work herself here.
+ *
  * @author Johannes Dieterich
- * @version 2020-06-23
+ * @version 2021-07-28
  */
 public class GenericMPIOptimization<E, T extends Optimizable<E>> {
-    
-    private static final Logger log = LoggerFactory.getLogger(GenericMPIOptimization.class);
-    private static final int NEXTTASK = 0;
-    private static final int EXITDONE = 1;
-    private static final int WAITFOR = 2;
-    private static final int KICKOFF = 42;
-    private static final long TIMEOUT = 5000; // 5 seconds
-    
-    private GenericMPIOptimization(){}
-    
-    @SuppressWarnings("unchecked")
-    public static <T> void runAsQueen(final Job<T> job) throws Exception {
-        
-        log.debug("Entering generic MPI globopt as queen. BRACE YOURSELF BIG TIMES!");
-        
-        final int noProcs = MPI.COMM_WORLD.Size();
-        if(noProcs <= 1){
-            throw new RuntimeException("Trying to actually work all by myself is not in my nature. Bye.");
-        }
-        
-        /*
-         * initial broadcast
-         */
-        final char[] initMessage = "Hello from MPI queen, all is well!".toCharArray();
-        MPI.COMM_WORLD.Bcast(initMessage, 0, 35, MPI.CHAR, KICKOFF);
-        
-        /*
-         * fill up all drones once
-         */
-        int taskCounter = 1;
-        for(int proc = 1; proc < noProcs; proc++){
-            final Task<T> task = job.nextTask();
-            final String outFile = "task" + taskCounter + ".dat";
-            OutputPrimitives.writeObjToBinFile(outFile, task);
-            final char[] message = new char[50];
-            final char[] outFM = outFile.toCharArray();
-            System.arraycopy(outFM, 0, message, 0, outFM.length);
-            MPI.COMM_WORLD.Send(message, 0, 50, MPI.CHAR, proc, 0);
-            taskCounter++;
-        }
-        
-        while(!job.jobFinished()){
-            
-            // receive something
-            final char[] answer = new char[50];
-            final Status rcvStat = MPI.COMM_WORLD.Recv(answer, 0, 50, MPI.CHAR, MPI.ANY_SOURCE, MPI.ANY_TAG);
-            final String resPath = String.copyValueOf(answer).trim();
-            
-            final Result<T> result = (Result<T>) InputPrimitives.readBinInput(resPath);
-            
-            // delete the result file
-            ManipulationPrimitives.remove(resPath);
-            
-            // submit it
-            job.submitResult(result);
-            
-            // and give something out
-            final Task<T> task = job.nextTask();
-            if(task == null){
-                final char[] message = new char[50];
-                MPI.COMM_WORLD.Send(message, 0, 50, MPI.CHAR, rcvStat.source, WAITFOR);
-            } else {
-                final String taskPath = "task" + taskCounter + ".dat";
-                OutputPrimitives.writeObjToBinFile(taskPath, task);
-                final char[] message = new char[50];
-                final char[] outFM = taskPath.toCharArray();
-                System.arraycopy(outFM, 0, message, 0, outFM.length);
-            
-                MPI.COMM_WORLD.Send(message, 0, 50, MPI.CHAR, rcvStat.source, NEXTTASK);
-                taskCounter++;
-            }
-        }
-        
-        
-        /*
-         * tell everybody to go kill themselves
-         */
-        final char[] finalMessage = new char[50];
-        for(int proc = 1; proc < noProcs; proc++){
-            MPI.COMM_WORLD.Send(finalMessage, 0, 50, MPI.CHAR, proc, EXITDONE);
-        }
+
+  private static final Logger LOG = LoggerFactory.getLogger(GenericMPIOptimization.class);
+  private static final int NEXTTASK = 0;
+  private static final int EXITDONE = 1;
+  private static final int WAITFOR = 2;
+  private static final int DUMMY = 3;
+  private static final int RESULT = 4;
+
+  private GenericMPIOptimization() {}
+
+  @SuppressWarnings("unchecked")
+  public static <T> void runAsQueen(final MPIInterface mpi, final Job<T> job) throws Exception {
+
+    final boolean debug = LOG.isDebugEnabled();
+    if (debug) LOG.debug("Entering generic MPI globopt as queen. BRACE YOURSELF BIG TIMES!");
+
+    final int noProcs = mpi.mpiCommSize();
+    if (noProcs <= 1) {
+      throw new RuntimeException("Trying to actually work all by myself is not in my nature. Bye.");
     }
-    
-    @SuppressWarnings("unchecked")
-    public static <X,Y extends Optimizable<X>> void runAsDrone(final long timeout) throws Exception {
-        
-        log.debug("Entering generic MPI globopt as drone. BRACE YOURSELF BIG TIMES!");
-        
-        final int myRank = MPI.COMM_WORLD.Rank();
-        
-        // try to receive the initial broadcast
-        final char[] initMessage = new char[35];
-        MPI.COMM_WORLD.Bcast(initMessage, 0, 35, MPI.CHAR, KICKOFF);
-        final String sInit = new String(initMessage).trim();
-        
-        if(!sInit.equalsIgnoreCase("Hello from MPI queen, all is well!")){
-            throw new RuntimeException("Initial message from queen was not what " + myRank + "expected. Exiting. Received message: "
-                + sInit);
-        }
-                
-        // do stuff as long as time permits
-        final long startTime = System.currentTimeMillis();
-        int taskCounter = 0;
-        BigLoop: while((System.currentTimeMillis()-startTime) < timeout ){
-            
-            
-            // always the same idea: ask the queen for a new task
-            final char[] message = new char[50];
-            final Status status = MPI.COMM_WORLD.Recv(message, 0, 50, MPI.CHAR, 0, MPI.ANY_TAG);
-            
-            final int messTag = status.tag;
-            if (messTag == EXITDONE || (messTag != WAITFOR && messTag != NEXTTASK)) {
-                log.debug("Queen tells me to quit: doing so! Tag was " + messTag);
-                break;
-            } else if(messTag == WAITFOR) {
-                Thread.sleep(TIMEOUT);
-                continue BigLoop;
-            }
-            
-            // there is a task: execute it
-            log.debug("There is a new task!");
-            taskCounter++;
 
-            final Task<Y> task = (Task<Y>) InputPrimitives.readBinInput(new String(message).trim());
-            final Result<Y> result = task.executeTask(myRank);
-            
-            // delete task
-            ManipulationPrimitives.remove(new String(message).trim());
+    /*
+     * initial broadcast
+     */
+    final char[] initMessage = "Hello from MPI queen, all is well!".toCharArray();
+    final Tuple<Integer, char[]> bcastRet = mpi.mpiBcast(initMessage, 0, 0);
+    if (bcastRet.getObject1() != 0)
+      throw new RuntimeException("Error in sending initial bcast. " + bcastRet);
 
-            final String outputFile = "result" + taskCounter + ".bin";
-            OutputPrimitives.writeObjToBinFile(outputFile, result);
+    /*
+     * fill up all drones once
+     */
+    int taskCounter = 0;
+    for (int proc = 1; proc < noProcs; proc++) {
+      final Task<T> task = job.nextTask();
+      if (task == null) {
+        // this case may happen if pool size < #drones
+        if (debug) LOG.debug("Queen: Sending WAITFOR to " + proc);
+        final int sendRes = mpi.mpiSend(new byte[1], 0, proc, WAITFOR);
+        if (sendRes != 0)
+          throw new RuntimeException("Failure to send wait to rank " + proc + "\t" + sendRes);
+      } else {
+        final byte[] data = OutputPrimitives.writeObjToByteArray(task);
+        final int retSend = mpi.mpiSend(data, 0, proc, 0);
+        if (retSend != 0)
+          throw new RuntimeException(
+              "Error in sending initial task "
+                  + taskCounter
+                  + " to "
+                  + proc
+                  + " with error "
+                  + retSend);
 
-            // report back
-            final char[] filePath = outputFile.toCharArray();
-            final char[] answer = new char[50];
-            assert (filePath.length <= answer.length);
-            System.arraycopy(filePath, 0, answer, 0, filePath.length);
-            MPI.COMM_WORLD.Send(answer, 0, 77, MPI.CHAR, 0, myRank);
-        }
+        taskCounter++;
+        if (debug) LOG.debug("Queen: Send task out to " + proc + " counter is " + taskCounter);
+      }
     }
+
+    while (!job.jobFinished()) {
+
+      // receive something
+      if (debug) LOG.debug("Queen: Waiting to receive, counter is " + taskCounter);
+      final MPIInterface.MPIStatus rcvStat =
+          mpi.mpiRecvBytes(0, MPIInterface.ANY_SOURCE, MPIInterface.ANY_TAG);
+      if (rcvStat.err != 0) {
+        throw new RuntimeException(
+            "Error in receiving w/ counter "
+                + taskCounter
+                + " tag "
+                + rcvStat.tag
+                + " from "
+                + rcvStat.source
+                + " error "
+                + rcvStat.err);
+      }
+
+      if (debug) LOG.debug("Queen: Received, tag " + rcvStat.tag + " from " + rcvStat.source);
+      if (rcvStat.tag != DUMMY) {
+        final Result<T> result = (Result<T>) InputPrimitives.readByteInput(rcvStat.msg);
+        taskCounter--;
+
+        // submit it
+        job.submitResult(result);
+      }
+
+      if (job.jobFinished()) { // no need to get a new task out
+        if (debug) LOG.debug("Queen: Sending WAITFOR (DONE) to " + rcvStat.source);
+        final int sendRes = mpi.mpiSend(new byte[1], 0, rcvStat.source, WAITFOR);
+        if (sendRes != 0)
+          throw new RuntimeException(
+              "Failure to send wait to rank " + rcvStat.source + "\t" + sendRes);
+        break;
+      }
+
+      // and give something out
+      final Task<T> task = job.nextTask();
+      if (task == null) {
+        if (debug) LOG.debug("Queen: Sending WAITFOR to " + rcvStat.source);
+        final int sendRes = mpi.mpiSend(new byte[1], 0, rcvStat.source, WAITFOR);
+        if (sendRes != 0)
+          throw new RuntimeException(
+              "Failure to send wait to rank " + rcvStat.source + "\t" + sendRes);
+      } else {
+        if (debug) LOG.debug("Queen: Sending task to " + rcvStat.source);
+        final byte[] data = OutputPrimitives.writeObjToByteArray(task);
+        final int sendRes = mpi.mpiSend(data, 0, rcvStat.source, NEXTTASK);
+        if (sendRes != 0)
+          throw new RuntimeException(
+              "Failure to send next task to rank " + rcvStat.source + "\t" + sendRes);
+
+        taskCounter++;
+      }
+    }
+
+    /*
+     * receive any stragglers
+     */
+    if (taskCounter > 0) {
+      LOG.info("Queen: Job finished. Waiting for " + taskCounter + " drones to report.");
+    }
+
+    while (taskCounter > 0) {
+      if (debug) LOG.debug("Queen: Waiting for stragglers " + taskCounter);
+      // receive outstanding
+      final MPIInterface.MPIStatus rcvStat =
+          mpi.mpiRecvBytes(0, MPIInterface.ANY_SOURCE, MPIInterface.ANY_TAG);
+      taskCounter--;
+    }
+
+    LOG.info("Queen: Finalizing across all drones.");
+
+    /*
+     * tell everybody to go kill themselves
+     */
+    for (int proc = 1; proc < noProcs; proc++) {
+      if (debug) LOG.debug("Queen: Sending EXITDONE to " + proc);
+      final int sendRes = mpi.mpiSend(new byte[1], 0, proc, EXITDONE);
+      if (sendRes != 0)
+        throw new RuntimeException("Failure to send exit done to rank " + proc + "\t" + sendRes);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <X, Y extends Optimizable<X>> void runAsDrone(
+      final MPIInterface mpi, final long waittime) throws Exception {
+
+    // init Lottery - it is unreasonable to assume a distributed job could synchronize Lottery,
+    // hence default init
+    final Random r = new Random();
+    final long seed = r.nextLong();
+    final RNGenerator rng = new StandardRNG(seed);
+    Lottery.setGenerator(rng);
+
+    final int myRank = mpi.mpiCommRank();
+
+    final boolean debug = LOG.isDebugEnabled();
+    if (debug)
+      LOG.debug(
+          "Entering generic MPI globopt as drone ( " + myRank + " ). BRACE YOURSELF BIG TIMES!");
+
+    // try to receive the initial broadcast
+    final char[] initMessage = new char[34];
+    final Tuple<Integer, char[]> bcastRet = mpi.mpiBcast(initMessage, myRank, 0);
+    if (bcastRet.getObject1() != 0)
+      throw new RuntimeException("Error in receiving initial bcast. " + bcastRet);
+    final String sInit = new String(bcastRet.getObject2()).trim();
+
+    if (!sInit.equalsIgnoreCase("Hello from MPI queen, all is well!")) {
+      throw new RuntimeException(
+          "Initial message from queen was not what "
+              + myRank
+              + " expected. Exiting. Received message: "
+              + sInit);
+    }
+
+    // do stuff as long as there is something to do
+    int taskCounter = 0;
+    for (; ; ) {
+
+      // always the same idea: ask the queen for a new task
+      if (debug) LOG.debug("Drone " + myRank + " asking for new task...");
+      final MPIInterface.MPIStatus status = mpi.mpiRecvBytes(myRank, 0, MPIInterface.ANY_TAG);
+      if (status.err != 0) {
+        throw new RuntimeException("Failure to receive on " + myRank + " with error " + status.err);
+      }
+
+      if (debug) LOG.debug("Drone " + myRank + " received " + status.tag);
+
+      final int messTag = status.tag;
+      if (messTag == EXITDONE || (messTag != WAITFOR && messTag != NEXTTASK)) {
+        if (debug) LOG.debug("Queen tells me to quit: doing so! Tag was " + messTag);
+        break;
+      }
+
+      if (messTag == WAITFOR) {
+        // sleep some to not congest the queen
+        Thread.sleep(waittime);
+
+        // dummy send
+        if (debug) LOG.debug("Drone " + myRank + " dummy sending... ");
+        final int retSend = mpi.mpiSend(new byte[1], myRank, 0, DUMMY);
+        if (retSend != 0)
+          throw new RuntimeException(
+              "Error in sending result back from " + myRank + " with error " + retSend);
+        if (debug) LOG.debug("Drone " + myRank + " sent dummy.");
+      } else {
+
+        // there is a task: execute it
+        taskCounter++;
+        if (debug) LOG.debug("There is a new task! No: " + taskCounter);
+
+        final Task<Y> task = (Task<Y>) InputPrimitives.readByteInput(status.msg);
+        final Result<Y> result = task.executeTask(myRank);
+
+        // report back
+        final byte[] resData = OutputPrimitives.writeObjToByteArray(result);
+        if (debug) LOG.debug("Drone " + myRank + " sending result...");
+        final int retSend = mpi.mpiSend(resData, myRank, 0, RESULT);
+        if (retSend != 0)
+          throw new RuntimeException(
+              "Error in sending result back from " + myRank + " with error " + retSend);
+        if (debug) LOG.debug("Drone " + myRank + " sent result.");
+      }
+    }
+  }
 }

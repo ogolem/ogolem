@@ -28,7 +28,7 @@ error or uncertainty, please do also contact us.
 \section{Licensing}
 \ogo{} is distributed under the following license
 \begin{verbatim}
-Copyright (c) 2009-2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2009-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -164,7 +164,7 @@ flags are
      for the OGOLEM snapshot version
 \end{verbatim}
 Please note here that you should have installed a Java runtime environment (JRE)
-complying at least to the JAVA7 standard. Additionally, for above command to
+complying at least to the JAVA16 standard. Additionally, for above command to
 work, the java binary should be in your path, otherwise you will need to
 explicitly specify the path to it.
 
@@ -210,9 +210,10 @@ java -jar ogolem.jar --shmem input.ogo 2
 where \texttt{input.ogo} is your input file, needing to have \texttt{.ogo} as a
 suffix, followed by the number of threads you want to use, 2 in this case.
 
-If you want to make use of the MPI frontend, please contact the authors for help
-since this is a non-trivial procedure due to the shortcomings of the MPI
-standard. In general, you are better off with shared memory parallelization.
+If you want to make use of the MPI frontend, please see notes in
+\texttt{mpi\_helper/HOWTORUNMPI.md} on how to link \ogo{} to a MPI
+implementation. In general, using the shared memory parallelization will be
+easier and is preferred for multi-CPU, single-node jobs.
 
 See Chapter.~\ref{rmi} for a JVM-based substitute for MPI with some more
 advanced distribution of computing tasks and stability. However, this feature

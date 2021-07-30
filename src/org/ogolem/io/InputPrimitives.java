@@ -80,6 +80,27 @@ public final class InputPrimitives {
   }
 
   /**
+   * Deserializes an object from its serialized byte[] representation.
+   *
+   * @param data the byte buffer representing the object
+   * @return the deserialized object
+   * @throws ClassNotFoundException
+   * @throws IOException
+   */
+  public static Object readByteInput(final byte[] data) throws ClassNotFoundException, IOException {
+
+    Object obj = null;
+    try (final ObjectInputStream objectStream =
+        new ObjectInputStream(new ByteArrayInputStream(data))) {
+      obj = objectStream.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      throw e;
+    }
+
+    return obj;
+  }
+
+  /**
    * Reads a file into memory.
    *
    * @param fileName
