@@ -24,7 +24,6 @@ dependencies {
   implementation name: 'corrmd'
   implementation name: 'evbqmdff'
   implementation name: 'lionbench'
-  implementation name: 'mpi'
   implementation name: 'scaTTM3F'
   implementation name: 'skalevala'
   implementation 'org.apache.commons:commons-math3:3.6.1'
@@ -65,6 +64,7 @@ sourceSets {
 }
 
 compileJava {
+  //options.release = 16
   options.warnings = true
   options.deprecation = true
   options.debug = true

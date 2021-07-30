@@ -72,6 +72,27 @@ public final class OutputPrimitives {
   }
 
   /**
+   * Write an object to a byte[] (assuming that it supports serialization).
+   *
+   * @param obj return byte array
+   * @throws IOException
+   */
+  public static byte[] writeObjToByteArray(final Serializable obj) throws IOException {
+
+    byte[] data;
+    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    try (final ObjectOutputStream outStream = new ObjectOutputStream(bos)) {
+      outStream.writeObject(obj);
+      outStream.flush();
+      data = bos.toByteArray();
+    } catch (IOException e) {
+      throw e;
+    }
+
+    return data;
+  }
+
+  /**
    * Writes an array of data to a file.
    *
    * @param path
