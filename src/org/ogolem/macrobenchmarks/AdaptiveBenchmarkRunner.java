@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -44,104 +44,115 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Run adaptive optimization benchmarks.
+ *
  * @author Johannes Dieterich
  * @version 2020-04-19
  */
-class AdaptiveBenchmarkRunner implements BenchmarkRunner  {
+class AdaptiveBenchmarkRunner implements BenchmarkRunner {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ClusterBenchmarkRunner.class);
-    
-    @Override
-    public boolean runBenchmark(String csvLine, int noThreads) throws Exception {
-        
-        final String[] csvData = csvLine.trim().split("\\,");
-        // format of the line is as follows:
-        // 1) the working directory the input resides in
-        // 2) the input file, relative to work dir
-        // 4) the expected global minimum fitness
-        // 5) the file, relative to work dir, containing the reference global minimum
-        // 6) threshold for fitness
-        // 7) threshold per parameter
-        final String workDir = csvData[0].trim();
-        final String inputFile = csvData[1].trim();
-        final double energy = Double.parseDouble(csvData[2].trim());
-        final String refParameters = csvData[3].trim();
-        final double fitnessThresh = Double.parseDouble(csvData[4].trim());
-        final double paramThresh = Double.parseDouble(csvData[5].trim());
-        
-        final File newDir = new File(workDir);
-        if(!newDir.exists() || !newDir.isDirectory()){
-            LOG.error("Specified working directory " + workDir + " does not exist or is not a directory.");
-            return false;
-        }
-        
-        LOG.info("Executing benchmark " + inputFile);
-        final double startT = System.currentTimeMillis();
-        
-        final String[] args = new String[]{"--adaptive", inputFile, "" + noThreads};
-        try {
-            Helpers.executeJavaProcess(workDir, args);
-        } catch(Exception e){
-            throw new RuntimeException("Failure to run benchmark " + csvLine, e);
-        }
-        final double endT = System.currentTimeMillis();
-        
-        // we know the output directory is inputFile w/o .ogo extension
-        final String outputDir = workDir + File.separator + inputFile.substring(0, inputFile.lastIndexOf(".ogo"));
-        
-        // find the rank0 parameters in that output directory
-        final File outDir = new File(outputDir);
-        final String[] ls = outDir.list(new Helpers.Rank0Filter());
-        if(ls == null || ls.length != 1){
-            throw new RuntimeException("No rank0 parameter set for benchmark " + csvLine + " in " + outputDir);
-        }
-        
-        // let's get two adaptive parameter sets
-        final String[] refParams = InputPrimitives.readFileIn(workDir + File.separator + refParameters);
-        final AdaptiveParameters refSet = new AdaptiveParameters(refParams, 0);
-        final String[] foundParams = InputPrimitives.readFileIn(outputDir + File.separator + ls[0]);
-        final AdaptiveParameters foundSet = new AdaptiveParameters(foundParams, 1);
-        
-        final double refFit = refSet.getFitness();
-        final double foundFit = foundSet.getFitness();
-        if(Math.abs(foundFit - refFit) > fitnessThresh){
-            LOG.error("Benchmark fitness wrong. Obtained: " + foundFit + " vs should be " + refFit);
-            return false;
-        }
+  private static final Logger LOG = LoggerFactory.getLogger(ClusterBenchmarkRunner.class);
 
-         // steps to that individual
-        final String ls0NoFront = ls[0].substring("rank0individual".length());
-        final long stepsToIndividual = Long.parseLong(ls0NoFront);
-        
-        // now the more complex thing - compare parameter values
-        final String[] keys = refSet.getAllKeysCopy();
-        final String[] oKeys = foundSet.getAllKeysCopy();
-        if(keys.length != oKeys.length){
-            LOG.error("Different number of keys for reference and obtained.");
-            return false;
-        }
-        for(final String key : keys){
-            
-            final double[] refParamKey = refSet.getParametersForKey(key);
-            final double[] foundParamKey = foundSet.getParametersForKey(key);
-            
-            if(refParamKey.length != foundParamKey.length){
-                LOG.error("For key " + key + " found " + foundParamKey.length + " should be " + refParamKey.length);
-                return false;
-            }
-            
-            for(int i = 0; i < refParamKey.length; i++){
-                if(Math.abs(refParamKey[i]-foundParamKey[i]) > paramThresh){
-                    LOG.debug("Parameter value is " + foundParamKey[i] + " should be " + refParamKey[i]);
-                    return false;
-                }
-            }
-        }
-        
-        LOG.info("Benchmark " + inputFile + " PASSED");
-        LOG.info("Benchmark " + inputFile + " took: " + (endT-startT)/1000 + " s.");
-        LOG.info("Benchmark " + inputFile + " took: " + stepsToIndividual + " steps.");
-        
-        return true;
+  @Override
+  public boolean runBenchmark(String csvLine, int noThreads) throws Exception {
+
+    final String[] csvData = csvLine.trim().split("\\,");
+    // format of the line is as follows:
+    // 1) the working directory the input resides in
+    // 2) the input file, relative to work dir
+    // 4) the expected global minimum fitness
+    // 5) the file, relative to work dir, containing the reference global minimum
+    // 6) threshold for fitness
+    // 7) threshold per parameter
+    final String workDir = csvData[0].trim();
+    final String inputFile = csvData[1].trim();
+    final double energy = Double.parseDouble(csvData[2].trim());
+    final String refParameters = csvData[3].trim();
+    final double fitnessThresh = Double.parseDouble(csvData[4].trim());
+    final double paramThresh = Double.parseDouble(csvData[5].trim());
+
+    final File newDir = new File(workDir);
+    if (!newDir.exists() || !newDir.isDirectory()) {
+      LOG.error(
+          "Specified working directory " + workDir + " does not exist or is not a directory.");
+      return false;
     }
+
+    LOG.info("Executing benchmark " + inputFile);
+    final double startT = System.currentTimeMillis();
+
+    final String[] args = new String[] {"--adaptive", inputFile, "" + noThreads};
+    try {
+      Helpers.executeJavaProcess(workDir, args);
+    } catch (Exception e) {
+      throw new RuntimeException("Failure to run benchmark " + csvLine, e);
+    }
+    final double endT = System.currentTimeMillis();
+
+    // we know the output directory is inputFile w/o .ogo extension
+    final String outputDir =
+        workDir + File.separator + inputFile.substring(0, inputFile.lastIndexOf(".ogo"));
+
+    // find the rank0 parameters in that output directory
+    final File outDir = new File(outputDir);
+    final String[] ls = outDir.list(new Helpers.Rank0Filter());
+    if (ls == null || ls.length != 1) {
+      throw new RuntimeException(
+          "No rank0 parameter set for benchmark " + csvLine + " in " + outputDir);
+    }
+
+    // let's get two adaptive parameter sets
+    final String[] refParams = InputPrimitives.readFileIn(workDir + File.separator + refParameters);
+    final AdaptiveParameters refSet = new AdaptiveParameters(refParams, 0);
+    final String[] foundParams = InputPrimitives.readFileIn(outputDir + File.separator + ls[0]);
+    final AdaptiveParameters foundSet = new AdaptiveParameters(foundParams, 1);
+
+    final double refFit = refSet.getFitness();
+    final double foundFit = foundSet.getFitness();
+    if (Math.abs(foundFit - refFit) > fitnessThresh) {
+      LOG.error("Benchmark fitness wrong. Obtained: " + foundFit + " vs should be " + refFit);
+      return false;
+    }
+
+    // steps to that individual
+    final String ls0NoFront = ls[0].substring("rank0individual".length());
+    final long stepsToIndividual = Long.parseLong(ls0NoFront);
+
+    // now the more complex thing - compare parameter values
+    final String[] keys = refSet.getAllKeysCopy();
+    final String[] oKeys = foundSet.getAllKeysCopy();
+    if (keys.length != oKeys.length) {
+      LOG.error("Different number of keys for reference and obtained.");
+      return false;
+    }
+    for (final String key : keys) {
+
+      final double[] refParamKey = refSet.getParametersForKey(key);
+      final double[] foundParamKey = foundSet.getParametersForKey(key);
+
+      if (refParamKey.length != foundParamKey.length) {
+        LOG.error(
+            "For key "
+                + key
+                + " found "
+                + foundParamKey.length
+                + " should be "
+                + refParamKey.length);
+        return false;
+      }
+
+      for (int i = 0; i < refParamKey.length; i++) {
+        if (Math.abs(refParamKey[i] - foundParamKey[i]) > paramThresh) {
+          LOG.error(
+              "Parameter value " + i + " is " + foundParamKey[i] + " should be " + refParamKey[i]);
+          return false;
+        }
+      }
+    }
+
+    LOG.info("Benchmark " + inputFile + " PASSED");
+    LOG.info("Benchmark " + inputFile + " took: " + (endT - startT) / 1000 + " s.");
+    LOG.info("Benchmark " + inputFile + " took: " + stepsToIndividual + " steps.");
+
+    return true;
+  }
 }

@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ import org.ogolem.properties.StressTensor;
  * A configuration object for the adaptive package.
  *
  * @author Johannes Dieterich
- * @version 2020-12-31
+ * @version 2021-07-21
  */
 public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
 
@@ -1144,7 +1144,7 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
 
       if (!s2.endsWith("D") && !s2.endsWith("d")) {
         System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
-        adapt = new BenchAckley(15, true);
+        adapt = new BenchAckley(15);
         sWhichMethod = "ackleybench:15D";
       } else {
 
@@ -1152,39 +1152,14 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
         s2 = s2.substring(0, s2.length() - 1).trim();
         try {
           int dims = Integer.parseInt(s2);
-          adapt = new BenchAckley(dims, true);
+          adapt = new BenchAckley(dims);
           sWhichMethod = "ackleybench:" + dims + "D";
         } catch (Exception e) {
           System.err.println(
               "WARNING: No explicit choice found for the Ackley benchmark "
                   + "using 15D now. "
                   + e.toString());
-          adapt = new BenchAckley(15, true);
-          sWhichMethod = "ackleybench:15D";
-        }
-      }
-    } else if (s.startsWith("ackleybenchoptgrad:")) {
-      // try to parse the dimensionality
-      String s2 = s.substring(12).trim();
-
-      if (!s2.endsWith("D") && !s2.endsWith("d")) {
-        System.err.println("ERROR: Dimensionality choice doesn't end with D/d. Using 15 D now.");
-        adapt = new BenchAckley(15, false);
-        sWhichMethod = "ackleybench:15D";
-      } else {
-
-        // chop the D/d off
-        s2 = s2.substring(0, s2.length() - 1).trim();
-        try {
-          int dims = Integer.parseInt(s2);
-          adapt = new BenchAckley(dims, false);
-          sWhichMethod = "ackleybench:" + dims + "D";
-        } catch (Exception e) {
-          System.err.println(
-              "WARNING: No explicit choice found for the Ackley benchmark "
-                  + "using 15D now. "
-                  + e.toString());
-          adapt = new BenchAckley(15, false);
+          adapt = new BenchAckley(15);
           sWhichMethod = "ackleybench:15D";
         }
       }

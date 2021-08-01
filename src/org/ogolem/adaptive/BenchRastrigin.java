@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import java.util.ArrayList;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorOperators;
+import jdk.incubator.vector.VectorSpecies;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
 
@@ -46,16 +49,18 @@ import org.ogolem.core.CartesianCoordinates;
  * Rastrigins benchmark function in nD. Global minimum: f(x)=0; xi=0.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2021-07-20
  */
-final class BenchRastrigin extends AbstractAdaptivable {
+public final class BenchRastrigin extends AbstractAdaptivable {
 
-  private static final long serialVersionUID = (long) 20150727;
+  private static final long serialVersionUID = (long) 20210720;
   public static final boolean DEBUG = false;
+
+  private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
   private final int iDims;
 
-  BenchRastrigin(final int dims) {
+  public BenchRastrigin(final int dims) {
     this.iDims = dims;
   }
 
@@ -73,14 +78,49 @@ final class BenchRastrigin extends AbstractAdaptivable {
 
     final double[] daParams = params.getAllParamters();
 
-    double dEnergy = 10.0 * iDims;
+    final int upperBound = SPECIES.loopBound(iDims);
+    final double twoPI = 2 * Math.PI;
+    final var vTwoPI = DoubleVector.broadcast(SPECIES, twoPI);
+    final var vCutVal = DoubleVector.broadcast(SPECIES, 5.12);
+    final var vTen = DoubleVector.broadcast(SPECIES, 10);
 
-    for (int i = 0; i < daParams.length; i++) {
+    var vRes = DoubleVector.broadcast(SPECIES, 0.0);
+    int i = 0;
+    for (; i < upperBound; i += SPECIES.length()) {
+      final var vPI = DoubleVector.fromArray(SPECIES, daParams, i);
+      // first check if we need the cutoff
+      final var vPIAbs = vPI.abs();
+      final var vCutMask = vPIAbs.compare(VectorOperators.GT, vCutVal);
+      final var anyCut = vCutMask.anyTrue();
+      if (anyCut) {
+        final var vPSq = vPI.mul(vPI);
+
+        // cutoff part
+        final var vCut = vPSq.mul(vTen);
+
+        // regular parts
+        final var vPC = vPI.mul(vTwoPI).lanewise(VectorOperators.COS).mul(vTen);
+        final var vResLocUn = vPSq.sub(vPC);
+
+        // blend
+        final var vResLoc = vResLocUn.blend(vCut, vCutMask);
+
+        vRes = vRes.add(vResLoc);
+      } else {
+        final var vPSq = vPI.mul(vPI);
+        final var vPC = vPI.mul(vTwoPI).lanewise(VectorOperators.COS).mul(vTen);
+        final var vResLoc = vPSq.sub(vPC);
+        vRes = vRes.add(vResLoc);
+      }
+    }
+
+    double dEnergy = 10 * iDims + vRes.reduceLanes(VectorOperators.ADD);
+    for (; i < iDims; i++) {
       if (daParams[i] > 5.12 || daParams[i] < -5.12) {
         // take the cutoff potential
         dEnergy += 10.0 * daParams[i] * daParams[i];
       } else {
-        dEnergy += daParams[i] * daParams[i] - 10.0 * Math.cos(2.0 * Math.PI * daParams[i]);
+        dEnergy += daParams[i] * daParams[i] - 10.0 * Math.cos(twoPI * daParams[i]);
       }
     }
 
@@ -96,11 +136,58 @@ final class BenchRastrigin extends AbstractAdaptivable {
       final double[] daGrad) {
 
     final double[] daParams = params.getAllParamters();
+    final double twoPI = 2 * Math.PI;
+    final double twentyPI = 20 * Math.PI;
 
-    final int iNoOfParams = params.getNumberOfParamters();
+    final int upperBound = SPECIES.loopBound(iDims);
+    final var vTwoPI = DoubleVector.broadcast(SPECIES, twoPI);
+    final var vTwentyPI = DoubleVector.broadcast(SPECIES, twentyPI);
+    final var vCutVal = DoubleVector.broadcast(SPECIES, 5.12);
+    final var vTwo = DoubleVector.broadcast(SPECIES, 2);
+    final var vTen = DoubleVector.broadcast(SPECIES, 10);
 
-    double dEnergy = 10.0 * iDims;
-    for (int i = 0; i < iNoOfParams; i++) {
+    var vRes = DoubleVector.broadcast(SPECIES, 0.0);
+    int i = 0;
+    for (; i < upperBound; i += SPECIES.length()) {
+      final var vPI = DoubleVector.fromArray(SPECIES, daParams, i);
+      // first check if we need the cutoff
+      final var vPIAbs = vPI.abs();
+      final var vCutMask = vPIAbs.compare(VectorOperators.GT, vCutVal);
+      final var anyCut = vCutMask.anyTrue();
+      if (anyCut) {
+        final var vPSq = vPI.mul(vPI);
+
+        // cutoff part
+        final var vCut = vPSq.mul(vTen);
+        final var vCutGrad = vPI.mul(vTen);
+
+        // regular parts
+        final var vT1 = vPI.mul(vTwoPI);
+        final var vPC = vT1.lanewise(VectorOperators.COS).mul(vTen);
+        final var vResLocUn = vPSq.sub(vPC);
+
+        final var vT2 = vT1.lanewise(VectorOperators.SIN).mul(vTwentyPI);
+        final var vGradUn = vPI.mul(vTwo).add(vT2);
+
+        // blend
+        final var vResLoc = vResLocUn.blend(vCut, vCutMask);
+        vRes = vRes.add(vResLoc);
+        final var vGrad = vGradUn.blend(vCutGrad, vCutMask);
+        vGrad.intoArray(daGrad, i);
+      } else {
+        final var vT1 = vPI.mul(vTwoPI);
+        final var vPSq = vPI.mul(vPI);
+        final var vPC = vT1.lanewise(VectorOperators.COS).mul(vTen);
+        final var vResLoc = vPSq.sub(vPC);
+        vRes = vRes.add(vResLoc);
+        final var vT2 = vT1.lanewise(VectorOperators.SIN).mul(vTwentyPI);
+        final var vGrad = vPI.mul(vTwo).add(vT2);
+        vGrad.intoArray(daGrad, i);
+      }
+    }
+
+    double dEnergy = 10 * iDims + vRes.reduceLanes(VectorOperators.ADD);
+    for (; i < iDims; i++) {
       if (daParams[i] > 5.12 || daParams[i] < -5.12) {
         // take the deviation of the cutoff potential
         daGrad[i] = 10.0 * daParams[i];
@@ -109,23 +196,23 @@ final class BenchRastrigin extends AbstractAdaptivable {
         /*
          * f'(x(i)) = 2x_i + 20pi*sin(2pi x_i)
          */
-        final double t1 = 2.0 * Math.PI * daParams[i];
-        daGrad[i] = 2.0 * daParams[i] + 20.0 * Math.PI * Math.sin(t1);
+        final double t1 = twoPI * daParams[i];
+        daGrad[i] = 2.0 * daParams[i] + twentyPI * Math.sin(t1);
         dEnergy += daParams[i] * daParams[i] - 10.0 * Math.cos(t1);
       }
     }
 
     if (DEBUG) {
       // calculate a numerical gradient and compare it to the analytical one
-      final double[] daNumGrad = new double[iNoOfParams];
+      final double[] daNumGrad = new double[iDims];
       final double numE =
           NumericalGradients.calculateParamGrad(cartes, params, this, geomID, bonds, daNumGrad);
 
-      for (int i = 0; i < daNumGrad.length; i++) {
-        if (Math.abs(daNumGrad[i] - daGrad[i]) >= 1E-7) {
+      for (int x = 0; x < daNumGrad.length; x++) {
+        if (Math.abs(daNumGrad[i] - daGrad[x]) >= 1E-7) {
           // we have a noticable difference
           System.err.println(
-              "DEBUG: Analytical vs numerical gradient is: " + daGrad[i] + " vs " + daNumGrad[i]);
+              "DEBUG: Analytical vs numerical gradient is: " + daGrad[x] + " vs " + daNumGrad[x]);
         } else {
           System.out.println("DEBUG: Analytical vs numerical gradient was fine. :-)");
         }

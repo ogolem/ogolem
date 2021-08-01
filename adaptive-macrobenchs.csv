@@ -1,7 +1,11 @@
 # adaptive parameter benchmarks
 # 10D Ackley
 examples/benchmarks/ackley/ , ackley_10d.ogo , 0.0 , globmin , 1e-6 , 1e-6
+# 10D Lunacek
+examples/benchmarks/lunacek/ , lunacek_10d.ogo , 0.0 , globmin , 1e-3 , 1e-5
 # 10D Rastrigin
 examples/benchmarks/rastrigin/ , rastrigin_10d.ogo , 0.0 , globmin , 1e-6 , 1e-6
 # 10D Schwefel
 examples/benchmarks/schwefel/ , schwefel_10d.ogo , 0.0 , globmin , 1e-3, 1e-5
+# 25D Schaffer F7
+examples/benchmarks/schaffer_f7/ , schaffer_25d.ogo, 0.0 , globmin , 1e-4, 1e-3
