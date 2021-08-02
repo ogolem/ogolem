@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import java.util.ArrayList;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorOperators;
+import jdk.incubator.vector.VectorSpecies;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
 
@@ -47,15 +50,17 @@ import org.ogolem.core.CartesianCoordinates;
  * reference geometry with a single dummy atom. Benchmarks are always ugly. ;-)
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2021-07-21
  */
-class BenchSchwefels extends AbstractAdaptivable {
+public final class BenchSchwefels extends AbstractAdaptivable {
 
-  private static final long serialVersionUID = (long) 20150727;
+  private static final long serialVersionUID = (long) 20210721;
   private static final boolean DEBUG = false;
+  private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
   private final int iDims;
 
-  BenchSchwefels(final int iDimensionality) {
+  public BenchSchwefels(final int iDimensionality) {
+    assert (iDimensionality > 0);
     this.iDims = iDimensionality;
   }
 
@@ -76,9 +81,39 @@ class BenchSchwefels extends AbstractAdaptivable {
     // parameters
     final double[] daParams = params.getAllParamters();
 
-    double dEnergy = 418.9829 * iDims;
+    final int upperBound = SPECIES.loopBound(iDims);
+    final var vCutVal = DoubleVector.broadcast(SPECIES, 500);
+    final var vCutCons = DoubleVector.broadcast(SPECIES, 0.02);
 
-    for (int i = 0; i < iDims; i++) {
+    var vRes = DoubleVector.broadcast(SPECIES, 0.0);
+    int i = 0;
+    for (; i < upperBound; i += SPECIES.length()) {
+      final var vPI = DoubleVector.fromArray(SPECIES, daParams, i);
+      // first check if we need the cutoff
+      final var vPIAbs = vPI.abs();
+      final var vCutMask = vPIAbs.compare(VectorOperators.GT, vCutVal);
+      final var anyCut = vCutMask.anyTrue();
+      if (anyCut) {
+        // cutoff
+        final var vCut = vPI.mul(vPI).mul(vCutCons).neg(); // to avoid the sub() below
+
+        // regular
+        final var vPAbsSq = vPIAbs.sqrt();
+        final var vResLocUn = vPI.mul(vPAbsSq.lanewise(VectorOperators.SIN));
+
+        // blend
+        final var vResLoc = vResLocUn.blend(vCut, vCutMask);
+        vRes = vRes.sub(vResLoc);
+
+      } else {
+        final var vPAbsSq = vPIAbs.sqrt();
+        final var vResLoc = vPI.mul(vPAbsSq.lanewise(VectorOperators.SIN));
+        vRes = vRes.sub(vResLoc);
+      }
+    }
+
+    double dEnergy = 418.9829 * iDims + vRes.reduceLanes(VectorOperators.ADD);
+    for (; i < iDims; i++) {
       if (daParams[i] > 500.0 || daParams[i] < -500.0) {
         // take the cutoff potential
         dEnergy += 0.02 * daParams[i] * daParams[i];
@@ -105,8 +140,61 @@ class BenchSchwefels extends AbstractAdaptivable {
 
     final double[] daParams = params.getAllParamters();
 
-    double dEnergy = 418.9829 * iDims;
-    for (int i = 0; i < iNoOfParams; i++) {
+    final int upperBound = SPECIES.loopBound(iDims);
+    final var vCutVal = DoubleVector.broadcast(SPECIES, 500);
+    final var vCutCons = DoubleVector.broadcast(SPECIES, 0.02);
+    final var vCutCons2 = DoubleVector.broadcast(SPECIES, 0.04);
+    final var vTwo = DoubleVector.broadcast(SPECIES, 2);
+
+    var vRes = DoubleVector.broadcast(SPECIES, 0.0);
+    int i = 0;
+    for (; i < upperBound; i += SPECIES.length()) {
+      final var vPI = DoubleVector.fromArray(SPECIES, daParams, i);
+      // first check if we need the cutoff
+      final var vPIAbs = vPI.abs();
+      final var vCutMask = vPIAbs.compare(VectorOperators.GT, vCutVal);
+      final var anyCut = vCutMask.anyTrue();
+      if (anyCut) {
+        // cutoff
+        final var vCut = vPI.mul(vPI).mul(vCutCons).neg(); // to avoid the sub() below
+        final var vCutGrad = vPI.mul(vCutCons2);
+
+        // regular
+        final var vPAbsR = vPIAbs.sqrt();
+        final var vT1 = vPAbsR.lanewise(VectorOperators.SIN);
+        final var vResLocUn = vPI.mul(vT1);
+
+        // blend
+        final var vResLoc = vResLocUn.blend(vCut, vCutMask);
+        vRes = vRes.sub(vResLoc);
+
+        final var vNumSec = vPIAbs.neg().mul(vPAbsR.lanewise(VectorOperators.COS));
+        final var vDenomSec = vPAbsR.mul(vTwo);
+
+        final var vSec = vNumSec.div(vDenomSec);
+        final var vAnalyGradUn = vT1.neg().add(vSec);
+
+        // blend
+        final var vAnalyGrad = vAnalyGradUn.blend(vCutGrad, vCutMask);
+        vAnalyGrad.intoArray(daGrad, i);
+
+      } else {
+        final var vPAbsR = vPIAbs.sqrt();
+        final var vT1 = vPAbsR.lanewise(VectorOperators.SIN);
+        final var vResLoc = vPI.mul(vT1);
+        vRes = vRes.sub(vResLoc);
+
+        final var vNumSec = vPIAbs.neg().mul(vPAbsR.lanewise(VectorOperators.COS));
+        final var vDenomSec = vPAbsR.mul(vTwo);
+
+        final var vSec = vNumSec.div(vDenomSec);
+        final var vAnalyGrad = vT1.neg().add(vSec);
+        vAnalyGrad.intoArray(daGrad, i);
+      }
+    }
+
+    double dEnergy = 418.9829 * iDims + vRes.reduceLanes(VectorOperators.ADD);
+    for (; i < iNoOfParams; i++) {
 
       if (daParams[i] > 500.0 || daParams[i] < -500.0) {
         // take the deviation of the cutoff potential
@@ -140,9 +228,9 @@ class BenchSchwefels extends AbstractAdaptivable {
           NumericalGradients.calculateParamGrad(cartes, params, this, geomID, bonds, numGrad);
       System.out.println("DEBUG OUTPUT FOR NUMGRAD");
       System.out.println("Func " + numFunc + "\t" + dEnergy + "\t" + (numFunc - dEnergy));
-      for (int i = 0; i < daGrad.length; i++) {
-        System.out.println(numGrad[i] + "\t" + daGrad[i] + "\t" + (numGrad[i] - daGrad[i]));
-        daGrad[i] = numGrad[i];
+      for (int x = 0; x < daGrad.length; x++) {
+        System.out.println(numGrad[x] + "\t" + daGrad[x] + "\t" + (numGrad[x] - daGrad[x]));
+        daGrad[x] = numGrad[x];
       }
 
       return numFunc;

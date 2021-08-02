@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.adaptive;
 
 import java.util.ArrayList;
+import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.VectorOperators;
+import jdk.incubator.vector.VectorSpecies;
 import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
 
@@ -46,12 +49,13 @@ import org.ogolem.core.CartesianCoordinates;
  * Lunacek's bi-Rastrigin function. Global minimum at xi = 2.5. Fake minimum at xi=-2.5.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2021-07-22
  */
-final class BenchLunacek extends AbstractAdaptivable {
+public final class BenchLunacek extends AbstractAdaptivable {
 
-  private static final long serialVersionUID = (long) 20150727;
+  private static final long serialVersionUID = (long) 20210722;
   public static final boolean bDebug = false;
+  private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
 
   private final int iDims;
 
@@ -61,7 +65,7 @@ final class BenchLunacek extends AbstractAdaptivable {
   private final double dS;
   private final double dMu1;
 
-  BenchLunacek(final int dims) {
+  public BenchLunacek(final int dims) {
     this.iDims = dims;
     // commented, this is the bbob setting (be aware that this *might* change the gradient
     // expression)
@@ -83,12 +87,53 @@ final class BenchLunacek extends AbstractAdaptivable {
       final BondInfo bonds) {
 
     final double[] daParams = params.getAllParamters();
-    final int iNoOfParams = daParams.length;
 
-    double dSpherePart1 = 0.0;
-    double dSpherePart2 = 0.0;
-    double dRastriginPart = 0.0;
-    for (int i = 0; i < iNoOfParams; i++) {
+    final int upperBound = SPECIES.loopBound(iDims);
+    final var vCutVal = DoubleVector.broadcast(SPECIES, 5.0);
+    final var vMu0 = DoubleVector.broadcast(SPECIES, dMu0);
+    final var vMu1 = DoubleVector.broadcast(SPECIES, dMu1);
+    final var vTwoPI = DoubleVector.broadcast(SPECIES, 2.0 * Math.PI);
+
+    var vSphere1 = DoubleVector.broadcast(SPECIES, 0.0);
+    var vSphere2 = DoubleVector.broadcast(SPECIES, 0.0);
+    var vRastrigin = DoubleVector.broadcast(SPECIES, 0.0);
+
+    int i = 0;
+    for (; i < upperBound; i += SPECIES.length()) {
+      final var vPI = DoubleVector.fromArray(SPECIES, daParams, i);
+      // first check if we need the cutoff
+      final var vPIAbs = vPI.abs();
+      final var vCutMask = vPIAbs.compare(VectorOperators.GT, vCutVal);
+      final var anyCut = vCutMask.anyTrue();
+      if (anyCut) {
+        // cutoff potential
+        final var vCutPot = vPI.mul(vPI).neg();
+
+        // regular & blend
+        final var vMu0P = vPI.sub(vMu0);
+        final var vMu1P = vPI.sub(vMu1);
+
+        vSphere1 = vMu0P.fma(vMu0P, vSphere1);
+        vSphere2 = vMu1P.fma(vMu1P, vSphere2);
+
+        final var vTRas = vMu0P.mul(vTwoPI).lanewise(VectorOperators.COS).blend(vCutPot, vCutMask);
+        vRastrigin = vTRas.add(vRastrigin);
+      } else {
+        final var vMu0P = vPI.sub(vMu0);
+        final var vMu1P = vPI.sub(vMu1);
+
+        vSphere1 = vMu0P.fma(vMu0P, vSphere1);
+        vSphere2 = vMu1P.fma(vMu1P, vSphere2);
+
+        final var vTRas = vMu0P.mul(vTwoPI).lanewise(VectorOperators.COS);
+        vRastrigin = vTRas.add(vRastrigin);
+      }
+    }
+
+    double dSpherePart1 = vSphere1.reduceLanes(VectorOperators.ADD);
+    double dSpherePart2 = vSphere2.reduceLanes(VectorOperators.ADD);
+    double dRastriginPart = vRastrigin.reduceLanes(VectorOperators.ADD);
+    for (; i < iDims; i++) {
 
       // boundaries
       if (daParams[i] > 5.0 || daParams[i] < -5.0) {
@@ -99,15 +144,15 @@ final class BenchLunacek extends AbstractAdaptivable {
 
       final double mu0P = daParams[i] - dMu0;
       final double mu1P = daParams[i] - dMu1;
-      dSpherePart1 += mu0P * mu0P;
-      dSpherePart2 += mu1P * mu1P;
+      dSpherePart1 = Math.fma(mu0P, mu0P, dSpherePart1);
+      dSpherePart2 = Math.fma(mu1P, mu1P, dSpherePart2);
 
       dRastriginPart += Math.cos(2.0 * Math.PI * (daParams[i] - dMu0));
     }
 
-    final double dSphereContrib = Math.min(dSpherePart1, (dD * iNoOfParams + dS * dSpherePart2));
+    final double dSphereContrib = Math.min(dSpherePart1, (dD * iDims + dS * dSpherePart2));
 
-    final double dTotal = dSphereContrib + 10.0 * iNoOfParams - 10.0 * dRastriginPart;
+    final double dTotal = dSphereContrib + 10.0 * iDims - 10.0 * dRastriginPart;
 
     return dTotal;
   }
@@ -121,12 +166,63 @@ final class BenchLunacek extends AbstractAdaptivable {
       final double[] grad) {
 
     final double[] daParams = params.getAllParamters();
-    final int iNoOfParams = daParams.length;
 
-    double dSpherePart1 = 0.0;
-    double dSpherePart2 = 0.0;
-    double dRastriginPart = 0.0;
-    for (int i = 0; i < iNoOfParams; i++) {
+    final int upperBound = SPECIES.loopBound(iDims);
+    final var vCutVal = DoubleVector.broadcast(SPECIES, 5.0);
+    final var vMu0 = DoubleVector.broadcast(SPECIES, dMu0);
+    final var vMu1 = DoubleVector.broadcast(SPECIES, dMu1);
+    final var vTwoPI = DoubleVector.broadcast(SPECIES, 2.0 * Math.PI);
+    final var vTwo = DoubleVector.broadcast(SPECIES, 2.0);
+    final var vTwentyPI = DoubleVector.broadcast(SPECIES, 20.0 * Math.PI);
+    final var vCutGrad = DoubleVector.broadcast(SPECIES, FixedValues.NONCONVERGEDGRADIENT);
+
+    var vSphere1 = DoubleVector.broadcast(SPECIES, 0.0);
+    var vSphere2 = DoubleVector.broadcast(SPECIES, 0.0);
+    var vRastrigin = DoubleVector.broadcast(SPECIES, 0.0);
+
+    int i = 0;
+    for (; i < upperBound; i += SPECIES.length()) {
+      final var vPI = DoubleVector.fromArray(SPECIES, daParams, i);
+      // first check if we need the cutoff
+      final var vPIAbs = vPI.abs();
+      final var vCutMask = vPIAbs.compare(VectorOperators.GT, vCutVal);
+      final var anyCut = vCutMask.anyTrue();
+      if (anyCut) {
+        // cutoff potential
+        final var vCutPot = vPI.mul(vPI).neg();
+
+        // regular & blend
+        final var vMu0P = vPI.sub(vMu0);
+        final var vMu1P = vPI.sub(vMu1);
+
+        vSphere1 = vMu0P.fma(vMu0P, vSphere1);
+        vSphere2 = vMu1P.fma(vMu1P, vSphere2);
+
+        final var vT1 = vMu0P.mul(vTwoPI);
+        final var vTCos = vT1.lanewise(VectorOperators.COS).blend(vCutPot, vCutMask);
+        vRastrigin = vTCos.add(vRastrigin);
+        final var vGrad =
+            vT1.lanewise(VectorOperators.SIN).mul(vTwentyPI).blend(vCutGrad, vCutMask);
+        vGrad.intoArray(grad, i);
+      } else {
+        final var vMu0P = vPI.sub(vMu0);
+        final var vMu1P = vPI.sub(vMu1);
+
+        vSphere1 = vMu0P.fma(vMu0P, vSphere1);
+        vSphere2 = vMu1P.fma(vMu1P, vSphere2);
+
+        final var vT1 = vMu0P.mul(vTwoPI);
+        final var vTCos = vT1.lanewise(VectorOperators.COS);
+        vRastrigin = vTCos.add(vRastrigin);
+        final var vGrad = vT1.lanewise(VectorOperators.SIN).mul(vTwentyPI);
+        vGrad.intoArray(grad, i);
+      }
+    }
+
+    double dSpherePart1 = vSphere1.reduceLanes(VectorOperators.ADD);
+    double dSpherePart2 = vSphere2.reduceLanes(VectorOperators.ADD);
+    double dRastriginPart = vRastrigin.reduceLanes(VectorOperators.ADD);
+    for (; i < iDims; i++) {
 
       // boundaries
       if (daParams[i] > 5.0 || daParams[i] < -5.0) {
@@ -138,8 +234,8 @@ final class BenchLunacek extends AbstractAdaptivable {
 
       final double mu0P = daParams[i] - dMu0;
       final double mu1P = daParams[i] - dMu1;
-      dSpherePart1 += mu0P * mu0P;
-      dSpherePart2 += mu1P * mu1P;
+      dSpherePart1 = Math.fma(mu0P, mu0P, dSpherePart1);
+      dSpherePart2 = Math.fma(mu1P, mu1P, dSpherePart2);
 
       final double t1 = 2 * Math.PI * (daParams[i] - dMu0);
       dRastriginPart += Math.cos(t1);
@@ -148,16 +244,38 @@ final class BenchLunacek extends AbstractAdaptivable {
 
     // grad[] contains the Rastrigin gradients now, add the sphere part
     double dSphereContrib;
-    final double t1 = dD * iNoOfParams + dS * dSpherePart2;
+    final double t1 = dD * iDims + dS * dSpherePart2;
     if (dSpherePart1 < t1) {
       dSphereContrib = dSpherePart1;
-      for (int i = 0; i < iNoOfParams; i++) grad[i] += 2 * (daParams[i] - dMu0);
+
+      int x = 0;
+      for (; x < upperBound; x += SPECIES.length()) {
+        final var vPI = DoubleVector.fromArray(SPECIES, daParams, x);
+        final var vGradLoad = DoubleVector.fromArray(SPECIES, grad, x);
+        final var vTmp = vPI.sub(vMu0);
+        final var vGrad = vTmp.fma(vTwo, vGradLoad);
+        vGrad.intoArray(grad, x);
+      }
+
+      for (; x < iDims; x++) grad[x] += 2 * (daParams[x] - dMu0);
     } else {
       dSphereContrib = t1;
-      for (int i = 0; i < iNoOfParams; i++) grad[i] += 2 * dS * (daParams[i] - dMu1);
+
+      final var vS = DoubleVector.broadcast(SPECIES, dS);
+
+      int x = 0;
+      for (; x < upperBound; x += SPECIES.length()) {
+        final var vPI = DoubleVector.fromArray(SPECIES, daParams, x);
+        final var vGradLoad = DoubleVector.fromArray(SPECIES, grad, x);
+        final var vTmp = vPI.sub(vMu1).mul(vS);
+        final var vGrad = vTmp.fma(vTwo, vGradLoad);
+        vGrad.intoArray(grad, x);
+      }
+
+      for (; x < iDims; x++) grad[x] += 2 * dS * (daParams[x] - dMu1);
     }
 
-    final double dTotal = dSphereContrib + 10.0 * iNoOfParams - 10.0 * dRastriginPart;
+    final double dTotal = dSphereContrib + 10.0 * iDims - 10.0 * dRastriginPart;
 
     return dTotal;
   }
