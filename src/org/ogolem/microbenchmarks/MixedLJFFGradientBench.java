@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -44,41 +44,52 @@ import org.ogolem.core.SimpleBondInfo;
 
 /**
  * Benchmarks gradient calculation in the Lennard-Jones FF for Ar55.
+ *
  * @author Johannes Dieterich
  * @version 2020-07-19
  */
 class MixedLJFFGradientBench implements SingleMicroBenchmark {
-    
-    private final CartesianCoordinates lj55;
-    private final BondInfo bonds55;
-    private final MixedLJForceField ljFF;
-    private final double[] energyparts;
-    private final Gradient grad;
-    private final double[] xyz1D;
-    
-    MixedLJFFGradientBench(){
-        
-        this.lj55 = CartesianCoordinatesLibrary.getAr55GlobMin();
-        this.bonds55 = new SimpleBondInfo(55);
-        this.ljFF = new MixedLJForceField(true);
-        this.energyparts = new double[55];
-        this.grad = new Gradient(3, 55);
-        this.xyz1D = lj55.getAll1DCartes();
-    }
-    
-    @Override
-    public String name() {
-        return "Ar55 mixed LJ gradient bench";
-    }
-    
-    @Override
-    public double runSingle() throws Exception {
-        
-        ljFF.gradientCalculation(-1, 0, xyz1D,
-                lj55.getAllAtomTypes(), lj55.getAllAtomNumbers(), lj55.getAllAtomsPerMol(),
-                energyparts, lj55.getNoOfAtoms(), lj55.getAllCharges(), lj55.getAllSpins(),
-                bonds55, grad, false);
-        
-        return grad.getTotalEnergy();
-    }
+
+  private final CartesianCoordinates lj55;
+  private final BondInfo bonds55;
+  private final MixedLJForceField ljFF;
+  private final double[] energyparts;
+  private final Gradient grad;
+  private final double[] xyz1D;
+
+  MixedLJFFGradientBench() {
+
+    this.lj55 = CartesianCoordinatesLibrary.getAr55GlobMin();
+    this.bonds55 = new SimpleBondInfo(55);
+    this.ljFF = new MixedLJForceField(true);
+    this.energyparts = new double[55];
+    this.grad = new Gradient(3, 55);
+    this.xyz1D = lj55.getAll1DCartes();
+  }
+
+  @Override
+  public String name() {
+    return "Ar55 mixed LJ gradient bench";
+  }
+
+  @Override
+  public double runSingle() throws Exception {
+
+    ljFF.gradientCalculation(
+        -1,
+        0,
+        xyz1D,
+        lj55.getAllAtomTypes(),
+        lj55.getAllAtomNumbers(),
+        lj55.getAllAtomsPerMol(),
+        energyparts,
+        lj55.getNoOfAtoms(),
+        lj55.getAllCharges(),
+        lj55.getAllSpins(),
+        bonds55,
+        grad,
+        false);
+
+    return grad.getTotalEnergy();
+  }
 }

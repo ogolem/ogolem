@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
               2015-2020, J. M. Dieterich and B. Hartke
@@ -40,87 +40,124 @@ package org.ogolem.core;
 
 /**
  * A decorator for the geometry initialization routines.
+ *
  * @author Johannes Dieterich
  * @version 2020-08-09
  */
-public final class GeometryInit implements GeometryInitialization{
+public final class GeometryInit implements GeometryInitialization {
 
-    private static final long serialVersionUID = (long) 20160402;
-    
-    public static enum INITSTYLE{PACKASCENDING,PACKBYSIZE,PACKRANDOMLY,
-        LAYERPACKINGASCENDING,LAYERPACKINGBYSIZE,LAYERPACKINGRANDOMLY,
-        RANDOMWITHDD,RANDOMWITHOUTDD};
-    public static final INITSTYLE DEFAULTINIT = INITSTYLE.PACKASCENDING;
-    
-    private final GeometryInitialization init;
+  private static final long serialVersionUID = (long) 20160402;
 
-    public GeometryInit(final INITSTYLE whichInit){
+  public static enum INITSTYLE {
+    PACKASCENDING,
+    PACKBYSIZE,
+    PACKRANDOMLY,
+    LAYERPACKINGASCENDING,
+    LAYERPACKINGBYSIZE,
+    LAYERPACKINGRANDOMLY,
+    RANDOMWITHDD,
+    RANDOMWITHOUTDD
+  };
 
-        switch(whichInit){
-            case PACKBYSIZE:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.BYSIZE, NorwayGeometryMutation.PACKDIM.THREED);
-                break;
-            case PACKRANDOMLY:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.RANDOM, NorwayGeometryMutation.PACKDIM.THREED);
-                break;
-            case PACKASCENDING:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.THREED);
-                break;
-            case LAYERPACKINGBYSIZE:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.BYSIZE, NorwayGeometryMutation.PACKDIM.TWOD);
-                break;
-            case LAYERPACKINGRANDOMLY:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.RANDOM, NorwayGeometryMutation.PACKDIM.TWOD);
-                break;
-            case LAYERPACKINGASCENDING:
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.TWOD);
-                break;
-            case RANDOMWITHDD:
-                init = new RandomizedGeomInit(true);
-                break;
-            case RANDOMWITHOUTDD:
-                init = new RandomizedGeomInit(false);
-                break;
-            default:
-                System.err.println("ERROR: No such initialization routine representing "
-                        + whichInit.name() + " using packing without size consideration now.");
-                init = new PackingInit(NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.THREED);
-                break;
-        }
+  public static final INITSTYLE DEFAULTINIT = INITSTYLE.PACKASCENDING;
+
+  private final GeometryInitialization init;
+
+  public GeometryInit(final INITSTYLE whichInit) {
+
+    switch (whichInit) {
+      case PACKBYSIZE:
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.BYSIZE, NorwayGeometryMutation.PACKDIM.THREED);
+        break;
+      case PACKRANDOMLY:
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.RANDOM, NorwayGeometryMutation.PACKDIM.THREED);
+        break;
+      case PACKASCENDING:
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.THREED);
+        break;
+      case LAYERPACKINGBYSIZE:
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.BYSIZE, NorwayGeometryMutation.PACKDIM.TWOD);
+        break;
+      case LAYERPACKINGRANDOMLY:
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.RANDOM, NorwayGeometryMutation.PACKDIM.TWOD);
+        break;
+      case LAYERPACKINGASCENDING:
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.TWOD);
+        break;
+      case RANDOMWITHDD:
+        init = new RandomizedGeomInit(true);
+        break;
+      case RANDOMWITHOUTDD:
+        init = new RandomizedGeomInit(false);
+        break;
+      default:
+        System.err.println(
+            "ERROR: No such initialization routine representing "
+                + whichInit.name()
+                + " using packing without size consideration now.");
+        init =
+            new PackingInit(
+                NorwayGeometryMutation.MUTMODE.ASCENDING, NorwayGeometryMutation.PACKDIM.THREED);
+        break;
+    }
+  }
+
+  @Override
+  public Geometry initTheGeometry(
+      Geometry geom,
+      final CollisionDetection.CDTYPE whichCollisionDetection,
+      final DissociationDetection.DDTYPE whichDissociationDetection,
+      final double[] cellSize,
+      final double blowDissDetect,
+      final double blowCollDetect,
+      final float explDoFRatio,
+      final boolean molecularCD) {
+
+    final Geometry geomNew = new Geometry(geom);
+
+    return init.initTheGeometry(
+        geomNew,
+        whichCollisionDetection,
+        whichDissociationDetection,
+        cellSize,
+        blowDissDetect,
+        blowCollDetect,
+        explDoFRatio,
+        molecularCD);
+  }
+
+  public static INITSTYLE parseType(final String type) throws Exception {
+
+    if (type.equalsIgnoreCase("packbysize")) {
+      return INITSTYLE.PACKBYSIZE;
+    } else if (type.equalsIgnoreCase("packrandomly")) {
+      return INITSTYLE.PACKRANDOMLY;
+    } else if (type.equalsIgnoreCase("packascending")) {
+      return INITSTYLE.PACKASCENDING;
+    } else if (type.equalsIgnoreCase("packlayerbysize")) {
+      return INITSTYLE.LAYERPACKINGBYSIZE;
+    } else if (type.equalsIgnoreCase("packlayerrandomly")) {
+      return INITSTYLE.LAYERPACKINGRANDOMLY;
+    } else if (type.equalsIgnoreCase("packlayerascending")) {
+      return INITSTYLE.LAYERPACKINGASCENDING;
+    } else if (type.equalsIgnoreCase("randomwithdd")) {
+      return INITSTYLE.RANDOMWITHDD;
+    } else if (type.equalsIgnoreCase("randomwithoutdd")) {
+      return INITSTYLE.RANDOMWITHOUTDD;
     }
 
-    @Override
-    public Geometry initTheGeometry(Geometry geom, final CollisionDetection.CDTYPE whichCollisionDetection,
-            final DissociationDetection.DDTYPE whichDissociationDetection, final double[] cellSize,
-            final double blowDissDetect, final double blowCollDetect, final float explDoFRatio,
-            final boolean molecularCD){
-
-        final Geometry geomNew = new Geometry(geom);
-
-        return init.initTheGeometry(geomNew, whichCollisionDetection, whichDissociationDetection, 
-                cellSize, blowDissDetect, blowCollDetect, explDoFRatio, molecularCD);
-    }
-    
-    public static INITSTYLE parseType(final String type) throws Exception {
-        
-        if(type.equalsIgnoreCase("packbysize")){
-            return INITSTYLE.PACKBYSIZE;
-        } else if(type.equalsIgnoreCase("packrandomly")){
-            return INITSTYLE.PACKRANDOMLY;
-        } else if(type.equalsIgnoreCase("packascending")){
-            return INITSTYLE.PACKASCENDING;
-        } else if(type.equalsIgnoreCase("packlayerbysize")){
-            return INITSTYLE.LAYERPACKINGBYSIZE;
-        } else if(type.equalsIgnoreCase("packlayerrandomly")){
-            return INITSTYLE.LAYERPACKINGRANDOMLY;
-        } else if(type.equalsIgnoreCase("packlayerascending")){
-            return INITSTYLE.LAYERPACKINGASCENDING;
-        } else if(type.equalsIgnoreCase("randomwithdd")){
-            return INITSTYLE.RANDOMWITHDD;
-        } else if(type.equalsIgnoreCase("randomwithoutdd")){
-            return INITSTYLE.RANDOMWITHOUTDD;
-        }
-        
-        throw new Exception("Illegal geometry initialization " + type + ".");
-    }
+    throw new Exception("Illegal geometry initialization " + type + ".");
+  }
 }

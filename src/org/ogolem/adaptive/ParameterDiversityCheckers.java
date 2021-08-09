@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
 All rights reserved.
 
@@ -40,44 +40,43 @@ import org.ogolem.generic.genericpool.DiversityChecker;
 import org.ogolem.generic.genericpool.GenericPoolEntry;
 
 /**
- *
  * @author Johannes Dieterich
  * @version 2014-01-20
  */
 public class ParameterDiversityCheckers {
-    
-    /**
-     * Checks the diversity of two structures based on the actual parameters
-     */
-    public static class ParamsDiversityChecker implements DiversityChecker<Double,AdaptiveParameters>{
-        
-        private static final long serialVersionUID = (long) 20131231;
-        private final double divThresh;
-        
-        public ParamsDiversityChecker(final double thresh){
-            this.divThresh = thresh;
-        }
-        
-        @Override
-        public boolean areDiverse(final GenericPoolEntry<Double,AdaptiveParameters> individuum1,
-            final GenericPoolEntry<Double,AdaptiveParameters> individuum2){
-            
-            final double[] daParams1 = individuum1.getIndividual().getAllParamters();
-            final double[] daParams2 = individuum2.getIndividual().getAllParamters();
 
-            for(int i = 0; i < daParams1.length; i++){
-                if(Math.abs(daParams1[i] - daParams2[i]) > divThresh){
-                    // diverse enough in (at least) one coordinate
-                    return true;
-                }
-            }
+  /** Checks the diversity of two structures based on the actual parameters */
+  public static class ParamsDiversityChecker
+      implements DiversityChecker<Double, AdaptiveParameters> {
 
-            return false;
-        }
+    private static final long serialVersionUID = (long) 20131231;
+    private final double divThresh;
 
-        @Override
-        public String getMyName() {
-            return "parameter diversity checker\n\tthreshold " + divThresh;
-        }
+    public ParamsDiversityChecker(final double thresh) {
+      this.divThresh = thresh;
     }
+
+    @Override
+    public boolean areDiverse(
+        final GenericPoolEntry<Double, AdaptiveParameters> individuum1,
+        final GenericPoolEntry<Double, AdaptiveParameters> individuum2) {
+
+      final double[] daParams1 = individuum1.getIndividual().getAllParamters();
+      final double[] daParams2 = individuum2.getIndividual().getAllParamters();
+
+      for (int i = 0; i < daParams1.length; i++) {
+        if (Math.abs(daParams1[i] - daParams2[i]) > divThresh) {
+          // diverse enough in (at least) one coordinate
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    @Override
+    public String getMyName() {
+      return "parameter diversity checker\n\tthreshold " + divThresh;
+    }
+  }
 }

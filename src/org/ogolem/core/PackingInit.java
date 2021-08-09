@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
               2015-2020, J. M. Dieterich and B. Hartke
@@ -40,32 +40,40 @@ package org.ogolem.core;
 
 /**
  * Packs the geometry for initialization.
+ *
  * @author Johannes Dieterich
  * @version 2020-08-09
  */
-public final class PackingInit implements GeometryInitialization{
-    
-    private static final long serialVersionUID = (long) 20200809;
-    
-    private final NorwayGeometryMutation.MUTMODE packingMode;
-    private final NorwayGeometryMutation.PACKDIM packDim;
-    
-    public PackingInit(final NorwayGeometryMutation.MUTMODE mode, final NorwayGeometryMutation.PACKDIM packDim){
-        this.packingMode = mode;
-        this.packDim = packDim;
-    }
+public final class PackingInit implements GeometryInitialization {
 
-    @Override
-    public Geometry initTheGeometry(final Geometry geom, final CollisionDetection.CDTYPE whichCollDetect,
-            final DissociationDetection.DDTYPE whichDissocDetect, final double[] cellSize,
-            final double blowDiss, final double blowColl, final float explDoFRatio,
-            final boolean molecularCD){
+  private static final long serialVersionUID = (long) 20200809;
 
-        final NorwayGeometryMutation norway = new NorwayGeometryMutation(packDim, whichCollDetect, blowColl, blowDiss,
-            whichDissocDetect, packingMode);
-        
-        final Geometry packed = norway.mutate(geom);
-        
-        return packed;
-    }
+  private final NorwayGeometryMutation.MUTMODE packingMode;
+  private final NorwayGeometryMutation.PACKDIM packDim;
+
+  public PackingInit(
+      final NorwayGeometryMutation.MUTMODE mode, final NorwayGeometryMutation.PACKDIM packDim) {
+    this.packingMode = mode;
+    this.packDim = packDim;
+  }
+
+  @Override
+  public Geometry initTheGeometry(
+      final Geometry geom,
+      final CollisionDetection.CDTYPE whichCollDetect,
+      final DissociationDetection.DDTYPE whichDissocDetect,
+      final double[] cellSize,
+      final double blowDiss,
+      final double blowColl,
+      final float explDoFRatio,
+      final boolean molecularCD) {
+
+    final NorwayGeometryMutation norway =
+        new NorwayGeometryMutation(
+            packDim, whichCollDetect, blowColl, blowDiss, whichDissocDetect, packingMode);
+
+    final Geometry packed = norway.mutate(geom);
+
+    return packed;
+  }
 }
