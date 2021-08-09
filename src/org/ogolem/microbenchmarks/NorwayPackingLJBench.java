@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2019-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -49,71 +49,88 @@ import org.ogolem.random.StandardRNG;
 
 /**
  * Benchmark the Norway packing mutation/init for a LJ cluster.
+ *
  * @author Johannes Dieterich
  * @version 2020-08-09
  */
 class NorwayPackingLJBench implements SingleMicroBenchmark {
 
-    private static final int RNGSEED = 42;
-    private static final double BLOWCOLL = 1.1;
-    private static final double BLOWDISS = 2.2;
-    private static final String LJATOM = "Xe";
-    
-    private final int noLJAtoms;
-    private final NorwayGeometryMutation norway;
-    private final Geometry geom;
-    
-    NorwayPackingLJBench(final int noLJAtoms){
-        
-        Lottery.setGenerator(new StandardRNG(RNGSEED));
+  private static final int RNGSEED = 42;
+  private static final double BLOWCOLL = 1.1;
+  private static final double BLOWDISS = 2.2;
+  private static final String LJATOM = "Xe";
 
-        this.norway = new NorwayGeometryMutation(NorwayGeometryMutation.PACKDIM.THREED, CollisionDetection.CDTYPE.SIMPLEPAIRWISE, BLOWCOLL, BLOWDISS,
-            DissociationDetection.DEFAULTDD, NorwayGeometryMutation.MUTMODE.ASCENDING);
+  private final int noLJAtoms;
+  private final NorwayGeometryMutation norway;
+  private final Geometry geom;
 
-        assert(noLJAtoms > 0);
-        this.noLJAtoms = noLJAtoms;
+  NorwayPackingLJBench(final int noLJAtoms) {
 
-        final BondInfo bonds = new SimpleBondInfo(noLJAtoms);
+    Lottery.setGenerator(new StandardRNG(RNGSEED));
 
-        final int[] atsPerMol = new int[noLJAtoms];
-        final boolean[] molFlexies = new boolean[noLJAtoms];
-        final List<boolean[][]> allFlexies = null;
-        final boolean[] molConstraints = new boolean[noLJAtoms];
-        final boolean[][] constrXYZ = new boolean[3][noLJAtoms];
-        final String[] sids = new String[noLJAtoms];
-        
-        for(int i = 0; i < noLJAtoms; i++){
-            atsPerMol[i] = 1;
-            molFlexies[i] = false;
-            molConstraints[i] = false;
-            sids[i] = LJATOM;
-            constrXYZ[0][i] = false;
-            constrXYZ[1][i] = false;
-            constrXYZ[2][i] = false;
-        }
-        
-        final CartesianCoordinates cartes = new CartesianCoordinates(noLJAtoms, noLJAtoms, atsPerMol);
-        final String[] atoms = cartes.getAllAtomTypes();
-        
-        for(int i = 0; i < noLJAtoms; i++){
-            atoms[i] = LJATOM;
-        }
-        
-        cartes.recalcAtomNumbersForced();
-        
-        this.geom = new Geometry(cartes, 0, noLJAtoms, atsPerMol, molFlexies, allFlexies, molConstraints,
-            constrXYZ, sids, bonds);
+    this.norway =
+        new NorwayGeometryMutation(
+            NorwayGeometryMutation.PACKDIM.THREED,
+            CollisionDetection.CDTYPE.SIMPLEPAIRWISE,
+            BLOWCOLL,
+            BLOWDISS,
+            DissociationDetection.DEFAULTDD,
+            NorwayGeometryMutation.MUTMODE.ASCENDING);
+
+    assert (noLJAtoms > 0);
+    this.noLJAtoms = noLJAtoms;
+
+    final BondInfo bonds = new SimpleBondInfo(noLJAtoms);
+
+    final int[] atsPerMol = new int[noLJAtoms];
+    final boolean[] molFlexies = new boolean[noLJAtoms];
+    final List<boolean[][]> allFlexies = null;
+    final boolean[] molConstraints = new boolean[noLJAtoms];
+    final boolean[][] constrXYZ = new boolean[3][noLJAtoms];
+    final String[] sids = new String[noLJAtoms];
+
+    for (int i = 0; i < noLJAtoms; i++) {
+      atsPerMol[i] = 1;
+      molFlexies[i] = false;
+      molConstraints[i] = false;
+      sids[i] = LJATOM;
+      constrXYZ[0][i] = false;
+      constrXYZ[1][i] = false;
+      constrXYZ[2][i] = false;
     }
-    
-    @Override
-    public String name() {
-        return "Norway packing LJ bench for " + this.noLJAtoms + " LJ atoms";
+
+    final CartesianCoordinates cartes = new CartesianCoordinates(noLJAtoms, noLJAtoms, atsPerMol);
+    final String[] atoms = cartes.getAllAtomTypes();
+
+    for (int i = 0; i < noLJAtoms; i++) {
+      atoms[i] = LJATOM;
     }
-    
-    @Override
-    public double runSingle() throws Exception {
-        
-        final Geometry packed = norway.mutate(geom);
-        return packed.getFitness();
-    }
+
+    cartes.recalcAtomNumbersForced();
+
+    this.geom =
+        new Geometry(
+            cartes,
+            0,
+            noLJAtoms,
+            atsPerMol,
+            molFlexies,
+            allFlexies,
+            molConstraints,
+            constrXYZ,
+            sids,
+            bonds);
+  }
+
+  @Override
+  public String name() {
+    return "Norway packing LJ bench for " + this.noLJAtoms + " LJ atoms";
+  }
+
+  @Override
+  public double runSingle() throws Exception {
+
+    final Geometry packed = norway.mutate(geom);
+    return packed.getFitness();
+  }
 }

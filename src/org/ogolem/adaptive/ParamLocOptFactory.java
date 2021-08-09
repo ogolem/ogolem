@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2015-2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -40,70 +40,79 @@ import java.util.HashMap;
 import org.ogolem.adaptive.genericfitness.GenericFitnessFunction;
 import org.ogolem.generic.GenericBackend;
 import org.ogolem.generic.GenericLocOpt;
-import org.ogolem.generic.GenericNoLocOpt;
 import org.ogolem.locopt.AbstractLocOptFactory;
 
 /**
  * The adaptive parameter version of the local optimization factory.
+ *
  * @author Johannes Dieterich
  * @version 2020-07-25
  */
-class ParamLocOptFactory extends AbstractLocOptFactory<Double,AdaptiveParameters> {
+class ParamLocOptFactory extends AbstractLocOptFactory<Double, AdaptiveParameters> {
 
-    private static final long serialVersionUID = (long) 20150428;
-    
-    private final AdaptiveConf adapConf;
-    private final double[] minBorders;
-    private final double[] maxBorders;
-    private final boolean normParams;
-    
-    ParamLocOptFactory(final double absConvThreshold, final int maxIter,
-            final boolean normParams,
-            final double[] minBorders, final double[] maxBorders,
-            final HashMap<String,GenericBackend<Double,AdaptiveParameters>> backendDict,
-            final AdaptiveConf adaptConf){
-        super(absConvThreshold,maxIter,backendDict);
-        this.adapConf = adaptConf;
-        this.normParams = normParams;
-        this.minBorders = minBorders;
-        this.maxBorders = maxBorders;
+  private static final long serialVersionUID = (long) 20150428;
+
+  private final AdaptiveConf adapConf;
+  private final double[] minBorders;
+  private final double[] maxBorders;
+  private final boolean normParams;
+
+  ParamLocOptFactory(
+      final double absConvThreshold,
+      final int maxIter,
+      final boolean normParams,
+      final double[] minBorders,
+      final double[] maxBorders,
+      final HashMap<String, GenericBackend<Double, AdaptiveParameters>> backendDict,
+      final AdaptiveConf adaptConf) {
+    super(absConvThreshold, maxIter, backendDict);
+    this.adapConf = adaptConf;
+    this.normParams = normParams;
+    this.minBorders = minBorders;
+    this.maxBorders = maxBorders;
+  }
+
+  @Override
+  protected GenericLocOpt<Double, AdaptiveParameters> buildSpecializedLocalOptimization(
+      final String input) throws Exception {
+
+    if (input.startsWith("external:")) {
+
+      final String[] opts = tokenizeSecondLevel(input.substring("external:".length()).trim());
+
+      GenericBackend<Double, AdaptiveParameters> backend = null;
+      for (final String opt : opts) {
+        if (opt.startsWith("backend=")) {
+          backend = getBackend(opt.substring(8));
+        } else {
+          throw new RuntimeException("Unknown option " + opt + " in single point only!");
+        }
+      }
+
+      checkSanityBackend(backend);
+
+      return new ExternalLocOpt(backend);
     }
 
-    @Override
-    protected GenericLocOpt<Double,AdaptiveParameters> buildSpecializedLocalOptimization(final String input) throws Exception {
-        
-    	if(input.startsWith("external:")){
-    		
-    		final String[] opts = tokenizeSecondLevel(input.substring("external:".length()).trim());
-            
-            GenericBackend<Double,AdaptiveParameters> backend = null;
-            for(final String opt : opts){
-                if(opt.startsWith("backend=")){
-                    backend = getBackend(opt.substring(8));
-                } else {
-                    throw new RuntimeException("Unknown option " + opt + " in single point only!");
-                }
-            }
-            
-            checkSanityBackend(backend);
-            
-            return new ExternalLocOpt(backend);
-    	}
-    	
-        // no specialized local optimization left
-    	
-        return null;
+    // no specialized local optimization left
+
+    return null;
+  }
+
+  @Override
+  public GenericBackend<Double, AdaptiveParameters> parseBackend(final String backend)
+      throws Exception {
+
+    if (!backend.equalsIgnoreCase("alldefault")) {
+      return null;
     }
 
-    @Override
-    public GenericBackend<Double,AdaptiveParameters> parseBackend(final String backend) throws Exception {
-        
-        if(!backend.equalsIgnoreCase("alldefault")){return null;}
-            
-        System.out.println("INFO: we fall back to all default backend definition. This is an intermediate solution that will be removed soon!");
-        final GenericFitnessFunction func = adapConf.getCartesianFitnessFunc();
-        final GenericBackend<Double,AdaptiveParameters> back = new FitFuncToBackend(func, normParams, minBorders, maxBorders);
-        
-        return back;
-    }
+    System.out.println(
+        "INFO: we fall back to all default backend definition. This is an intermediate solution that will be removed soon!");
+    final GenericFitnessFunction func = adapConf.getCartesianFitnessFunc();
+    final GenericBackend<Double, AdaptiveParameters> back =
+        new FitFuncToBackend(func, normParams, minBorders, maxBorders);
+
+    return back;
+  }
 }

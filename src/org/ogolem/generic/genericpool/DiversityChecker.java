@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2012-2014, J. M. Dieterich
 All rights reserved.
 
@@ -41,12 +41,14 @@ import org.ogolem.generic.Optimizable;
 
 /**
  * A diversity check.
+ *
  * @author Johannes Dieterich
  * @version 2014-01-20
  */
-public interface DiversityChecker<E,T extends Optimizable<E>> extends Serializable {
-    
-    String getMyName();
-    
-    boolean areDiverse(final GenericPoolEntry<E,T> indivduum1, final GenericPoolEntry<E,T> individuum2);
+public interface DiversityChecker<E, T extends Optimizable<E>> extends Serializable {
+
+  String getMyName();
+
+  boolean areDiverse(
+      final GenericPoolEntry<E, T> indivduum1, final GenericPoolEntry<E, T> individuum2);
 }

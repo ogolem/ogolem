@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2012,2014, J. M. Dieterich
 All rights reserved.
 
@@ -40,99 +40,108 @@ import org.ogolem.generic.Optimizable;
 
 /**
  * A collection of generic diversity checkers
+ *
  * @author Johannes Dieterich
  * @version 2014-06-12
  */
 public class GenericDiversityCheckers {
-    
-    public static class FitnessDiversityChecker<E,T extends Optimizable<E>> implements DiversityChecker<E,T>{
-        
-        private static final long serialVersionUID = (long) 20140612;
-        private final double diversity;
-        
-        public FitnessDiversityChecker(final double fitnessDiv){
-            assert(fitnessDiv >= 0.0);
-            diversity = fitnessDiv;
-        }
-        
-        @Override
-        public boolean areDiverse(final GenericPoolEntry<E,T> individuum1, final GenericPoolEntry<E,T> individuum2){
-            
-            final double fit1 = individuum1.getFitness();
-            final double fit2 = individuum2.getFitness();
-            
-            return (Math.abs(fit1-fit2) > diversity);
-        }
 
-        @Override
-        public String getMyName() {
-            return "standard fitness diversity, threshold " + diversity;
-        }
+  public static class FitnessDiversityChecker<E, T extends Optimizable<E>>
+      implements DiversityChecker<E, T> {
+
+    private static final long serialVersionUID = (long) 20140612;
+    private final double diversity;
+
+    public FitnessDiversityChecker(final double fitnessDiv) {
+      assert (fitnessDiv >= 0.0);
+      diversity = fitnessDiv;
     }
-    
+
+    @Override
+    public boolean areDiverse(
+        final GenericPoolEntry<E, T> individuum1, final GenericPoolEntry<E, T> individuum2) {
+
+      final double fit1 = individuum1.getFitness();
+      final double fit2 = individuum2.getFitness();
+
+      return (Math.abs(fit1 - fit2) > diversity);
+    }
+
+    @Override
+    public String getMyName() {
+      return "standard fitness diversity, threshold " + diversity;
+    }
+  }
+
+  /**
+   * A fitness diversity checker based on the percentage difference w.r.t. to the individual with
+   * smaller fitness.
+   *
+   * @param <E> a type, e.g., Double
+   * @param <T> an optimizable of type E
+   */
+  public static class PercentageFitnessDiversityChecker<E, T extends Optimizable<E>>
+      implements DiversityChecker<E, T> {
+
+    private static final long serialVersionUID = (long) 20140612;
+    private final double diversity;
+
     /**
-     * A fitness diversity checker based on the percentage difference w.r.t. to the
-     * individual with smaller fitness.
-     * @param <E> a type, e.g., Double
-     * @param <T> an optimizable of type E
+     * Constructor.
+     *
+     * @param percentage percentage in the interval [0,1.0]
      */
-    public static class PercentageFitnessDiversityChecker<E,T extends Optimizable<E>> implements DiversityChecker<E,T>{
-        
-        private static final long serialVersionUID = (long) 20140612;
-        private final double diversity;
-        
-        /**
-         * Constructor.
-         * @param percentage percentage in the interval [0,1.0]
-         */
-        public PercentageFitnessDiversityChecker(final double percentage){
-            assert(percentage >= 0.0);
-            assert(percentage <= 1.0);
-            diversity = percentage;
-        }
-        
-        @Override
-        public boolean areDiverse(final GenericPoolEntry<E,T> individuum1, final GenericPoolEntry<E,T> individuum2){
-            
-            final double fit1 = individuum1.getFitness();
-            final double fit2 = individuum2.getFitness();
-            
-            return (Math.abs(fit1-fit2)/Math.abs(Math.min(fit1, fit2)) > diversity);
-        }
-
-        @Override
-        public String getMyName() {
-            return "percentage fitness diversity, percentage " + diversity*100 + "%";
-        }
+    public PercentageFitnessDiversityChecker(final double percentage) {
+      assert (percentage >= 0.0);
+      assert (percentage <= 1.0);
+      diversity = percentage;
     }
-    
-    public static class ScaledFitnessDiversityChecker<E,T extends Optimizable<E>> implements DiversityChecker<E,T>{
-        
-        private static final long serialVersionUID = (long) 20131231;
-        private final double diversity;
-        
-        public ScaledFitnessDiversityChecker(final double fitnessDiv){
-            diversity = fitnessDiv;
-        }
-        
-        @Override
-        public boolean areDiverse(final GenericPoolEntry<E,T> individuum1, final GenericPoolEntry<E,T> individuum2){
-            
-            final double fit1 = individuum1.getFitness();
-            final double fit2 = individuum2.getFitness();
-            
-            return (Math.abs(fit1-fit2) > diversity);
-        }
-    
-    //private boolean checkScaledEnergyDiversity(Geometry geom1, Geometry geom2) {
+
+    @Override
+    public boolean areDiverse(
+        final GenericPoolEntry<E, T> individuum1, final GenericPoolEntry<E, T> individuum2) {
+
+      final double fit1 = individuum1.getFitness();
+      final double fit2 = individuum2.getFitness();
+
+      return (Math.abs(fit1 - fit2) / Math.abs(Math.min(fit1, fit2)) > diversity);
+    }
+
+    @Override
+    public String getMyName() {
+      return "percentage fitness diversity, percentage " + diversity * 100 + "%";
+    }
+  }
+
+  public static class ScaledFitnessDiversityChecker<E, T extends Optimizable<E>>
+      implements DiversityChecker<E, T> {
+
+    private static final long serialVersionUID = (long) 20131231;
+    private final double diversity;
+
+    public ScaledFitnessDiversityChecker(final double fitnessDiv) {
+      diversity = fitnessDiv;
+    }
+
+    @Override
+    public boolean areDiverse(
+        final GenericPoolEntry<E, T> individuum1, final GenericPoolEntry<E, T> individuum2) {
+
+      final double fit1 = individuum1.getFitness();
+      final double fit2 = individuum2.getFitness();
+
+      return (Math.abs(fit1 - fit2) > diversity);
+    }
+
+    // private boolean checkScaledEnergyDiversity(Geometry geom1, Geometry geom2) {
     //    boolean bDiversity = false;
     //    //TODO scaled diversity check, adjusted sigmoid function again
     //    return bDiversity;
-    //}
+    // }
 
-        @Override
-        public String getMyName() {
-            return "scaled fitness diversity checker, threshold " + diversity;
-        }
+    @Override
+    public String getMyName() {
+      return "scaled fitness diversity checker, threshold " + diversity;
     }
+  }
 }
