@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2013, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,15 +41,17 @@ import java.io.Serializable;
 
 /**
  * Interface for all (generic) global optimizations.
+ *
  * @author Johannes Dieterich
  * @version 2020-04-29
  */
-public interface GenericGlobalOptimization<E,T extends Optimizable<E>> extends Serializable, Copyable {
-    
-	@Override
-    GenericGlobalOptimization<E,T> copy();
-    
-    String getMyID();
-    
-    T globalOptimization(final long futureID, final T mother, final T father);
+public interface GenericGlobalOptimization<E, T extends Optimizable<E>>
+    extends Serializable, Copyable {
+
+  @Override
+  GenericGlobalOptimization<E, T> copy();
+
+  String getMyID();
+
+  T globalOptimization(final long futureID, final T mother, final T father);
 }
