@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2014, J. M. Dieterich
               2020, J. M. Dieterich and B. Hartke
 All rights reserved.
@@ -41,52 +41,53 @@ import org.ogolem.generic.ContinuousProblem;
 
 /**
  * A basic optimizable type. Basically a wrapper for a double[].
+ *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-12-26
  */
-public class BasicOptimizableType extends ContinuousProblem<Double>{
-    
-    private static final long serialVersionUID = (long) 20200429;
-    private double[] genome;
+public class BasicOptimizableType extends ContinuousProblem<Double> {
 
-    BasicOptimizableType(final double[] genome){
-        this.genome = genome;
-    }
-    
-    @Override
-    public ContinuousProblem<Double> copy() {
-        return new BasicOptimizableType(genome.clone());
-    }
+  private static final long serialVersionUID = (long) 20200429;
+  private double[] genome;
 
-    @Override
-    public double[] getGenomeAsDouble() {
-        return genome;
-    }
+  BasicOptimizableType(final double[] genome) {
+    this.genome = genome;
+  }
 
-    @Override
-    public Double[] getGenomeCopy() {
-        final Double[] gen = new Double[genome.length];
-        for(int i = 0; i < genome.length; i++){
-            gen[i] = genome[i];
-        }
-        
-        return gen;
+  @Override
+  public ContinuousProblem<Double> copy() {
+    return new BasicOptimizableType(genome.clone());
+  }
+
+  @Override
+  public double[] getGenomeAsDouble() {
+    return genome.clone();
+  }
+
+  @Override
+  public Double[] getGenomeCopy() {
+    final Double[] gen = new Double[genome.length];
+    for (int i = 0; i < genome.length; i++) {
+      gen[i] = genome[i];
     }
 
-    @Override
-    public void setGenome(Double[] geno) {
-        for(int i = 0; i < genome.length; i++){
-            genome[i] = geno[i];
-        }
+    return gen;
+  }
+
+  @Override
+  public void setGenome(Double[] geno) {
+    for (int i = 0; i < genome.length; i++) {
+      genome[i] = geno[i];
     }
-    
-    void setGenome(final double[] geno){
-        for(int i = 0; i < genome.length; i++){
-            genome[i] = geno[i];
-        }
+  }
+
+  void setGenome(final double[] geno) {
+    for (int i = 0; i < genome.length; i++) {
+      genome[i] = geno[i];
     }
-    
-    int getNoOfCoords(){
-        return genome.length;
-    }
+  }
+
+  int getNoOfCoords() {
+    return genome.length;
+  }
 }

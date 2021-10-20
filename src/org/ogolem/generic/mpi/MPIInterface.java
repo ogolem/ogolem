@@ -53,9 +53,8 @@ import org.slf4j.LoggerFactory;
  * @author Johannes M Dieterich
  * @version 2021-07-27
  */
-public class MPIInterface implements Serializable {
+public class MPIInterface {
 
-  private static final long serialVersionUID = 20210727;
   private static final Logger LOG = LoggerFactory.getLogger(MPIInterface.class);
 
   /* the following constants are our internal choices for ANY_SOURCE, ANY_TAG which the wrapper translates into the platform-dependent ones */

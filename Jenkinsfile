@@ -6,6 +6,9 @@ pipeline {
             steps {
                 echo 'Building ogolem and running unit tests'
                 sh 'gradle build -i -Dorg.gradle.java.home=/usr/local/openjdk16'
+                // touch test reports to avoid junit complaining about old, cached ones
+                sh 'find . -name "TEST-*.xml" -exec touch {} \\;'
+                junit 'build/test-results/**/*.xml'
             }
         }
         stage('Build ogolem manual') {
@@ -38,8 +41,7 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'build/libs/ogolem-snapshot.jar', fingerprint: true
             archiveArtifacts artifacts: 'manual/manual.pdf', fingerprint: true
-            archiveArtifacts artifacts: 'build/reports/spotbugs/main.xml', fingerprint: true
-            archiveArtifacts artifacts: 'build/reports/spotbugs/test.xml', fingerprint: true
+            archiveArtifacts artifacts: 'build/reports/spotbugs/main.html', fingerprint: true
         }
     }
 }
