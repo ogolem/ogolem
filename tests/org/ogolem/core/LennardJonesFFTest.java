@@ -151,6 +151,14 @@ public class LennardJonesFFTest {
   private static final double ENERGYLJ55 = -0.10594240151944964;
   private static final double NUMACC = 1.0e-8;
 
+  public static String getLJ38MIN() {
+    return LJ38MIN;
+  }
+
+  public static String getLJ55MIN() {
+    return LJ55MIN;
+  }
+
   @Test
   public void testEnergyCalculationLJMins() {
 
@@ -167,13 +175,13 @@ public class LennardJonesFFTest {
     CartesianCoordinates lj38 = null;
     CartesianCoordinates lj55 = null;
     try {
-      final String[] fileCont38 = LJ38MIN.split("\n");
       lj38 =
-          Input.parseCartesFromFileData(fileCont38, 38, atsPerMol38, new short[38], new float[38]);
+          Input.parseCartesFromFileData(
+              LJ38MIN.split("\n"), 38, atsPerMol38, new short[38], new float[38]);
 
-      final String[] fileCont55 = LJ55MIN.split("\n");
       lj55 =
-          Input.parseCartesFromFileData(fileCont55, 55, atsPerMol55, new short[55], new float[55]);
+          Input.parseCartesFromFileData(
+              LJ55MIN.split("\n"), 55, atsPerMol55, new short[55], new float[55]);
     } catch (Exception e) {
       fail(e.toString());
     }
@@ -234,13 +242,13 @@ public class LennardJonesFFTest {
     CartesianCoordinates lj38 = null;
     CartesianCoordinates lj55 = null;
     try {
-      final String[] fileCont38 = LJ38MIN.split("\n");
       lj38 =
-          Input.parseCartesFromFileData(fileCont38, 38, atsPerMol38, new short[38], new float[38]);
+          Input.parseCartesFromFileData(
+              LJ38MIN.split("\n"), 38, atsPerMol38, new short[38], new float[38]);
 
-      final String[] fileCont55 = LJ55MIN.split("\n");
       lj55 =
-          Input.parseCartesFromFileData(fileCont55, 55, atsPerMol55, new short[55], new float[55]);
+          Input.parseCartesFromFileData(
+              LJ55MIN.split("\n"), 55, atsPerMol55, new short[55], new float[55]);
     } catch (Exception e) {
       fail(e.toString());
     }

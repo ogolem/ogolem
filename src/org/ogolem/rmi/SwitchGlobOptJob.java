@@ -1,6 +1,7 @@
 /*
 Copyright (c) 2010-2014, J. M. Dieterich
-              2015-2016, J. M. Dieterich and B. Hartke
+              2015, J. M. Dieterich and B. Hartke
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -55,7 +56,7 @@ import org.ogolem.switches.Taboos;
  * A job for the global optimization of a switchable molecule.
  *
  * @author Johannes Dieterich
- * @version 2016-01-25
+ * @version 2020-12-26
  */
 final class SwitchGlobOptJob implements Job<Switch> {
 
@@ -254,7 +255,8 @@ final class SwitchGlobOptJob implements Job<Switch> {
       return new ArrayList<>();
     }
 
-    final int noTasks = Math.min(maxTasks, (int) Math.ceil(this.poolSize / noProxies));
+    final int noTasks =
+        Math.min(maxTasks, (int) Math.ceil((double) this.poolSize / (double) noProxies));
 
     final List<Task<Switch>> jobs = new ArrayList<>();
     for (int i = 0; i < noTasks; i++) {

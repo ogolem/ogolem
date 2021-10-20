@@ -260,7 +260,8 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T> {
       return new ArrayList<>();
     }
 
-    final int noTasks = Math.min(maxTasks, (int) Math.ceil(this.poolSize / noProxies));
+    final int noTasks =
+        Math.min(maxTasks, (int) Math.ceil((double) this.poolSize / (double) noProxies));
 
     if (DEBUG) {
       System.out.println(

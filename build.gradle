@@ -1,7 +1,7 @@
 plugins {
-  id 'com.github.johnrengelman.shadow' version '7.0.0'
-  id 'com.diffplug.spotless' version '5.12.4'
-  id 'com.github.spotbugs' version '4.6.1'
+  id 'com.github.johnrengelman.shadow' version '7.1.0'
+  id 'com.diffplug.spotless' version '5.16.0'
+  id 'com.github.spotbugs' version '4.7.8'
   id 'java'
   id 'application'
 }
@@ -114,16 +114,17 @@ spotless {
 }
 
 spotbugs {
-    ignoreFailures = true
-    effort = 'more'
-    onlyAnalyze = [ 'org.ogolem.*' ]
+  spotbugsTest.enabled = false
+  ignoreFailures = false
+  effort = 'more'
+  baselineFile = file("baseline.xml")
 }
 
-//spotbugsMain {
-//  reports {
-//    html {
-//      enabled = true
-//      stylesheet = 'fancy-hist.xsl'
-//    }
-//  }
-//}
+spotbugsMain {
+  reports {
+    html {
+      enabled = true
+      stylesheet = 'fancy-hist.xsl'
+    }
+  }
+}
