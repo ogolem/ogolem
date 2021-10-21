@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -63,11 +63,11 @@ import org.ogolem.rmi.RMICodes.JOBSTATE;
  * A generic global optimization job.
  *
  * @author Johannes Dieterich
- * @version 2020-12-30
+ * @version 2021-10-15
  */
 public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T> {
 
-  private static final long serialVersionUID = (long) 20150526;
+  private static final long serialVersionUID = (long) 20211015;
   private static final boolean DEBUG = false;
 
   private final String outFolder;
@@ -511,8 +511,8 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T> {
       int c = 0;
       for (final GenericPoolEntry<E, T> entry : pool) {
         c++;
-        if (entry != null && entry.getIndividual() != null) {
-          mergedPool.add(entry.getIndividual());
+        if (entry != null && entry.individual() != null) {
+          mergedPool.add(entry.individual());
         } else {
           break; // end of pool
         }
@@ -555,8 +555,8 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T> {
       int c = 0;
       for (final GenericPoolEntry<E, T> entry : pool) {
         c++;
-        if (entry != null && entry.getIndividual() != null) {
-          mergedPool.add(entry.getIndividual());
+        if (entry != null && entry.individual() != null) {
+          mergedPool.add(entry.individual());
         } else {
           break; // end of pool
         }
@@ -739,7 +739,7 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T> {
       // print the individuals out as well
       int c = 0;
       for (final GenericPoolEntry<E, T> entry : pool) {
-        final T ind = entry.getIndividual();
+        final T ind = entry.individual();
         final String file =
             outFolder + File.separator + "initrank" + c + "individual" + ind.getID();
         writer.writeIndividual(ind, file);
@@ -781,7 +781,7 @@ public class GenericGlobOptJob<E, T extends Optimizable<E>> implements Job<T> {
       // print the individuals out as well
       int c = 0;
       for (final GenericPoolEntry<E, T> entry : pool) {
-        final T ind = entry.getIndividual();
+        final T ind = entry.individual();
         final String file = outFolder + File.separator + "rank" + c + "individual" + ind.getID();
         writer.writeIndividual(ind, file);
         c++;

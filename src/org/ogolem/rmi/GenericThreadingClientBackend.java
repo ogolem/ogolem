@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2016-2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2016-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * The actual backend for the threading RMI client.
  *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2021-10-15
  */
 class GenericThreadingClientBackend<E, T extends Optimizable<E>> {
 
@@ -304,7 +304,7 @@ class GenericThreadingClientBackend<E, T extends Optimizable<E>> {
     } else {
       final List<T> myPool = new ArrayList<>();
       for (final GenericPoolEntry<E, T> entry : pool) {
-        final T ind = entry.getIndividual();
+        final T ind = entry.individual();
         final long id = ind.getID();
         if (id < currIDStart) {
           if (isInInit && DEBUG) {

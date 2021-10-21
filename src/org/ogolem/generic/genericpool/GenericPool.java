@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2012-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,12 +54,12 @@ import org.ogolem.io.OutputPrimitives;
  * A generic genetic pool.
  *
  * @author Johannes Dieterich
- * @version 2020-12-30
+ * @version 2021-10-15
  */
 public class GenericPool<E, T extends Optimizable<E>>
     implements Serializable, Iterable<GenericPoolEntry<E, T>> {
 
-  private static final long serialVersionUID = (long) 20200413;
+  private static final long serialVersionUID = (long) 20211015;
   private static final boolean DEBUG = false;
 
   // the pool
@@ -232,7 +232,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     roLock.lock();
     T inv = null;
     try {
-      inv = geneticPool.get(position).getIndividual();
+      inv = geneticPool.get(position).individual();
     } finally {
       roLock.unlock();
     }
@@ -255,7 +255,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     roLock.lock();
     double fitness = FixedValues.NONCONVERGEDENERGY;
     try {
-      fitness = geneticPool.get(position).getFitness();
+      fitness = geneticPool.get(position).fitness();
     } finally {
       roLock.unlock();
     }
@@ -277,7 +277,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     roLock.lock();
     Niche n = null;
     try {
-      n = geneticPool.get(position).getNiche();
+      n = geneticPool.get(position).niche();
     } finally {
       roLock.unlock();
     }
@@ -292,7 +292,7 @@ public class GenericPool<E, T extends Optimizable<E>>
       final List<String> output = new ArrayList<>();
       int pos = 0;
       for (final GenericPoolEntry<E, T> entry : geneticPool) {
-        final T ind = entry.getIndividual();
+        final T ind = entry.individual();
         final long id = ind.getID();
         final double fit = ind.getFitness();
         final String s = String.format(Locale.US, "%6d   %10d  %18.10f", pos, id, fit);
@@ -311,7 +311,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     rwLock.lock();
     try {
       if (doNiching) {
-        final Niche n = geneticPool.get(position).getNiche();
+        final Niche n = geneticPool.get(position).niche();
         nicher.delete(n);
       }
       geneticPool.remove(position);
@@ -328,7 +328,7 @@ public class GenericPool<E, T extends Optimizable<E>>
       if (doNiching) {
         for (int pos = 0; pos < geneticPool.size(); pos++) {
           final GenericPoolEntry<E, T> entry = geneticPool.get(pos);
-          nicher.delete(entry.getNiche());
+          nicher.delete(entry.niche());
         }
       }
       geneticPool.clear();
@@ -391,7 +391,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     final int currentSize = geneticPool.size();
     for (int pos = 0; pos < currentSize; pos++) {
       final GenericPoolEntry<E, T> entry = geneticPool.get(pos);
-      final double posFit = entry.getFitness();
+      final double posFit = entry.fitness();
       if (fitness < posFit) {
         final GenericPoolEntry<E, T> newEntry = new GenericPoolEntry<>(individual, fitness, niche);
         geneticPool.add(pos, newEntry);
@@ -450,7 +450,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     final int currentSize = geneticPool.size();
     for (int pos = 0; pos < currentSize; pos++) {
       final GenericPoolEntry<E, T> entry = geneticPool.get(pos);
-      final double posFit = entry.getFitness();
+      final double posFit = entry.fitness();
       if (fitness < posFit) {
         /*
          * now check back and forth if this ID is known
@@ -460,7 +460,7 @@ public class GenericPool<E, T extends Optimizable<E>>
         int c = 0;
         int checkPos = pos;
         while (c < checkBackForth && checkPos >= 0) {
-          final long thisID = geneticPool.get(checkPos).getIndividual().getID();
+          final long thisID = geneticPool.get(checkPos).individual().getID();
           if (thisID == myID) {
             // known
             return false;
@@ -472,7 +472,7 @@ public class GenericPool<E, T extends Optimizable<E>>
         c = 1;
         checkPos = pos + 1;
         while (c < checkBackForth && checkPos < currentSize) {
-          final long thisID = geneticPool.get(checkPos).getIndividual().getID();
+          final long thisID = geneticPool.get(checkPos).individual().getID();
           if (thisID == myID) {
             // known
             return false;
@@ -614,8 +614,7 @@ public class GenericPool<E, T extends Optimizable<E>>
 
     // only check this if the pool is fully filled
     final int currentSize = geneticPool.size();
-    if (currentSize >= poolSize
-        && fitness >= geneticPool.get(geneticPool.size() - 1).getFitness()) {
+    if (currentSize >= poolSize && fitness >= geneticPool.get(geneticPool.size() - 1).fitness()) {
       stats.registerIndividualNotAdded(individual.getID());
       return false;
     } // fitness out of range
@@ -632,7 +631,7 @@ public class GenericPool<E, T extends Optimizable<E>>
 
         final Niche other = getNicheOfIndividualAtPos(pos);
         if (other.comp(niche)) {
-          if (!firstPlaceSeen && geneticPool.get(pos).getFitness() > fitness) {
+          if (!firstPlaceSeen && geneticPool.get(pos).fitness() > fitness) {
             // new best individual in this niche: accept anyways
             final GenericPoolEntry<E, T> thisEntry = geneticPool.get(pos);
             final boolean areDiverse = diversity.areDiverse(newEntry, thisEntry);
@@ -647,8 +646,7 @@ public class GenericPool<E, T extends Optimizable<E>>
           final GenericPoolEntry<E, T> thisEntry = geneticPool.get(pos);
           if (bottomOfNiche) {
             bottomOfNiche = false;
-            if (fitness <= thisEntry.getFitness())
-              break; // accept new best entry w/o diversity-check!
+            if (fitness <= thisEntry.fitness()) break; // accept new best entry w/o diversity-check!
           }
           final boolean areDiverse = diversity.areDiverse(newEntry, thisEntry);
           if (!areDiverse) {
@@ -666,7 +664,7 @@ public class GenericPool<E, T extends Optimizable<E>>
       // niche or is the new best individual in this niche, now just add :-)
       for (int pos = 0; pos < geneticPool.size(); pos++) {
         final GenericPoolEntry<E, T> entry = geneticPool.get(pos);
-        final double posFit = entry.getFitness();
+        final double posFit = entry.fitness();
         if (fitness < posFit) {
 
           final GenericPoolEntry<E, T> addEntry = newEntry.copy();
@@ -681,23 +679,23 @@ public class GenericPool<E, T extends Optimizable<E>>
               removePos++;
             }
 
-            nicher.delete(geneticPool.get(removePos).getNiche());
+            nicher.delete(geneticPool.get(removePos).niche());
             geneticPool.remove(removePos);
           }
           if (DEBUG) {
             System.out.println("DEBUG: This fitness " + fitness + " compared to " + posFit);
             System.out.println("DEBUG: Did Nicher remove something? " + removed);
             System.out.println(
-                "DEBUG: Worst individual: " + geneticPool.get(geneticPool.size() - 1).getFitness());
+                "DEBUG: Worst individual: " + geneticPool.get(geneticPool.size() - 1).fitness());
             if (removed) {
               for (int i = 0; i < geneticPool.size(); i++) {
                 System.out.println(
                     " "
                         + i
                         + " fitness "
-                        + geneticPool.get(i).getFitness()
+                        + geneticPool.get(i).fitness()
                         + " niche "
-                        + geneticPool.get(i).getNiche().getID());
+                        + geneticPool.get(i).niche().getID());
               }
             }
           }
@@ -721,7 +719,7 @@ public class GenericPool<E, T extends Optimizable<E>>
       // not niching, simpler case
       for (int pos = 0; pos < geneticPool.size(); pos++) {
         final GenericPoolEntry<E, T> entry = geneticPool.get(pos);
-        final double posFit = entry.getFitness();
+        final double posFit = entry.fitness();
         if (fitness < posFit) {
 
           final GenericPoolEntry<E, T> newEntry = new GenericPoolEntry<>(individual, fitness, null);
@@ -796,8 +794,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     try {
       // only check this if the pool is fully filled
       final int currentSize = geneticPool.size();
-      if (currentSize >= poolSize
-          && fitness >= geneticPool.get(geneticPool.size() - 1).getFitness()) {
+      if (currentSize >= poolSize && fitness >= geneticPool.get(geneticPool.size() - 1).fitness()) {
         hasChance = false;
       } // fitness out of range
     } finally {
@@ -832,7 +829,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     try {
       final double[] fs = new double[geneticPool.size()];
       for (int i = 0; i < geneticPool.size(); i++) {
-        fs[i] = geneticPool.get(i).getFitness();
+        fs[i] = geneticPool.get(i).fitness();
       }
 
       return fs;
@@ -846,7 +843,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     roLock.lock();
     try {
       final boolean done =
-          (geneticPool.isEmpty()) ? false : (geneticPool.get(0).getFitness() <= acceptableFitness);
+          (geneticPool.isEmpty()) ? false : (geneticPool.get(0).fitness() <= acceptableFitness);
       return done;
     } finally {
       roLock.unlock();
@@ -878,13 +875,13 @@ public class GenericPool<E, T extends Optimizable<E>>
 
     assert (newEntry != null);
     assert (posAdded >= 0);
-    assert (newEntry.getIndividual() != null);
+    assert (newEntry.individual() != null);
 
     countAddsSerial++;
     if (!forced) {
       countAddsStats++;
     }
-    stats.individualAddedToPool(newEntry.getIndividual().getID(), posAdded, newEntry.getFitness());
+    stats.individualAddedToPool(newEntry.individual().getID(), posAdded, newEntry.fitness());
     if ((posAdded == 0 && serializeAfterNewBest) || countAddsSerial >= addsToSerial) {
       serializeMe();
       countAddsSerial = 0;
@@ -929,7 +926,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     while (geneticPool.size() > allowedSize) {
       if (doNiching) {
         // report decrement in niche population
-        nicher.delete(geneticPool.get(geneticPool.size() - 1).getNiche());
+        nicher.delete(geneticPool.get(geneticPool.size() - 1).niche());
       }
       geneticPool.remove(geneticPool.size() - 1);
     }

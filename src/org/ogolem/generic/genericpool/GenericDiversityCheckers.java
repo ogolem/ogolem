@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2012,2014, J. M. Dieterich
+              2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,14 +43,14 @@ import org.ogolem.generic.Optimizable;
  * A collection of generic diversity checkers
  *
  * @author Johannes Dieterich
- * @version 2014-06-12
+ * @version 2021-10-15
  */
 public class GenericDiversityCheckers {
 
   public static class FitnessDiversityChecker<E, T extends Optimizable<E>>
       implements DiversityChecker<E, T> {
 
-    private static final long serialVersionUID = (long) 20140612;
+    private static final long serialVersionUID = (long) 20211015;
     private final double diversity;
 
     public FitnessDiversityChecker(final double fitnessDiv) {
@@ -61,8 +62,8 @@ public class GenericDiversityCheckers {
     public boolean areDiverse(
         final GenericPoolEntry<E, T> individuum1, final GenericPoolEntry<E, T> individuum2) {
 
-      final double fit1 = individuum1.getFitness();
-      final double fit2 = individuum2.getFitness();
+      final double fit1 = individuum1.fitness();
+      final double fit2 = individuum2.fitness();
 
       return (Math.abs(fit1 - fit2) > diversity);
     }
@@ -101,8 +102,8 @@ public class GenericDiversityCheckers {
     public boolean areDiverse(
         final GenericPoolEntry<E, T> individuum1, final GenericPoolEntry<E, T> individuum2) {
 
-      final double fit1 = individuum1.getFitness();
-      final double fit2 = individuum2.getFitness();
+      final double fit1 = individuum1.fitness();
+      final double fit2 = individuum2.fitness();
 
       return (Math.abs(fit1 - fit2) / Math.abs(Math.min(fit1, fit2)) > diversity);
     }
@@ -127,8 +128,8 @@ public class GenericDiversityCheckers {
     public boolean areDiverse(
         final GenericPoolEntry<E, T> individuum1, final GenericPoolEntry<E, T> individuum2) {
 
-      final double fit1 = individuum1.getFitness();
-      final double fit2 = individuum2.getFitness();
+      final double fit1 = individuum1.fitness();
+      final double fit2 = individuum2.fitness();
 
       return (Math.abs(fit1 - fit2) > diversity);
     }

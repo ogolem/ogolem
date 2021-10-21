@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2012-2014, J. M. Dieterich
+              2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,7 +42,7 @@ import org.ogolem.generic.genericpool.GenericPoolEntry;
 
 /**
  * @author Johannes Dieterich
- * @version 2014-01-20
+ * @version 2021-10-15
  */
 public class ParameterDiversityCheckers {
 
@@ -49,7 +50,7 @@ public class ParameterDiversityCheckers {
   public static class ParamsDiversityChecker
       implements DiversityChecker<Double, AdaptiveParameters> {
 
-    private static final long serialVersionUID = (long) 20131231;
+    private static final long serialVersionUID = (long) 20211015;
     private final double divThresh;
 
     public ParamsDiversityChecker(final double thresh) {
@@ -61,8 +62,8 @@ public class ParameterDiversityCheckers {
         final GenericPoolEntry<Double, AdaptiveParameters> individuum1,
         final GenericPoolEntry<Double, AdaptiveParameters> individuum2) {
 
-      final double[] daParams1 = individuum1.getIndividual().getAllParamters();
-      final double[] daParams2 = individuum2.getIndividual().getAllParamters();
+      final double[] daParams1 = individuum1.individual().getAllParamters();
+      final double[] daParams2 = individuum2.individual().getAllParamters();
 
       for (int i = 0; i < daParams1.length; i++) {
         if (Math.abs(daParams1[i] - daParams2[i]) > divThresh) {

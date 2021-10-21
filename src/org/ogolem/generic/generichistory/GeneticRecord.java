@@ -1,7 +1,7 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2012, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -43,40 +43,20 @@ import org.ogolem.generic.Optimizable;
 
 /**
  * This is a single genetic record wrapping all needed information.
+ *
  * @author Johannes Dieterich
- * @version 2015-07-15
+ * @version 2021-10-15
  */
-class GeneticRecord<E,T extends Optimizable<E>> implements Serializable {
-    
-    //TODO this is just a stub
-    // fill it with life aka the grid
+record GeneticRecord<E, T extends Optimizable<E>>(
+    long id, long mother, long father, boolean wasAccepted, boolean wasNull)
+    implements Serializable {
 
-    private static final long serialVersionUID = (long) 20150715;
+  // TODO this is just a stub
+  // fill it with life aka the grid
 
-    private final long id;
-    private final long mother;
-    private final long father;
-    private final boolean wasAccepted;
-    private final boolean wasNull;
+  private static final long serialVersionUID = (long) 20211015;
 
-    public GeneticRecord(final long id, final long mother, final long father,
-            final boolean wasAccepted, final boolean wasNull){
-        this.id = id;
-        this.father = father;
-        this.mother = mother;
-        this.wasAccepted = wasAccepted;
-        this.wasNull = wasNull;
-    }
-
-    /*
-     * Getters and setters
-     */
-    public long getID(){
-        return id;
-    }
-
-    
-    String formattedHistoryLine(){
-        return ("\t" + id + "\t" + mother + "\t" + father + "\t" + wasAccepted + "\t\t\t" + wasNull);
-    }
+  String formattedHistoryLine() {
+    return ("\t" + id + "\t" + mother + "\t" + father + "\t" + wasAccepted + "\t\t\t" + wasNull);
+  }
 }

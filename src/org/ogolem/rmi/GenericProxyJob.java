@@ -488,7 +488,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T> {
             pool.getAllIndividuals()
                 .forEach(
                     (entry) -> {
-                      myPool.add(entry.getIndividual());
+                      myPool.add(entry.individual());
                     });
             final List<T> merged =
                 serverComm.synchronizePool(myPool, myID, pool.getPoolSize(), currIDStart);
@@ -629,7 +629,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T> {
             int c = 0;
             // always synchronize our top individuals with the server
             for (final GenericPoolEntry<E, T> entry : pool.getAllIndividuals()) {
-              myPool.add(entry.getIndividual());
+              myPool.add(entry.individual());
               pool.removeIndividualAtPos(c);
               c++;
               if (c >= maxStructsExchange) {
@@ -659,7 +659,7 @@ public class GenericProxyJob<E, T extends Optimizable<E>> implements Job<T> {
             pool.getAllIndividuals()
                 .forEach(
                     (entry) -> {
-                      myPool.add(entry.getIndividual());
+                      myPool.add(entry.individual());
                     });
             final List<T> merged =
                 serverComm.synchronizePool(myPool, myID, pool.getPoolSize(), currIDStart);
