@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="4.4.0" sequence="0" timestamp="1633923853003" analysisTimestamp="1633923853005" release="snapshot">
+<BugCollection version="4.4.2" sequence="0" timestamp="1634736256910" analysisTimestamp="1634736256913" release="snapshot">
   <Project projectName="ogolem (spotbugsMain)">
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/familytree/VisualizationConfig.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/familytree/MainFamilyTree.class</Jar>
@@ -888,27 +888,6 @@
     </Method>
     <SourceLine classname="contrib.edu.princeton.eac.Grid" start="138" end="138" startBytecode="0" endBytecode="68" sourcefile="Grid.java" sourcepath="contrib/edu/princeton/eac/Grid.java" relSourcepath="contrib/edu/princeton/eac/Grid.java" synthetic="true">
       <Message>At Grid.java:[line 138]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="ae0bbd03dc55a2c93eca901f6208b53d" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in contrib.edu.princeton.eac.Grid.getRandomGridPoint()</LongMessage>
-    <Class classname="contrib.edu.princeton.eac.Grid" primary="true">
-      <SourceLine classname="contrib.edu.princeton.eac.Grid" start="61" end="326" sourcefile="Grid.java" sourcepath="contrib/edu/princeton/eac/Grid.java" relSourcepath="contrib/edu/princeton/eac/Grid.java">
-        <Message>At Grid.java:[lines 61-326]</Message>
-      </SourceLine>
-      <Message>In class contrib.edu.princeton.eac.Grid</Message>
-    </Class>
-    <Method classname="contrib.edu.princeton.eac.Grid" name="getRandomGridPoint" signature="()[D" isStatic="false" primary="true">
-      <SourceLine classname="contrib.edu.princeton.eac.Grid" start="147" end="157" startBytecode="0" endBytecode="269" sourcefile="Grid.java" sourcepath="contrib/edu/princeton/eac/Grid.java" relSourcepath="contrib/edu/princeton/eac/Grid.java"/>
-      <Message>In method contrib.edu.princeton.eac.Grid.getRandomGridPoint()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextInt" signature="(I)I" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="321" end="333" startBytecode="0" endBytecode="212" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextInt(int)</Message>
-    </Method>
-    <SourceLine classname="contrib.edu.princeton.eac.Grid" primary="true" start="152" end="152" startBytecode="57" endBytecode="57" sourcefile="Grid.java" sourcepath="contrib/edu/princeton/eac/Grid.java" relSourcepath="contrib/edu/princeton/eac/Grid.java">
-      <Message>At Grid.java:[line 152]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="DM_EXIT" priority="2" rank="16" abbrev="Dm" category="BAD_PRACTICE" instanceHash="515eb6fff885b0a2899d144f422bb8dd" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="382">
@@ -1829,27 +1808,6 @@
       <Message>At AdaptiveMorse.java:[line 90]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="2050ea487c814250f35f1455bbaa38f2" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.adaptive.AdaptiveParameters.setRandomParams(double[], double[])</LongMessage>
-    <Class classname="org.ogolem.adaptive.AdaptiveParameters" primary="true">
-      <SourceLine classname="org.ogolem.adaptive.AdaptiveParameters" start="60" end="654" sourcefile="AdaptiveParameters.java" sourcepath="org/ogolem/adaptive/AdaptiveParameters.java" relSourcepath="org/ogolem/adaptive/AdaptiveParameters.java">
-        <Message>At AdaptiveParameters.java:[lines 60-654]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.adaptive.AdaptiveParameters</Message>
-    </Class>
-    <Method classname="org.ogolem.adaptive.AdaptiveParameters" name="setRandomParams" signature="([D[D)V" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.adaptive.AdaptiveParameters" start="545" end="557" startBytecode="0" endBytecode="302" sourcefile="AdaptiveParameters.java" sourcepath="org/ogolem/adaptive/AdaptiveParameters.java" relSourcepath="org/ogolem/adaptive/AdaptiveParameters.java"/>
-      <Message>In method org.ogolem.adaptive.AdaptiveParameters.setRandomParams(double[], double[])</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextDouble" signature="()D" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="463" end="463" startBytecode="0" endBytecode="65" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextDouble()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.adaptive.AdaptiveParameters" primary="true" start="553" end="553" startBytecode="107" endBytecode="107" sourcefile="AdaptiveParameters.java" sourcepath="org/ogolem/adaptive/AdaptiveParameters.java" relSourcepath="org/ogolem/adaptive/AdaptiveParameters.java">
-      <Message>At AdaptiveParameters.java:[line 553]</Message>
-    </SourceLine>
-  </BugInstance>
   <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" instanceHash="67c3920c422e0aaf6d1efb77fd3df257" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by returning reference to mutable object</ShortMessage>
     <LongMessage>org.ogolem.adaptive.AdaptiveParameters.getAllParamters() may expose internal representation by returning AdaptiveParameters.parameters</LongMessage>
@@ -2429,48 +2387,6 @@
     </LocalVariable>
     <SourceLine classname="org.ogolem.adaptive.ParamGlobOptFactory" primary="true" start="85" end="85" startBytecode="36" endBytecode="36" sourcefile="ParamGlobOptFactory.java" sourcepath="org/ogolem/adaptive/ParamGlobOptFactory.java" relSourcepath="org/ogolem/adaptive/ParamGlobOptFactory.java">
       <Message>At ParamGlobOptFactory.java:[line 85]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="ebfc2130742446bb43fdcd6e2a406b65" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.adaptive.ParameterInit.initialize(AdaptiveParameters, long)</LongMessage>
-    <Class classname="org.ogolem.adaptive.ParameterInit" primary="true">
-      <SourceLine classname="org.ogolem.adaptive.ParameterInit" start="49" end="108" sourcefile="ParameterInit.java" sourcepath="org/ogolem/adaptive/ParameterInit.java" relSourcepath="org/ogolem/adaptive/ParameterInit.java">
-        <Message>At ParameterInit.java:[lines 49-108]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.adaptive.ParameterInit</Message>
-    </Class>
-    <Method classname="org.ogolem.adaptive.ParameterInit" name="initialize" signature="(Lorg/ogolem/adaptive/AdaptiveParameters;J)Lorg/ogolem/adaptive/AdaptiveParameters;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.adaptive.ParameterInit" start="78" end="92" startBytecode="0" endBytecode="314" sourcefile="ParameterInit.java" sourcepath="org/ogolem/adaptive/ParameterInit.java" relSourcepath="org/ogolem/adaptive/ParameterInit.java"/>
-      <Message>In method org.ogolem.adaptive.ParameterInit.initialize(AdaptiveParameters, long)</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextDouble" signature="()D" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="463" end="463" startBytecode="0" endBytecode="65" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextDouble()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.adaptive.ParameterInit" primary="true" start="83" end="83" startBytecode="38" endBytecode="38" sourcefile="ParameterInit.java" sourcepath="org/ogolem/adaptive/ParameterInit.java" relSourcepath="org/ogolem/adaptive/ParameterInit.java">
-      <Message>At ParameterInit.java:[line 83]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="a15488601e5f840afa2e45f155df3df" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.adaptive.ParameterInit.initializeOnly(AdaptiveParameters, long)</LongMessage>
-    <Class classname="org.ogolem.adaptive.ParameterInit" primary="true">
-      <SourceLine classname="org.ogolem.adaptive.ParameterInit" start="49" end="108" sourcefile="ParameterInit.java" sourcepath="org/ogolem/adaptive/ParameterInit.java" relSourcepath="org/ogolem/adaptive/ParameterInit.java">
-        <Message>At ParameterInit.java:[lines 49-108]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.adaptive.ParameterInit</Message>
-    </Class>
-    <Method classname="org.ogolem.adaptive.ParameterInit" name="initializeOnly" signature="(Lorg/ogolem/adaptive/AdaptiveParameters;J)Lorg/ogolem/adaptive/AdaptiveParameters;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.adaptive.ParameterInit" start="98" end="108" startBytecode="0" endBytecode="273" sourcefile="ParameterInit.java" sourcepath="org/ogolem/adaptive/ParameterInit.java" relSourcepath="org/ogolem/adaptive/ParameterInit.java"/>
-      <Message>In method org.ogolem.adaptive.ParameterInit.initializeOnly(AdaptiveParameters, long)</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextDouble" signature="()D" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="463" end="463" startBytecode="0" endBytecode="65" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextDouble()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.adaptive.ParameterInit" primary="true" start="103" end="103" startBytecode="38" endBytecode="38" sourcefile="ParameterInit.java" sourcepath="org/ogolem/adaptive/ParameterInit.java" relSourcepath="org/ogolem/adaptive/ParameterInit.java">
-      <Message>At ParameterInit.java:[line 103]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="61f5fc667c68ed1e16074038e8c2e8be" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
@@ -7310,20 +7226,20 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to removed in org.ogolem.generic.genericpool.GenericPool.addIndividualUnsync(Optimizable, Niche, double)</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
     <Method classname="org.ogolem.generic.genericpool.GenericPool" name="addIndividualUnsync" signature="(Lorg/ogolem/generic/Optimizable;Lorg/ogolem/generic/genericpool/Niche;D)Z" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="607" end="771" startBytecode="0" endBytecode="381" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="607" end="769" startBytecode="0" endBytecode="381" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
       <Message>In method org.ogolem.generic.genericpool.GenericPool.addIndividualUnsync(Optimizable, Niche, double)</Message>
     </Method>
     <LocalVariable name="removed" register="15" pc="457" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named removed</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="678" end="678" startBytecode="455" endBytecode="455" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-      <Message>At GenericPool.java:[line 678]</Message>
+    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="676" end="676" startBytecode="455" endBytecode="455" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+      <Message>At GenericPool.java:[line 676]</Message>
     </SourceLine>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.BASE_VALUE" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="removed"/>
@@ -7334,13 +7250,13 @@
     <ShortMessage>May expose internal representation by returning reference to mutable object</ShortMessage>
     <LongMessage>org.ogolem.generic.genericpool.GenericPool.getExample() may expose internal representation by returning GenericPool.ref</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
     <Method classname="org.ogolem.generic.genericpool.GenericPool" name="getExample" signature="()Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="857" end="857" startBytecode="0" endBytecode="64" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="854" end="854" startBytecode="0" endBytecode="64" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
       <Message>In method org.ogolem.generic.genericpool.GenericPool.getExample()</Message>
     </Method>
     <Field classname="org.ogolem.generic.genericpool.GenericPool" name="ref" signature="Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
@@ -7349,16 +7265,16 @@
       </SourceLine>
       <Message>Field org.ogolem.generic.genericpool.GenericPool.ref</Message>
     </Field>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="857" end="857" startBytecode="4" endBytecode="4" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-      <Message>At GenericPool.java:[line 857]</Message>
+    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="854" end="854" startBytecode="4" endBytecode="4" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+      <Message>At GenericPool.java:[line 854]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="MS_EXPOSE_REP" priority="2" rank="18" abbrev="MS" category="MALICIOUS_CODE" instanceHash="3b41a8df9d8cf1322f8493f310479364" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="218">
     <ShortMessage>Public static method may expose internal representation by returning array</ShortMessage>
     <LongMessage>Public static org.ogolem.generic.genericpool.GenericPool.getInstance() may expose internal representation by returning GenericPool.instance</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7380,8 +7296,8 @@
     <ShortMessage>Public static method may expose internal representation by returning array</ShortMessage>
     <LongMessage>Public static org.ogolem.generic.genericpool.GenericPool.getInstance(GenericPoolConfig, Optimizable) may expose internal representation by returning GenericPool.instance</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7403,8 +7319,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.diversity is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7422,8 +7338,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.nicher is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7441,8 +7357,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.selector is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7460,8 +7376,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.stats is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7479,8 +7395,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.writer is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="956" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-956]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-953]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7641,18 +7557,18 @@
       <Message>At GenericPoolConfig.java:[line 222]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" instanceHash="38c2864862d6927b8e24d0f1aadb1c4e" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
+  <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" instanceHash="b1d1ba1e95bcd610b502e0d5dfc416c7" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by returning reference to mutable object</ShortMessage>
-    <LongMessage>org.ogolem.generic.genericpool.GenericPoolEntry.getIndividual() may expose internal representation by returning GenericPoolEntry.individual</LongMessage>
+    <LongMessage>org.ogolem.generic.genericpool.GenericPoolEntry.individual() may expose internal representation by returning GenericPoolEntry.individual</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPoolEntry" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="50" end="105" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
-        <Message>At GenericPoolEntry.java:[lines 50-105]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="50" end="61" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
+        <Message>At GenericPoolEntry.java:[lines 50-61]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPoolEntry</Message>
     </Class>
-    <Method classname="org.ogolem.generic.genericpool.GenericPoolEntry" name="getIndividual" signature="()Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="97" end="97" startBytecode="0" endBytecode="64" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java"/>
-      <Message>In method org.ogolem.generic.genericpool.GenericPoolEntry.getIndividual()</Message>
+    <Method classname="org.ogolem.generic.genericpool.GenericPoolEntry" name="individual" signature="()Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="50" end="50" startBytecode="0" endBytecode="64" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java"/>
+      <Message>In method org.ogolem.generic.genericpool.GenericPoolEntry.individual()</Message>
     </Method>
     <Field classname="org.ogolem.generic.genericpool.GenericPoolEntry" name="individual" signature="Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
       <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
@@ -7660,22 +7576,22 @@
       </SourceLine>
       <Message>Field org.ogolem.generic.genericpool.GenericPoolEntry.individual</Message>
     </Field>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" primary="true" start="97" end="97" startBytecode="4" endBytecode="4" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
-      <Message>At GenericPoolEntry.java:[line 97]</Message>
+    <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" primary="true" start="50" end="50" startBytecode="4" endBytecode="4" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
+      <Message>At GenericPoolEntry.java:[line 50]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="dfe8d92c8b00ab5ee17e3928c673e957" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="abae82d11f685c10d4e183aec9b23528" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
-    <LongMessage>org.ogolem.generic.genericpool.GenericPoolEntry.setIndividual(Optimizable) may expose internal representation by storing an externally mutable object into GenericPoolEntry.individual</LongMessage>
+    <LongMessage>new org.ogolem.generic.genericpool.GenericPoolEntry(Optimizable, double, Niche) may expose internal representation by storing an externally mutable object into GenericPoolEntry.individual</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPoolEntry" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="50" end="105" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
-        <Message>At GenericPoolEntry.java:[lines 50-105]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="50" end="61" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
+        <Message>At GenericPoolEntry.java:[lines 50-61]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPoolEntry</Message>
     </Class>
-    <Method classname="org.ogolem.generic.genericpool.GenericPoolEntry" name="setIndividual" signature="(Lorg/ogolem/generic/Optimizable;)V" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="93" end="94" startBytecode="0" endBytecode="89" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java"/>
-      <Message>In method org.ogolem.generic.genericpool.GenericPoolEntry.setIndividual(Optimizable)</Message>
+    <Method classname="org.ogolem.generic.genericpool.GenericPoolEntry" name="&lt;init&gt;" signature="(Lorg/ogolem/generic/Optimizable;DLorg/ogolem/generic/genericpool/Niche;)V" isStatic="false" primary="true">
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" start="50" end="50" startBytecode="0" endBytecode="120" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java"/>
+      <Message>In method new org.ogolem.generic.genericpool.GenericPoolEntry(Optimizable, double, Niche)</Message>
     </Method>
     <Field classname="org.ogolem.generic.genericpool.GenericPoolEntry" name="individual" signature="Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
       <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
@@ -7683,11 +7599,11 @@
       </SourceLine>
       <Message>Field org.ogolem.generic.genericpool.GenericPoolEntry.individual</Message>
     </Field>
-    <LocalVariable name="individuum" register="1" pc="2" role="LOCAL_VARIABLE_NAMED">
-      <Message>Local variable named individuum</Message>
+    <LocalVariable name="individual" register="1" pc="6" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named individual</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" primary="true" start="93" end="93" startBytecode="2" endBytecode="2" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
-      <Message>At GenericPoolEntry.java:[line 93]</Message>
+    <SourceLine classname="org.ogolem.generic.genericpool.GenericPoolEntry" primary="true" start="50" end="50" startBytecode="6" endBytecode="6" sourcefile="GenericPoolEntry.java" sourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java" relSourcepath="org/ogolem/generic/genericpool/GenericPoolEntry.java">
+      <Message>At GenericPoolEntry.java:[line 50]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="DM_EXIT" priority="2" rank="16" abbrev="Dm" category="BAD_PRACTICE" instanceHash="e71a4cb6e50fece1434d3eec0baf436a" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="382">
@@ -7730,15 +7646,15 @@
   </BugInstance>
   <BugInstance type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" priority="2" rank="11" abbrev="RCN" category="CORRECTNESS" instanceHash="b0375031795dd7f27ed9567932b70af3" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Nullcheck of value previously dereferenced</ShortMessage>
-    <LongMessage>Nullcheck of msgSeg at line 279 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiBcast(char[], int, int)</LongMessage>
+    <LongMessage>Nullcheck of msgSeg at line 278 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiBcast(char[], int, int)</LongMessage>
     <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="393" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+        <Message>At MPIInterface.java:[lines 56-393]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
     </Class>
     <Method classname="org.ogolem.generic.mpi.MPIInterface" name="mpiBcast" signature="([CII)Lorg/ogolem/helpers/Tuple;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="273" end="303" startBytecode="0" endBytecode="530" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="272" end="302" startBytecode="0" endBytecode="530" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
       <Message>In method org.ogolem.generic.mpi.MPIInterface.mpiBcast(char[], int, int)</Message>
     </Method>
     <LocalVariable name="msgSeg" register="7" pc="75" role="LOCAL_VARIABLE_VALUE_OF">
@@ -7748,24 +7664,24 @@
       <SourceLine classname="jdk.incubator.foreign.MemorySegment" sourcefile="MemorySegment.java" sourcepath="jdk/incubator/foreign/MemorySegment.java"/>
       <Message>Return value of jdk.incubator.foreign.MemorySegment.allocateNative(long) of type jdk.incubator.foreign.MemorySegment</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="279" end="279" startBytecode="37" endBytecode="37" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-      <Message>At MPIInterface.java:[line 279]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="278" end="278" startBytecode="37" endBytecode="37" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+      <Message>At MPIInterface.java:[line 278]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="286" end="286" startBytecode="77" endBytecode="77" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
-      <Message>Redundant null check at MPIInterface.java:[line 286]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="285" end="285" startBytecode="77" endBytecode="77" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
+      <Message>Redundant null check at MPIInterface.java:[line 285]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" priority="2" rank="11" abbrev="RCN" category="CORRECTNESS" instanceHash="92543b0bd6504f6e3c7611a5bd3450e" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Nullcheck of value previously dereferenced</ShortMessage>
-    <LongMessage>Nullcheck of rankSeg at line 232 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiCommRank()</LongMessage>
+    <LongMessage>Nullcheck of rankSeg at line 231 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiCommRank()</LongMessage>
     <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="393" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+        <Message>At MPIInterface.java:[lines 56-393]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
     </Class>
     <Method classname="org.ogolem.generic.mpi.MPIInterface" name="mpiCommRank" signature="()I" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="229" end="246" startBytecode="0" endBytecode="384" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="228" end="245" startBytecode="0" endBytecode="384" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
       <Message>In method org.ogolem.generic.mpi.MPIInterface.mpiCommRank()</Message>
     </Method>
     <LocalVariable name="rankSeg" register="3" pc="36" role="LOCAL_VARIABLE_VALUE_OF">
@@ -7775,24 +7691,24 @@
       <SourceLine classname="jdk.incubator.foreign.MemorySegment" sourcefile="MemorySegment.java" sourcepath="jdk/incubator/foreign/MemorySegment.java"/>
       <Message>Return value of jdk.incubator.foreign.MemorySegment.allocateNative(long) of type jdk.incubator.foreign.MemorySegment</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="232" end="232" startBytecode="18" endBytecode="18" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-      <Message>At MPIInterface.java:[line 232]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="231" end="231" startBytecode="18" endBytecode="18" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+      <Message>At MPIInterface.java:[line 231]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="234" end="234" startBytecode="37" endBytecode="37" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
-      <Message>Redundant null check at MPIInterface.java:[line 234]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="233" end="233" startBytecode="37" endBytecode="37" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
+      <Message>Redundant null check at MPIInterface.java:[line 233]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" priority="2" rank="11" abbrev="RCN" category="CORRECTNESS" instanceHash="466b7cb93b37c81daa258d7d20ca644" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Nullcheck of value previously dereferenced</ShortMessage>
-    <LongMessage>Nullcheck of sizeSeg at line 254 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiCommSize()</LongMessage>
+    <LongMessage>Nullcheck of sizeSeg at line 253 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiCommSize()</LongMessage>
     <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="393" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+        <Message>At MPIInterface.java:[lines 56-393]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
     </Class>
     <Method classname="org.ogolem.generic.mpi.MPIInterface" name="mpiCommSize" signature="()I" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="251" end="268" startBytecode="0" endBytecode="384" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="250" end="267" startBytecode="0" endBytecode="384" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
       <Message>In method org.ogolem.generic.mpi.MPIInterface.mpiCommSize()</Message>
     </Method>
     <LocalVariable name="sizeSeg" register="3" pc="36" role="LOCAL_VARIABLE_VALUE_OF">
@@ -7802,24 +7718,24 @@
       <SourceLine classname="jdk.incubator.foreign.MemorySegment" sourcefile="MemorySegment.java" sourcepath="jdk/incubator/foreign/MemorySegment.java"/>
       <Message>Return value of jdk.incubator.foreign.MemorySegment.allocateNative(long) of type jdk.incubator.foreign.MemorySegment</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="254" end="254" startBytecode="18" endBytecode="18" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-      <Message>At MPIInterface.java:[line 254]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="253" end="253" startBytecode="18" endBytecode="18" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+      <Message>At MPIInterface.java:[line 253]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="256" end="256" startBytecode="37" endBytecode="37" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
-      <Message>Redundant null check at MPIInterface.java:[line 256]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="255" end="255" startBytecode="37" endBytecode="37" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
+      <Message>Redundant null check at MPIInterface.java:[line 255]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" priority="2" rank="11" abbrev="RCN" category="CORRECTNESS" instanceHash="d7c19a0fc59d26785f0b5e22def24a33" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Nullcheck of value previously dereferenced</ShortMessage>
-    <LongMessage>Nullcheck of argc at line 170 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiInit(String[])</LongMessage>
+    <LongMessage>Nullcheck of argc at line 169 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiInit(String[])</LongMessage>
     <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="393" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+        <Message>At MPIInterface.java:[lines 56-393]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
     </Class>
     <Method classname="org.ogolem.generic.mpi.MPIInterface" name="mpiInit" signature="([Ljava/lang/String;)I" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="167" end="182" startBytecode="0" endBytecode="493" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="166" end="181" startBytecode="0" endBytecode="493" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
       <Message>In method org.ogolem.generic.mpi.MPIInterface.mpiInit(String[])</Message>
     </Method>
     <LocalVariable name="argc" register="3" pc="90" role="LOCAL_VARIABLE_VALUE_OF">
@@ -7829,24 +7745,24 @@
       <SourceLine classname="jdk.incubator.foreign.MemorySegment" sourcefile="MemorySegment.java" sourcepath="jdk/incubator/foreign/MemorySegment.java"/>
       <Message>Return value of jdk.incubator.foreign.MemorySegment.allocateNative(long) of type jdk.incubator.foreign.MemorySegment</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="170" end="170" startBytecode="33" endBytecode="33" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-      <Message>At MPIInterface.java:[line 170]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="169" end="169" startBytecode="33" endBytecode="33" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+      <Message>At MPIInterface.java:[line 169]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="172" end="172" startBytecode="91" endBytecode="91" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
-      <Message>Redundant null check at MPIInterface.java:[line 172]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="171" end="171" startBytecode="91" endBytecode="91" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
+      <Message>Redundant null check at MPIInterface.java:[line 171]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" priority="2" rank="11" abbrev="RCN" category="CORRECTNESS" instanceHash="b68930c450da48e10511e8cf8a0b13c" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Nullcheck of value previously dereferenced</ShortMessage>
-    <LongMessage>Nullcheck of dataSeg at line 345 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiRecvBytes(int, int, int)</LongMessage>
+    <LongMessage>Nullcheck of dataSeg at line 344 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiRecvBytes(int, int, int)</LongMessage>
     <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="393" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+        <Message>At MPIInterface.java:[lines 56-393]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
     </Class>
     <Method classname="org.ogolem.generic.mpi.MPIInterface" name="mpiRecvBytes" signature="(III)Lorg/ogolem/generic/mpi/MPIInterface$MPIStatus;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="340" end="394" startBytecode="0" endBytecode="1031" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="339" end="393" startBytecode="0" endBytecode="1031" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
       <Message>In method org.ogolem.generic.mpi.MPIInterface.mpiRecvBytes(int, int, int)</Message>
     </Method>
     <LocalVariable name="dataSeg" register="7" pc="65" role="LOCAL_VARIABLE_VALUE_OF">
@@ -7856,24 +7772,24 @@
       <SourceLine classname="jdk.incubator.foreign.MemorySegment" sourcefile="MemorySegment.java" sourcepath="jdk/incubator/foreign/MemorySegment.java"/>
       <Message>Return value of jdk.incubator.foreign.MemorySegment.allocateNative(long) of type jdk.incubator.foreign.MemorySegment</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="345" end="345" startBytecode="35" endBytecode="35" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-      <Message>At MPIInterface.java:[line 345]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="344" end="344" startBytecode="35" endBytecode="35" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+      <Message>At MPIInterface.java:[line 344]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="349" end="349" startBytecode="67" endBytecode="67" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
-      <Message>Redundant null check at MPIInterface.java:[line 349]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="348" end="348" startBytecode="67" endBytecode="67" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
+      <Message>Redundant null check at MPIInterface.java:[line 348]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" priority="2" rank="11" abbrev="RCN" category="CORRECTNESS" instanceHash="d6337fd1a7ecf3f101a3e7e7b0241ed6" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Nullcheck of value previously dereferenced</ShortMessage>
-    <LongMessage>Nullcheck of msgSeg at line 312 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiSend(byte[], int, int, int)</LongMessage>
+    <LongMessage>Nullcheck of msgSeg at line 311 of value previously dereferenced in org.ogolem.generic.mpi.MPIInterface.mpiSend(byte[], int, int, int)</LongMessage>
     <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="393" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+        <Message>At MPIInterface.java:[lines 56-393]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
     </Class>
     <Method classname="org.ogolem.generic.mpi.MPIInterface" name="mpiSend" signature="([BIII)I" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="308" end="334" startBytecode="0" endBytecode="443" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
+      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="307" end="333" startBytecode="0" endBytecode="443" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java"/>
       <Message>In method org.ogolem.generic.mpi.MPIInterface.mpiSend(byte[], int, int, int)</Message>
     </Method>
     <LocalVariable name="msgSeg" register="7" pc="47" role="LOCAL_VARIABLE_VALUE_OF">
@@ -7883,261 +7799,11 @@
       <SourceLine classname="jdk.incubator.foreign.MemorySegment" sourcefile="MemorySegment.java" sourcepath="jdk/incubator/foreign/MemorySegment.java"/>
       <Message>Return value of jdk.incubator.foreign.MemorySegment.allocateNative(long) of type jdk.incubator.foreign.MemorySegment</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="312" end="312" startBytecode="21" endBytecode="21" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-      <Message>At MPIInterface.java:[line 312]</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" primary="true" start="311" end="311" startBytecode="21" endBytecode="21" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
+      <Message>At MPIInterface.java:[line 311]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="315" end="315" startBytecode="49" endBytecode="49" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
-      <Message>Redundant null check at MPIInterface.java:[line 315]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="40ac04af832238d8751427a17658fb78" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiAbortH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiAbortH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiAbortH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="333164157c05d0def3f00e030fb9e362" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiBcastH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiBcastH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiBcastH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="f2bdca0f124b6c770197e908eb8429d0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiFinalizeH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiFinalizeH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiFinalizeH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="1debcaa306ff9c58b9ba7ecfee636fa8" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiInitH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiInitH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiInitH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="7423d2623b3ae70f7590c9887dea1772" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiProbeH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiProbeH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiProbeH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="667740ad72611121968f11b1d13bcd5a" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiRankH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiRankH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiRankH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="2b3ea7d6223e3aae53341edeed062728" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiRecvH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiRecvH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiRecvH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="79fd59851eeb73a9e653dc80d0a7adb8" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiSendH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiSendH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiSendH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="576ae34c664e2fe893f7ae6e2adea1a3" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiSizeH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiSizeH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiSizeH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="SE_BAD_FIELD" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="cd65cd225da1301fe3efcca46148a403" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
-    <ShortMessage>Non-transient non-serializable instance field in serializable class</ShortMessage>
-    <LongMessage>Class org.ogolem.generic.mpi.MPIInterface defines non-transient non-serializable instance field mpiWtimeH</LongMessage>
-    <Class classname="org.ogolem.generic.mpi.MPIInterface" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="56" end="394" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>At MPIInterface.java:[lines 56-394]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.mpi.MPIInterface</Message>
-    </Class>
-    <Field classname="org.ogolem.generic.mpi.MPIInterface" name="mpiWtimeH" signature="Ljava/lang/invoke/MethodHandle;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java">
-        <Message>In MPIInterface.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.mpi.MPIInterface.mpiWtimeH</Message>
-    </Field>
-    <Type descriptor="Ljava/lang/invoke/MethodHandle;" role="TYPE_FOUND">
-      <SourceLine classname="java.lang.invoke.MethodHandle" start="441" end="1779" sourcefile="MethodHandle.java" sourcepath="java/lang/invoke/MethodHandle.java">
-        <Message>At MethodHandle.java:[lines 441-1779]</Message>
-      </SourceLine>
-      <Message>Actual type invoke.MethodHandle</Message>
-    </Type>
-    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" synthetic="true">
-      <Message>In MPIInterface.java</Message>
+    <SourceLine classname="org.ogolem.generic.mpi.MPIInterface" start="314" end="314" startBytecode="49" endBytecode="49" sourcefile="MPIInterface.java" sourcepath="org/ogolem/generic/mpi/MPIInterface.java" relSourcepath="org/ogolem/generic/mpi/MPIInterface.java" role="SOURCE_REDUNDANT_NULL_CHECK">
+      <Message>Redundant null check at MPIInterface.java:[line 314]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" instanceHash="d55995e96b24e6c0fc6210a807691780" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
@@ -8167,33 +7833,33 @@
     <ShortMessage>Method invokes System.exit(...)</ShortMessage>
     <LongMessage>org.ogolem.generic.threading.GenericOGOLEMOptimization.globOpt(int) invokes System.exit(...), which shuts down the entire virtual machine</LongMessage>
     <Class classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="323" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-        <Message>At GenericOGOLEMOptimization.java:[lines 70-323]</Message>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="375" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+        <Message>At GenericOGOLEMOptimization.java:[lines 70-375]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.threading.GenericOGOLEMOptimization</Message>
     </Class>
     <Method classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="globOpt" signature="(I)Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="109" end="323" startBytecode="0" endBytecode="3464" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="114" end="375" startBytecode="0" endBytecode="3480" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
       <Message>In method org.ogolem.generic.threading.GenericOGOLEMOptimization.globOpt(int)</Message>
     </Method>
-    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="159" end="159" startBytecode="320" endBytecode="320" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-      <Message>At GenericOGOLEMOptimization.java:[line 159]</Message>
+    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="168" end="168" startBytecode="320" endBytecode="320" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+      <Message>At GenericOGOLEMOptimization.java:[line 168]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="187" end="187" startBytecode="541" endBytecode="541" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" role="SOURCE_LINE_ANOTHER_INSTANCE">
-      <Message>Another occurrence at GenericOGOLEMOptimization.java:[line 187]</Message>
+    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="198" end="198" startBytecode="541" endBytecode="541" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" role="SOURCE_LINE_ANOTHER_INSTANCE">
+      <Message>Another occurrence at GenericOGOLEMOptimization.java:[line 198]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="73a8a22f6d70c02c0623ee4fa02724de" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
     <LongMessage>new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int) may expose internal representation by storing an externally mutable object into GenericOGOLEMOptimization.history</LongMessage>
     <Class classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="323" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-        <Message>At GenericOGOLEMOptimization.java:[lines 70-323]</Message>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="375" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+        <Message>At GenericOGOLEMOptimization.java:[lines 70-375]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.threading.GenericOGOLEMOptimization</Message>
     </Class>
     <Method classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="&lt;init&gt;" signature="(Lorg/ogolem/generic/Configuration;Lorg/ogolem/generic/genericpool/GenericPool;Lorg/ogolem/generic/generichistory/GenericHistory;Ljava/lang/String;Ljava/lang/String;Lorg/ogolem/generic/IndividualWriter;Lorg/ogolem/generic/IndividualReader;I)V" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="88" end="105" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="93" end="110" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
       <Message>In method new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int)</Message>
     </Method>
     <Field classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="history" signature="Lorg/ogolem/generic/generichistory/GenericHistory;" isStatic="false" primary="true">
@@ -8205,21 +7871,21 @@
     <LocalVariable name="history" register="3" pc="16" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named history</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="91" end="91" startBytecode="16" endBytecode="16" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-      <Message>At GenericOGOLEMOptimization.java:[line 91]</Message>
+    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="96" end="96" startBytecode="16" endBytecode="16" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+      <Message>At GenericOGOLEMOptimization.java:[line 96]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="8fc8b5cb6483e5fc1c99bbf447f919ed" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
     <LongMessage>new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int) may expose internal representation by storing an externally mutable object into GenericOGOLEMOptimization.pool</LongMessage>
     <Class classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="323" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-        <Message>At GenericOGOLEMOptimization.java:[lines 70-323]</Message>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="375" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+        <Message>At GenericOGOLEMOptimization.java:[lines 70-375]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.threading.GenericOGOLEMOptimization</Message>
     </Class>
     <Method classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="&lt;init&gt;" signature="(Lorg/ogolem/generic/Configuration;Lorg/ogolem/generic/genericpool/GenericPool;Lorg/ogolem/generic/generichistory/GenericHistory;Ljava/lang/String;Ljava/lang/String;Lorg/ogolem/generic/IndividualWriter;Lorg/ogolem/generic/IndividualReader;I)V" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="88" end="105" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="93" end="110" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
       <Message>In method new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int)</Message>
     </Method>
     <Field classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="pool" signature="Lorg/ogolem/generic/genericpool/GenericPool;" isStatic="false" primary="true">
@@ -8231,21 +7897,21 @@
     <LocalVariable name="pool" register="2" pc="11" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named pool</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="90" end="90" startBytecode="11" endBytecode="11" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-      <Message>At GenericOGOLEMOptimization.java:[line 90]</Message>
+    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="95" end="95" startBytecode="11" endBytecode="11" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+      <Message>At GenericOGOLEMOptimization.java:[line 95]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="9f263ac8685fdf05a4f93ab78d09a538" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
     <LongMessage>new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int) may expose internal representation by storing an externally mutable object into GenericOGOLEMOptimization.reader</LongMessage>
     <Class classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="323" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-        <Message>At GenericOGOLEMOptimization.java:[lines 70-323]</Message>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="375" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+        <Message>At GenericOGOLEMOptimization.java:[lines 70-375]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.threading.GenericOGOLEMOptimization</Message>
     </Class>
     <Method classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="&lt;init&gt;" signature="(Lorg/ogolem/generic/Configuration;Lorg/ogolem/generic/genericpool/GenericPool;Lorg/ogolem/generic/generichistory/GenericHistory;Ljava/lang/String;Ljava/lang/String;Lorg/ogolem/generic/IndividualWriter;Lorg/ogolem/generic/IndividualReader;I)V" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="88" end="105" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="93" end="110" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
       <Message>In method new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int)</Message>
     </Method>
     <Field classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="reader" signature="Lorg/ogolem/generic/IndividualReader;" isStatic="false" primary="true">
@@ -8257,21 +7923,21 @@
     <LocalVariable name="reader" register="7" pc="40" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named reader</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="95" end="95" startBytecode="40" endBytecode="40" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-      <Message>At GenericOGOLEMOptimization.java:[line 95]</Message>
+    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="100" end="100" startBytecode="40" endBytecode="40" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+      <Message>At GenericOGOLEMOptimization.java:[line 100]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" instanceHash="c0bfd9797dcd3778939d89aebe522685" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="374">
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
     <LongMessage>new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int) may expose internal representation by storing an externally mutable object into GenericOGOLEMOptimization.writer</LongMessage>
     <Class classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="323" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-        <Message>At GenericOGOLEMOptimization.java:[lines 70-323]</Message>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="70" end="375" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+        <Message>At GenericOGOLEMOptimization.java:[lines 70-375]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.threading.GenericOGOLEMOptimization</Message>
     </Class>
     <Method classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="&lt;init&gt;" signature="(Lorg/ogolem/generic/Configuration;Lorg/ogolem/generic/genericpool/GenericPool;Lorg/ogolem/generic/generichistory/GenericHistory;Ljava/lang/String;Ljava/lang/String;Lorg/ogolem/generic/IndividualWriter;Lorg/ogolem/generic/IndividualReader;I)V" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="88" end="105" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
+      <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" start="93" end="110" startBytecode="0" endBytecode="479" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java"/>
       <Message>In method new org.ogolem.generic.threading.GenericOGOLEMOptimization(Configuration, GenericPool, GenericHistory, String, String, IndividualWriter, IndividualReader, int)</Message>
     </Method>
     <Field classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" name="writer" signature="Lorg/ogolem/generic/IndividualWriter;" isStatic="false" primary="true">
@@ -8283,8 +7949,8 @@
     <LocalVariable name="writer" register="6" pc="34" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named writer</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="94" end="94" startBytecode="34" endBytecode="34" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
-      <Message>At GenericOGOLEMOptimization.java:[line 94]</Message>
+    <SourceLine classname="org.ogolem.generic.threading.GenericOGOLEMOptimization" primary="true" start="99" end="99" startBytecode="34" endBytecode="34" sourcefile="GenericOGOLEMOptimization.java" sourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" relSourcepath="org/ogolem/generic/threading/GenericOGOLEMOptimization.java">
+      <Message>At GenericOGOLEMOptimization.java:[line 99]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" priority="2" rank="13" abbrev="NP" category="STYLE" instanceHash="b3fc1d135d545131a3d94574b25c4d2b" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
@@ -9137,9 +8803,6 @@
     <SourceLine classname="org.ogolem.microbenchmarks.Mat3x3MultBenchmark" start="63" end="63" startBytecode="76" endBytecode="76" sourcefile="Mat3x3MultBenchmark.java" sourcepath="org/ogolem/microbenchmarks/Mat3x3MultBenchmark.java" relSourcepath="org/ogolem/microbenchmarks/Mat3x3MultBenchmark.java" role="SOURCE_LINE_ANOTHER_INSTANCE">
       <Message>Another occurrence at Mat3x3MultBenchmark.java:[line 63]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.microbenchmarks.Mat3x3MultBenchmark" start="69" end="69" startBytecode="130" endBytecode="130" sourcefile="Mat3x3MultBenchmark.java" sourcepath="org/ogolem/microbenchmarks/Mat3x3MultBenchmark.java" relSourcepath="org/ogolem/microbenchmarks/Mat3x3MultBenchmark.java" role="SOURCE_LINE_ANOTHER_INSTANCE">
-      <Message>Another occurrence at Mat3x3MultBenchmark.java:[line 69]</Message>
-    </SourceLine>
   </BugInstance>
   <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="dabd8cdba82024adf0b0bd92350cfefe" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
     <ShortMessage>Random object created and used only once</ShortMessage>
@@ -9404,176 +9067,6 @@
     </Method>
     <SourceLine classname="org.ogolem.random.Lottery" primary="true" start="71" end="71" startBytecode="23" endBytecode="23" sourcefile="Lottery.java" sourcepath="org/ogolem/random/Lottery.java" relSourcepath="org/ogolem/random/Lottery.java">
       <Message>At Lottery.java:[line 71]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="MS_EXPOSE_REP" priority="2" rank="18" abbrev="MS" category="MALICIOUS_CODE" instanceHash="a1e4642bc96de45abd617d89d68022e" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="218">
-    <ShortMessage>Public static method may expose internal representation by returning array</ShortMessage>
-    <LongMessage>Public static org.ogolem.random.Lottery.getInstance() may expose internal representation by returning Lottery.instance</LongMessage>
-    <Class classname="org.ogolem.random.Lottery" primary="true">
-      <SourceLine classname="org.ogolem.random.Lottery" start="52" end="117" sourcefile="Lottery.java" sourcepath="org/ogolem/random/Lottery.java" relSourcepath="org/ogolem/random/Lottery.java">
-        <Message>At Lottery.java:[lines 52-117]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.Lottery</Message>
-    </Class>
-    <Method classname="org.ogolem.random.Lottery" name="getInstance" signature="()Lorg/ogolem/random/Lottery;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.random.Lottery" start="67" end="85" startBytecode="0" endBytecode="297" sourcefile="Lottery.java" sourcepath="org/ogolem/random/Lottery.java" relSourcepath="org/ogolem/random/Lottery.java"/>
-      <Message>In method org.ogolem.random.Lottery.getInstance()</Message>
-    </Method>
-    <Field classname="org.ogolem.random.Lottery" name="instance" signature="Lorg/ogolem/random/Lottery;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.random.Lottery" sourcefile="Lottery.java" sourcepath="org/ogolem/random/Lottery.java" relSourcepath="org/ogolem/random/Lottery.java">
-        <Message>In Lottery.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.random.Lottery.instance</Message>
-    </Field>
-    <SourceLine classname="org.ogolem.random.Lottery" primary="true" start="85" end="85" startBytecode="130" endBytecode="130" sourcefile="Lottery.java" sourcepath="org/ogolem/random/Lottery.java" relSourcepath="org/ogolem/random/Lottery.java">
-      <Message>At Lottery.java:[line 85]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="119a3175095812d7b00989ed81fdabe3" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextBoolean()</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextBoolean" signature="()Z" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="65" end="65" startBytecode="0" endBytecode="49" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextBoolean()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextBoolean" signature="()Z" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="382" end="382" startBytecode="0" endBytecode="66" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextBoolean()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="65" end="65" startBytecode="4" endBytecode="4" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 65]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="8f30d954a956e7bf55bedea906bd2197" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextDouble()</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextDouble" signature="()D" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="70" end="70" startBytecode="0" endBytecode="49" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextDouble()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextDouble" signature="()D" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="463" end="463" startBytecode="0" endBytecode="65" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextDouble()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="70" end="70" startBytecode="4" endBytecode="4" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 70]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="f3d2d2e0992b3c464e549c3edb404c3f" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextFloat()</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextFloat" signature="()F" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="75" end="75" startBytecode="0" endBytecode="49" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextFloat()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextFloat" signature="()F" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="422" end="422" startBytecode="0" endBytecode="52" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextFloat()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="75" end="75" startBytecode="4" endBytecode="4" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 75]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="748f7f8ac56ede1463c0da2c4beca961" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextGaussian()</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextGaussian" signature="()D" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="80" end="80" startBytecode="0" endBytecode="49" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextGaussian()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextGaussian" signature="()D" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="518" end="531" startBytecode="0" endBytecode="227" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextGaussian()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="80" end="80" startBytecode="4" endBytecode="4" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 80]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="c6164cfe7d3320e31562efb084245b2a" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextInt()</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextInt" signature="()I" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="85" end="85" startBytecode="0" endBytecode="49" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextInt()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextInt" signature="()I" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="260" end="260" startBytecode="0" endBytecode="48" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextInt()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="85" end="85" startBytecode="4" endBytecode="4" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 85]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="ee8318b9012453b3bc26fa1c776863a3" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextInt(int)</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextInt" signature="(I)I" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="90" end="90" startBytecode="0" endBytecode="60" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextInt(int)</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextInt" signature="(I)I" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="321" end="333" startBytecode="0" endBytecode="212" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextInt(int)</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="90" end="90" startBytecode="5" endBytecode="5" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 90]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="bc8fa6371187e8fe56380f493f615c16" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.random.StandardRNG.nextLong()</LongMessage>
-    <Class classname="org.ogolem.random.StandardRNG" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="53" end="95" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-        <Message>At StandardRNG.java:[lines 53-95]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.random.StandardRNG</Message>
-    </Class>
-    <Method classname="org.ogolem.random.StandardRNG" name="nextLong" signature="()J" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.random.StandardRNG" start="95" end="95" startBytecode="0" endBytecode="49" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java"/>
-      <Message>In method org.ogolem.random.StandardRNG.nextLong()</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextLong" signature="()J" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="357" end="357" startBytecode="0" endBytecode="60" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextLong()</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.random.StandardRNG" primary="true" start="95" end="95" startBytecode="4" endBytecode="4" sourcefile="StandardRNG.java" sourcepath="org/ogolem/random/StandardRNG.java" relSourcepath="org/ogolem/random/StandardRNG.java">
-      <Message>At StandardRNG.java:[line 95]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="c9b096acc2a94df2487a0b4d978d474e" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
@@ -10383,27 +9876,6 @@
       <Message>At ColorPalette.java:[line 94]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="8dad04869a9a5f5388644572f22d1e74" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
-    <ShortMessage>Random object created and used only once</ShortMessage>
-    <LongMessage>Random object created and used only once in org.ogolem.switches.GlobOptAtomics.genotypeCross(ArrayList, ArrayList)</LongMessage>
-    <Class classname="org.ogolem.switches.GlobOptAtomics" primary="true">
-      <SourceLine classname="org.ogolem.switches.GlobOptAtomics" start="49" end="119" sourcefile="GlobOptAtomics.java" sourcepath="org/ogolem/switches/GlobOptAtomics.java" relSourcepath="org/ogolem/switches/GlobOptAtomics.java">
-        <Message>At GlobOptAtomics.java:[lines 49-119]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.switches.GlobOptAtomics</Message>
-    </Class>
-    <Method classname="org.ogolem.switches.GlobOptAtomics" name="genotypeCross" signature="(Ljava/util/ArrayList;Ljava/util/ArrayList;)Ljava/util/ArrayList;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.switches.GlobOptAtomics" start="53" end="77" startBytecode="0" endBytecode="457" sourcefile="GlobOptAtomics.java" sourcepath="org/ogolem/switches/GlobOptAtomics.java" relSourcepath="org/ogolem/switches/GlobOptAtomics.java"/>
-      <Message>In method org.ogolem.switches.GlobOptAtomics.genotypeCross(ArrayList, ArrayList)</Message>
-    </Method>
-    <Method classname="java.util.Random" name="nextInt" signature="(I)I" isStatic="false" role="METHOD_CALLED">
-      <SourceLine classname="java.util.Random" start="321" end="333" startBytecode="0" endBytecode="212" sourcefile="Random.java" sourcepath="java/util/Random.java"/>
-      <Message>Called method java.util.Random.nextInt(int)</Message>
-    </Method>
-    <SourceLine classname="org.ogolem.switches.GlobOptAtomics" primary="true" start="60" end="60" startBytecode="35" endBytecode="35" sourcefile="GlobOptAtomics.java" sourcepath="org/ogolem/switches/GlobOptAtomics.java" relSourcepath="org/ogolem/switches/GlobOptAtomics.java">
-      <Message>At GlobOptAtomics.java:[line 60]</Message>
-    </SourceLine>
-  </BugInstance>
   <BugInstance type="DMI_RANDOM_USED_ONLY_ONCE" priority="1" rank="14" abbrev="DMI" category="BAD_PRACTICE" instanceHash="663b6694129a3aa801b01b938c12bd6a" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
     <ShortMessage>Random object created and used only once</ShortMessage>
     <LongMessage>Random object created and used only once in org.ogolem.switches.GlobOptAtomics.genotypeMutation(ArrayList, boolean)</LongMessage>
@@ -10423,9 +9895,6 @@
     </Method>
     <SourceLine classname="org.ogolem.switches.GlobOptAtomics" primary="true" start="85" end="85" startBytecode="11" endBytecode="11" sourcefile="GlobOptAtomics.java" sourcepath="org/ogolem/switches/GlobOptAtomics.java" relSourcepath="org/ogolem/switches/GlobOptAtomics.java">
       <Message>At GlobOptAtomics.java:[line 85]</Message>
-    </SourceLine>
-    <SourceLine classname="org.ogolem.switches.GlobOptAtomics" start="101" end="101" startBytecode="86" endBytecode="86" sourcefile="GlobOptAtomics.java" sourcepath="org/ogolem/switches/GlobOptAtomics.java" relSourcepath="org/ogolem/switches/GlobOptAtomics.java" role="SOURCE_LINE_ANOTHER_INSTANCE">
-      <Message>Another occurrence at GlobOptAtomics.java:[line 101]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="SS_SHOULD_BE_STATIC" priority="2" rank="18" abbrev="SS" category="PERFORMANCE" instanceHash="3448c27b0d1fc7dfa9cb01c613d73381" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
@@ -10941,6 +10410,20 @@ and generally bad practice.
 
     ]]></Details>
   </BugPattern>
+  <BugPattern type="EI_EXPOSE_REP" abbrev="EI" category="MALICIOUS_CODE" cweid="374">
+    <ShortDescription>May expose internal representation by returning reference to mutable object</ShortDescription>
+    <Details><![CDATA[
+
+  <p> Returning a reference to a mutable object value stored in one of the object's fields
+  exposes the internal representation of the object.&nbsp;
+   If instances
+   are accessed by untrusted code, and unchecked changes to
+   the mutable object would compromise security or other
+   important properties, you will need to do something different.
+  Returning a new copy of the object is better approach in many situations.</p>
+
+    ]]></Details>
+  </BugPattern>
   <BugPattern type="DMI_RANDOM_USED_ONLY_ONCE" abbrev="DMI" category="BAD_PRACTICE">
     <ShortDescription>Random object created and used only once</ShortDescription>
     <Details><![CDATA[
@@ -10955,20 +10438,6 @@ is required invoke a method on the existing Random object to obtain it.
 number; the values are too easily guessable. You should strongly consider using a java.security.SecureRandom instead
 (and avoid allocating a new SecureRandom for each random number needed).
 </p>
-
-    ]]></Details>
-  </BugPattern>
-  <BugPattern type="EI_EXPOSE_REP" abbrev="EI" category="MALICIOUS_CODE" cweid="374">
-    <ShortDescription>May expose internal representation by returning reference to mutable object</ShortDescription>
-    <Details><![CDATA[
-
-  <p> Returning a reference to a mutable object value stored in one of the object's fields
-  exposes the internal representation of the object.&nbsp;
-   If instances
-   are accessed by untrusted code, and unchecked changes to
-   the mutable object would compromise security or other
-   important properties, you will need to do something different.
-  Returning a new copy of the object is better approach in many situations.</p>
 
     ]]></Details>
   </BugPattern>
@@ -11391,11 +10860,11 @@ closed.</p>
   <Errors errors="0" missingClasses="1">
     <MissingClass>jdk.incubator.foreign.LibraryLookup</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Sun, 10 Oct 2021 22:44:13 -0500" total_classes="737" referenced_classes="1004" total_bugs="423" total_size="65959" num_packages="49" java_version="17" vm_version="17+35" cpu_seconds="31.27" clock_seconds="15.53" peak_mbytes="601.64" alloc_mbytes="512.00" gc_seconds="0.63" priority_2="363" priority_1="60">
+  <FindBugsSummary timestamp="Wed, 20 Oct 2021 08:24:16 -0500" total_classes="737" referenced_classes="1007" total_bugs="400" total_size="65953" num_packages="49" java_version="17" vm_version="17+35" cpu_seconds="25.75" clock_seconds="16.24" peak_mbytes="682.87" alloc_mbytes="512.00" gc_seconds="0.56" priority_2="352" priority_1="48">
     <FileStats path="contrib/bobyqa/AbstractBOBYQAMethod.java" bugCount="0" size="33"/>
     <FileStats path="contrib/bobyqa/BOBYQAMethod.java" bugCount="0" size="5"/>
     <FileStats path="contrib/bobyqa/BOBYQAOptimizer.java" bugCount="5" size="1766" bugHash="02df92db8a0d632e485370f73e6e1b33"/>
-    <FileStats path="contrib/edu/princeton/eac/Grid.java" bugCount="6" size="137" bugHash="a4668ae531fad84cb54851408529c933"/>
+    <FileStats path="contrib/edu/princeton/eac/Grid.java" bugCount="5" size="137" bugHash="251eb162a72e2566121eefb876ee6d55"/>
     <FileStats path="contrib/jama/CholeskyDecomposition.java" bugCount="1" size="50" bugHash="41d37c4a6cddaa062ff3ee500d7f0d16"/>
     <FileStats path="contrib/jama/EigenvalueDecomposition.java" bugCount="3" size="538" bugHash="e85f17394ac825a376badd80f4bc9cb0"/>
     <FileStats path="contrib/jama/LUDecomposition.java" bugCount="1" size="100" bugHash="2eddbcf35d071bdd723a580865367dba"/>
@@ -11434,7 +10903,7 @@ closed.</p>
     <FileStats path="org/ogolem/adaptive/AdaptiveMorseTerm.java" bugCount="0" size="290"/>
     <FileStats path="org/ogolem/adaptive/AdaptiveNewton.java" bugCount="0" size="6"/>
     <FileStats path="org/ogolem/adaptive/AdaptiveOrcaCaller.java" bugCount="0" size="348"/>
-    <FileStats path="org/ogolem/adaptive/AdaptiveParameters.java" bugCount="6" size="310" bugHash="786dd4e3fdffcc6815de4d7acdc3aea5"/>
+    <FileStats path="org/ogolem/adaptive/AdaptiveParameters.java" bugCount="5" size="310" bugHash="1bf6412bc0df85ea1d7b1bdb962b4d47"/>
     <FileStats path="org/ogolem/adaptive/AdaptivePolaris.java" bugCount="0" size="213"/>
     <FileStats path="org/ogolem/adaptive/AdaptiveSWG2BodyTerm.java" bugCount="0" size="206"/>
     <FileStats path="org/ogolem/adaptive/AdaptiveSWG3BodyTerm.java" bugCount="0" size="378"/>
@@ -11469,7 +10938,7 @@ closed.</p>
     <FileStats path="org/ogolem/adaptive/ParamLocOptFactory.java" bugCount="0" size="31"/>
     <FileStats path="org/ogolem/adaptive/ParameterDiversityCheckers.java" bugCount="0" size="19"/>
     <FileStats path="org/ogolem/adaptive/ParameterGradient.java" bugCount="0" size="35"/>
-    <FileStats path="org/ogolem/adaptive/ParameterInit.java" bugCount="2" size="47" bugHash="c2b5e15a888ac274d96f9e2e7dcd7603"/>
+    <FileStats path="org/ogolem/adaptive/ParameterInit.java" bugCount="0" size="47"/>
     <FileStats path="org/ogolem/adaptive/ParameterReader.java" bugCount="0" size="36"/>
     <FileStats path="org/ogolem/adaptive/ParameterSanityCheck.java" bugCount="2" size="33" bugHash="c5295bc7a34bd588707b20af611bce09"/>
     <FileStats path="org/ogolem/adaptive/ParameterWriter.java" bugCount="0" size="30"/>
@@ -11507,7 +10976,7 @@ closed.</p>
     <FileStats path="org/ogolem/atom2ogo/MainOgo2Atom.java" bugCount="0" size="46"/>
     <FileStats path="org/ogolem/beswitched/MainBeswitched.java" bugCount="0" size="67"/>
     <FileStats path="org/ogolem/clusters/ClusterAnalyzation.java" bugCount="2" size="166" bugHash="6668d1917380dda7977eea533e64cf58"/>
-    <FileStats path="org/ogolem/clusters/MainClusters.java" bugCount="0" size="372"/>
+    <FileStats path="org/ogolem/clusters/MainClusters.java" bugCount="0" size="388"/>
     <FileStats path="org/ogolem/clusters/MainThreadingClusterGlobOpt.java" bugCount="2" size="81" bugHash="2e3dbc32a658d59504b5210e8bc9ce37"/>
     <FileStats path="org/ogolem/core/ADFCaller.java" bugCount="1" size="127" bugHash="7cf9a36c86b5178bc223c098b97befc3"/>
     <FileStats path="org/ogolem/core/AbstractBondInfo.java" bugCount="0" size="23"/>
@@ -11687,7 +11156,7 @@ closed.</p>
     <FileStats path="org/ogolem/dimerizer/MainDimerizer.java" bugCount="0" size="62"/>
     <FileStats path="org/ogolem/familytree/GeneticRecord.java" bugCount="0" size="39"/>
     <FileStats path="org/ogolem/familytree/GeneticRecordComparator.java" bugCount="0" size="10"/>
-    <FileStats path="org/ogolem/familytree/MainFamilyTree.java" bugCount="0" size="173"/>
+    <FileStats path="org/ogolem/familytree/MainFamilyTree.java" bugCount="0" size="180"/>
     <FileStats path="org/ogolem/familytree/VisualizationConfig.java" bugCount="0" size="104"/>
     <FileStats path="org/ogolem/fft/MainFFTInterface.java" bugCount="0" size="63"/>
     <FileStats path="org/ogolem/fft/Padder.java" bugCount="0" size="32"/>
@@ -11752,9 +11221,9 @@ closed.</p>
     <FileStats path="org/ogolem/generic/genericpool/DiversityChecker.java" bugCount="0" size="3"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericDiversityCheckers.java" bugCount="0" size="51"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericParentSelectors.java" bugCount="0" size="207"/>
-    <FileStats path="org/ogolem/generic/genericpool/GenericPool.java" bugCount="9" size="467" bugHash="d43672a349bc5ecc652eaa52fb927105"/>
+    <FileStats path="org/ogolem/generic/genericpool/GenericPool.java" bugCount="9" size="464" bugHash="5c9d49bb5a5c97ef44c2c5a97b6a7570"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericPoolConfig.java" bugCount="6" size="149" bugHash="68d9e650fec16a8682d048ab66132763"/>
-    <FileStats path="org/ogolem/generic/genericpool/GenericPoolEntry.java" bugCount="2" size="47" bugHash="cbc9182a5831d583a7000115d0bb99ef"/>
+    <FileStats path="org/ogolem/generic/genericpool/GenericPoolEntry.java" bugCount="2" size="19" bugHash="fdf2cd7a04a44fd938abf7f86a45d7c5"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericStatistics.java" bugCount="0" size="83"/>
     <FileStats path="org/ogolem/generic/genericpool/Niche.java" bugCount="0" size="19"/>
     <FileStats path="org/ogolem/generic/genericpool/NicheComputer.java" bugCount="0" size="5"/>
@@ -11762,14 +11231,14 @@ closed.</p>
     <FileStats path="org/ogolem/generic/genericpool/ParentSelector.java" bugCount="0" size="2"/>
     <FileStats path="org/ogolem/generic/genericpool/SimpleNicher.java" bugCount="1" size="54" bugHash="be5e897cf3e412ea7fbc78a3052a4f6b"/>
     <FileStats path="org/ogolem/generic/mpi/GenericMPIOptimization.java" bugCount="1" size="126" bugHash="47d96b15cb152ffa93d3437a8d95e28e"/>
-    <FileStats path="org/ogolem/generic/mpi/MPIInterface.java" bugCount="16" size="242" bugHash="1c157809b11cc155f462ec7c65fe879f"/>
+    <FileStats path="org/ogolem/generic/mpi/MPIInterface.java" bugCount="6" size="241" bugHash="e81f187009dea43b12badc24e37a2d17"/>
     <FileStats path="org/ogolem/generic/stats/BasicDetailedBackend.java" bugCount="1" size="45" bugHash="48f6bf8cc61698154d74bec10ae51dfa"/>
     <FileStats path="org/ogolem/generic/stats/DetailedStatistics.java" bugCount="0" size="13"/>
     <FileStats path="org/ogolem/generic/stats/DummyDetailedStats.java" bugCount="0" size="27"/>
     <FileStats path="org/ogolem/generic/stats/GenericDetailStatistics.java" bugCount="0" size="84"/>
     <FileStats path="org/ogolem/generic/threading/GenericGlobOptTask.java" bugCount="0" size="82"/>
     <FileStats path="org/ogolem/generic/threading/GenericInitTask.java" bugCount="0" size="60"/>
-    <FileStats path="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" bugCount="5" size="193" bugHash="27a75a0c384a35777120a71be1ca14dd"/>
+    <FileStats path="org/ogolem/generic/threading/GenericOGOLEMOptimization.java" bugCount="5" size="196" bugHash="9830887e0538a9d94140f73911bb4543"/>
     <FileStats path="org/ogolem/generic/threading/GenericSeedTask.java" bugCount="4" size="95" bugHash="23b4d58a48ec1942cf1fa5fec86cee12"/>
     <FileStats path="org/ogolem/generic/threading/GenericThreadDispatcher.java" bugCount="2" size="84" bugHash="8a39c2590fa60f5f5f4d208b9ded5518"/>
     <FileStats path="org/ogolem/generic/threading/ObjectCache.java" bugCount="0" size="28"/>
@@ -11899,10 +11368,10 @@ closed.</p>
     <FileStats path="org/ogolem/properties/StressTensor.java" bugCount="0" size="43"/>
     <FileStats path="org/ogolem/properties/TensorProperty.java" bugCount="0" size="80"/>
     <FileStats path="org/ogolem/properties/VectorProperty.java" bugCount="0" size="57"/>
-    <FileStats path="org/ogolem/random/Lottery.java" bugCount="2" size="43" bugHash="140db765a3dbee5c9e51812df25bcea8"/>
+    <FileStats path="org/ogolem/random/Lottery.java" bugCount="1" size="43" bugHash="032c7eb9748ba256b70f4fb5ba2306de"/>
     <FileStats path="org/ogolem/random/RNGenerator.java" bugCount="0" size="9"/>
     <FileStats path="org/ogolem/random/RandomUtils.java" bugCount="0" size="158"/>
-    <FileStats path="org/ogolem/random/StandardRNG.java" bugCount="7" size="25" bugHash="cd2ea7276b8d4fa8cf0703b163627db2"/>
+    <FileStats path="org/ogolem/random/StandardRNG.java" bugCount="0" size="25"/>
     <FileStats path="org/ogolem/rmi/AliveCheck.java" bugCount="2" size="36" bugHash="1ebb2b68d0f9ea6cfa99d0ab5af8e6b3"/>
     <FileStats path="org/ogolem/rmi/ClientList.java" bugCount="0" size="99"/>
     <FileStats path="org/ogolem/rmi/DummyTask.java" bugCount="0" size="9"/>
@@ -11947,7 +11416,7 @@ closed.</p>
     <FileStats path="org/ogolem/switches/FitnessFunction.java" bugCount="0" size="128"/>
     <FileStats path="org/ogolem/switches/FixedValues.java" bugCount="0" size="6"/>
     <FileStats path="org/ogolem/switches/GermanyGlobOpt.java" bugCount="0" size="62"/>
-    <FileStats path="org/ogolem/switches/GlobOptAtomics.java" bugCount="2" size="38" bugHash="4e5665e5b1fb6fd4cf87f1b30f40bb85"/>
+    <FileStats path="org/ogolem/switches/GlobOptAtomics.java" bugCount="1" size="38" bugHash="0eb750f6e878f3aa6f15089736017253"/>
     <FileStats path="org/ogolem/switches/GlobalOptimization.java" bugCount="0" size="2"/>
     <FileStats path="org/ogolem/switches/GugaCI.java" bugCount="0" size="104"/>
     <FileStats path="org/ogolem/switches/LittleHelpers.java" bugCount="0" size="14"/>
@@ -11992,8 +11461,8 @@ closed.</p>
       <ClassStats class="contrib.bobyqa.BOBYQAOptimizer$IntRef" sourceFile="BOBYQAOptimizer.java" interface="false" size="6" bugs="0"/>
       <ClassStats class="contrib.bobyqa.BOBYQAOptimizer$ScopedPtr" sourceFile="BOBYQAOptimizer.java" interface="false" size="25" bugs="0"/>
     </PackageStats>
-    <PackageStats package="contrib.edu.princeton.eac" total_bugs="6" total_types="1" total_size="137" priority_2="5" priority_1="1">
-      <ClassStats class="contrib.edu.princeton.eac.Grid" sourceFile="Grid.java" interface="false" size="137" bugs="6" priority_2="5" priority_1="1"/>
+    <PackageStats package="contrib.edu.princeton.eac" total_bugs="5" total_types="1" total_size="137" priority_2="5">
+      <ClassStats class="contrib.edu.princeton.eac.Grid" sourceFile="Grid.java" interface="false" size="137" bugs="5" priority_2="5"/>
     </PackageStats>
     <PackageStats package="contrib.jama" total_bugs="15" total_types="6" total_size="1458" priority_2="9" priority_1="6">
       <ClassStats class="contrib.jama.CholeskyDecomposition" sourceFile="CholeskyDecomposition.java" interface="false" size="50" bugs="1" priority_2="1"/>
@@ -12026,7 +11495,7 @@ closed.</p>
       <ClassStats class="numal.AP_praxis_method" sourceFile="AP_praxis_method.java" interface="true" size="2" bugs="0"/>
       <ClassStats class="numal.Analytic_problems" sourceFile="Analytic_problems.java" interface="false" size="9" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.adaptive" total_bugs="42" total_types="88" total_size="12995" priority_2="36" priority_1="6">
+    <PackageStats package="org.ogolem.adaptive" total_bugs="39" total_types="88" total_size="12995" priority_2="36" priority_1="3">
       <ClassStats class="org.ogolem.adaptive.AbstractAdaptivable" sourceFile="AbstractAdaptivable.java" interface="false" size="81" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.AbstractAdaptiveBackend" sourceFile="AbstractAdaptiveBackend.java" interface="false" size="66" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.Adaptivable" sourceFile="Adaptivable.java" interface="true" size="10" bugs="0"/>
@@ -12053,7 +11522,7 @@ closed.</p>
       <ClassStats class="org.ogolem.adaptive.AdaptiveMorseTerm" sourceFile="AdaptiveMorseTerm.java" interface="false" size="290" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.AdaptiveNewton" sourceFile="AdaptiveNewton.java" interface="true" size="6" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.AdaptiveOrcaCaller" sourceFile="AdaptiveOrcaCaller.java" interface="false" size="348" bugs="0"/>
-      <ClassStats class="org.ogolem.adaptive.AdaptiveParameters" sourceFile="AdaptiveParameters.java" interface="false" size="310" bugs="6" priority_2="5" priority_1="1"/>
+      <ClassStats class="org.ogolem.adaptive.AdaptiveParameters" sourceFile="AdaptiveParameters.java" interface="false" size="310" bugs="5" priority_2="5"/>
       <ClassStats class="org.ogolem.adaptive.AdaptivePolaris" sourceFile="AdaptivePolaris.java" interface="false" size="213" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.AdaptiveSWG2BodyTerm" sourceFile="AdaptiveSWG2BodyTerm.java" interface="false" size="206" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.AdaptiveSWG3BodyTerm" sourceFile="AdaptiveSWG3BodyTerm.java" interface="false" size="378" bugs="0"/>
@@ -12101,7 +11570,7 @@ closed.</p>
       <ClassStats class="org.ogolem.adaptive.ParameterDiversityCheckers" sourceFile="ParameterDiversityCheckers.java" interface="false" size="3" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.ParameterDiversityCheckers$ParamsDiversityChecker" sourceFile="ParameterDiversityCheckers.java" interface="false" size="16" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.ParameterGradient" sourceFile="ParameterGradient.java" interface="false" size="35" bugs="0"/>
-      <ClassStats class="org.ogolem.adaptive.ParameterInit" sourceFile="ParameterInit.java" interface="false" size="47" bugs="2" priority_1="2"/>
+      <ClassStats class="org.ogolem.adaptive.ParameterInit" sourceFile="ParameterInit.java" interface="false" size="47" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.ParameterReader" sourceFile="ParameterReader.java" interface="false" size="36" bugs="0"/>
       <ClassStats class="org.ogolem.adaptive.ParameterSanityCheck" sourceFile="ParameterSanityCheck.java" interface="false" size="33" bugs="2" priority_2="2"/>
       <ClassStats class="org.ogolem.adaptive.ParameterWriter" sourceFile="ParameterWriter.java" interface="false" size="30" bugs="0"/>
@@ -12151,10 +11620,10 @@ closed.</p>
     <PackageStats package="org.ogolem.beswitched" total_bugs="0" total_types="1" total_size="67">
       <ClassStats class="org.ogolem.beswitched.MainBeswitched" sourceFile="MainBeswitched.java" interface="false" size="67" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.clusters" total_bugs="4" total_types="4" total_size="619" priority_2="3" priority_1="1">
+    <PackageStats package="org.ogolem.clusters" total_bugs="4" total_types="4" total_size="635" priority_2="3" priority_1="1">
       <ClassStats class="org.ogolem.clusters.ClusterAnalyzation" sourceFile="ClusterAnalyzation.java" interface="false" size="153" bugs="2" priority_2="1" priority_1="1"/>
       <ClassStats class="org.ogolem.clusters.ClusterAnalyzation$Shape" sourceFile="ClusterAnalyzation.java" interface="false" size="13" bugs="0"/>
-      <ClassStats class="org.ogolem.clusters.MainClusters" sourceFile="MainClusters.java" interface="false" size="372" bugs="0"/>
+      <ClassStats class="org.ogolem.clusters.MainClusters" sourceFile="MainClusters.java" interface="false" size="388" bugs="0"/>
       <ClassStats class="org.ogolem.clusters.MainThreadingClusterGlobOpt" sourceFile="MainThreadingClusterGlobOpt.java" interface="false" size="81" bugs="2" priority_2="2"/>
     </PackageStats>
     <PackageStats package="org.ogolem.core" total_bugs="160" total_types="250" total_size="27389" priority_2="154" priority_1="6">
@@ -12417,10 +11886,10 @@ closed.</p>
       <ClassStats class="org.ogolem.dimerizer.DimerizerCore" sourceFile="DimerizerCore.java" interface="false" size="46" bugs="0"/>
       <ClassStats class="org.ogolem.dimerizer.MainDimerizer" sourceFile="MainDimerizer.java" interface="false" size="62" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.familytree" total_bugs="0" total_types="4" total_size="326">
+    <PackageStats package="org.ogolem.familytree" total_bugs="0" total_types="4" total_size="333">
       <ClassStats class="org.ogolem.familytree.GeneticRecord" sourceFile="GeneticRecord.java" interface="false" size="39" bugs="0"/>
       <ClassStats class="org.ogolem.familytree.GeneticRecordComparator" sourceFile="GeneticRecordComparator.java" interface="false" size="10" bugs="0"/>
-      <ClassStats class="org.ogolem.familytree.MainFamilyTree" sourceFile="MainFamilyTree.java" interface="false" size="173" bugs="0"/>
+      <ClassStats class="org.ogolem.familytree.MainFamilyTree" sourceFile="MainFamilyTree.java" interface="false" size="180" bugs="0"/>
       <ClassStats class="org.ogolem.familytree.VisualizationConfig" sourceFile="VisualizationConfig.java" interface="false" size="104" bugs="0"/>
     </PackageStats>
     <PackageStats package="org.ogolem.fft" total_bugs="0" total_types="2" total_size="95">
@@ -12494,7 +11963,7 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.generichistory.GenericHistoryConfig" sourceFile="GenericHistoryConfig.java" interface="false" size="21" bugs="0"/>
       <ClassStats class="org.ogolem.generic.generichistory.GeneticRecord" sourceFile="GeneticRecord.java" interface="false" size="19" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.generic.genericpool" total_bugs="19" total_types="19" total_size="1151" priority_2="19">
+    <PackageStats package="org.ogolem.generic.genericpool" total_bugs="19" total_types="19" total_size="1120" priority_2="19">
       <ClassStats class="org.ogolem.generic.genericpool.AbstractNicher" sourceFile="AbstractNicher.java" interface="false" size="59" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.genericpool.DiversityChecker" sourceFile="DiversityChecker.java" interface="true" size="3" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericDiversityCheckers" sourceFile="GenericDiversityCheckers.java" interface="false" size="3" bugs="0"/>
@@ -12505,9 +11974,9 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.genericpool.GenericParentSelectors$FitnessWeightedParentSelector" sourceFile="GenericParentSelectors.java" interface="false" size="74" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericParentSelectors$RandomParentSelector" sourceFile="GenericParentSelectors.java" interface="false" size="23" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericParentSelectors$RealFitnessWeightedParentSelector" sourceFile="GenericParentSelectors.java" interface="false" size="52" bugs="0"/>
-      <ClassStats class="org.ogolem.generic.genericpool.GenericPool" sourceFile="GenericPool.java" interface="false" size="467" bugs="9" priority_2="9"/>
+      <ClassStats class="org.ogolem.generic.genericpool.GenericPool" sourceFile="GenericPool.java" interface="false" size="464" bugs="9" priority_2="9"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericPoolConfig" sourceFile="GenericPoolConfig.java" interface="false" size="149" bugs="6" priority_2="6"/>
-      <ClassStats class="org.ogolem.generic.genericpool.GenericPoolEntry" sourceFile="GenericPoolEntry.java" interface="false" size="47" bugs="2" priority_2="2"/>
+      <ClassStats class="org.ogolem.generic.genericpool.GenericPoolEntry" sourceFile="GenericPoolEntry.java" interface="false" size="19" bugs="2" priority_2="2"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericStatistics" sourceFile="GenericStatistics.java" interface="false" size="83" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.Niche" sourceFile="Niche.java" interface="false" size="19" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.NicheComputer" sourceFile="NicheComputer.java" interface="true" size="5" bugs="0"/>
@@ -12515,9 +11984,9 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.genericpool.ParentSelector" sourceFile="ParentSelector.java" interface="true" size="2" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.SimpleNicher" sourceFile="SimpleNicher.java" interface="false" size="54" bugs="1" priority_2="1"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.generic.mpi" total_bugs="17" total_types="3" total_size="368" priority_2="16" priority_1="1">
+    <PackageStats package="org.ogolem.generic.mpi" total_bugs="7" total_types="3" total_size="367" priority_2="6" priority_1="1">
       <ClassStats class="org.ogolem.generic.mpi.GenericMPIOptimization" sourceFile="GenericMPIOptimization.java" interface="false" size="126" bugs="1" priority_1="1"/>
-      <ClassStats class="org.ogolem.generic.mpi.MPIInterface" sourceFile="MPIInterface.java" interface="false" size="229" bugs="16" priority_2="16"/>
+      <ClassStats class="org.ogolem.generic.mpi.MPIInterface" sourceFile="MPIInterface.java" interface="false" size="228" bugs="6" priority_2="6"/>
       <ClassStats class="org.ogolem.generic.mpi.MPIInterface$MPIStatus" sourceFile="MPIInterface.java" interface="false" size="13" bugs="0"/>
     </PackageStats>
     <PackageStats package="org.ogolem.generic.stats" total_bugs="1" total_types="4" total_size="169" priority_2="1">
@@ -12526,12 +11995,12 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.stats.DummyDetailedStats" sourceFile="DummyDetailedStats.java" interface="false" size="27" bugs="0"/>
       <ClassStats class="org.ogolem.generic.stats.GenericDetailStatistics" sourceFile="GenericDetailStatistics.java" interface="false" size="84" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.generic.threading" total_bugs="11" total_types="10" total_size="544" priority_2="11">
+    <PackageStats package="org.ogolem.generic.threading" total_bugs="11" total_types="10" total_size="547" priority_2="11">
       <ClassStats class="org.ogolem.generic.threading.GenericGlobOptTask" sourceFile="GenericGlobOptTask.java" interface="false" size="11" bugs="0"/>
       <ClassStats class="org.ogolem.generic.threading.GenericGlobOptTask$1" sourceFile="GenericGlobOptTask.java" interface="false" size="71" bugs="0"/>
       <ClassStats class="org.ogolem.generic.threading.GenericInitTask" sourceFile="GenericInitTask.java" interface="false" size="13" bugs="0"/>
       <ClassStats class="org.ogolem.generic.threading.GenericInitTask$1" sourceFile="GenericInitTask.java" interface="false" size="47" bugs="0"/>
-      <ClassStats class="org.ogolem.generic.threading.GenericOGOLEMOptimization" sourceFile="GenericOGOLEMOptimization.java" interface="false" size="193" bugs="5" priority_2="5"/>
+      <ClassStats class="org.ogolem.generic.threading.GenericOGOLEMOptimization" sourceFile="GenericOGOLEMOptimization.java" interface="false" size="196" bugs="5" priority_2="5"/>
       <ClassStats class="org.ogolem.generic.threading.GenericSeedTask" sourceFile="GenericSeedTask.java" interface="false" size="26" bugs="3" priority_2="3"/>
       <ClassStats class="org.ogolem.generic.threading.GenericSeedTask$1" sourceFile="GenericSeedTask.java" interface="false" size="69" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.threading.GenericThreadDispatcher" sourceFile="GenericThreadDispatcher.java" interface="false" size="84" bugs="2" priority_2="2"/>
@@ -12707,11 +12176,11 @@ closed.</p>
       <ClassStats class="org.ogolem.properties.TensorProperty" sourceFile="TensorProperty.java" interface="false" size="80" bugs="0"/>
       <ClassStats class="org.ogolem.properties.VectorProperty" sourceFile="VectorProperty.java" interface="false" size="57" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.random" total_bugs="9" total_types="4" total_size="235" priority_2="1" priority_1="8">
-      <ClassStats class="org.ogolem.random.Lottery" sourceFile="Lottery.java" interface="false" size="43" bugs="2" priority_2="1" priority_1="1"/>
+    <PackageStats package="org.ogolem.random" total_bugs="1" total_types="4" total_size="235" priority_1="1">
+      <ClassStats class="org.ogolem.random.Lottery" sourceFile="Lottery.java" interface="false" size="43" bugs="1" priority_1="1"/>
       <ClassStats class="org.ogolem.random.RNGenerator" sourceFile="RNGenerator.java" interface="true" size="9" bugs="0"/>
       <ClassStats class="org.ogolem.random.RandomUtils" sourceFile="RandomUtils.java" interface="false" size="158" bugs="0"/>
-      <ClassStats class="org.ogolem.random.StandardRNG" sourceFile="StandardRNG.java" interface="false" size="25" bugs="7" priority_1="7"/>
+      <ClassStats class="org.ogolem.random.StandardRNG" sourceFile="StandardRNG.java" interface="false" size="25" bugs="0"/>
     </PackageStats>
     <PackageStats package="org.ogolem.rmi" total_bugs="27" total_types="33" total_size="2429" priority_2="19" priority_1="8">
       <ClassStats class="org.ogolem.rmi.AliveCheck" sourceFile="AliveCheck.java" interface="false" size="21" bugs="1" priority_1="1"/>
@@ -12766,7 +12235,7 @@ closed.</p>
       <ClassStats class="org.ogolem.spectral.Spectrum" sourceFile="Spectrum.java" interface="true" size="9" bugs="0"/>
       <ClassStats class="org.ogolem.spectral.SpectrumConfig" sourceFile="SpectrumConfig.java" interface="false" size="6" bugs="1" priority_2="1"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.switches" total_bugs="14" total_types="34" total_size="2793" priority_2="11" priority_1="3">
+    <PackageStats package="org.ogolem.switches" total_bugs="13" total_types="34" total_size="2793" priority_2="11" priority_1="2">
       <ClassStats class="org.ogolem.switches.Backbone" sourceFile="Backbone.java" interface="false" size="41" bugs="0"/>
       <ClassStats class="org.ogolem.switches.Color" sourceFile="Color.java" interface="false" size="37" bugs="0"/>
       <ClassStats class="org.ogolem.switches.ColorPalette" sourceFile="ColorPalette.java" interface="false" size="37" bugs="1" priority_1="1"/>
@@ -12775,7 +12244,7 @@ closed.</p>
       <ClassStats class="org.ogolem.switches.FitnessFunction" sourceFile="FitnessFunction.java" interface="false" size="128" bugs="0"/>
       <ClassStats class="org.ogolem.switches.FixedValues" sourceFile="FixedValues.java" interface="false" size="6" bugs="0"/>
       <ClassStats class="org.ogolem.switches.GermanyGlobOpt" sourceFile="GermanyGlobOpt.java" interface="false" size="62" bugs="0"/>
-      <ClassStats class="org.ogolem.switches.GlobOptAtomics" sourceFile="GlobOptAtomics.java" interface="false" size="38" bugs="2" priority_1="2"/>
+      <ClassStats class="org.ogolem.switches.GlobOptAtomics" sourceFile="GlobOptAtomics.java" interface="false" size="38" bugs="1" priority_1="1"/>
       <ClassStats class="org.ogolem.switches.GlobalOptimization" sourceFile="GlobalOptimization.java" interface="true" size="2" bugs="0"/>
       <ClassStats class="org.ogolem.switches.GugaCI" sourceFile="GugaCI.java" interface="false" size="104" bugs="0"/>
       <ClassStats class="org.ogolem.switches.LittleHelpers" sourceFile="LittleHelpers.java" interface="false" size="14" bugs="0"/>
@@ -12820,40 +12289,39 @@ closed.</p>
       <ClassStats class="org.ogolem.tests.MainTests" sourceFile="MainTests.java" interface="false" size="107" bugs="0"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1672" invocations="5798" avgMicrosecondsPerInvocation="288" maxMicrosecondsPerInvocation="31267" standardDeviationMicrosecondsPerInvocation="1457"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1310" invocations="4587" avgMicrosecondsPerInvocation="285" maxMicrosecondsPerInvocation="47235" standardDeviationMicrosecondsPerInvocation="1596"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1114" invocations="4441" avgMicrosecondsPerInvocation="251" maxMicrosecondsPerInvocation="47576" standardDeviationMicrosecondsPerInvocation="1276"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="1065" invocations="1883" avgMicrosecondsPerInvocation="565" maxMicrosecondsPerInvocation="10227" standardDeviationMicrosecondsPerInvocation="958"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="860" invocations="5310" avgMicrosecondsPerInvocation="162" maxMicrosecondsPerInvocation="16507" standardDeviationMicrosecondsPerInvocation="710"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="712" invocations="5772" avgMicrosecondsPerInvocation="123" maxMicrosecondsPerInvocation="8387" standardDeviationMicrosecondsPerInvocation="432"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="493" invocations="4446" avgMicrosecondsPerInvocation="110" maxMicrosecondsPerInvocation="8566" standardDeviationMicrosecondsPerInvocation="424"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="486" invocations="6989" avgMicrosecondsPerInvocation="69" maxMicrosecondsPerInvocation="8960" standardDeviationMicrosecondsPerInvocation="313"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="389" invocations="5310" avgMicrosecondsPerInvocation="73" maxMicrosecondsPerInvocation="24196" standardDeviationMicrosecondsPerInvocation="543"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="252" invocations="5314" avgMicrosecondsPerInvocation="47" maxMicrosecondsPerInvocation="4160" standardDeviationMicrosecondsPerInvocation="122"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="249" invocations="737" avgMicrosecondsPerInvocation="338" maxMicrosecondsPerInvocation="19076" standardDeviationMicrosecondsPerInvocation="1284"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="239" invocations="2478" avgMicrosecondsPerInvocation="96" maxMicrosecondsPerInvocation="4653" standardDeviationMicrosecondsPerInvocation="239"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="182" invocations="1004" avgMicrosecondsPerInvocation="181" maxMicrosecondsPerInvocation="8133" standardDeviationMicrosecondsPerInvocation="502"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="179" invocations="4340" avgMicrosecondsPerInvocation="41" maxMicrosecondsPerInvocation="9258" standardDeviationMicrosecondsPerInvocation="228"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="158" invocations="1004" avgMicrosecondsPerInvocation="158" maxMicrosecondsPerInvocation="5463" standardDeviationMicrosecondsPerInvocation="336"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="157" invocations="737" avgMicrosecondsPerInvocation="214" maxMicrosecondsPerInvocation="83266" standardDeviationMicrosecondsPerInvocation="3082"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="133" invocations="737" avgMicrosecondsPerInvocation="180" maxMicrosecondsPerInvocation="7114" standardDeviationMicrosecondsPerInvocation="416"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="132" invocations="737" avgMicrosecondsPerInvocation="180" maxMicrosecondsPerInvocation="9193" standardDeviationMicrosecondsPerInvocation="594"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="122" invocations="737" avgMicrosecondsPerInvocation="165" maxMicrosecondsPerInvocation="4193" standardDeviationMicrosecondsPerInvocation="327"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="121" invocations="737" avgMicrosecondsPerInvocation="164" maxMicrosecondsPerInvocation="7118" standardDeviationMicrosecondsPerInvocation="387"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="104" invocations="5666" avgMicrosecondsPerInvocation="18" maxMicrosecondsPerInvocation="4321" standardDeviationMicrosecondsPerInvocation="113"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="104" invocations="737" avgMicrosecondsPerInvocation="142" maxMicrosecondsPerInvocation="4957" standardDeviationMicrosecondsPerInvocation="381"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="104" invocations="737" avgMicrosecondsPerInvocation="141" maxMicrosecondsPerInvocation="3571" standardDeviationMicrosecondsPerInvocation="295"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="102" invocations="737" avgMicrosecondsPerInvocation="138" maxMicrosecondsPerInvocation="6296" standardDeviationMicrosecondsPerInvocation="395"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="101" invocations="737" avgMicrosecondsPerInvocation="137" maxMicrosecondsPerInvocation="5733" standardDeviationMicrosecondsPerInvocation="348"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="100" invocations="4441" avgMicrosecondsPerInvocation="22" maxMicrosecondsPerInvocation="5210" standardDeviationMicrosecondsPerInvocation="98"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="97" invocations="737" avgMicrosecondsPerInvocation="131" maxMicrosecondsPerInvocation="4015" standardDeviationMicrosecondsPerInvocation="294"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="96" invocations="737" avgMicrosecondsPerInvocation="131" maxMicrosecondsPerInvocation="3448" standardDeviationMicrosecondsPerInvocation="278"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="96" invocations="737" avgMicrosecondsPerInvocation="130" maxMicrosecondsPerInvocation="5153" standardDeviationMicrosecondsPerInvocation="322"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="95" invocations="737" avgMicrosecondsPerInvocation="129" maxMicrosecondsPerInvocation="7459" standardDeviationMicrosecondsPerInvocation="365"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="94" invocations="737" avgMicrosecondsPerInvocation="128" maxMicrosecondsPerInvocation="7441" standardDeviationMicrosecondsPerInvocation="405"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDoubleCheck" totalMilliseconds="91" invocations="737" avgMicrosecondsPerInvocation="123" maxMicrosecondsPerInvocation="4171" standardDeviationMicrosecondsPerInvocation="285"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CrossSiteScripting" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="123" maxMicrosecondsPerInvocation="3372" standardDeviationMicrosecondsPerInvocation="273"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="89" invocations="737" avgMicrosecondsPerInvocation="121" maxMicrosecondsPerInvocation="3361" standardDeviationMicrosecondsPerInvocation="260"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1711" invocations="5802" avgMicrosecondsPerInvocation="294" maxMicrosecondsPerInvocation="36241" standardDeviationMicrosecondsPerInvocation="1524"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1360" invocations="4591" avgMicrosecondsPerInvocation="296" maxMicrosecondsPerInvocation="53013" standardDeviationMicrosecondsPerInvocation="1623"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1239" invocations="4445" avgMicrosecondsPerInvocation="278" maxMicrosecondsPerInvocation="50375" standardDeviationMicrosecondsPerInvocation="1480"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="1075" invocations="1883" avgMicrosecondsPerInvocation="571" maxMicrosecondsPerInvocation="12299" standardDeviationMicrosecondsPerInvocation="994"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="927" invocations="5314" avgMicrosecondsPerInvocation="174" maxMicrosecondsPerInvocation="19167" standardDeviationMicrosecondsPerInvocation="794"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="799" invocations="5776" avgMicrosecondsPerInvocation="138" maxMicrosecondsPerInvocation="14269" standardDeviationMicrosecondsPerInvocation="555"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="509" invocations="6996" avgMicrosecondsPerInvocation="72" maxMicrosecondsPerInvocation="9129" standardDeviationMicrosecondsPerInvocation="319"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="501" invocations="4443" avgMicrosecondsPerInvocation="112" maxMicrosecondsPerInvocation="10338" standardDeviationMicrosecondsPerInvocation="408"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="405" invocations="5314" avgMicrosecondsPerInvocation="76" maxMicrosecondsPerInvocation="20147" standardDeviationMicrosecondsPerInvocation="502"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="281" invocations="5318" avgMicrosecondsPerInvocation="52" maxMicrosecondsPerInvocation="9666" standardDeviationMicrosecondsPerInvocation="181"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="278" invocations="2485" avgMicrosecondsPerInvocation="112" maxMicrosecondsPerInvocation="9399" standardDeviationMicrosecondsPerInvocation="287"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="253" invocations="737" avgMicrosecondsPerInvocation="344" maxMicrosecondsPerInvocation="19693" standardDeviationMicrosecondsPerInvocation="1312"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="187" invocations="1007" avgMicrosecondsPerInvocation="186" maxMicrosecondsPerInvocation="3964" standardDeviationMicrosecondsPerInvocation="381"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="185" invocations="1007" avgMicrosecondsPerInvocation="184" maxMicrosecondsPerInvocation="8633" standardDeviationMicrosecondsPerInvocation="423"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="183" invocations="4344" avgMicrosecondsPerInvocation="42" maxMicrosecondsPerInvocation="8971" standardDeviationMicrosecondsPerInvocation="218"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="160" invocations="737" avgMicrosecondsPerInvocation="217" maxMicrosecondsPerInvocation="78026" standardDeviationMicrosecondsPerInvocation="2893"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="136" invocations="737" avgMicrosecondsPerInvocation="184" maxMicrosecondsPerInvocation="8612" standardDeviationMicrosecondsPerInvocation="426"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="126" invocations="737" avgMicrosecondsPerInvocation="172" maxMicrosecondsPerInvocation="3908" standardDeviationMicrosecondsPerInvocation="330"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="123" invocations="737" avgMicrosecondsPerInvocation="167" maxMicrosecondsPerInvocation="5002" standardDeviationMicrosecondsPerInvocation="340"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="116" invocations="737" avgMicrosecondsPerInvocation="157" maxMicrosecondsPerInvocation="12225" standardDeviationMicrosecondsPerInvocation="561"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="114" invocations="4445" avgMicrosecondsPerInvocation="25" maxMicrosecondsPerInvocation="5871" standardDeviationMicrosecondsPerInvocation="115"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="111" invocations="5670" avgMicrosecondsPerInvocation="19" maxMicrosecondsPerInvocation="4654" standardDeviationMicrosecondsPerInvocation="122"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="110" invocations="737" avgMicrosecondsPerInvocation="149" maxMicrosecondsPerInvocation="4831" standardDeviationMicrosecondsPerInvocation="355"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="110" invocations="737" avgMicrosecondsPerInvocation="149" maxMicrosecondsPerInvocation="9015" standardDeviationMicrosecondsPerInvocation="488"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="109" invocations="2492" avgMicrosecondsPerInvocation="44" maxMicrosecondsPerInvocation="3705" standardDeviationMicrosecondsPerInvocation="88"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="97" invocations="737" avgMicrosecondsPerInvocation="132" maxMicrosecondsPerInvocation="4298" standardDeviationMicrosecondsPerInvocation="294"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="95" invocations="737" avgMicrosecondsPerInvocation="130" maxMicrosecondsPerInvocation="4683" standardDeviationMicrosecondsPerInvocation="309"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="95" invocations="737" avgMicrosecondsPerInvocation="129" maxMicrosecondsPerInvocation="4641" standardDeviationMicrosecondsPerInvocation="326"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="122" maxMicrosecondsPerInvocation="3953" standardDeviationMicrosecondsPerInvocation="276"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="122" maxMicrosecondsPerInvocation="3982" standardDeviationMicrosecondsPerInvocation="279"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="122" maxMicrosecondsPerInvocation="9768" standardDeviationMicrosecondsPerInvocation="441"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="89" invocations="737" avgMicrosecondsPerInvocation="120" maxMicrosecondsPerInvocation="4442" standardDeviationMicrosecondsPerInvocation="275"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CrossSiteScripting" totalMilliseconds="88" invocations="737" avgMicrosecondsPerInvocation="119" maxMicrosecondsPerInvocation="4354" standardDeviationMicrosecondsPerInvocation="287"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>

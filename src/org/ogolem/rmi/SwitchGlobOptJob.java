@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2010-2014, J. M. Dieterich
               2015, J. M. Dieterich and B. Hartke
-              2020, J. M. Dieterich and B. Hartke
+              2020-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,11 +56,11 @@ import org.ogolem.switches.Taboos;
  * A job for the global optimization of a switchable molecule.
  *
  * @author Johannes Dieterich
- * @version 2020-12-26
+ * @version 2021-10-15
  */
 final class SwitchGlobOptJob implements Job<Switch> {
 
-  private static final long serialVersionUID = (long) 20101114;
+  private static final long serialVersionUID = (long) 20211015;
 
   private final Switch refSwitch;
   private final SwitchesConfig config;
@@ -325,8 +325,8 @@ final class SwitchGlobOptJob implements Job<Switch> {
     int c = 0;
     for (final GenericPoolEntry<Color, Switch> entry : pool.getAllIndividuals()) {
       c++;
-      if (entry != null && entry.getIndividual() != null) {
-        mergedPool.add(entry.getIndividual());
+      if (entry != null && entry.individual() != null) {
+        mergedPool.add(entry.individual());
       } else {
         break; // end of pool
       }

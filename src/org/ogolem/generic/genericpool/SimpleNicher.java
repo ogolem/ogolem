@@ -80,7 +80,7 @@ public class SimpleNicher<E, T extends Optimizable<E>> extends AbstractNicher<E,
     PoolLoop:
     for (int j = poolSize - 1; j >= 0; j--) {
       final GenericPoolEntry<E, T> entry = pool.getEntryAtPosition(j);
-      if (entry.getNiche().comp(maxPopNiche)) {
+      if (entry.niche().comp(maxPopNiche)) {
         if (j == 0) {
           System.err.println(
               "ERROR: Trying to delete the best individual. Exiting, first some hopefully helpful output...");
@@ -89,7 +89,7 @@ public class SimpleNicher<E, T extends Optimizable<E>> extends AbstractNicher<E,
           System.err.println(" maxPopNiche " + maxPopNiche.getID());
           for (int x = 0; x < pool.getCurrentPoolSize(); x++) {
             final GenericPoolEntry<E, T> en = pool.getEntryAtPosition(x);
-            System.err.println(" Pool entry " + x + " " + en.getNiche().getID());
+            System.err.println(" Pool entry " + x + " " + en.niche().getID());
           }
           System.err.println("");
           nichePopulation.forEach(
