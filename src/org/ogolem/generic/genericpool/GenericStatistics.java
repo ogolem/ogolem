@@ -92,6 +92,34 @@ public final class GenericStatistics implements Serializable {
   }
 
   /**
+   * Constructs the statistics object. Option to not touch the file.
+   *
+   * @param log The path to the log file.
+   * @param countsToFlush how many counts that are NOT new best individuals we wait before printing
+   *     a line.
+   * @param touchFile whether or not to touch the log file as trial
+   */
+  public GenericStatistics(final String log, final long countsToFlush, final boolean touchFile) {
+    this.logFile = log;
+    this.noBestCountsToFlush = countsToFlush;
+
+    if (touchFile) {
+      // touch the log file
+      final File f = new File(log);
+      if (!f.exists()) {
+        try {
+          final boolean success = f.createNewFile();
+          if (!success) {
+            throw new RuntimeException("File reports no success with file creation.");
+          }
+        } catch (Exception e) {
+          throw new RuntimeException("Logfile " + log + " could not be created!");
+        }
+      }
+    }
+  }
+
+  /**
    * If the individual is the new best individual, a line is printed to the log file with the
    * current date and time.
    *

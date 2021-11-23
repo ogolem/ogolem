@@ -61,7 +61,7 @@ import org.ogolem.properties.Energy;
  * The main class of the adaptive package designed to do a paramterization.
  *
  * @author Johannes Dieterich
- * @version 2020-07-25
+ * @version 2020-07-27
  */
 public class MainOgoAdaptive {
 
@@ -383,7 +383,7 @@ public class MainOgoAdaptive {
       final GenericPoolConfig<Double, AdaptiveParameters> poolConf =
           adapConf.getGenericPoolConfig();
       final AdaptiveParameters example = adapConf.getExample();
-      pool = GenericPool.getInstance(poolConf, example);
+      pool = new GenericPool<>(poolConf, example);
     } catch (Exception e) {
       System.err.println("ERROR: Couldn't instantiate helper objects in the parameter optimizer.");
       e.printStackTrace(System.err);

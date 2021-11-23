@@ -117,7 +117,7 @@ class GenericThreadingClientBackend<E, T extends Optimizable<E>> {
 
     final GenericPoolConfig<E, T> poolConfig = config.getGenericPoolConfig();
     final T example = config.getExample();
-    this.pool = GenericPool.getInstance(poolConfig, example);
+    this.pool = new GenericPool<>(poolConfig, example);
 
     final GenericHistoryConfig hisConf = config.getGenericHistoryConfig();
     this.history = GenericHistory.getReference(hisConf);

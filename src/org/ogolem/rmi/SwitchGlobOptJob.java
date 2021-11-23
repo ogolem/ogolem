@@ -1,7 +1,6 @@
 /*
 Copyright (c) 2010-2014, J. M. Dieterich
-              2015, J. M. Dieterich and B. Hartke
-              2020-2021, J. M. Dieterich and B. Hartke
+              2015-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -85,7 +84,7 @@ final class SwitchGlobOptJob implements Job<Switch> {
     this.refSwitch = example;
     this.config = configuration;
     this.palette = ColorPalette.getReference();
-    this.pool = GenericPool.getInstance(configuration.getGenericConfig(), example);
+    this.pool = new GenericPool<>(configuration.getGenericConfig(), example);
     this.taboos = Taboos.getReference();
     this.poolSize = SwitchesConfig.iPoolSize;
     this.globOptIter = SwitchesConfig.iNoOfGlobIters;

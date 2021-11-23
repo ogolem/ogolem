@@ -95,14 +95,11 @@ public class GenericPool<E, T extends Optimizable<E>>
 
   private final transient ParentSelector<E, T> selector;
 
-  /**
-   * This is specific for the singleton design pattern, since the constructor is private, we need to
-   * construct the object ourselves. Please note that due to Java's type erasure, this is untyped!
-   */
-  @SuppressWarnings("rawtypes")
-  private static GenericPool instance;
+  public GenericPool(final GenericPoolConfig<E, T> conf, final T reference) {
 
-  private GenericPool(final GenericPoolConfig<E, T> conf, final T reference) {
+    assert (conf != null);
+    assert (reference != null);
+
     serializeAfterNewBest = conf.serializeAfterNewBest();
     writeEveryAdd = conf.writeEveryAdd();
     beSilent = conf.shouldBeSilent();
@@ -125,7 +122,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     }
     writer = conf.getWriter();
     selector = conf.getSelector();
-    ref = reference;
+    ref = (T) reference.copy();
 
     // the genetic pool
     geneticPool = new ArrayList<>(2 * poolSize);
@@ -136,32 +133,6 @@ public class GenericPool<E, T extends Optimizable<E>>
     rwLock = lock.writeLock();
   }
 
-  /**
-   * If needed lazy instantiation of the object.
-   *
-   * @param config The configuration
-   * @param ref A reference object of type T.
-   * @return An instance of this GenericPool.
-   */
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public static synchronized <E, T extends Optimizable<E>> GenericPool<E, T> getInstance(
-      final GenericPoolConfig<E, T> config, final T ref) {
-    if (instance == null) {
-      instance = new GenericPool(config, ref);
-    }
-    return instance;
-  }
-
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public static synchronized <E, T extends Optimizable<E>> GenericPool<E, T> getInstance() {
-    if (instance == null) {
-      System.err.println(
-          "ERROR: Asking for instance of pool before we had a chance to instantiate it!");
-      System.exit(22);
-    }
-    return instance;
-  }
-
   public int getPoolSize() {
     return poolSize;
   }
@@ -169,14 +140,12 @@ public class GenericPool<E, T extends Optimizable<E>>
   public int getCurrentPoolSize() {
 
     roLock.lock();
-    int poolS = -1;
     try {
-      poolS = Math.min(poolSize, geneticPool.size());
+      final int poolS = Math.min(poolSize, geneticPool.size());
+      return poolS;
     } finally {
       roLock.unlock();
     }
-
-    return poolS;
   }
 
   /** NOT threadsafe - will require external read locking if called from a threading context. */
@@ -208,14 +177,12 @@ public class GenericPool<E, T extends Optimizable<E>>
     }
 
     roLock.lock();
-    GenericPoolEntry<E, T> entry = null;
     try {
-      entry = geneticPool.get(position);
+      final GenericPoolEntry<E, T> entry = geneticPool.get(position);
+      return entry;
     } finally {
       roLock.unlock();
     }
-
-    return entry;
   }
 
   public T getIndividualAtPosition(final int position) {
@@ -230,14 +197,12 @@ public class GenericPool<E, T extends Optimizable<E>>
     }
 
     roLock.lock();
-    T inv = null;
     try {
-      inv = geneticPool.get(position).individual();
+      final T inv = geneticPool.get(position).individual();
+      return inv;
     } finally {
       roLock.unlock();
     }
-
-    return inv;
   }
 
   public double getFitnessOfIndividualAtPos(final int position) {
@@ -571,26 +536,22 @@ public class GenericPool<E, T extends Optimizable<E>>
 
   public boolean addIndividual(final T individual, final double fitness) {
     rwLock.lock();
-    boolean added = false;
     try {
-      added = addIndividualUnsync(individual, null, fitness);
+      final boolean added = addIndividualUnsync(individual, null, fitness);
+      return added;
     } finally {
       rwLock.unlock();
     }
-
-    return added;
   }
 
   public boolean addIndividual(final T individual, final Niche niche, final double fitness) {
     rwLock.lock();
-    boolean added = false;
     try {
-      added = addIndividualUnsync(individual, niche, fitness);
+      final boolean added = addIndividualUnsync(individual, niche, fitness);
+      return added;
     } finally {
       rwLock.unlock();
     }
-
-    return added;
   }
 
   /**
@@ -603,6 +564,42 @@ public class GenericPool<E, T extends Optimizable<E>>
    * @return true if the individual was accepted to the pool, false otherwise.
    */
   public boolean addIndividualUnsync(final T individual, final Niche niche, final double fitness) {
+    return (addIndividualToPoolUnsync(individual, niche, fitness) >= 0);
+  }
+
+  public int addIndividualToPool(final T individual, final double fitness) {
+    rwLock.lock();
+    try {
+      final int pos = addIndividualToPoolUnsync(individual, null, fitness);
+      return pos;
+    } finally {
+      rwLock.unlock();
+    }
+  }
+
+  public int addIndividualToPool(final T individual, final Niche niche, final double fitness) {
+    rwLock.lock();
+    try {
+      final int pos = addIndividualToPoolUnsync(individual, niche, fitness);
+      return pos;
+    } finally {
+      rwLock.unlock();
+    }
+  }
+
+  /**
+   * The unsychronized version of addIndividual. HANDLE WITH CARE! MUST ONLY BE USED IF ACCESS IS
+   * SYNCHRONIZED EXPLICITLY IN THE CALLING CODE!
+   *
+   * @param individual the individual. Must not be null.
+   * @param niche the niche. Can be null if no niching is employed.
+   * @param fitness the fitness. Must be a finite number.
+   * @return 0 or higher if the individual has been added to the pool (i.e., it's new position),
+   *     negative number if the individual was not accepted. The later may eventually be given
+   *     meaning.
+   */
+  public int addIndividualToPoolUnsync(
+      final T individual, final Niche niche, final double fitness) {
 
     assert (individual != null);
     assert (!Double.isInfinite(fitness));
@@ -616,7 +613,7 @@ public class GenericPool<E, T extends Optimizable<E>>
     final int currentSize = geneticPool.size();
     if (currentSize >= poolSize && fitness >= geneticPool.get(geneticPool.size() - 1).fitness()) {
       stats.registerIndividualNotAdded(individual.getID());
-      return false;
+      return -1;
     } // fitness out of range
 
     if (doNiching && niche != null) {
@@ -652,7 +649,7 @@ public class GenericPool<E, T extends Optimizable<E>>
           if (!areDiverse) {
             // tough luck
             stats.registerIndividualNotAdded(individual.getID());
-            return false;
+            return -2;
           }
 
           firstPlaceSeen = true;
@@ -704,7 +701,7 @@ public class GenericPool<E, T extends Optimizable<E>>
           ensureSize(poolSize);
           // notify...
           microManage(addEntry, pos, false);
-          return true;
+          return pos;
         }
       }
 
@@ -713,7 +710,7 @@ public class GenericPool<E, T extends Optimizable<E>>
         geneticPool.add(newEntry);
         microManage(newEntry, currentSize, true);
         nicher.report(niche);
-        return true;
+        return currentSize;
       }
     } else {
       // not niching, simpler case
@@ -726,9 +723,9 @@ public class GenericPool<E, T extends Optimizable<E>>
           final boolean divFront =
               (pos == 0) ? true : diversity.areDiverse(newEntry, geneticPool.get(pos - 1));
           if (!divFront) {
-            // not enough diverstiy to the front -> reject
+            // not enough diversity to the front -> reject
             stats.registerIndividualNotAdded(individual.getID());
-            return false;
+            return -2;
           }
 
           final boolean divBack = diversity.areDiverse(newEntry, entry);
@@ -741,7 +738,7 @@ public class GenericPool<E, T extends Optimizable<E>>
             ensureSize(poolSize);
             // notify...
             microManage(addEntry, pos, false);
-            return true;
+            return pos;
           }
 
           // both diversity to the front AND to the back. just add in between.
@@ -752,7 +749,7 @@ public class GenericPool<E, T extends Optimizable<E>>
           ensureSize(poolSize);
           // notify...
           microManage(addEntry, pos, false);
-          return true;
+          return pos;
         }
       }
 
@@ -761,12 +758,12 @@ public class GenericPool<E, T extends Optimizable<E>>
         final GenericPoolEntry<E, T> newEntry = new GenericPoolEntry<>(individual, fitness, niche);
         geneticPool.add(newEntry);
         microManage(newEntry, currentSize, true);
-        return true;
+        return currentSize;
       }
     }
 
     stats.registerIndividualNotAdded(individual.getID());
-    return false;
+    return -10;
   }
 
   /**

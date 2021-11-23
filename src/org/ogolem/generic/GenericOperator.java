@@ -1,6 +1,5 @@
 /*
-Copyright (c) 2013, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2016-2021, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,20 +39,14 @@ package org.ogolem.generic;
 import java.io.Serializable;
 
 /**
- * Interface for all (generic) global optimizations.
+ * A very bare-bones interface for all genetic operations.
  *
  * @author Johannes Dieterich
- * @version 2020-07-03
+ * @version 2021-10-10
  */
-public interface GenericGlobalOptimization<E, T extends Optimizable<E>>
-    extends Serializable, Copyable {
+public interface GenericOperator extends Serializable {
 
-  @Override
-  GenericGlobalOptimization<E, T> copy();
-
-  GenericGlobalOptimization<E, T> deepCopy();
+  GenericOperator copy();
 
   String getMyID();
-
-  T globalOptimization(final long futureID, final T mother, final T father);
 }

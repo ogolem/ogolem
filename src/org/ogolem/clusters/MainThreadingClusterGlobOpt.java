@@ -60,7 +60,7 @@ import org.ogolem.io.OutputPrimitives;
  * The entry point for cluster global optimization, threading style.
  *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-03
  */
 public class MainThreadingClusterGlobOpt {
 
@@ -154,7 +154,7 @@ public class MainThreadingClusterGlobOpt {
       history = GenericHistory.getReference(hisConf);
       final GenericPoolConfig<Molecule, Geometry> poolConf = conf.getGenericPoolConfig();
       final Geometry example = new Geometry(conf.geoConfCopy());
-      pool = GenericPool.getInstance(poolConf, example);
+      pool = new GenericPool<>(poolConf, example);
     } catch (Exception e) {
       System.err.println("ERROR: Couldn't instantiate helper objects in the cluster optimizer.");
       e.printStackTrace(System.err);
