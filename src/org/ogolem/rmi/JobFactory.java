@@ -64,7 +64,7 @@ import org.ogolem.switches.SwitchesInput;
  * Constructs all jobs from input.
  *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-03
  */
 final class JobFactory {
 
@@ -246,8 +246,7 @@ final class JobFactory {
     if (isProxy) {
       poolC.beSilent();
     }
-    final GenericPool<Molecule, Geometry> pool =
-        GenericPool.getInstance(poolC, globConf.getExample());
+    final GenericPool<Molecule, Geometry> pool = new GenericPool<>(poolC, globConf.getExample());
     assert (pool != null);
     final GenericHistory<Molecule, Geometry> history =
         GenericHistory.getReference(globConf.getGenericHistoryConfig());
@@ -321,7 +320,7 @@ final class JobFactory {
       poolC.beSilent();
     }
     final GenericPool<Double, AdaptiveParameters> pool =
-        GenericPool.getInstance(poolC, adapConf.getExample());
+        new GenericPool<>(poolC, adapConf.getExample());
     assert (pool != null);
     final GenericHistory<Double, AdaptiveParameters> history =
         GenericHistory.getReference(adapConf.getGenericHistoryConfig());

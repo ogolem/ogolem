@@ -53,7 +53,7 @@ import org.ogolem.random.Lottery;
 public abstract class GenericAbstractDarwin<E, T extends Optimizable<E>>
     implements GenericDarwin<E, T> {
 
-  private static final long serialVersionUID = (long) 20200429;
+  private static final long serialVersionUID = (long) 20200703;
   protected final GenericCrossover<E, T> xover;
   protected final GenericMutation<E, T> mutation;
   protected final GenericSanityCheck<E, T> sanitizer;
@@ -106,6 +106,16 @@ public abstract class GenericAbstractDarwin<E, T extends Optimizable<E>>
 
   @Override
   public abstract GenericAbstractDarwin<E, T> copy();
+
+  /**
+   * Override if anything else than a shallow copied (!) GenericAbstractDarwin is wanted!
+   *
+   * @return the shallow copied GenericAbstractDarwin!
+   */
+  @Override
+  public GenericAbstractDarwin<E, T> deepCopy() {
+    return copy();
+  }
 
   @Override
   public abstract String getMyID();

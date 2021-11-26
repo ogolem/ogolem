@@ -45,12 +45,12 @@ import org.ogolem.random.Lottery;
  * Multiple GLOBAL OPTIMIZATIONS wrapped nicely.
  *
  * @author Johannes Dieterich
- * @version 2020-04-29
+ * @version 2020-07-03
  */
 public class GenericMultipleGlobOpt<E, T extends Optimizable<E>>
     implements GenericGlobalOptimization<E, T> {
 
-  private static final long serialVersionUID = (long) 20200429;
+  private static final long serialVersionUID = (long) 20200703;
   private final Lottery random = Lottery.getInstance();
   private final List<GenericGlobalOptimization<E, T>> globopts;
   private final double[] probabilities;
@@ -86,7 +86,12 @@ public class GenericMultipleGlobOpt<E, T extends Optimizable<E>>
   }
 
   @Override
-  public GenericGlobalOptimization<E, T> copy() {
+  public GenericMultipleGlobOpt<E, T> copy() {
+    return new GenericMultipleGlobOpt<>(this);
+  }
+
+  @Override
+  public GenericMultipleGlobOpt<E, T> deepCopy() {
     return new GenericMultipleGlobOpt<>(this);
   }
 

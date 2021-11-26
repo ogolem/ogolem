@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="4.4.2" sequence="0" timestamp="1634736256910" analysisTimestamp="1634736256913" release="snapshot">
+<BugCollection version="4.4.2" sequence="0" timestamp="1635716979584" analysisTimestamp="1635716979587" release="snapshot">
   <Project projectName="ogolem (spotbugsMain)">
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/familytree/VisualizationConfig.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/familytree/MainFamilyTree.class</Jar>
@@ -413,6 +413,7 @@
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/generichistory/GenericHistoryConfig.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/generichistory/GenericHistory.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/generichistory/GeneticRecord.class</Jar>
+    <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/GenericOperator.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/GenericGlobalOptimizationFactory.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/mpi/MPIInterface.class</Jar>
     <Jar>/Users/jmd/workspace/ogolem-development_jmd/build/classes/java/main/org/ogolem/generic/mpi/GenericMPIOptimization.class</Jar>
@@ -2675,7 +2676,7 @@
       <Message>In class org.ogolem.clusters.MainThreadingClusterGlobOpt</Message>
     </Class>
     <Method classname="org.ogolem.clusters.MainThreadingClusterGlobOpt" name="execute" signature="([Ljava/lang/String;)V" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.clusters.MainThreadingClusterGlobOpt" start="69" end="176" startBytecode="0" endBytecode="254" sourcefile="MainThreadingClusterGlobOpt.java" sourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java" relSourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java"/>
+      <SourceLine classname="org.ogolem.clusters.MainThreadingClusterGlobOpt" start="69" end="176" startBytecode="0" endBytecode="256" sourcefile="MainThreadingClusterGlobOpt.java" sourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java" relSourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java"/>
       <Message>In method org.ogolem.clusters.MainThreadingClusterGlobOpt.execute(String[])</Message>
     </Method>
     <LocalVariable name="inpFolder" register="4" pc="97" role="LOCAL_VARIABLE_NAMED">
@@ -2698,7 +2699,7 @@
       <Message>In class org.ogolem.clusters.MainThreadingClusterGlobOpt</Message>
     </Class>
     <Method classname="org.ogolem.clusters.MainThreadingClusterGlobOpt" name="execute" signature="([Ljava/lang/String;)V" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.clusters.MainThreadingClusterGlobOpt" start="69" end="176" startBytecode="0" endBytecode="1539" sourcefile="MainThreadingClusterGlobOpt.java" sourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java" relSourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java"/>
+      <SourceLine classname="org.ogolem.clusters.MainThreadingClusterGlobOpt" start="69" end="176" startBytecode="0" endBytecode="1543" sourcefile="MainThreadingClusterGlobOpt.java" sourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java" relSourcepath="org/ogolem/clusters/MainThreadingClusterGlobOpt.java"/>
       <Message>In method org.ogolem.clusters.MainThreadingClusterGlobOpt.execute(String[])</Message>
     </Method>
     <LocalVariable name="conf" register="8" pc="434" role="LOCAL_VARIABLE_VALUE_OF">
@@ -6796,8 +6797,8 @@
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
     <LongMessage>new org.ogolem.generic.GenericAbstractDarwin(GenericCrossover, GenericMutation, GenericSanityCheck, GenericFitnessFunction, IndividualWriter, double, double, boolean, int) may expose internal representation by storing an externally mutable object into GenericAbstractDarwin.writer</LongMessage>
     <Class classname="org.ogolem.generic.GenericAbstractDarwin" primary="true">
-      <SourceLine classname="org.ogolem.generic.GenericAbstractDarwin" start="53" end="275" sourcefile="GenericAbstractDarwin.java" sourcepath="org/ogolem/generic/GenericAbstractDarwin.java" relSourcepath="org/ogolem/generic/GenericAbstractDarwin.java">
-        <Message>At GenericAbstractDarwin.java:[lines 53-275]</Message>
+      <SourceLine classname="org.ogolem.generic.GenericAbstractDarwin" start="53" end="285" sourcefile="GenericAbstractDarwin.java" sourcepath="org/ogolem/generic/GenericAbstractDarwin.java" relSourcepath="org/ogolem/generic/GenericAbstractDarwin.java">
+        <Message>At GenericAbstractDarwin.java:[lines 53-285]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.GenericAbstractDarwin</Message>
     </Class>
@@ -7030,8 +7031,8 @@
     <ShortMessage>May expose internal representation by incorporating reference to mutable object</ShortMessage>
     <LongMessage>new org.ogolem.generic.GenericMultipleGlobOpt(List, List) may expose internal representation by storing an externally mutable object into GenericMultipleGlobOpt.globopts</LongMessage>
     <Class classname="org.ogolem.generic.GenericMultipleGlobOpt" primary="true">
-      <SourceLine classname="org.ogolem.generic.GenericMultipleGlobOpt" start="50" end="119" sourcefile="GenericMultipleGlobOpt.java" sourcepath="org/ogolem/generic/GenericMultipleGlobOpt.java" relSourcepath="org/ogolem/generic/GenericMultipleGlobOpt.java">
-        <Message>At GenericMultipleGlobOpt.java:[lines 50-119]</Message>
+      <SourceLine classname="org.ogolem.generic.GenericMultipleGlobOpt" start="50" end="124" sourcefile="GenericMultipleGlobOpt.java" sourcepath="org/ogolem/generic/GenericMultipleGlobOpt.java" relSourcepath="org/ogolem/generic/GenericMultipleGlobOpt.java">
+        <Message>At GenericMultipleGlobOpt.java:[lines 50-124]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.GenericMultipleGlobOpt</Message>
     </Class>
@@ -7222,24 +7223,24 @@
       <Message>At AbstractNicher.java:[line 103]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE" instanceHash="f7f2d800a4dd2606c19b268fbcc8419b" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE" instanceHash="37d8e45db1baa774600db930cb6920c7" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
     <ShortMessage>Dead store to local variable</ShortMessage>
-    <LongMessage>Dead store to removed in org.ogolem.generic.genericpool.GenericPool.addIndividualUnsync(Optimizable, Niche, double)</LongMessage>
+    <LongMessage>Dead store to removed in org.ogolem.generic.genericpool.GenericPool.addIndividualToPoolUnsync(Optimizable, Niche, double)</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
-    <Method classname="org.ogolem.generic.genericpool.GenericPool" name="addIndividualUnsync" signature="(Lorg/ogolem/generic/Optimizable;Lorg/ogolem/generic/genericpool/Niche;D)Z" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="607" end="769" startBytecode="0" endBytecode="381" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
-      <Message>In method org.ogolem.generic.genericpool.GenericPool.addIndividualUnsync(Optimizable, Niche, double)</Message>
+    <Method classname="org.ogolem.generic.genericpool.GenericPool" name="addIndividualToPoolUnsync" signature="(Lorg/ogolem/generic/Optimizable;Lorg/ogolem/generic/genericpool/Niche;D)I" isStatic="false" primary="true">
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="604" end="766" startBytecode="0" endBytecode="381" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
+      <Message>In method org.ogolem.generic.genericpool.GenericPool.addIndividualToPoolUnsync(Optimizable, Niche, double)</Message>
     </Method>
-    <LocalVariable name="removed" register="15" pc="457" role="LOCAL_VARIABLE_NAMED">
+    <LocalVariable name="removed" register="15" pc="458" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named removed</Message>
     </LocalVariable>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="676" end="676" startBytecode="455" endBytecode="455" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-      <Message>At GenericPool.java:[line 676]</Message>
+    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="673" end="673" startBytecode="456" endBytecode="456" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+      <Message>At GenericPool.java:[line 673]</Message>
     </SourceLine>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.BASE_VALUE" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="removed"/>
@@ -7250,13 +7251,13 @@
     <ShortMessage>May expose internal representation by returning reference to mutable object</ShortMessage>
     <LongMessage>org.ogolem.generic.genericpool.GenericPool.getExample() may expose internal representation by returning GenericPool.ref</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
     <Method classname="org.ogolem.generic.genericpool.GenericPool" name="getExample" signature="()Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="854" end="854" startBytecode="0" endBytecode="64" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="851" end="851" startBytecode="0" endBytecode="64" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
       <Message>In method org.ogolem.generic.genericpool.GenericPool.getExample()</Message>
     </Method>
     <Field classname="org.ogolem.generic.genericpool.GenericPool" name="ref" signature="Lorg/ogolem/generic/Optimizable;" isStatic="false" primary="true">
@@ -7265,62 +7266,16 @@
       </SourceLine>
       <Message>Field org.ogolem.generic.genericpool.GenericPool.ref</Message>
     </Field>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="854" end="854" startBytecode="4" endBytecode="4" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-      <Message>At GenericPool.java:[line 854]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="MS_EXPOSE_REP" priority="2" rank="18" abbrev="MS" category="MALICIOUS_CODE" instanceHash="3b41a8df9d8cf1322f8493f310479364" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="218">
-    <ShortMessage>Public static method may expose internal representation by returning array</ShortMessage>
-    <LongMessage>Public static org.ogolem.generic.genericpool.GenericPool.getInstance() may expose internal representation by returning GenericPool.instance</LongMessage>
-    <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
-    </Class>
-    <Method classname="org.ogolem.generic.genericpool.GenericPool" name="getInstance" signature="()Lorg/ogolem/generic/genericpool/GenericPool;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="157" end="162" startBytecode="0" endBytecode="67" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
-      <Message>In method org.ogolem.generic.genericpool.GenericPool.getInstance()</Message>
-    </Method>
-    <Field classname="org.ogolem.generic.genericpool.GenericPool" name="instance" signature="Lorg/ogolem/generic/genericpool/GenericPool;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>In GenericPool.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.genericpool.GenericPool.instance</Message>
-    </Field>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="162" end="162" startBytecode="22" endBytecode="22" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-      <Message>At GenericPool.java:[line 162]</Message>
-    </SourceLine>
-  </BugInstance>
-  <BugInstance type="MS_EXPOSE_REP" priority="2" rank="18" abbrev="MS" category="MALICIOUS_CODE" instanceHash="67c2248da35e194b64dd25d523410d61" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="218">
-    <ShortMessage>Public static method may expose internal representation by returning array</ShortMessage>
-    <LongMessage>Public static org.ogolem.generic.genericpool.GenericPool.getInstance(GenericPoolConfig, Optimizable) may expose internal representation by returning GenericPool.instance</LongMessage>
-    <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
-      </SourceLine>
-      <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
-    </Class>
-    <Method classname="org.ogolem.generic.genericpool.GenericPool" name="getInstance" signature="(Lorg/ogolem/generic/genericpool/GenericPoolConfig;Lorg/ogolem/generic/Optimizable;)Lorg/ogolem/generic/genericpool/GenericPool;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="149" end="152" startBytecode="0" endBytecode="118" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java"/>
-      <Message>In method org.ogolem.generic.genericpool.GenericPool.getInstance(GenericPoolConfig, Optimizable)</Message>
-    </Method>
-    <Field classname="org.ogolem.generic.genericpool.GenericPool" name="instance" signature="Lorg/ogolem/generic/genericpool/GenericPool;" isStatic="true" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>In GenericPool.java</Message>
-      </SourceLine>
-      <Message>Field org.ogolem.generic.genericpool.GenericPool.instance</Message>
-    </Field>
-    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="152" end="152" startBytecode="21" endBytecode="21" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-      <Message>At GenericPool.java:[line 152]</Message>
+    <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" primary="true" start="851" end="851" startBytecode="4" endBytecode="4" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+      <Message>At GenericPool.java:[line 851]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="SE_TRANSIENT_FIELD_NOT_RESTORED" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="27c85856dff836fa68aea45f72f073a8" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.diversity is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7338,8 +7293,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.nicher is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7357,8 +7312,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.selector is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7376,8 +7331,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.stats is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -7395,8 +7350,8 @@
     <ShortMessage>Transient field that isn&apos;t set by deserialization.</ShortMessage>
     <LongMessage>The field org.ogolem.generic.genericpool.GenericPool.writer is transient but isn&apos;t set by deserialization</LongMessage>
     <Class classname="org.ogolem.generic.genericpool.GenericPool" primary="true">
-      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="953" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
-        <Message>At GenericPool.java:[lines 59-953]</Message>
+      <SourceLine classname="org.ogolem.generic.genericpool.GenericPool" start="59" end="950" sourcefile="GenericPool.java" sourcepath="org/ogolem/generic/genericpool/GenericPool.java" relSourcepath="org/ogolem/generic/genericpool/GenericPool.java">
+        <Message>At GenericPool.java:[lines 59-950]</Message>
       </SourceLine>
       <Message>In class org.ogolem.generic.genericpool.GenericPool</Message>
     </Class>
@@ -9654,8 +9609,8 @@
     <ShortMessage>Inconsistent synchronization</ShortMessage>
     <LongMessage>Inconsistent synchronization of org.ogolem.rmi.SwitchGlobOptJob.countGlobOptReturns; locked 50% of time</LongMessage>
     <Class classname="org.ogolem.rmi.SwitchGlobOptJob" primary="true">
-      <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="74" end="338" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java">
-        <Message>At SwitchGlobOptJob.java:[lines 74-338]</Message>
+      <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="73" end="337" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java">
+        <Message>At SwitchGlobOptJob.java:[lines 73-337]</Message>
       </SourceLine>
       <Message>In class org.ogolem.rmi.SwitchGlobOptJob</Message>
     </Class>
@@ -9668,31 +9623,31 @@
     <Int value="50" role="INT_SYNC_PERCENT">
       <Message>Synchronized 50% of the time</Message>
     </Int>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" primary="true" start="163" end="163" startBytecode="134" endBytecode="134" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" primary="true" start="162" end="162" startBytecode="134" endBytecode="134" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
+      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 162]</Message>
+    </SourceLine>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="162" end="162" startBytecode="139" endBytecode="139" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
+      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 162]</Message>
+    </SourceLine>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="163" end="163" startBytecode="143" endBytecode="143" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
       <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 163]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="163" end="163" startBytecode="139" endBytecode="139" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
-      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 163]</Message>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="316" end="316" startBytecode="68" endBytecode="68" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
+      <Message>Synchronized access at SwitchGlobOptJob.java:[line 316]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="164" end="164" startBytecode="143" endBytecode="143" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
-      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 164]</Message>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="316" end="316" startBytecode="73" endBytecode="73" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
+      <Message>Synchronized access at SwitchGlobOptJob.java:[line 316]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="317" end="317" startBytecode="68" endBytecode="68" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="317" end="317" startBytecode="77" endBytecode="77" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
       <Message>Synchronized access at SwitchGlobOptJob.java:[line 317]</Message>
-    </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="317" end="317" startBytecode="73" endBytecode="73" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
-      <Message>Synchronized access at SwitchGlobOptJob.java:[line 317]</Message>
-    </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="318" end="318" startBytecode="77" endBytecode="77" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
-      <Message>Synchronized access at SwitchGlobOptJob.java:[line 318]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IS2_INCONSISTENT_SYNC" priority="2" rank="17" abbrev="IS" category="MT_CORRECTNESS" instanceHash="3cd477c2f83e724730450411a0c24af8" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="366">
     <ShortMessage>Inconsistent synchronization</ShortMessage>
     <LongMessage>Inconsistent synchronization of org.ogolem.rmi.SwitchGlobOptJob.countInitialReturns; locked 50% of time</LongMessage>
     <Class classname="org.ogolem.rmi.SwitchGlobOptJob" primary="true">
-      <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="74" end="338" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java">
-        <Message>At SwitchGlobOptJob.java:[lines 74-338]</Message>
+      <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="73" end="337" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java">
+        <Message>At SwitchGlobOptJob.java:[lines 73-337]</Message>
       </SourceLine>
       <Message>In class org.ogolem.rmi.SwitchGlobOptJob</Message>
     </Class>
@@ -9705,23 +9660,23 @@
     <Int value="50" role="INT_SYNC_PERCENT">
       <Message>Synchronized 50% of the time</Message>
     </Int>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" primary="true" start="151" end="151" startBytecode="55" endBytecode="55" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" primary="true" start="150" end="150" startBytecode="55" endBytecode="55" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
+      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 150]</Message>
+    </SourceLine>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="150" end="150" startBytecode="60" endBytecode="60" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
+      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 150]</Message>
+    </SourceLine>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="151" end="151" startBytecode="64" endBytecode="64" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
       <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 151]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="151" end="151" startBytecode="60" endBytecode="60" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
-      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 151]</Message>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="302" end="302" startBytecode="21" endBytecode="21" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
+      <Message>Synchronized access at SwitchGlobOptJob.java:[line 302]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="152" end="152" startBytecode="64" endBytecode="64" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_UNSYNC_ACCESS">
-      <Message>Unsynchronized access at SwitchGlobOptJob.java:[line 152]</Message>
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="302" end="302" startBytecode="26" endBytecode="26" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
+      <Message>Synchronized access at SwitchGlobOptJob.java:[line 302]</Message>
     </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="303" end="303" startBytecode="21" endBytecode="21" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
+    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="303" end="303" startBytecode="30" endBytecode="30" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
       <Message>Synchronized access at SwitchGlobOptJob.java:[line 303]</Message>
-    </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="303" end="303" startBytecode="26" endBytecode="26" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
-      <Message>Synchronized access at SwitchGlobOptJob.java:[line 303]</Message>
-    </SourceLine>
-    <SourceLine classname="org.ogolem.rmi.SwitchGlobOptJob" start="304" end="304" startBytecode="30" endBytecode="30" sourcefile="SwitchGlobOptJob.java" sourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" relSourcepath="org/ogolem/rmi/SwitchGlobOptJob.java" role="SOURCE_LINE_SYNC_ACCESS">
-      <Message>Synchronized access at SwitchGlobOptJob.java:[line 304]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NP_LOAD_OF_KNOWN_NULL_VALUE" priority="2" rank="16" abbrev="NP" category="STYLE" instanceHash="44f92f72b4d78241637b0d882ea44b83" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
@@ -10860,7 +10815,7 @@ closed.</p>
   <Errors errors="0" missingClasses="1">
     <MissingClass>jdk.incubator.foreign.LibraryLookup</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Wed, 20 Oct 2021 08:24:16 -0500" total_classes="737" referenced_classes="1007" total_bugs="400" total_size="65953" num_packages="49" java_version="17" vm_version="17+35" cpu_seconds="25.75" clock_seconds="16.24" peak_mbytes="682.87" alloc_mbytes="512.00" gc_seconds="0.56" priority_2="352" priority_1="48">
+  <FindBugsSummary timestamp="Sun, 31 Oct 2021 16:49:39 -0500" total_classes="738" referenced_classes="1008" total_bugs="398" total_size="65978" num_packages="49" java_version="17.0.1" vm_version="17.0.1+12" cpu_seconds="43.79" clock_seconds="17.86" peak_mbytes="682.24" alloc_mbytes="512.00" gc_seconds="0.65" priority_2="350" priority_1="48">
     <FileStats path="contrib/bobyqa/AbstractBOBYQAMethod.java" bugCount="0" size="33"/>
     <FileStats path="contrib/bobyqa/BOBYQAMethod.java" bugCount="0" size="5"/>
     <FileStats path="contrib/bobyqa/BOBYQAOptimizer.java" bugCount="5" size="1766" bugHash="02df92db8a0d632e485370f73e6e1b33"/>
@@ -11179,7 +11134,7 @@ closed.</p>
     <FileStats path="org/ogolem/generic/DummyIndividualReader.java" bugCount="0" size="10"/>
     <FileStats path="org/ogolem/generic/EmptySanityCheck.java" bugCount="0" size="10"/>
     <FileStats path="org/ogolem/generic/GenericAbsolutePrescreeningLocOpt.java" bugCount="0" size="34"/>
-    <FileStats path="org/ogolem/generic/GenericAbstractDarwin.java" bugCount="1" size="136" bugHash="4f1a97a1ac8346e5adb510b0b7fff311"/>
+    <FileStats path="org/ogolem/generic/GenericAbstractDarwin.java" bugCount="1" size="139" bugHash="4f1a97a1ac8346e5adb510b0b7fff311"/>
     <FileStats path="org/ogolem/generic/GenericAbstractGradFreeLocOpt.java" bugCount="0" size="28"/>
     <FileStats path="org/ogolem/generic/GenericAbstractLocOpt.java" bugCount="0" size="28"/>
     <FileStats path="org/ogolem/generic/GenericBackend.java" bugCount="0" size="15"/>
@@ -11192,15 +11147,16 @@ closed.</p>
     <FileStats path="org/ogolem/generic/GenericFitnessFunction.java" bugCount="0" size="6"/>
     <FileStats path="org/ogolem/generic/GenericFitnessFunctionBackendWrapper.java" bugCount="3" size="59" bugHash="33b9501ff635601ba3b7aaeca642cd2a"/>
     <FileStats path="org/ogolem/generic/GenericGermanyCrossover.java" bugCount="0" size="34"/>
-    <FileStats path="org/ogolem/generic/GenericGlobalOptimization.java" bugCount="0" size="6"/>
+    <FileStats path="org/ogolem/generic/GenericGlobalOptimization.java" bugCount="0" size="7"/>
     <FileStats path="org/ogolem/generic/GenericGlobalOptimizationFactory.java" bugCount="0" size="147"/>
     <FileStats path="org/ogolem/generic/GenericHollandCrossover.java" bugCount="0" size="19"/>
     <FileStats path="org/ogolem/generic/GenericInitializer.java" bugCount="0" size="6"/>
     <FileStats path="org/ogolem/generic/GenericLocOpt.java" bugCount="0" size="7"/>
-    <FileStats path="org/ogolem/generic/GenericMultipleGlobOpt.java" bugCount="1" size="52" bugHash="d338a4dd0063c09a91956b62c49a33a2"/>
+    <FileStats path="org/ogolem/generic/GenericMultipleGlobOpt.java" bugCount="1" size="56" bugHash="d338a4dd0063c09a91956b62c49a33a2"/>
     <FileStats path="org/ogolem/generic/GenericMutation.java" bugCount="0" size="6"/>
     <FileStats path="org/ogolem/generic/GenericMutationAsXOver.java" bugCount="0" size="28"/>
     <FileStats path="org/ogolem/generic/GenericNoLocOpt.java" bugCount="0" size="26"/>
+    <FileStats path="org/ogolem/generic/GenericOperator.java" bugCount="0" size="3"/>
     <FileStats path="org/ogolem/generic/GenericPortugalCrossover.java" bugCount="0" size="41"/>
     <FileStats path="org/ogolem/generic/GenericRelativePrescreeningLocOpt.java" bugCount="1" size="42" bugHash="964beea0b1d0bfb3dccce0b5338d140c"/>
     <FileStats path="org/ogolem/generic/GenericSanityCheck.java" bugCount="0" size="5"/>
@@ -11221,10 +11177,10 @@ closed.</p>
     <FileStats path="org/ogolem/generic/genericpool/DiversityChecker.java" bugCount="0" size="3"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericDiversityCheckers.java" bugCount="0" size="51"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericParentSelectors.java" bugCount="0" size="207"/>
-    <FileStats path="org/ogolem/generic/genericpool/GenericPool.java" bugCount="9" size="464" bugHash="5c9d49bb5a5c97ef44c2c5a97b6a7570"/>
+    <FileStats path="org/ogolem/generic/genericpool/GenericPool.java" bugCount="7" size="465" bugHash="ffdfd0638436308a531b49b8fe17a508"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericPoolConfig.java" bugCount="6" size="149" bugHash="68d9e650fec16a8682d048ab66132763"/>
     <FileStats path="org/ogolem/generic/genericpool/GenericPoolEntry.java" bugCount="2" size="19" bugHash="fdf2cd7a04a44fd938abf7f86a45d7c5"/>
-    <FileStats path="org/ogolem/generic/genericpool/GenericStatistics.java" bugCount="0" size="83"/>
+    <FileStats path="org/ogolem/generic/genericpool/GenericStatistics.java" bugCount="0" size="97"/>
     <FileStats path="org/ogolem/generic/genericpool/Niche.java" bugCount="0" size="19"/>
     <FileStats path="org/ogolem/generic/genericpool/NicheComputer.java" bugCount="0" size="5"/>
     <FileStats path="org/ogolem/generic/genericpool/Nicher.java" bugCount="0" size="5"/>
@@ -11383,7 +11339,7 @@ closed.</p>
     <FileStats path="org/ogolem/rmi/GenericSeedTask.java" bugCount="2" size="30" bugHash="1ddfeb56a25805cb80b6258a457eaad6"/>
     <FileStats path="org/ogolem/rmi/GenericThreadingClientBackend.java" bugCount="2" size="337" bugHash="d67d87c666f5f9dd74e15216890a7d46"/>
     <FileStats path="org/ogolem/rmi/Job.java" bugCount="0" size="8"/>
-    <FileStats path="org/ogolem/rmi/JobFactory.java" bugCount="0" size="130"/>
+    <FileStats path="org/ogolem/rmi/JobFactory.java" bugCount="0" size="129"/>
     <FileStats path="org/ogolem/rmi/MainOgolemRMI.java" bugCount="0" size="91"/>
     <FileStats path="org/ogolem/rmi/MainRMIClient.java" bugCount="2" size="142" bugHash="a184606b1c3d904776b3b0b0a0b14c2e"/>
     <FileStats path="org/ogolem/rmi/MainRMIProxy.java" bugCount="2" size="153" bugHash="141fcffe9f3562132063772784bfeee0"/>
@@ -11392,7 +11348,7 @@ closed.</p>
     <FileStats path="org/ogolem/rmi/RMICommImpl.java" bugCount="0" size="90"/>
     <FileStats path="org/ogolem/rmi/RMICommunication.java" bugCount="0" size="11"/>
     <FileStats path="org/ogolem/rmi/Result.java" bugCount="0" size="33"/>
-    <FileStats path="org/ogolem/rmi/SwitchGlobOptJob.java" bugCount="2" size="170" bugHash="4b6f5366f783f67b990ae092bce091bd"/>
+    <FileStats path="org/ogolem/rmi/SwitchGlobOptJob.java" bugCount="2" size="170" bugHash="b24b45967470f11302076ba51fd28e4f"/>
     <FileStats path="org/ogolem/rmi/SwitchGlobOptTask.java" bugCount="1" size="25" bugHash="887e92aa6a05d2fac5f91d4945c1937a"/>
     <FileStats path="org/ogolem/rmi/SwitchInitTask.java" bugCount="0" size="27"/>
     <FileStats path="org/ogolem/rmi/Task.java" bugCount="0" size="3"/>
@@ -11909,7 +11865,7 @@ closed.</p>
     <PackageStats package="org.ogolem.general" total_bugs="0" total_types="1" total_size="180">
       <ClassStats class="org.ogolem.general.MainOgolem" sourceFile="MainOgolem.java" interface="false" size="180" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.generic" total_bugs="20" total_types="47" total_size="1478" priority_2="20">
+    <PackageStats package="org.ogolem.generic" total_bugs="20" total_types="48" total_size="1489" priority_2="20">
       <ClassStats class="org.ogolem.generic.AbstractDefaultConfig" sourceFile="AbstractDefaultConfig.java" interface="false" size="76" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.AbstractProblem" sourceFile="AbstractProblem.java" interface="false" size="44" bugs="0"/>
       <ClassStats class="org.ogolem.generic.BoundedGenericMutation" sourceFile="BoundedGenericMutation.java" interface="false" size="52" bugs="2" priority_2="2"/>
@@ -11921,7 +11877,7 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.DummyIndividualReader" sourceFile="DummyIndividualReader.java" interface="false" size="10" bugs="0"/>
       <ClassStats class="org.ogolem.generic.EmptySanityCheck" sourceFile="EmptySanityCheck.java" interface="false" size="10" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericAbsolutePrescreeningLocOpt" sourceFile="GenericAbsolutePrescreeningLocOpt.java" interface="false" size="34" bugs="0"/>
-      <ClassStats class="org.ogolem.generic.GenericAbstractDarwin" sourceFile="GenericAbstractDarwin.java" interface="false" size="136" bugs="1" priority_2="1"/>
+      <ClassStats class="org.ogolem.generic.GenericAbstractDarwin" sourceFile="GenericAbstractDarwin.java" interface="false" size="139" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.GenericAbstractGradFreeLocOpt" sourceFile="GenericAbstractGradFreeLocOpt.java" interface="false" size="28" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericAbstractLocOpt" sourceFile="GenericAbstractLocOpt.java" interface="false" size="28" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericBackend" sourceFile="GenericBackend.java" interface="true" size="15" bugs="0"/>
@@ -11935,15 +11891,16 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.GenericFitnessFunction" sourceFile="GenericFitnessFunction.java" interface="true" size="6" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericFitnessFunctionBackendWrapper" sourceFile="GenericFitnessFunctionBackendWrapper.java" interface="false" size="59" bugs="3" priority_2="3"/>
       <ClassStats class="org.ogolem.generic.GenericGermanyCrossover" sourceFile="GenericGermanyCrossover.java" interface="false" size="34" bugs="0"/>
-      <ClassStats class="org.ogolem.generic.GenericGlobalOptimization" sourceFile="GenericGlobalOptimization.java" interface="true" size="6" bugs="0"/>
+      <ClassStats class="org.ogolem.generic.GenericGlobalOptimization" sourceFile="GenericGlobalOptimization.java" interface="true" size="7" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericGlobalOptimizationFactory" sourceFile="GenericGlobalOptimizationFactory.java" interface="false" size="147" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericHollandCrossover" sourceFile="GenericHollandCrossover.java" interface="false" size="19" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericInitializer" sourceFile="GenericInitializer.java" interface="true" size="6" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericLocOpt" sourceFile="GenericLocOpt.java" interface="true" size="7" bugs="0"/>
-      <ClassStats class="org.ogolem.generic.GenericMultipleGlobOpt" sourceFile="GenericMultipleGlobOpt.java" interface="false" size="52" bugs="1" priority_2="1"/>
+      <ClassStats class="org.ogolem.generic.GenericMultipleGlobOpt" sourceFile="GenericMultipleGlobOpt.java" interface="false" size="56" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.GenericMutation" sourceFile="GenericMutation.java" interface="true" size="6" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericMutationAsXOver" sourceFile="GenericMutationAsXOver.java" interface="false" size="28" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericNoLocOpt" sourceFile="GenericNoLocOpt.java" interface="false" size="26" bugs="0"/>
+      <ClassStats class="org.ogolem.generic.GenericOperator" sourceFile="GenericOperator.java" interface="true" size="3" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericPortugalCrossover" sourceFile="GenericPortugalCrossover.java" interface="false" size="41" bugs="0"/>
       <ClassStats class="org.ogolem.generic.GenericRelativePrescreeningLocOpt" sourceFile="GenericRelativePrescreeningLocOpt.java" interface="false" size="42" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.GenericSanityCheck" sourceFile="GenericSanityCheck.java" interface="true" size="5" bugs="0"/>
@@ -11963,7 +11920,7 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.generichistory.GenericHistoryConfig" sourceFile="GenericHistoryConfig.java" interface="false" size="21" bugs="0"/>
       <ClassStats class="org.ogolem.generic.generichistory.GeneticRecord" sourceFile="GeneticRecord.java" interface="false" size="19" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.generic.genericpool" total_bugs="19" total_types="19" total_size="1120" priority_2="19">
+    <PackageStats package="org.ogolem.generic.genericpool" total_bugs="17" total_types="19" total_size="1135" priority_2="17">
       <ClassStats class="org.ogolem.generic.genericpool.AbstractNicher" sourceFile="AbstractNicher.java" interface="false" size="59" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.generic.genericpool.DiversityChecker" sourceFile="DiversityChecker.java" interface="true" size="3" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericDiversityCheckers" sourceFile="GenericDiversityCheckers.java" interface="false" size="3" bugs="0"/>
@@ -11974,10 +11931,10 @@ closed.</p>
       <ClassStats class="org.ogolem.generic.genericpool.GenericParentSelectors$FitnessWeightedParentSelector" sourceFile="GenericParentSelectors.java" interface="false" size="74" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericParentSelectors$RandomParentSelector" sourceFile="GenericParentSelectors.java" interface="false" size="23" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericParentSelectors$RealFitnessWeightedParentSelector" sourceFile="GenericParentSelectors.java" interface="false" size="52" bugs="0"/>
-      <ClassStats class="org.ogolem.generic.genericpool.GenericPool" sourceFile="GenericPool.java" interface="false" size="464" bugs="9" priority_2="9"/>
+      <ClassStats class="org.ogolem.generic.genericpool.GenericPool" sourceFile="GenericPool.java" interface="false" size="465" bugs="7" priority_2="7"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericPoolConfig" sourceFile="GenericPoolConfig.java" interface="false" size="149" bugs="6" priority_2="6"/>
       <ClassStats class="org.ogolem.generic.genericpool.GenericPoolEntry" sourceFile="GenericPoolEntry.java" interface="false" size="19" bugs="2" priority_2="2"/>
-      <ClassStats class="org.ogolem.generic.genericpool.GenericStatistics" sourceFile="GenericStatistics.java" interface="false" size="83" bugs="0"/>
+      <ClassStats class="org.ogolem.generic.genericpool.GenericStatistics" sourceFile="GenericStatistics.java" interface="false" size="97" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.Niche" sourceFile="Niche.java" interface="false" size="19" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.NicheComputer" sourceFile="NicheComputer.java" interface="true" size="5" bugs="0"/>
       <ClassStats class="org.ogolem.generic.genericpool.Nicher" sourceFile="Nicher.java" interface="true" size="5" bugs="0"/>
@@ -12182,7 +12139,7 @@ closed.</p>
       <ClassStats class="org.ogolem.random.RandomUtils" sourceFile="RandomUtils.java" interface="false" size="158" bugs="0"/>
       <ClassStats class="org.ogolem.random.StandardRNG" sourceFile="StandardRNG.java" interface="false" size="25" bugs="0"/>
     </PackageStats>
-    <PackageStats package="org.ogolem.rmi" total_bugs="27" total_types="33" total_size="2429" priority_2="19" priority_1="8">
+    <PackageStats package="org.ogolem.rmi" total_bugs="27" total_types="33" total_size="2428" priority_2="19" priority_1="8">
       <ClassStats class="org.ogolem.rmi.AliveCheck" sourceFile="AliveCheck.java" interface="false" size="21" bugs="1" priority_1="1"/>
       <ClassStats class="org.ogolem.rmi.AliveCheck$AliveChecker" sourceFile="AliveCheck.java" interface="false" size="15" bugs="1" priority_2="1"/>
       <ClassStats class="org.ogolem.rmi.ClientList" sourceFile="ClientList.java" interface="false" size="69" bugs="0"/>
@@ -12200,7 +12157,7 @@ closed.</p>
       <ClassStats class="org.ogolem.rmi.GenericThreadingClientBackend$GlobTaskFactory" sourceFile="GenericThreadingClientBackend.java" interface="false" size="6" bugs="0"/>
       <ClassStats class="org.ogolem.rmi.GenericThreadingClientBackend$GlobTaskFactory$1" sourceFile="GenericThreadingClientBackend.java" interface="false" size="72" bugs="1" priority_1="1"/>
       <ClassStats class="org.ogolem.rmi.Job" sourceFile="Job.java" interface="true" size="8" bugs="0"/>
-      <ClassStats class="org.ogolem.rmi.JobFactory" sourceFile="JobFactory.java" interface="false" size="130" bugs="0"/>
+      <ClassStats class="org.ogolem.rmi.JobFactory" sourceFile="JobFactory.java" interface="false" size="129" bugs="0"/>
       <ClassStats class="org.ogolem.rmi.MainOgolemRMI" sourceFile="MainOgolemRMI.java" interface="false" size="91" bugs="0"/>
       <ClassStats class="org.ogolem.rmi.MainRMIClient" sourceFile="MainRMIClient.java" interface="false" size="142" bugs="2" priority_1="2"/>
       <ClassStats class="org.ogolem.rmi.MainRMIProxy" sourceFile="MainRMIProxy.java" interface="false" size="153" bugs="2" priority_1="2"/>
@@ -12289,39 +12246,41 @@ closed.</p>
       <ClassStats class="org.ogolem.tests.MainTests" sourceFile="MainTests.java" interface="false" size="107" bugs="0"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1711" invocations="5802" avgMicrosecondsPerInvocation="294" maxMicrosecondsPerInvocation="36241" standardDeviationMicrosecondsPerInvocation="1524"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1360" invocations="4591" avgMicrosecondsPerInvocation="296" maxMicrosecondsPerInvocation="53013" standardDeviationMicrosecondsPerInvocation="1623"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1239" invocations="4445" avgMicrosecondsPerInvocation="278" maxMicrosecondsPerInvocation="50375" standardDeviationMicrosecondsPerInvocation="1480"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="1075" invocations="1883" avgMicrosecondsPerInvocation="571" maxMicrosecondsPerInvocation="12299" standardDeviationMicrosecondsPerInvocation="994"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="927" invocations="5314" avgMicrosecondsPerInvocation="174" maxMicrosecondsPerInvocation="19167" standardDeviationMicrosecondsPerInvocation="794"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="799" invocations="5776" avgMicrosecondsPerInvocation="138" maxMicrosecondsPerInvocation="14269" standardDeviationMicrosecondsPerInvocation="555"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="509" invocations="6996" avgMicrosecondsPerInvocation="72" maxMicrosecondsPerInvocation="9129" standardDeviationMicrosecondsPerInvocation="319"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="501" invocations="4443" avgMicrosecondsPerInvocation="112" maxMicrosecondsPerInvocation="10338" standardDeviationMicrosecondsPerInvocation="408"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="405" invocations="5314" avgMicrosecondsPerInvocation="76" maxMicrosecondsPerInvocation="20147" standardDeviationMicrosecondsPerInvocation="502"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="281" invocations="5318" avgMicrosecondsPerInvocation="52" maxMicrosecondsPerInvocation="9666" standardDeviationMicrosecondsPerInvocation="181"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="278" invocations="2485" avgMicrosecondsPerInvocation="112" maxMicrosecondsPerInvocation="9399" standardDeviationMicrosecondsPerInvocation="287"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="253" invocations="737" avgMicrosecondsPerInvocation="344" maxMicrosecondsPerInvocation="19693" standardDeviationMicrosecondsPerInvocation="1312"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="187" invocations="1007" avgMicrosecondsPerInvocation="186" maxMicrosecondsPerInvocation="3964" standardDeviationMicrosecondsPerInvocation="381"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="185" invocations="1007" avgMicrosecondsPerInvocation="184" maxMicrosecondsPerInvocation="8633" standardDeviationMicrosecondsPerInvocation="423"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="183" invocations="4344" avgMicrosecondsPerInvocation="42" maxMicrosecondsPerInvocation="8971" standardDeviationMicrosecondsPerInvocation="218"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="160" invocations="737" avgMicrosecondsPerInvocation="217" maxMicrosecondsPerInvocation="78026" standardDeviationMicrosecondsPerInvocation="2893"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="136" invocations="737" avgMicrosecondsPerInvocation="184" maxMicrosecondsPerInvocation="8612" standardDeviationMicrosecondsPerInvocation="426"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="126" invocations="737" avgMicrosecondsPerInvocation="172" maxMicrosecondsPerInvocation="3908" standardDeviationMicrosecondsPerInvocation="330"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="123" invocations="737" avgMicrosecondsPerInvocation="167" maxMicrosecondsPerInvocation="5002" standardDeviationMicrosecondsPerInvocation="340"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="116" invocations="737" avgMicrosecondsPerInvocation="157" maxMicrosecondsPerInvocation="12225" standardDeviationMicrosecondsPerInvocation="561"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="114" invocations="4445" avgMicrosecondsPerInvocation="25" maxMicrosecondsPerInvocation="5871" standardDeviationMicrosecondsPerInvocation="115"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="111" invocations="5670" avgMicrosecondsPerInvocation="19" maxMicrosecondsPerInvocation="4654" standardDeviationMicrosecondsPerInvocation="122"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="110" invocations="737" avgMicrosecondsPerInvocation="149" maxMicrosecondsPerInvocation="4831" standardDeviationMicrosecondsPerInvocation="355"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="110" invocations="737" avgMicrosecondsPerInvocation="149" maxMicrosecondsPerInvocation="9015" standardDeviationMicrosecondsPerInvocation="488"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="109" invocations="2492" avgMicrosecondsPerInvocation="44" maxMicrosecondsPerInvocation="3705" standardDeviationMicrosecondsPerInvocation="88"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="97" invocations="737" avgMicrosecondsPerInvocation="132" maxMicrosecondsPerInvocation="4298" standardDeviationMicrosecondsPerInvocation="294"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="95" invocations="737" avgMicrosecondsPerInvocation="130" maxMicrosecondsPerInvocation="4683" standardDeviationMicrosecondsPerInvocation="309"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="95" invocations="737" avgMicrosecondsPerInvocation="129" maxMicrosecondsPerInvocation="4641" standardDeviationMicrosecondsPerInvocation="326"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="122" maxMicrosecondsPerInvocation="3953" standardDeviationMicrosecondsPerInvocation="276"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="122" maxMicrosecondsPerInvocation="3982" standardDeviationMicrosecondsPerInvocation="279"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" totalMilliseconds="90" invocations="737" avgMicrosecondsPerInvocation="122" maxMicrosecondsPerInvocation="9768" standardDeviationMicrosecondsPerInvocation="441"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="89" invocations="737" avgMicrosecondsPerInvocation="120" maxMicrosecondsPerInvocation="4442" standardDeviationMicrosecondsPerInvocation="275"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CrossSiteScripting" totalMilliseconds="88" invocations="737" avgMicrosecondsPerInvocation="119" maxMicrosecondsPerInvocation="4354" standardDeviationMicrosecondsPerInvocation="287"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1662" invocations="5811" avgMicrosecondsPerInvocation="286" maxMicrosecondsPerInvocation="45483" standardDeviationMicrosecondsPerInvocation="1446"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1385" invocations="4595" avgMicrosecondsPerInvocation="301" maxMicrosecondsPerInvocation="53756" standardDeviationMicrosecondsPerInvocation="1567"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1348" invocations="4449" avgMicrosecondsPerInvocation="303" maxMicrosecondsPerInvocation="55153" standardDeviationMicrosecondsPerInvocation="1630"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="1105" invocations="1882" avgMicrosecondsPerInvocation="587" maxMicrosecondsPerInvocation="13384" standardDeviationMicrosecondsPerInvocation="1017"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1002" invocations="5321" avgMicrosecondsPerInvocation="188" maxMicrosecondsPerInvocation="25164" standardDeviationMicrosecondsPerInvocation="886"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="873" invocations="5785" avgMicrosecondsPerInvocation="151" maxMicrosecondsPerInvocation="17568" standardDeviationMicrosecondsPerInvocation="595"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="592" invocations="4450" avgMicrosecondsPerInvocation="133" maxMicrosecondsPerInvocation="14762" standardDeviationMicrosecondsPerInvocation="519"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="558" invocations="7003" avgMicrosecondsPerInvocation="79" maxMicrosecondsPerInvocation="11299" standardDeviationMicrosecondsPerInvocation="335"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="436" invocations="2487" avgMicrosecondsPerInvocation="175" maxMicrosecondsPerInvocation="18367" standardDeviationMicrosecondsPerInvocation="653"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="395" invocations="5321" avgMicrosecondsPerInvocation="74" maxMicrosecondsPerInvocation="10865" standardDeviationMicrosecondsPerInvocation="398"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="310" invocations="5325" avgMicrosecondsPerInvocation="58" maxMicrosecondsPerInvocation="7347" standardDeviationMicrosecondsPerInvocation="164"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="283" invocations="738" avgMicrosecondsPerInvocation="383" maxMicrosecondsPerInvocation="25798" standardDeviationMicrosecondsPerInvocation="1690"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="203" invocations="1008" avgMicrosecondsPerInvocation="202" maxMicrosecondsPerInvocation="4311" standardDeviationMicrosecondsPerInvocation="406"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="193" invocations="1008" avgMicrosecondsPerInvocation="192" maxMicrosecondsPerInvocation="3595" standardDeviationMicrosecondsPerInvocation="354"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="184" invocations="738" avgMicrosecondsPerInvocation="249" maxMicrosecondsPerInvocation="89396" standardDeviationMicrosecondsPerInvocation="3312"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="179" invocations="4348" avgMicrosecondsPerInvocation="41" maxMicrosecondsPerInvocation="4085" standardDeviationMicrosecondsPerInvocation="166"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="156" invocations="738" avgMicrosecondsPerInvocation="212" maxMicrosecondsPerInvocation="8849" standardDeviationMicrosecondsPerInvocation="466"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="151" invocations="738" avgMicrosecondsPerInvocation="204" maxMicrosecondsPerInvocation="11953" standardDeviationMicrosecondsPerInvocation="573"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="148" invocations="738" avgMicrosecondsPerInvocation="200" maxMicrosecondsPerInvocation="4472" standardDeviationMicrosecondsPerInvocation="377"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="131" invocations="738" avgMicrosecondsPerInvocation="178" maxMicrosecondsPerInvocation="6813" standardDeviationMicrosecondsPerInvocation="439"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="128" invocations="738" avgMicrosecondsPerInvocation="174" maxMicrosecondsPerInvocation="10078" standardDeviationMicrosecondsPerInvocation="494"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="127" invocations="4449" avgMicrosecondsPerInvocation="28" maxMicrosecondsPerInvocation="5719" standardDeviationMicrosecondsPerInvocation="114"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="127" invocations="5680" avgMicrosecondsPerInvocation="22" maxMicrosecondsPerInvocation="4306" standardDeviationMicrosecondsPerInvocation="122"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="117" invocations="738" avgMicrosecondsPerInvocation="159" maxMicrosecondsPerInvocation="4979" standardDeviationMicrosecondsPerInvocation="415"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="114" invocations="738" avgMicrosecondsPerInvocation="155" maxMicrosecondsPerInvocation="6372" standardDeviationMicrosecondsPerInvocation="393"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="112" invocations="160035" avgMicrosecondsPerInvocation="0" maxMicrosecondsPerInvocation="241" standardDeviationMicrosecondsPerInvocation="1"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="111" invocations="738" avgMicrosecondsPerInvocation="150" maxMicrosecondsPerInvocation="3807" standardDeviationMicrosecondsPerInvocation="335"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="110" invocations="738" avgMicrosecondsPerInvocation="149" maxMicrosecondsPerInvocation="4301" standardDeviationMicrosecondsPerInvocation="332"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="109" invocations="738" avgMicrosecondsPerInvocation="147" maxMicrosecondsPerInvocation="4329" standardDeviationMicrosecondsPerInvocation="332"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="108" invocations="2494" avgMicrosecondsPerInvocation="43" maxMicrosecondsPerInvocation="3844" standardDeviationMicrosecondsPerInvocation="82"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="108" invocations="738" avgMicrosecondsPerInvocation="146" maxMicrosecondsPerInvocation="5278" standardDeviationMicrosecondsPerInvocation="345"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="102" invocations="738" avgMicrosecondsPerInvocation="139" maxMicrosecondsPerInvocation="3689" standardDeviationMicrosecondsPerInvocation="288"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" totalMilliseconds="100" invocations="738" avgMicrosecondsPerInvocation="136" maxMicrosecondsPerInvocation="5321" standardDeviationMicrosecondsPerInvocation="353"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDoubleCheck" totalMilliseconds="97" invocations="738" avgMicrosecondsPerInvocation="132" maxMicrosecondsPerInvocation="3560" standardDeviationMicrosecondsPerInvocation="271"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="97" invocations="738" avgMicrosecondsPerInvocation="132" maxMicrosecondsPerInvocation="3920" standardDeviationMicrosecondsPerInvocation="270"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>

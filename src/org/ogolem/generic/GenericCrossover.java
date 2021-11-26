@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic;
 
-import java.io.Serializable;
 import org.ogolem.helpers.Tuple;
 
 /**
@@ -45,7 +44,7 @@ import org.ogolem.helpers.Tuple;
  * @author Johannes Dieterich
  * @version 2020-12-29
  */
-public interface GenericCrossover<E, T extends Optimizable<E>> extends Serializable, Copyable {
+public interface GenericCrossover<E, T extends Optimizable<E>> extends GenericOperator {
 
   @Override
   GenericCrossover<E, T> copy();

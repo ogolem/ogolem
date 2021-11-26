@@ -1,6 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2012, J. M. Dieterich
+              2016, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +47,7 @@ import org.ogolem.generic.genericpool.GenericPool;
  * Entry point for designing some new switches.
  *
  * @author Johannes Dieterich
- * @version 2012-06-12
+ * @version 2016-12-26
  */
 public class MainSwitches {
 
@@ -108,7 +109,7 @@ public class MainSwitches {
 
     final Switch refSwitch = new Switch(new Backbone(SwitchesConfig.backbone), alColors);
     final GenericPool<Color, Switch> pool =
-        GenericPool.getInstance(swConfig.getGenericConfig(), refSwitch);
+        new GenericPool<>(swConfig.getGenericConfig(), refSwitch);
 
     // do the initialization of the pool
     final ThreadingInits inits = new ThreadingInits(swConfig, iNoOfThreads, pool);

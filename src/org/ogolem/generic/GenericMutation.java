@@ -36,15 +36,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic;
 
-import java.io.Serializable;
-
 /**
  * Generic interface for a mutation.
  *
  * @author Johannes Dieterich
  * @version 2020-12-29
  */
-public interface GenericMutation<E, T extends Optimizable<E>> extends Serializable, Copyable {
+public interface GenericMutation<E, T extends Optimizable<E>> extends GenericOperator {
 
   @Override
   GenericMutation<E, T> copy();

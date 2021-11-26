@@ -226,7 +226,7 @@ public class MainOGOLEM {
 
       try {
         final GenericPool<Molecule, Geometry> pool =
-            GenericPool.getInstance(globConf.getGenericPoolConfig(), globConf.getExample());
+            new GenericPool<>(globConf.getGenericPoolConfig(), globConf.getExample());
         final GenericHistory<Molecule, Geometry> history =
             GenericHistory.getReference(globConf.getGenericHistoryConfig());
 
