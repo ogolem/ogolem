@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import de.gwdg.rmata.atomdroiduff.AtomdroidUFF;
  * Provides energy and gradient calculated using a very simple UFF approach.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2022-01-01
  */
 public class UniversalFF implements CartesianFullBackend {
 
@@ -55,8 +55,9 @@ public class UniversalFF implements CartesianFullBackend {
   private final boolean useCaching;
   private int noAtoms;
   private AtomdroidUFF uff;
-  private double[][] coords;
+  private double[] coords1D;
   private boolean hasBeenUsed = false;
+  private int noDummy = 0;
 
   public UniversalFF(final int whichStyle, final boolean useCaching) {
     this.style = whichStyle;
@@ -74,10 +75,10 @@ public class UniversalFF implements CartesianFullBackend {
     }
 
     this.noAtoms = orig.noAtoms;
-    if (orig.coords != null) {
-      this.coords = new double[noAtoms][3];
+    if (orig.coords1D != null) {
+      this.coords1D = new double[orig.noAtoms * 3];
     } else {
-      this.coords = null;
+      this.coords1D = null;
     }
   }
 
@@ -110,14 +111,14 @@ public class UniversalFF implements CartesianFullBackend {
       initialize(noAts, bonds, atoms, charges, atomNos, atsPerMol, hasRigidEnv);
     }
 
-    copy1d3d(daXYZ1D, coords, noAts, atomNos);
+    copy1d1d(daXYZ1D, coords1D, noAts, noDummy, atomNos);
     boolean isFirst = false;
     if (!this.hasBeenUsed) {
       isFirst = true;
       hasBeenUsed = true;
     }
     // final boolean isFirst = (iIteration == -1 || iIteration == 0);
-    return uff.energy(style, coords, isFirst) * Constants.KJTOHARTREE;
+    return uff.energy(style, coords1D, isFirst) * Constants.KJTOHARTREE;
   }
 
   @Override
@@ -140,9 +141,9 @@ public class UniversalFF implements CartesianFullBackend {
       initialize(noAts, bonds, atoms, charges, atomNos, atsPerMol, hasRigidEnv);
     }
 
-    copy1d3d(daXYZ1D, coords, noAts, atomNos);
+    copy1d1d(daXYZ1D, coords1D, noAts, noDummy, atomNos);
 
-    de.gwdg.rmata.atomdroiduff.Gradient g = uff.gradient(style, coords, !hasBeenUsed);
+    de.gwdg.rmata.atomdroiduff.Gradient g = uff.gradient(style, coords1D, !hasBeenUsed);
     if (!hasBeenUsed) {
       hasBeenUsed = true; // now it has
     }
@@ -161,7 +162,6 @@ public class UniversalFF implements CartesianFullBackend {
       final int[] atsPerMol,
       final boolean hasRigidEnv) {
 
-    int noDummy = 0;
     for (int i = 0; i < atomNos.length; i++) {
       if (atomNos[i] == 0) {
         noDummy++;
@@ -169,12 +169,12 @@ public class UniversalFF implements CartesianFullBackend {
     }
 
     noAtoms = noAts - noDummy;
-    coords = new double[noAtoms][3];
+    coords1D = new double[noAtoms * 3];
 
     // let's work on the bonds first...
     int numBonds = 0;
     final short[][] bonding = new short[noAtoms][noAtoms];
-    final double[][] pos = new double[noAtoms][3];
+    final double[] pos1D = new double[3 * noAtoms];
     int c1 = 0;
     for (int i = 0; i < noAts; i++) {
       if (atomNos[i] == 0) {
@@ -222,21 +222,22 @@ public class UniversalFF implements CartesianFullBackend {
     // subtract dummy atoms that used to be in the frozen part from the number of frozen atoms
     if (hasRigidEnv) noFrozen -= noDummies;
 
-    uff = new AtomdroidUFF(noAtoms, noFrozen, na, bonding, ch, pos, numBonds, nos);
+    uff = new AtomdroidUFF(noAtoms, noFrozen, na, bonding, ch, pos1D, numBonds, nos);
   }
 
-  private static void copy1d3d(
-      final double[] x1d, final double[][] x3d, final int noAts, final short[] atomNos) {
+  private static void copy1d1d(
+      final double[] x1d,
+      final double[] x1dAtom,
+      final int noAts,
+      final int noDummy,
+      final short[] atomNos) {
 
     int c = 0;
-    for (int i = 0; i < noAts; i++) {
-      if (atomNos[i] == 0) {
+    for (int i = 0; i < x1d.length; i++) {
+      if (atomNos[i % noAts] == 0) {
         continue;
       }
-      x3d[c][0] = x1d[i] * Constants.BOHRTOANG;
-      x3d[c][1] = x1d[i + noAts] * Constants.BOHRTOANG;
-      x3d[c][2] = x1d[i + 2 * noAts] * Constants.BOHRTOANG;
-      c++;
+      x1dAtom[c++] = x1d[i] * Constants.BOHRTOANG;
     }
   }
 
@@ -255,9 +256,9 @@ public class UniversalFF implements CartesianFullBackend {
         g[1][i] = 0.0;
         g[2][i] = 0.0;
       } else {
-        g[0][i] = o[c][0] * Constants.BOHRTOANG * Constants.KJTOHARTREE;
-        g[1][i] = o[c][1] * Constants.BOHRTOANG * Constants.KJTOHARTREE;
-        g[2][i] = o[c][2] * Constants.BOHRTOANG * Constants.KJTOHARTREE;
+        g[0][i] = o[0][c] * Constants.BOHRTOANG * Constants.KJTOHARTREE;
+        g[1][i] = o[1][c] * Constants.BOHRTOANG * Constants.KJTOHARTREE;
+        g[2][i] = o[2][c] * Constants.BOHRTOANG * Constants.KJTOHARTREE;
         c++;
       }
     }
