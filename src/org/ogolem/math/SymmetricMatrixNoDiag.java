@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020, J. M. Dieterich and B. Hartke
+Copyright (c) 2020-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,11 @@ package org.ogolem.math;
  * A matrix implementation for a symmetric matrix without diagonal.
  *
  * @author Johannes Dieterich
- * @version 2020-12-21
+ * @version 2022-02-05
  */
-public class SymmetricMatrixNoDiag implements Matrix {
+public final class SymmetricMatrixNoDiag implements Matrix {
 
-  private static final long serialVersionUID = (long) 20201221;
+  private static final long serialVersionUID = (long) 20220205;
 
   private final int noRowsCols;
   private final double[] buffer;
@@ -53,6 +53,17 @@ public class SymmetricMatrixNoDiag implements Matrix {
     assert (noRowsCols >= 0);
     this.noRowsCols = noRowsCols;
     this.buffer = new double[noRowsCols * (noRowsCols - 1) / 2];
+  }
+
+  private SymmetricMatrixNoDiag(final SymmetricMatrixNoDiag orig) {
+    assert (orig != null);
+    this.noRowsCols = orig.noRowsCols;
+    this.buffer = orig.buffer.clone();
+  }
+
+  @Override
+  public SymmetricMatrixNoDiag copy() {
+    return new SymmetricMatrixNoDiag(this);
   }
 
   @Override
@@ -68,34 +79,14 @@ public class SymmetricMatrixNoDiag implements Matrix {
   @Override
   public void setElement(final int i, final int j, final double val) {
 
-    // we always assume j > i
-    final int row = Math.min(j, i);
-    final int col = Math.max(j, i);
-
-    final int idx =
-        (noRowsCols * (noRowsCols - 1) / 2)
-            - (noRowsCols - row) * ((noRowsCols - row) - 1) / 2
-            + col
-            - row
-            - 1;
-
+    final int idx = idx(i, j);
     buffer[idx] = val;
   }
 
   @Override
   public double getElement(final int i, final int j) {
 
-    // we always assume j > i
-    final int row = Math.min(j, i);
-    final int col = Math.max(j, i);
-
-    final int idx =
-        (noRowsCols * (noRowsCols - 1) / 2)
-            - (noRowsCols - row) * ((noRowsCols - row) - 1) / 2
-            + col
-            - row
-            - 1;
-
+    final int idx = idx(i, j);
     return buffer[idx];
   }
 
@@ -103,5 +94,25 @@ public class SymmetricMatrixNoDiag implements Matrix {
   @Override
   public double[] underlyingStorageBuffer() {
     return buffer;
+  }
+
+  public int idx(final int i, final int j) {
+
+    assert (i != j);
+    assert (i < noRowsCols);
+    assert (j < noRowsCols);
+
+    // we always assume j > i
+    final int row = Math.min(j, i);
+    final int col = Math.max(j, i);
+
+    final int idx =
+        (noRowsCols * (noRowsCols - 1) / 2)
+            - (noRowsCols - row) * ((noRowsCols - row) - 1) / 2
+            + col
+            - row
+            - 1;
+
+    return idx;
   }
 }

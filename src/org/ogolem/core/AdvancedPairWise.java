@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2013, J. M. Dieterich
-              2015-2021, J. M. Dieterich and B. Hartke
+              2015-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ package org.ogolem.core;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorMask;
 import jdk.incubator.vector.VectorSpecies;
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
 import org.ogolem.math.SymmetricMatrixNoDiag;
 
 /**
@@ -49,7 +50,7 @@ import org.ogolem.math.SymmetricMatrixNoDiag;
  * cases a pairwise checking.
  *
  * @author Johannes Dieterich
- * @version 2021-07-25
+ * @version 2022-01-08
  */
 public class AdvancedPairWise implements CollisionDetectionEngine {
 
@@ -119,6 +120,9 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
     final int noOfAtoms = cartesians.getNoOfAtoms();
     final SymmetricMatrixNoDiag dists = info.getPairWiseDistances();
 
+    final int noOfAtomsBonds = bonds.getNoOfAtoms();
+    assert (noOfAtomsBonds >= noOfAtoms);
+
     final double[][] xyz = cartesians.getAllXYZCoord();
     final short[] numbers = cartesians.getAllAtomNumbers();
 
@@ -134,7 +138,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       System.err.println(
           "WARNING: The retrival of the full bond matrix is slow, reconsider to NOT use AdvancedPairWise or change implementation!");
     }
-    final boolean[][] bondMat = bonds.getFullBondMatrix();
+    final BoolSymmetricMatrixNoDiag bondMat = bonds.getFullBondMatrix();
+    final boolean[] bondsBuffer = bondMat.underlyingStorageBuffer();
 
     // prefetch the radii in O(N) - the allocation here is not ideal
     // but caching it would make this whole object thread-unsafe
@@ -145,6 +150,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
 
     final double[] distsBuffer = dists.underlyingStorageBuffer();
     int distsIdx = 0;
+
+    final int idxPref = (noOfAtomsBonds * (noOfAtomsBonds - 1) / 2);
 
     boolean distCompl = true;
     Outer:
@@ -158,10 +165,10 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       final var vY = DoubleVector.broadcast(SPECIES, y);
       final var vZ = DoubleVector.broadcast(SPECIES, z);
 
-      final boolean[] bondRow = bondMat[i];
-
       final int loopBound = SPECIES.loopBound(noOfAtoms - i - 1);
       int j = i + 1;
+
+      int bondsIdx = idxPref - (noOfAtomsBonds - i) * ((noOfAtomsBonds - i) - 1) / 2;
 
       // vector loop
       for (; j < loopBound + i + 1; j += SPECIES.length()) {
@@ -175,11 +182,12 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
         final var vDistSq = vDZ.fma(vDZ, vFirst);
         final var vDist = vDistSq.sqrt();
         final var vComp = vDist.lt(vRadiiAdd);
-        final var vNotBond = VectorMask.fromArray(SPECIES, bondRow, j).not();
+        final var vNotBond = VectorMask.fromArray(SPECIES, bondsBuffer, bondsIdx).not();
         final var vMask = vComp.and(vNotBond);
 
         vDist.intoArray(distsBuffer, distsIdx);
         distsIdx += SPECIES.length();
+        bondsIdx += SPECIES.length();
 
         final boolean anyColl = vMask.anyTrue();
 
@@ -188,8 +196,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
           for (int v = 0; v < SPECIES.length(); v++) {
             if (!vMask.laneIsSet(v)) continue;
             final double strength =
-                comp.calculateCollisionStrength(i, j, vDist.lane(v), vRadiiAdd.lane(v));
-            final boolean succ = info.reportCollision(i, j, strength);
+                comp.calculateCollisionStrength(i, j + v, vDist.lane(v), vRadiiAdd.lane(v));
+            final boolean succ = info.reportCollision(i, j + v, strength);
             if (!succ) {
               System.err.println("No success setting collision!");
             }
@@ -215,9 +223,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
         final double dZ = z - xyz[2][j];
         final double dist = Math.sqrt(dX * dX + dY * dY + dZ * dZ);
         distsBuffer[distsIdx] = dist;
-        distsIdx++;
 
-        if (dist < radiiAdd && !bondRow[j]) {
+        if (dist < radiiAdd && !bondsBuffer[bondsIdx]) {
           // collision
           final double strength = comp.calculateCollisionStrength(i, j, dist, radiiAdd);
           final boolean succ = info.reportCollision(i, j, strength);
@@ -232,6 +239,9 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
             break Outer;
           }
         }
+
+        distsIdx++;
+        bondsIdx++;
       }
     }
 
@@ -271,6 +281,9 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
     final double[][] xyz = cartesians.getAllXYZCoord();
     final short[] numbers = cartesians.getAllAtomNumbers();
 
+    final int noOfAtomsBonds = bonds.getNoOfAtoms();
+    assert (noOfAtomsBonds >= noOfAtoms);
+
     assert (xyz != null);
     assert (numbers != null);
     assert (numbers.length >= noOfAtoms);
@@ -285,7 +298,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       System.err.println(
           "WARNING: The retrival of the full bond matrix is slow, reconsider to NOT use AdvancedPairWise or change implementation!");
     }
-    final boolean[][] bondMat = bonds.getFullBondMatrix();
+    final BoolSymmetricMatrixNoDiag bondMat = bonds.getFullBondMatrix();
+    final boolean[] bondsBuffer = bondMat.underlyingStorageBuffer();
 
     // prefetch the radii in O(N) - the allocation here is not ideal
     // but caching it would make this whole object thread-unsafe
@@ -295,6 +309,7 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       radii[i] = AtomicProperties.giveRadius(numbers[i]) * blowFactor;
     }
 
+    final int idxPref = (noOfAtomsBonds * (noOfAtomsBonds - 1) / 2);
     final int end = Math.min(noOfAtoms - 1, endset);
     for (int i = 0; i < end; i++) { // note: this is by spec
       final double rad1 = radii[i];
@@ -307,7 +322,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
       final var vZ = DoubleVector.broadcast(SPECIES, z);
       final int start = Math.max(offset, i + 1);
 
-      final boolean[] bondRow = bondMat[i];
+      int bondsIdx =
+          idxPref - (noOfAtomsBonds - i) * ((noOfAtomsBonds - i) - 1) / 2 + start - i - 1;
 
       final int loopBound = SPECIES.loopBound(noOfAtoms - start);
       int j = start;
@@ -322,7 +338,8 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
         final var vFirst = vDX.fma(vDX, vDY.mul(vDY));
         final var vDistSq = vDZ.fma(vDZ, vFirst);
         final var vComp = vDistSq.lt(vRadiiAdd.mul(vRadiiAdd));
-        final var vNotBond = VectorMask.fromArray(SPECIES, bondRow, j).not();
+        final var vNotBond = VectorMask.fromArray(SPECIES, bondsBuffer, bondsIdx).not();
+        bondsIdx += SPECIES.length();
         final var vMask = vComp.and(vNotBond);
         // one might think andNot() would be reasonable here - performance craters then (4x in
         // microbench) - this may be a temporary issue, reevaluate later
@@ -339,10 +356,11 @@ public class AdvancedPairWise implements CollisionDetectionEngine {
         final double dY = y - xyz[1][j];
         final double dZ = z - xyz[2][j];
         final double distSq = dX * dX + dY * dY + dZ * dZ;
-        if (distSq < radiiAdd * radiiAdd && !bondRow[j]) {
+        if (distSq < radiiAdd * radiiAdd && !bondsBuffer[bondsIdx]) {
           // collision
           return true;
         }
+        bondsIdx++;
       }
     }
 

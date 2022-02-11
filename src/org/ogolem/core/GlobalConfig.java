@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ import org.ogolem.random.Lottery;
  * "constructor madness". Default values are provided.
  *
  * @author Johannes Dieterich
- * @version 2020-12-30
+ * @version 2022-02-05
  */
 public class GlobalConfig implements Configuration<Molecule, Geometry> {
 
@@ -412,8 +412,11 @@ public class GlobalConfig implements Configuration<Molecule, Geometry> {
         final StringBuffer sBuff = new StringBuffer();
         for (int l = iOffSet; l < iEndSet; l++) {
           sBuff.append("\t");
-          sBuff.append(geoConf.bonds.bondType(k, l));
-          assert (geoConf.bonds.bondType(k, l) == geoConf.bonds.bondType(l, k));
+          if (k == l) sBuff.append("S");
+          else {
+            sBuff.append(geoConf.bonds.bondType(k, l));
+            assert (geoConf.bonds.bondType(k, l) == geoConf.bonds.bondType(l, k));
+          }
         }
 
         configData.add(sBuff.toString());

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,62 +34,35 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
+package org.ogolem.math;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
- * A collision info only able to store a single collision.
+ * An interface for matrices.
  *
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2020-12-28
  */
-public class SingleCollisionInfo extends AbstractCollisionInfo {
-
-  private static final long serialVersionUID = (long) 20150720;
-
-  private int atom1;
-  private int atom2;
-  private double strength;
+public interface BoolMatrix extends Serializable, Copyable {
 
   @Override
-  public boolean reportCollision(final int atom1, final int atom2, final double strength) {
+  public BoolMatrix copy();
 
-    if (noCollisions > 0) {
-      System.err.println("Previous collision already stored in SingleCollisionInfo.");
-      return false;
-    }
+  public int noRows();
 
-    this.atom1 = atom1;
-    this.atom2 = atom2;
-    this.strength = strength;
-    noCollisions++;
-    System.out.println("Collision reported between " + atom1 + " and " + atom2);
+  public int noCols();
 
-    return true;
-  }
+  public void setElement(final int i, final int j, final boolean val);
 
-  @Override
-  public List<Collision> getCollisions() {
+  public boolean getElement(final int i, final int j);
 
-    System.out.println("NO COLLISIONS: " + noCollisions);
-
-    if (noCollisions == 0) {
-      return new ArrayList<>();
-    }
-
-    final Collision coll = new Collision(atom1, atom2, strength);
-    final List<Collision> colls = new ArrayList<>();
-    colls.add(coll);
-
-    return colls;
-  }
-
-  @Override
-  protected void cleanState() {
-    atom1 = -1;
-    atom2 = -1;
-    strength = -1.0;
-  }
+  /**
+   * Returns a direct reference to the underlying storage buffer.
+   *
+   * @return the underlying storage buffer. Size and indexing implementation dependent. Handle with
+   *     utmost care!
+   */
+  public boolean[] underlyingStorageBuffer();
 }

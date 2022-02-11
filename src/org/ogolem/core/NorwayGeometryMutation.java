@@ -379,7 +379,10 @@ public class NorwayGeometryMutation implements GenericMutation<Molecule, Geometr
           countTotalFailed++;
           if (DEBUG) {
             System.out.println("DEBUG: At least one collision detected.");
+            collInfo.resizeDistsAndClearState(noAtoms);
+            colldetect.checkForCollision(cartesCache, blowColl, mutated.getBondInfo(), collInfo);
             final List<CollisionInfo.Collision> colls = collInfo.getCollisions();
+            System.out.println("Colls length " + colls.size());
             colls.forEach(
                 (coll) -> {
                   System.out.println(

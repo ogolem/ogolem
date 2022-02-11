@@ -95,8 +95,8 @@ final class TinkerMDCaller extends AbstractLocOpt {
 
     this.useSolvation = useSolv;
 
-    final boolean[][] bonds = conf.geoConf.bonds.getFullBondMatrix();
-    saTinkerSecondHalf = new String[bonds.length + 1];
+    final var bonds = conf.geoConf.bonds.getFullBondMatrix();
+    saTinkerSecondHalf = new String[bonds.noCols() + 1];
     saTinkerSecondHalf[0] = " ";
 
     String[] saAuxInput;
@@ -116,7 +116,7 @@ final class TinkerMDCaller extends AbstractLocOpt {
     // read in, which parameters are to be taken
     sWhichParameters = saAuxInput[1].trim();
 
-    for (int i = 2; i < bonds.length + 2; i++) {
+    for (int i = 2; i < bonds.noCols() + 2; i++) {
       // get the force field parameter code in every single line
       saAuxInput[i] = saAuxInput[i].trim();
       saAuxInput[i] = saAuxInput[i].substring(saAuxInput[i].indexOf(" "));
@@ -132,18 +132,14 @@ final class TinkerMDCaller extends AbstractLocOpt {
     this.envIsRigid =
         (gTmp.containsEnvironment()) ? gTmp.getEnvironment().isEnvironmentRigid() : false;
 
-    // now we act on the boolean[][] bond information
-    for (int i = 0; i < bonds.length; i++) {
-      for (int j = 0; j < bonds.length; j++) {
-        if (i == j) {
-          // not specified in tinker
-        } else {
-          if (bonds[i][j]) {
+    // now we act on the bond information
+    for (int i = 0; i < bonds.noCols(); i++) {
+      for (int j = 0; j < bonds.noRows(); j++) {
+        if (i != j) {
+          if (bonds.getElement(i, j)) {
             // bond, add that to the connectivity info
             int k = j + 1;
             saTinkerSecondHalf[i + 1] = saTinkerSecondHalf[i + 1] + k + "\t";
-          } else {
-            // no bond, go on
           }
         }
       }

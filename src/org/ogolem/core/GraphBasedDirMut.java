@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.ogolem.generic.GenericMutation;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
 import org.ogolem.math.TrivialLinearAlgebra;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
@@ -250,13 +251,12 @@ public class GraphBasedDirMut implements GenericMutation<Molecule, Geometry> {
     // create the connectivity matrix for the geometry (so in between molecules)
     // 1) get the full one
     final SimpleBondInfo fullBonds = CoordTranslation.checkForBonds(c, blowBonds);
-    final boolean[][] full = fullBonds.getFullBondMatrix();
+    final BoolSymmetricMatrixNoDiag bondMat = fullBonds.getFullBondMatrix();
 
     if (DEBUG) {
-      System.out.println("Bonds with blow fator " + blowBonds);
-      for (final boolean[] fullRow : full) {
-        System.out.println(Arrays.toString(fullRow));
-      }
+      System.out.println("Bonds with blow factor " + blowBonds);
+      final boolean[] bondsBuffer = bondMat.underlyingStorageBuffer();
+      System.out.println(Arrays.toString(bondsBuffer));
     }
 
     // figure out the number of connections from each molecule to another one (do not count internal
@@ -276,7 +276,8 @@ public class GraphBasedDirMut implements GenericMutation<Molecule, Geometry> {
         // not only is this easier, but it makes more sense for the application at hand
         // which is to find the least connected molecule
         for (int x = 0; x < c.getNoOfAtoms(); x++) {
-          if (full[at][x]) {
+          if (at == x) continue;
+          if (bondMat.getElement(at, x)) {
             if (x < atCounter || x >= atCounter + ats) {
               if (DEBUG) {
 

@@ -136,6 +136,7 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
     this.envIsRigid =
         (gTmp.containsEnvironment()) ? gTmp.getEnvironment().isEnvironmentRigid() : false;
 
+    final var bonds = globconf.geoConf.bonds.getFullBondMatrix();
     saTinkerSecondHalf = new String[noAtomsTotal + 1];
     saTinkerSecondHalf[0] = " ";
 
@@ -176,28 +177,24 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
 
       // once more ugly java code! ;-)
       CartesianCoordinates cartes;
-      BondInfo bonds;
       if (gTmp.containsEnvironment()) {
         final Tuple<CartesianCoordinates, BondInfo> tup =
             gTmp.getCartesiansAndBondsWithEnvironment();
         cartes = tup.getObject1();
-        bonds = tup.getObject2();
       } else {
         cartes = gTmp.getCartesians();
-        bonds = gTmp.getBondInfo();
       }
-      final boolean[][] bondMat = bonds.getFullBondMatrix();
       final String[] atoms = cartes.getAllAtomTypes();
 
-      // now we act on the boolean[][] bond information
-      for (int i = 0; i < bondMat.length; i++) {
+      // now we act on the bond information
+      for (int i = 0; i < bonds.noCols(); i++) {
 
         if (atoms[i].equalsIgnoreCase("DM")) {
           // real dummy for TIP5P
           continue;
         }
 
-        for (int j = 0; j < bondMat.length; j++) {
+        for (int j = 0; j < bonds.noCols(); j++) {
 
           if (atoms[j].equalsIgnoreCase("DM")) {
             // real dummy for TIP5P
@@ -216,7 +213,7 @@ class TinkerCaller extends AbstractLocOpt implements CartesianFullBackend {
           if (i == j) {
             continue;
           }
-          if (bondMat[i][j]) {
+          if (bonds.getElement(i, j)) {
             // bond, add that to the connectivity info
             int k = j + 1;
             saTinkerSecondHalf[i + 1] += k + "\t";

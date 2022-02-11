@@ -40,6 +40,8 @@ package org.ogolem.core;
 import java.io.Serializable;
 import java.util.List;
 import org.ogolem.generic.Copyable;
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
+import org.ogolem.math.ShortSymmetricMatrixNoDiag;
 
 /**
  * Interface describing what bond information implementations need to be capable of.
@@ -120,7 +122,7 @@ public interface BondInfo extends Serializable, Copyable {
    *
    * @return the bond matrix (boolean: bond yes/no)
    */
-  public boolean[][] getFullBondMatrix();
+  public BoolSymmetricMatrixNoDiag getFullBondMatrix();
 
   /**
    * Whether or not the return of the full bond information is fast or not.
@@ -134,7 +136,7 @@ public interface BondInfo extends Serializable, Copyable {
    *
    * @return the bond information as the above described shorts.
    */
-  public short[][] getBondInformation();
+  public ShortSymmetricMatrixNoDiag getBondInformation();
 
   /**
    * Translates this bond information to the input formatted one.

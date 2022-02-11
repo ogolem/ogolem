@@ -43,13 +43,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import org.ogolem.core.CartesianCoordinates;
 import org.ogolem.core.StreamGobbler;
-// physical constants
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
 
 /**
  * Uses tinker for the local optimization of a set of cartesian coordinates.
  *
  * @author Johannes Dieterich
- * @version 2012-06-24
+ * @version 2012-12-28
  */
 final class TinkerLocOpt implements LocalOptimization {
 
@@ -97,17 +97,17 @@ final class TinkerLocOpt implements LocalOptimization {
      * first we need to figure out what atomic types we have, for that we
      * need to create the bonding information
      */
-    final boolean[][] baBonds =
-        LittleHelpers.bondingInfo(startCartes, dBlowBondFac).getFullBondMatrix();
+    final var baBonds = LittleHelpers.bondingInfo(startCartes, dBlowBondFac).getFullBondMatrix();
 
     if (bDebug) {
       System.out.println("DEBUG: Operating with bonding blow factor: " + dBlowBondFac);
       // we print the bonding info out
       System.out.println("DEBUG: Bonding info coming from TinkerLocOpt:");
-      for (int i = 0; i < baBonds.length; i++) {
+      for (int i = 0; i < baBonds.noCols(); i++) {
         String sBonds = " ";
-        for (int j = 0; j < baBonds[0].length; j++) {
-          sBonds += baBonds[i][j] + "  ";
+        for (int j = 0; j < baBonds.noCols(); j++) {
+          if (i == j) continue;
+          sBonds += baBonds.getElement(i, j) + "  ";
         }
         System.out.println("DEBUG: " + sBonds);
       }
@@ -310,7 +310,8 @@ final class TinkerLocOpt implements LocalOptimization {
     return endCartes;
   }
 
-  private static int[][] assignConnects(final String[] saAtoms, final boolean[][] baBonds) {
+  private static int[][] assignConnects(
+      final String[] saAtoms, final BoolSymmetricMatrixNoDiag baBonds) {
 
     final int[][] iaConnects = new int[saAtoms.length][];
 
@@ -319,10 +320,9 @@ final class TinkerLocOpt implements LocalOptimization {
       // collect connectivity
       final LinkedList<Integer> llTempConn = new LinkedList<>();
 
-      final boolean[] baPartBonds = baBonds[i];
-
-      for (int j = 0; j < baPartBonds.length; j++) {
-        final boolean bCurrBond = baPartBonds[j];
+      for (int j = 0; j < baBonds.noCols(); j++) {
+        if (i == j) continue;
+        final boolean bCurrBond = baBonds.getElement(i, j);
         if (bCurrBond && j != i) {
           llTempConn.add(j);
         }
