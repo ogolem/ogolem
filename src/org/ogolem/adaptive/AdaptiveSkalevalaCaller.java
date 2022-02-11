@@ -59,7 +59,7 @@ import org.ogolem.skalevala.Vainamoinen;
  */
 public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
 
-  private static final long serialVersionUID = (long) 20150727;
+  private static final long serialVersionUID = (long) 20201228;
 
   private final int runotID;
   private final Runot runot;
@@ -132,14 +132,22 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
     }
     final int charge = (int) fCharge;
 
+    final var symBonds = bonds.getFullBondMatrix();
+    final var symBuffer = symBonds.underlyingStorageBuffer();
+    int symBondsIdx = 0;
+    final var fullBondMatrix = new boolean[noOfAtoms][noOfAtoms];
+    for (int i = 0; i < noOfAtoms; i++) {
+      fullBondMatrix[i][i] = true; // mark self-bonds
+      for (int j = i + i; j < noOfAtoms; j++) {
+        fullBondMatrix[i][j] = symBuffer[symBondsIdx];
+        fullBondMatrix[j][i] = symBuffer[symBondsIdx];
+        symBondsIdx++;
+      }
+    }
+
     final org.ogolem.skalevala.CartesianCoordinates ca =
         new org.ogolem.skalevala.CartesianCoordinates(
-            cartes2Cartes(xyz1d, noOfAtoms),
-            atomTypes,
-            atomNos,
-            spin,
-            charge,
-            bonds.getFullBondMatrix());
+            cartes2Cartes(xyz1d, noOfAtoms), atomTypes, atomNos, spin, charge, fullBondMatrix);
 
     final double e = runot.energy(ca, p);
 
@@ -170,14 +178,22 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
     }
     final int charge = (int) fCharge;
 
+    final var symBonds = bonds.getFullBondMatrix();
+    final var symBuffer = symBonds.underlyingStorageBuffer();
+    int symBondsIdx = 0;
+    final var fullBondMatrix = new boolean[noOfAtoms][noOfAtoms];
+    for (int i = 0; i < noOfAtoms; i++) {
+      fullBondMatrix[i][i] = true; // mark self-bonds
+      for (int j = i + i; j < noOfAtoms; j++) {
+        fullBondMatrix[i][j] = symBuffer[symBondsIdx];
+        fullBondMatrix[j][i] = symBuffer[symBondsIdx];
+        symBondsIdx++;
+      }
+    }
+
     final org.ogolem.skalevala.CartesianCoordinates ca =
         new org.ogolem.skalevala.CartesianCoordinates(
-            cartes2Cartes(xyz1d, noOfAtoms),
-            atomTypes,
-            atomNos,
-            spin,
-            charge,
-            bonds.getFullBondMatrix());
+            cartes2Cartes(xyz1d, noOfAtoms), atomTypes, atomNos, spin, charge, fullBondMatrix);
 
     final org.ogolem.skalevala.Gradient g = runot.gradient(ca, p);
 
@@ -192,8 +208,23 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
       final BondInfo bonds) {
 
     if (!useCaching || c == null) {
+
+      final var noOfAtoms = cartes.getNoOfAtoms();
+      final var symBonds = bonds.getFullBondMatrix();
+      final var symBuffer = symBonds.underlyingStorageBuffer();
+      int symBondsIdx = 0;
+      final var fullBondMatrix = new boolean[noOfAtoms][noOfAtoms];
+      for (int i = 0; i < noOfAtoms; i++) {
+        fullBondMatrix[i][i] = true; // mark self-bonds
+        for (int j = i + i; j < noOfAtoms; j++) {
+          fullBondMatrix[i][j] = symBuffer[symBondsIdx];
+          fullBondMatrix[j][i] = symBuffer[symBondsIdx];
+          symBondsIdx++;
+        }
+      }
+
       // initialize c fresh
-      c = createCartesStub(cartes, bonds.getFullBondMatrix());
+      c = createCartesStub(cartes, fullBondMatrix);
     }
 
     if (p == null) {
@@ -223,8 +254,23 @@ public class AdaptiveSkalevalaCaller extends AbstractAdaptiveBackend {
       final double[] grad) {
 
     if (!useCaching || c == null) {
+
+      final var noOfAtoms = cartes.getNoOfAtoms();
+      final var symBonds = bonds.getFullBondMatrix();
+      final var symBuffer = symBonds.underlyingStorageBuffer();
+      int symBondsIdx = 0;
+      final var fullBondMatrix = new boolean[noOfAtoms][noOfAtoms];
+      for (int i = 0; i < noOfAtoms; i++) {
+        fullBondMatrix[i][i] = true; // mark self-bonds
+        for (int j = i + i; j < noOfAtoms; j++) {
+          fullBondMatrix[i][j] = symBuffer[symBondsIdx];
+          fullBondMatrix[j][i] = symBuffer[symBondsIdx];
+          symBondsIdx++;
+        }
+      }
+
       // initialize c fresh
-      c = createCartesStub(cartes, bonds.getFullBondMatrix());
+      c = createCartesStub(cartes, fullBondMatrix);
     }
 
     if (p == null) {

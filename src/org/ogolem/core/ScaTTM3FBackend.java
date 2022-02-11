@@ -42,6 +42,7 @@ import static org.ogolem.core.Constants.*;
 import java.io.File;
 import java.util.Locale;
 import org.ogolem.io.OutputPrimitives;
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
 import org.ogolem.properties.DipoleMoment;
 import org.ogolem.scaTTM3F.TTM3F;
 
@@ -199,12 +200,16 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
 
     if (simpleExtraTerm) {
 
-      final boolean[][] bondMat = bonds.getFullBondMatrix();
+      final BoolSymmetricMatrixNoDiag bondMat = bonds.getFullBondMatrix();
+      final boolean[] bondBuff = bondMat.underlyingStorageBuffer();
+      int bondsIdx = -1; // to offset
+
       boolean anythingFound = false;
       for (int i = 0; i < noAts - 1; i++) {
         for (int j = i + 1; j < noAts; j++) {
 
-          if (bondMat[i][j]) {
+          bondsIdx++;
+          if (bondBuff[bondsIdx]) {
             continue;
           } // this would not help if there would be a water collapsing in itself w/ an aritifically
           // low energy: never seen that though.
@@ -380,11 +385,16 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
 
     if (simpleExtraTerm) {
 
-      final boolean[][] bondMat = bonds.getFullBondMatrix();
+      final BoolSymmetricMatrixNoDiag bondMat = bonds.getFullBondMatrix();
+      final boolean[] bondBuff = bondMat.underlyingStorageBuffer();
+      int bondsIdx = -1; // to offset
+
       for (int i = 0; i < noAts - 1; i++) {
         for (int j = i + 1; j < noAts; j++) {
 
-          if (bondMat[i][j]) {
+          bondsIdx++;
+
+          if (bondBuff[bondsIdx]) {
             continue;
           } // this would not help if there would be a water collapsing in itself w/ an aritifically
           // low energy: never seen that though.

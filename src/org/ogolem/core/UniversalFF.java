@@ -185,15 +185,21 @@ public class UniversalFF implements CartesianFullBackend {
         if (atomNos[j] == 0) {
           continue;
         }
-        final short bond = bonds.bondType(i, j);
-        if (bond == BondInfo.UNCERTAIN) {
+        if (i == j) {
+          // capture self-self
           bonding[c1][c2] = 1;
           numBonds++;
-        } else if (bond == BondInfo.VDW) {
-          // vdW is no bond for us here
         } else {
-          bonding[c1][c2] = bond;
-          numBonds++;
+          final short bond = bonds.bondType(i, j);
+          if (bond == BondInfo.UNCERTAIN) {
+            bonding[c1][c2] = 1;
+            numBonds++;
+          } else if (bond == BondInfo.VDW) {
+            // vdW is no bond for us here
+          } else {
+            bonding[c1][c2] = bond;
+            numBonds++;
+          }
         }
         c2++;
       }

@@ -51,6 +51,7 @@ import org.ogolem.generic.GenericFitnessBackend;
 import org.ogolem.generic.GenericLocOpt;
 import org.ogolem.generic.GenericMutation;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
 
 /**
  * A directed mutation using a graph-based analysis of the cluster in question.
@@ -239,13 +240,13 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule, Geome
           (work.containsEnvironment() && envAware)
               ? CoordTranslation.checkForBondsIncludingEnvironment(work, blowBonds)
               : CoordTranslation.checkForBonds(work, blowBonds);
-      final boolean[][] full = fullBonds.getFullBondMatrix();
+
+      final BoolSymmetricMatrixNoDiag bondMat = fullBonds.getFullBondMatrix();
 
       if (DEBUG) {
-        System.out.println("DEBUG: Bonds with blow fator " + blowBonds);
-        for (final boolean[] fullRow : full) {
-          System.out.println(Arrays.toString(fullRow));
-        }
+        System.out.println("Bonds with blow factor " + blowBonds);
+        final boolean[] bondsBuffer = bondMat.underlyingStorageBuffer();
+        System.out.println(Arrays.toString(bondsBuffer));
       }
 
       // figure out the number of connections from each molecule to another one (do not count
@@ -264,7 +265,8 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule, Geome
           // not only is this easier, but it makes more sense for the application at hand
           // which is to find the least connected molecule
           for (int x = 0; x < noAtoms; x++) {
-            if (full[at][x]) {
+            if (at == x) continue;
+            if (bondMat.getElement(at, x)) {
               if (x < atCounter || x >= atCounter + ats) {
                 if (DEBUG) {
 
@@ -292,7 +294,8 @@ public class AdvancedGraphBasedDirMut implements GenericMutation<Molecule, Geome
           if (work.containsEnvironment() && envAware) {
             // count connections with the environment
             for (int x = 0; x < noEnvAtoms; x++) {
-              if (full[at][x + noAtoms]) {
+              if (at == x + noAtoms) continue;
+              if (bondMat.getElement(at, x + noAtoms)) {
                 connections[i]++;
               }
             }

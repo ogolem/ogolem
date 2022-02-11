@@ -52,7 +52,7 @@ import org.ogolem.skalevala.Runot;
 class SkalevalaCaller implements CartesianFullBackend {
   // TODO debug, extend
   // the ID
-  private static final long serialVersionUID = (long) 20120103;
+  private static final long serialVersionUID = (long) 20201228;
 
   @Override
   public SkalevalaCaller copy() {
@@ -94,12 +94,25 @@ class SkalevalaCaller implements CartesianFullBackend {
       spin += iaSpins[i];
     }
 
+    final var symBonds = bonds.getFullBondMatrix();
+    final var symBuffer = symBonds.underlyingStorageBuffer();
+    int symBondsIdx = 0;
+    final var fullBondMatrix = new boolean[iNoOfAtoms][iNoOfAtoms];
+    for (int i = 0; i < iNoOfAtoms; i++) {
+      fullBondMatrix[i][i] = true; // mark self-bonds
+      for (int j = i + i; j < iNoOfAtoms; j++) {
+        fullBondMatrix[i][j] = symBuffer[symBondsIdx];
+        fullBondMatrix[j][i] = symBuffer[symBondsIdx];
+        symBondsIdx++;
+      }
+    }
+
     Configuration.printTimings_$eq(false);
     // System.out.println("DEBUG: EHNDO entering energy...");
     final Runot runot = new EHNDO();
     final org.ogolem.skalevala.CartesianCoordinates cartes =
         new org.ogolem.skalevala.CartesianCoordinates(
-            daXYZ, saAtomTypes, atomNos, spin, (int) fcharge, bonds.getFullBondMatrix());
+            daXYZ, saAtomTypes, atomNos, spin, (int) fcharge, fullBondMatrix);
     final EHNDOParameters params = new EHNDOParameters();
     params.initializeDefaults();
 
@@ -144,11 +157,24 @@ class SkalevalaCaller implements CartesianFullBackend {
       spin += iaSpins[i];
     }
 
+    final var symBonds = bonds.getFullBondMatrix();
+    final var symBuffer = symBonds.underlyingStorageBuffer();
+    int symBondsIdx = 0;
+    final var fullBondMatrix = new boolean[iNoOfAtoms][iNoOfAtoms];
+    for (int i = 0; i < iNoOfAtoms; i++) {
+      fullBondMatrix[i][i] = true; // mark self-bonds
+      for (int j = i + i; j < iNoOfAtoms; j++) {
+        fullBondMatrix[i][j] = symBuffer[symBondsIdx];
+        fullBondMatrix[j][i] = symBuffer[symBondsIdx];
+        symBondsIdx++;
+      }
+    }
+
     Configuration.printTimings_$eq(false);
     final Runot runot = new EHNDO();
     final org.ogolem.skalevala.CartesianCoordinates cartes =
         new org.ogolem.skalevala.CartesianCoordinates(
-            xyz, saAtomTypes, atomNos, spin, (int) fcharge, bonds.getFullBondMatrix());
+            xyz, saAtomTypes, atomNos, spin, (int) fcharge, fullBondMatrix);
     final EHNDOParameters params = new EHNDOParameters();
     params.initializeDefaults();
 

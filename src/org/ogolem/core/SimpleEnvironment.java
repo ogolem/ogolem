@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ package org.ogolem.core;
 
 import contrib.jama.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.ogolem.core.CollisionInfo.Collision;
 import org.ogolem.helpers.Tuple;
@@ -50,7 +51,7 @@ import org.ogolem.random.RandomUtils;
  * Holds as the father of all environments for the cluster.
  *
  * @author Johannes Dieterich
- * @version 2020-12-30
+ * @version 2022-02-05
  */
 public class SimpleEnvironment implements Environment {
 
@@ -192,6 +193,7 @@ public class SimpleEnvironment implements Environment {
         this.marryBonds(
             clusterCartes.getNoOfAtoms(), (clusterCartes.getNoOfAtoms() + cartEnv.getNoOfAtoms()));
     final boolean hasCollision = detect.checkOnlyForCollision(married, blowColl, marriedBonds);
+    // System.out.println("Has collision? " + hasCollision);
     /*
      * important side-note: due to us actually *wanting* interactions between
      * the environment and the cluster, the blow factor above needs to be very
@@ -734,24 +736,31 @@ public class SimpleEnvironment implements Environment {
   protected BondInfo marryBonds(final int noClusterAts, final int noTotalAts) {
 
     final BondInfo bondsCompl = new SimpleBondInfo(noTotalAts);
+    final var bonds = bondsCompl.getFullBondMatrix();
+    final var bondsBuffer = bonds.underlyingStorageBuffer();
+    final var bondTypes = bondsCompl.getBondInformation();
+    final var bondTypesBuffer = bondTypes.underlyingStorageBuffer();
 
-    for (int i = 0; i < noClusterAts; i++) {
-      for (int j = 0; j < noClusterAts; j++) {
-        // XXX could be done with fill
-        // it doesn't matter, what we fill in here since it's not about these distances anyways (but
-        // there must be bonds)
-        bondsCompl.setBond(i, j, BondInfo.UNCERTAIN);
-      }
+    for (int i = 0; i < noClusterAts - 1; i++) {
+      final int idx = bonds.idx(i, i + 1);
+      final int length = noClusterAts - i - 1;
+      Arrays.fill(bondsBuffer, idx, idx + length, true);
+      Arrays.fill(bondTypesBuffer, idx, idx + length, BondInfo.UNCERTAIN);
     }
 
-    for (int i = noClusterAts; i < noTotalAts; i++) {
-      for (int j = i; j < noTotalAts; j++) {
-        if (envBonds.hasBond(i - noClusterAts, j - noClusterAts)) {
-          final short bond = envBonds.bondType(i - noClusterAts, j - noClusterAts);
-          bondsCompl.setBond(i, j, bond);
-          bondsCompl.setBond(j, i, bond);
-        } // default is no bond, so this is fine
-      }
+    final var bondsEnv = envBonds.getFullBondMatrix();
+    final var bondsBufferEnv = bondsEnv.underlyingStorageBuffer();
+    final var bondTypesEnv = envBonds.getBondInformation();
+    final var bondTypesBufferEnv = bondTypesEnv.underlyingStorageBuffer();
+
+    for (int i = noClusterAts; i < noTotalAts - 1; i++) {
+
+      final int idx = bonds.idx(i, i + 1);
+      final int idxEnv = bondsEnv.idx(i - noClusterAts, i + 1 - noClusterAts);
+      final int length = noTotalAts - i - 1;
+
+      System.arraycopy(bondsBufferEnv, idxEnv, bondsBuffer, idx, length);
+      System.arraycopy(bondTypesBufferEnv, idxEnv, bondTypesBuffer, idx, length);
     }
 
     return bondsCompl;
@@ -761,26 +770,41 @@ public class SimpleEnvironment implements Environment {
       final BondInfo clusterBonds, final int noClusterAts, final int noTotalAts) {
 
     final BondInfo bondsCompl = new SimpleBondInfo(noTotalAts);
+    final var bonds = bondsCompl.getFullBondMatrix();
+    final var bondsBuffer = bonds.underlyingStorageBuffer();
+    final var bondTypes = bondsCompl.getBondInformation();
+    final var bondTypesBuffer = bondTypes.underlyingStorageBuffer();
 
-    for (int i = 0; i < noClusterAts; i++) {
-      for (int j = i; j < noClusterAts; j++) {
-        if (clusterBonds.hasBond(i, j)) {
-          bondsCompl.setBond(i, j, clusterBonds.bondType(i, j));
-          bondsCompl.setBond(j, i, clusterBonds.bondType(i, j));
-        }
-      }
+    final var bondsCluster = clusterBonds.getFullBondMatrix();
+    final var bondsBufferCluster = bondsCluster.underlyingStorageBuffer();
+    final var bondTypesCluster = clusterBonds.getBondInformation();
+    final var bondTypesBufferCluster = bondTypesCluster.underlyingStorageBuffer();
+
+    for (int i = 0; i < noClusterAts - 1; i++) {
+
+      final int idx = bonds.idx(i, i + 1);
+      final int idxCluster = bondsCluster.idx(i, i + 1);
+      final int length = noClusterAts - i - 1;
+
+      System.arraycopy(bondsBufferCluster, idxCluster, bondsBuffer, idx, length);
+      System.arraycopy(bondTypesBufferCluster, idxCluster, bondTypesBuffer, idx, length);
     }
 
     // WE DO NOT SET ANY BONDS IN BETWEEN ENV AND CLUSTER. IF THIS IS WANTED, YOU'LL NEED TO ADJUST!
 
-    for (int i = noClusterAts; i < noTotalAts; i++) {
-      for (int j = i; j < noTotalAts; j++) {
-        if (envBonds.hasBond(i - noClusterAts, j - noClusterAts)) {
-          final short bond = envBonds.bondType(i - noClusterAts, j - noClusterAts);
-          bondsCompl.setBond(i, j, bond);
-          bondsCompl.setBond(j, i, bond);
-        } // default is no bond, so this is fine
-      }
+    final var bondsEnv = envBonds.getFullBondMatrix();
+    final var bondsBufferEnv = bondsEnv.underlyingStorageBuffer();
+    final var bondTypesEnv = envBonds.getBondInformation();
+    final var bondTypesBufferEnv = bondTypesEnv.underlyingStorageBuffer();
+
+    for (int i = noClusterAts; i < noTotalAts - 1; i++) {
+
+      final int idx = bonds.idx(i, i + 1);
+      final int idxEnv = bondsEnv.idx(i - noClusterAts, i + 1 - noClusterAts);
+      final int length = noTotalAts - i - 1;
+
+      System.arraycopy(bondsBufferEnv, idxEnv, bondsBuffer, idx, length);
+      System.arraycopy(bondTypesBufferEnv, idxEnv, bondTypesBuffer, idx, length);
     }
 
     return bondsCompl;
@@ -795,7 +819,6 @@ public class SimpleEnvironment implements Environment {
         if (complete.hasBond(i, j)) {
           final short bond = complete.bondType(i, j);
           clusterBonds.setBond(i, j, bond);
-          clusterBonds.setBond(j, i, bond);
         }
       }
     }

@@ -45,7 +45,7 @@ import org.ogolem.io.OutputPrimitives;
  * All kind of output related features using the primitive I/O classes.
  *
  * @author Johannes Dieterich
- * @version 2020-08-11
+ * @version 2022-02-05
  */
 public final class Output {
 
@@ -72,7 +72,7 @@ public final class Output {
           "",
           "",
           "",
-          "Copyright (c) 2009-2020, J. M. Dieterich and B. Hartke",
+          "Copyright (c) 2009-2022, J. M. Dieterich and B. Hartke",
           "All rights reserved.",
           "",
           "Redistribution and use in source and binary forms, with or without",

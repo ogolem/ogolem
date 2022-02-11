@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2021, J. M. Dieterich and B. Hartke
+              2015-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import jdk.incubator.vector.VectorSpecies;
  * combination rules.
  *
  * @author Johannes Dieterich
- * @version 2021-04-22
+ * @version 2022-02-05
  */
 public class MixedLJForceField implements CartesianFullBackend {
 
@@ -297,6 +297,9 @@ public class MixedLJForceField implements CartesianFullBackend {
 
     final var vConst2 = DoubleVector.broadcast(SPECIES, 10000.0);
     final var one = DoubleVector.broadcast(SPECIES, 1);
+    final var negTwo = DoubleVector.broadcast(SPECIES, -2);
+    final var four = DoubleVector.broadcast(SPECIES, 4);
+    final var twentyFour = DoubleVector.broadcast(SPECIES, 24);
 
     // calculate all pair distances
     double dPotEnergyAdded = 0.0;
@@ -363,7 +366,7 @@ public class MixedLJForceField implements CartesianFullBackend {
             System.err.println(
                 "WARNING: LJ gradient: Atoms too close together, we take the cutoff potential.");
 
-          final var vCst1 = vEps.mul(4).mul(vT112_Hex).sub(10000);
+          final var vCst1 = vEps.mul(four).mul(vT112_Hex).sub(10000);
           final var vConst1 = vCst1.div(vSeam);
           final var vTmp = vConst1.mul(vDist).add(vConst2);
 
@@ -385,8 +388,8 @@ public class MixedLJForceField implements CartesianFullBackend {
           vPotEnergy = vPotEnergy.add(vVecTmp);
           // dTemp = -48.0 * dEpsilon * dInvRPow12 * dDistInv + 24.0 * dEpsilon * dInvRPow6 *
           // dDistInv;
-          final var vDistGrad = vEps.mul(vDistInv).mul(24);
-          final var vGrad2 = vInvRPow12.mul(vDistGrad).mul(-2);
+          final var vDistGrad = vEps.mul(vDistInv).mul(twentyFour);
+          final var vGrad2 = vInvRPow12.mul(vDistGrad).mul(negTwo);
           final var vGradTmp = vInvRPow6.fma(vDistGrad, vGrad2);
           final var vNegGradTmp = vGradTmp.neg();
 
@@ -412,15 +415,15 @@ public class MixedLJForceField implements CartesianFullBackend {
               vInvRPow12
                   .sub(vInvRPow6)
                   .mul(vEps)
-                  .mul(4); // XXX I bet one could do this with bitshifts
+                  .mul(four); // XXX I bet one could do this with bitshifts
           final var vEP = DoubleVector.fromArray(SPECIES, energyparts, j);
           final var vEPAdd = vEP.add(vVecTmp);
           vEPAdd.intoArray(energyparts, j);
           vPotEnergy = vPotEnergy.add(vVecTmp);
           // dTemp = -48.0 * dEpsilon * dInvRPow12 * dDistInv + 24.0 * dEpsilon * dInvRPow6 *
           // dDistInv;
-          final var vDistGrad = vEps.mul(vDistInv).mul(24);
-          final var vGrad2 = vInvRPow12.mul(vDistGrad).mul(-2);
+          final var vDistGrad = vEps.mul(vDistInv).mul(twentyFour);
+          final var vGrad2 = vInvRPow12.mul(vDistGrad).mul(negTwo);
           final var vGradTmp = vInvRPow6.fma(vDistGrad, vGrad2);
           final var vNegGradTmp = vGradTmp.neg();
 

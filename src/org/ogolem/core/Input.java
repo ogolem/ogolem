@@ -1475,10 +1475,9 @@ public final class Input {
     // get the bond information
     final BondInfo bonds = new SimpleBondInfo(noAtomsTotal);
 
-    double dBlowBond = globConf.blowFacInitialBondDetect;
+    final double dBlowBond = globConf.blowFacInitialBondDetect;
 
-    int iEndSet = 0;
-
+    int atomOffset = 0;
     for (int i = 0; i < gc.noOfParticles; i++) {
 
       final MoleculeConfig mc = gc.geomMCs.get(i);
@@ -1487,14 +1486,12 @@ public final class Input {
         molBonds = CoordTranslation.checkForBonds(mc.toCartesians(), dBlowBond);
       }
 
-      final int iOffSet = iEndSet;
-      iEndSet += mc.noOfAtoms;
-
-      for (int j = iOffSet; j < iEndSet; j++) {
-        for (int k = iOffSet; k < iEndSet; k++) {
-          bonds.setBond(j, k, molBonds.bondType(j - iOffSet, k - iOffSet));
+      for (int j = 0; j < mc.noOfAtoms - 1; j++) {
+        for (int k = j + 1; k < mc.noOfAtoms; k++) {
+          bonds.setBond(j + atomOffset, k + atomOffset, molBonds.bondType(j, k));
         }
       }
+      atomOffset += mc.noOfAtoms;
     }
 
     gc.bonds = bonds;
@@ -1908,9 +1905,6 @@ public final class Input {
 
     // initialize with defaults
     final BondInfo bonds = new SimpleBondInfo(noOfAtoms);
-    for (int i = 0; i < noOfAtoms; i++) {
-      bonds.setBond(i, i, BondInfo.UNCERTAIN);
-    }
 
     // parse data and manipulate bonds
     for (final String data1 : data) {

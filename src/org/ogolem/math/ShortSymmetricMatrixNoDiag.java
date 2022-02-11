@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, J. M. Dieterich and B. Hartke
+Copyright (c) 2020-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,62 +34,85 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.ogolem.core;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.ogolem.math;
 
 /**
- * A collision info only able to store a single collision.
+ * A matrix implementation for a symmetric matrix without diagonal.
  *
  * @author Johannes Dieterich
- * @version 2015-07-23
+ * @version 2022-02-05
  */
-public class SingleCollisionInfo extends AbstractCollisionInfo {
+public final class ShortSymmetricMatrixNoDiag implements ShortMatrix {
 
-  private static final long serialVersionUID = (long) 20150720;
+  private static final long serialVersionUID = (long) 20220205;
 
-  private int atom1;
-  private int atom2;
-  private double strength;
+  private final int noRowsCols;
+  private final short[] buffer;
 
-  @Override
-  public boolean reportCollision(final int atom1, final int atom2, final double strength) {
+  public ShortSymmetricMatrixNoDiag(final int noRowsCols) {
+    assert (noRowsCols >= 0);
+    this.noRowsCols = noRowsCols;
+    this.buffer = new short[noRowsCols * (noRowsCols - 1) / 2];
+  }
 
-    if (noCollisions > 0) {
-      System.err.println("Previous collision already stored in SingleCollisionInfo.");
-      return false;
-    }
-
-    this.atom1 = atom1;
-    this.atom2 = atom2;
-    this.strength = strength;
-    noCollisions++;
-    System.out.println("Collision reported between " + atom1 + " and " + atom2);
-
-    return true;
+  private ShortSymmetricMatrixNoDiag(final ShortSymmetricMatrixNoDiag orig) {
+    assert (orig != null);
+    this.noRowsCols = orig.noRowsCols;
+    this.buffer = orig.buffer.clone();
   }
 
   @Override
-  public List<Collision> getCollisions() {
-
-    System.out.println("NO COLLISIONS: " + noCollisions);
-
-    if (noCollisions == 0) {
-      return new ArrayList<>();
-    }
-
-    final Collision coll = new Collision(atom1, atom2, strength);
-    final List<Collision> colls = new ArrayList<>();
-    colls.add(coll);
-
-    return colls;
+  public ShortSymmetricMatrixNoDiag copy() {
+    return new ShortSymmetricMatrixNoDiag(this);
   }
 
   @Override
-  protected void cleanState() {
-    atom1 = -1;
-    atom2 = -1;
-    strength = -1.0;
+  public int noRows() {
+    return noRowsCols;
+  }
+
+  @Override
+  public int noCols() {
+    return noRowsCols;
+  }
+
+  @Override
+  public void setElement(final int i, final int j, final short val) {
+
+    final int idx = idx(i, j);
+    buffer[idx] = val;
+  }
+
+  @Override
+  public short getElement(final int i, final int j) {
+
+    final int idx = idx(i, j);
+    return buffer[idx];
+  }
+
+  /** Returns the n*(n-1)/2 storage buffer where j > i always. */
+  @Override
+  public short[] underlyingStorageBuffer() {
+    return buffer;
+  }
+
+  public int idx(final int i, final int j) {
+
+    assert (i != j);
+    assert (i < noRowsCols);
+    assert (j < noRowsCols);
+
+    // we always assume j > i
+    final int row = Math.min(j, i);
+    final int col = Math.max(j, i);
+
+    final int idx =
+        (noRowsCols * (noRowsCols - 1) / 2)
+            - (noRowsCols - row) * ((noRowsCols - row) - 1) / 2
+            + col
+            - row
+            - 1;
+
+    return idx;
   }
 }

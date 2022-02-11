@@ -1449,11 +1449,6 @@ public final class CoordTranslation {
     final int noOfAtoms = cartes.getNoOfAtoms();
     final SimpleBondInfo bonds = new SimpleBondInfo(noOfAtoms);
 
-    for (int i = 0; i < noOfAtoms; i++) {
-      // of course between two identical atoms there is a bond. kind of...
-      bonds.setBond(i, i, BondInfo.UNCERTAIN);
-    }
-
     final double[][] xyz = cartes.getAllXYZCoord();
     final short[] atomNos = cartes.getAllAtomNumbers();
 

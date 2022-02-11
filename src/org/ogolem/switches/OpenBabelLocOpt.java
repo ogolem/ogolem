@@ -1,6 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
+              2020, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -46,14 +47,14 @@ import org.ogolem.core.BondInfo;
 import org.ogolem.core.CartesianCoordinates;
 import org.ogolem.core.CastException;
 import org.ogolem.core.StreamGobbler;
-// for physical constants
+import org.ogolem.math.BoolSymmetricMatrixNoDiag;
 
 /**
  * Does a force field based local optimization using the OpenBabel program. Since we do not assign
  * any atom types explicitly, we need to trust on OpenBabel doing that. So far that was OK. :-)
  *
  * @author Johannes Dieterich
- * @version 2014-09-06
+ * @version 2020-12-28
  */
 final class OpenBabelLocOpt implements LocalOptimization {
 
@@ -260,15 +261,9 @@ final class OpenBabelLocOpt implements LocalOptimization {
     }
 
     // the energy is one row above the "convergence reached" info
-    sTemp = saErrOut[saErrOut.length - 2];
-    // cut the first columns off
-    sTemp = sTemp.trim();
-    sTemp = sTemp.substring(sTemp.indexOf(" "));
-    sTemp = sTemp.trim();
-    sTemp = sTemp.substring(0, sTemp.indexOf(" ")).trim();
-
     try {
-      dEnergy = Double.parseDouble(sTemp) * KJTOHARTREE;
+      dEnergy =
+          Double.parseDouble(saErrOut[saErrOut.length - 2].trim().split("\\s+")[1]) * KJTOHARTREE;
     } catch (Exception e) {
       throw new CastException("Couldn't cast the energy of babel.", e);
     }
@@ -276,26 +271,29 @@ final class OpenBabelLocOpt implements LocalOptimization {
     return cartes;
   }
 
-  private String[] doConnects(final boolean[][] baBonds) {
+  private String[] doConnects(final BoolSymmetricMatrixNoDiag bonds) {
 
     final LinkedList<String> llConnects = new LinkedList<>();
 
     int iConnectCounter = 0;
 
-    for (int i = 0; i < baBonds.length; i++) {
-      for (int j = i + 1; j < baBonds.length; j++) {
-        if (baBonds[i][j]) {
+    final var bondsBuff = bonds.underlyingStorageBuffer();
+    int bondsIdx = 0;
+
+    for (int i = 0; i < bonds.noCols(); i++) {
+      for (int j = i + 1; j < bonds.noCols(); j++) {
+        if (bondsBuff[bondsIdx]) {
           // there is a bond aka connect
           iConnectCounter++;
           String sConnect = "M  V30 " + iConnectCounter + " 1 " + (i + 1) + " " + (j + 1);
           llConnects.add(sConnect);
         }
+        bondsIdx++;
       }
     }
 
     // transfer the connect arraylist to the string array
     final String[] saConnects = new String[llConnects.size()];
-
     for (int i = 0; i < saConnects.length; i++) {
       saConnects[i] = llConnects.get(i);
     }

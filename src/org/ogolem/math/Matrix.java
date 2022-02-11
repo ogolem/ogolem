@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.math;
 
 import java.io.Serializable;
+import org.ogolem.generic.Copyable;
 
 /**
  * An interface for matrices.
@@ -44,7 +45,10 @@ import java.io.Serializable;
  * @author Johannes Dieterich
  * @version 2020-12-21
  */
-public interface Matrix extends Serializable {
+public interface Matrix extends Serializable, Copyable {
+
+  @Override
+  public Matrix copy();
 
   public int noRows();
 
