@@ -1,0 +1,24 @@
+# cluster structure benchmarks
+# LJ38 - LBFGS
+examples/clusteropt/ar38 , ar38_sweden.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
+# LJ38 - LBFGS - seeded
+examples/clusteropt/ar38_seeded , ar38_sweden_seeded.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
+# LJ38 - FIRE
+examples/clusteropt/ar38_fire , ar38_fire.ogo , -0.0659856619926505, globmin.xyz , 1e-6 , 1e-4
+# LJ55
+examples/clusteropt/ar55 , ar55_sweden.ogo , -0.10594240135321474, globmin.xyz , 1e-6 , 1e-4
+# mixed LJ
+examples/clusteropt/henearkrxe , henearkrxe.ogo , -0.0027165447983133243 , henearkrxe_globmin.xyz , 1e-6 , 1e-4
+examples/clusteropt/henearkrxe , henearkrxe_lj6162.ogo , -0.002734125889232408 , henearkrxe_lj6162_globmin.xyz , 1e-6, 1e-4
+# H2O 7 - TIP4P
+examples/clusteropt/w7 , w7_tip4p.ogo , -0.0927719842 , globmin_tip4p.xyz , 1e-6 , 1e-4
+# H2O 7 - TTM3F
+examples/clusteropt/w7 , w7_ttm3f.ogo , -0.091194191 , globmin_ttm3f.xyz , 1e-6 , 1e-4
+# Si6 - SWGFF
+examples/clusteropt/si6_swg , si6.ogo  , -1.025728, globmin.xyz , 1e-6 , 1e-4
+# CO10 on Pd100 surface
+examples/clusteropt/co10_at_pd200 , co10_at_pd200.ogo , -0.019703062666414292 , globmin.xyz , 7e-6 , 1e-4
+# Xe7Ar7 cluster on a single layer Ar100 surface
+examples/clusteropt/xe7kr7_ar100_surface , xe7_kr7_ar100.ogo , -0.019833090090614337 , globmin.xyz , 1e-6 , 1e-4
+# Xe7Ar7 cluster on a single layer Ar100 surface (seeded)
+examples/clusteropt/xe7kr7_ar100_surface_seeded , xe7_kr7_ar100_seeded.ogo , -0.019833090090614337 , globmin.xyz , 1e-6 , 1e-4
