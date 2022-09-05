@@ -25,3 +25,28 @@ jobs:
       with:
         arguments: build
         gradle-version: current
+    - name: Build manual
+      uses: xu-cheng/latex-action@v2
+      with:
+        root_file: manual/manual.tex
+    - name: Setup MPI
+      uses: mpi4py/setup-mpi@v1
+      with:
+        mpi: 'openmpi'
+    - name: Build MPI helper library
+      run: cd mpi_helper && mpicc -fPIC -shared -O3 -o libogompi.so ogompi.c && cd ..
+    - name: Run adaptive macrobenchmarks
+      run: java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -adaptive adaptive-macrobenchs.csv 2
+    - name: Run cluster macrobenchmarks
+      run: java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -cluster cluster-internal-macrobenchs.csv 2
+    #- name: Run simple MPI test
+    #  run: cd examples/clusteropt/ar55 && mpirun -n 2 java --add-modules=jdk.incubator.vector --add-modules=jdk.incubator.foreign -Dforeign.restricted=permit -jar ../../../build/libs/ogolem-snapshot.jar --core ar38_sweden.ogo && cd -
+    - name: Store artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ogolem_artifacts
+        path: |
+          build/libs/ogolem-snapshot.jar
+          manual.pdf
+          build/reports/spotbugs/main.html
+        if-no-files-found: error
