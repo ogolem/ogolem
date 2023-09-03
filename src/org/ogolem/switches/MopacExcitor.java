@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2010, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -43,137 +43,151 @@ import org.ogolem.core.StreamGobbler;
 
 /**
  * Uses MOPAC to calculate vertical excitation energies
+ *
  * @author Johannes Dieterich
  * @version 2010-04-13
  */
-final class MopacExcitor implements Excitor{
+final class MopacExcitor implements Excitor {
 
-    private static final boolean bDebug = false;
+  private static final boolean bDebug = false;
 
-    final String sWhichMethod;
-    final boolean bUsePersico;
-    final boolean bUseExternal;
-    final int iNoOfAccElectrons;
-    final int iNoOfMOs;
+  final String sWhichMethod;
+  final boolean bUsePersico;
+  final boolean bUseExternal;
+  final int iNoOfAccElectrons;
+  final int iNoOfMOs;
 
-    // these are not used at the moment
-    private static final int iCharge=0;
-    private static final int iSpin=0;
+  // these are not used at the moment
+  private static final int iCharge = 0;
+  private static final int iSpin = 0;
 
-    MopacExcitor(final SwitchesConfig config, final String method,
-            final boolean persico, final boolean useexternal){
-        this.sWhichMethod = method;
-        this.bUsePersico = persico;
-        this.bUseExternal = useexternal;
-        // this obviously does NOT allow half occ MOs
-        this.iNoOfAccElectrons = config.iActiveOcc*2;
-        this.iNoOfMOs = config.iActiveNonOcc + config.iActiveOcc;
+  MopacExcitor(
+      final SwitchesConfig config,
+      final String method,
+      final boolean persico,
+      final boolean useexternal) {
+    this.sWhichMethod = method;
+    this.bUsePersico = persico;
+    this.bUseExternal = useexternal;
+    // this obviously does NOT allow half occ MOs
+    this.iNoOfAccElectrons = config.iActiveOcc * 2;
+    this.iNoOfMOs = config.iActiveNonOcc + config.iActiveOcc;
+  }
+
+  @Override
+  public double s0s1TransitionEnergy(final CartesianCoordinates cartes, final int iID) {
+
+    // file stuff
+    final String sMOPACInput = "mopac" + iID + ".dat";
+    final String sMOPACOutput = "mopac" + iID + ".out";
+    final String sMOPACDatBasis = "mopac" + iID;
+    final String sMOPACBasis = "mopac" + iID + "exc";
+
+    final String[] saAtoms = cartes.getAllAtomTypes();
+
+    if (saAtoms.length != cartes.getAllXYZCoordsCopy()[0].length) {
+      System.err.println("ERROR: Atom types and coordinates not of same dimension.");
+      return FixedValues.UNEXCITABLEENERGY;
     }
 
-    @Override
-    public double s0s1TransitionEnergy(final CartesianCoordinates cartes, final int iID){
-
-        // file stuff
-        final String sMOPACInput = "mopac" + iID + ".dat";
-        final String sMOPACOutput = "mopac" + iID + ".out";
-        final String sMOPACDatBasis = "mopac" + iID;
-        final String sMOPACBasis = "mopac" + iID + "exc";
-
-        final String[] saAtoms = cartes.getAllAtomTypes();
-
-        if(saAtoms.length != cartes.getAllXYZCoordsCopy()[0].length){
-            System.err.println("ERROR: Atom types and coordinates not of same dimension.");
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * create a folder for this run
-         */
-        try{
-            Output.createAFolder(sMOPACBasis);
-        } catch(Exception e){
-            System.err.println("ERROR: Can't creat folder. " + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * write the output aka input for the to be called program
-         */
-        try{
-            Output.writeMopacExcInput(sMOPACBasis, sMOPACInput, sWhichMethod,
-                    cartes.getAllXYZCoordsCopy(), saAtoms, iCharge, iSpin, 2000,
-                    bUsePersico, bUseExternal, iNoOfAccElectrons, iNoOfMOs);
-        } catch(InitIOException e){
-            System.err.println("WARNING: Problem in writing geometry for MOPAC input (S0/S1 calculation)." + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * call mopac
-         */
-        Process proc = null;
-        try{
-            final Runtime rt = Runtime.getRuntime();
-            final String sCommand = "mopac  " + sMOPACDatBasis;
-            final String[] saEnvp = new String[0];
-            final File dir = new File(sMOPACBasis);
-
-            proc = rt.exec(sCommand,saEnvp,dir);
-
-            // any error message?
-            final StreamGobbler errorGobbler = new
-                StreamGobbler(proc.getErrorStream(), "ERROR");
-
-            // any output?
-            final StreamGobbler outputGobbler = new
-                StreamGobbler(proc.getInputStream(), "OUTPUT");
-
-            // kick them off
-            errorGobbler.start();
-            outputGobbler.start();
-
-            // any error???
-            final int iExitValue = proc.waitFor();
-            if(iExitValue != 0){
-                System.err.println("WARNING: Mopac returns non-zero return value (local optimization).");
-                return FixedValues.UNEXCITABLEENERGY;
-            } else{
-                // mopac should(!) have completed normally...
-            }
-        } catch(Exception e){
-            System.err.println("Mopac has a problem (local optimization)." + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-
-        /*
-         * read mopacs output
-         */
-        double dS0S1Energy = FixedValues.UNEXCITABLEENERGY;
-        try{
-            dS0S1Energy = SwitchesInput.readExcMopacOutput(
-                    sMOPACBasis + System.getProperty("file.separator") + sMOPACOutput);
-        } catch(Exception e){
-            System.err.println("WARNING: Problem in reading the output of mopac for exciting.");
-            e.printStackTrace(System.err);
-            return  FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * clean up
-         */
-        if(!bDebug){
-            try{
-                SwitchesInput.removeFolder(sMOPACBasis);
-            }catch(Exception e){
-                System.err.println("Problem cleaning mopac files up. " + e.toString());
-            }
-        }
-
-        /*
-         * return it
-         */
-
-        return dS0S1Energy;
+    /*
+     * create a folder for this run
+     */
+    try {
+      Output.createAFolder(sMOPACBasis);
+    } catch (Exception e) {
+      System.err.println("ERROR: Can't creat folder. " + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
     }
+
+    /*
+     * write the output aka input for the to be called program
+     */
+    try {
+      Output.writeMopacExcInput(
+          sMOPACBasis,
+          sMOPACInput,
+          sWhichMethod,
+          cartes.getAllXYZCoordsCopy(),
+          saAtoms,
+          iCharge,
+          iSpin,
+          2000,
+          bUsePersico,
+          bUseExternal,
+          iNoOfAccElectrons,
+          iNoOfMOs);
+    } catch (InitIOException e) {
+      System.err.println(
+          "WARNING: Problem in writing geometry for MOPAC input (S0/S1 calculation)."
+              + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
+    }
+
+    /*
+     * call mopac
+     */
+    Process proc = null;
+    try {
+      final Runtime rt = Runtime.getRuntime();
+      final String[] saCommand = new String[] {"mopac", sMOPACDatBasis};
+      final String[] saEnvp = new String[0];
+      final File dir = new File(sMOPACBasis);
+
+      proc = rt.exec(saCommand, saEnvp, dir);
+
+      // any error message?
+      final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
+
+      // any output?
+      final StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");
+
+      // kick them off
+      errorGobbler.start();
+      outputGobbler.start();
+
+      // any error???
+      final int iExitValue = proc.waitFor();
+      if (iExitValue != 0) {
+        System.err.println("WARNING: Mopac returns non-zero return value (local optimization).");
+        return FixedValues.UNEXCITABLEENERGY;
+      } else {
+        // mopac should(!) have completed normally...
+      }
+    } catch (Exception e) {
+      System.err.println("Mopac has a problem (local optimization)." + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
+    }
+
+    /*
+     * read mopacs output
+     */
+    double dS0S1Energy = FixedValues.UNEXCITABLEENERGY;
+    try {
+      dS0S1Energy =
+          SwitchesInput.readExcMopacOutput(
+              sMOPACBasis + System.getProperty("file.separator") + sMOPACOutput);
+    } catch (Exception e) {
+      System.err.println("WARNING: Problem in reading the output of mopac for exciting.");
+      e.printStackTrace(System.err);
+      return FixedValues.UNEXCITABLEENERGY;
+    }
+
+    /*
+     * clean up
+     */
+    if (!bDebug) {
+      try {
+        SwitchesInput.removeFolder(sMOPACBasis);
+      } catch (Exception e) {
+        System.err.println("Problem cleaning mopac files up. " + e.toString());
+      }
+    }
+
+    /*
+     * return it
+     */
+
+    return dS0S1Energy;
+  }
 }

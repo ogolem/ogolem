@@ -232,7 +232,7 @@ final class MolproCaller implements CartesianFullBackend, Newton {
         // default
         sMolproCmd = "molpro";
       }
-      Process proc = rt.exec(sMolproCmd + " " + sMolproInput);
+      Process proc = rt.exec(new String[] {sMolproCmd, sMolproInput});
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
@@ -322,7 +322,7 @@ final class MolproCaller implements CartesianFullBackend, Newton {
      */
     try {
       Runtime rt = Runtime.getRuntime();
-      Process proc = rt.exec("molpro " + sMolproInput);
+      Process proc = rt.exec(new String[] {"molpro", sMolproInput});
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
@@ -614,7 +614,7 @@ final class MolproCaller implements CartesianFullBackend, Newton {
       if (sMolproCmd == null) {
         sMolproCmd = "molpro";
       }
-      Process proc = rt.exec(sMolproCmd + " " + sMolproInput);
+      Process proc = rt.exec(new String[] {sMolproCmd, sMolproInput});
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

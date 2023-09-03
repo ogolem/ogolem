@@ -137,7 +137,9 @@ class TwoStepLocOpt implements Newton {
     return cartes;
   }
 
-  /** @return always returns the secondary backend (if available) */
+  /**
+   * @return always returns the secondary backend (if available)
+   */
   @Override
   public CartesianFullBackend getBackend() {
     return secLocOpt.getBackend();

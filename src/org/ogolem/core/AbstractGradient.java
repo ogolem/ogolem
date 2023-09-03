@@ -1,5 +1,6 @@
-/**
+/*
 Copyright (c) 2012, J. M. Dieterich
+              2022, J. M Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,54 +37,56 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * An abstract gradient.
+ *
  * @author Johannes Dieterich
- * @version 2012-03-09
+ * @version 2022-11-16
  */
-public class AbstractGradient {
-    
-    protected double[] gradientValues;
-    protected double functionValue;
-    
-    public AbstractGradient(){
+public class AbstractGradient implements Serializable {
+
+  private static final long serialVersionUID = (long) 20221116;
+  protected double[] gradientValues;
+  protected double functionValue;
+
+  public AbstractGradient() {}
+
+  public AbstractGradient(final int dim) {
+    this.gradientValues = new double[dim];
+  }
+
+  public AbstractGradient(final double val, final double[] grad) {
+    this.functionValue = val;
+    this.gradientValues = grad;
+  }
+
+  public AbstractGradient(final List<AbstractGradient> grads, final int dim) {
+    gradientValues = new double[dim];
+    for (final AbstractGradient grad : grads) {
+      functionValue += grad.functionValue;
+      final double[] g = grad.gradientValues;
+      for (int i = 0; i < dim; i++) {
+        gradientValues[i] += g[i];
+      }
     }
-    
-    public AbstractGradient(final int dim){
-        this.gradientValues = new double[dim];
-    }
-    
-    public AbstractGradient(final double val, final double[] grad){
-        this.functionValue = val;
-        this.gradientValues = grad;
-    }
-    
-    public AbstractGradient(final List<AbstractGradient> grads, final int dim){
-        gradientValues = new double[dim];
-        for(final AbstractGradient grad : grads){
-            functionValue += grad.functionValue;
-            final double[] g = grad.gradientValues;
-            for(int i = 0; i < dim; i++){
-                gradientValues[i] += g[i];
-            }
-        }
-    }
-    
-    public void setGradient(final double[] grad){
-        this.gradientValues = grad;
-    }
-    
-    public double[] getGradient(){
-        return gradientValues;
-    }
-    
-    public void setFunctionValue(final double val){
-        functionValue = val;
-    }
-    
-    public double getFunctionValue(){
-        return functionValue;
-    }
+  }
+
+  public void setGradient(final double[] grad) {
+    this.gradientValues = grad;
+  }
+
+  public double[] getGradient() {
+    return gradientValues;
+  }
+
+  public void setFunctionValue(final double val) {
+    functionValue = val;
+  }
+
+  public double getFunctionValue() {
+    return functionValue;
+  }
 }

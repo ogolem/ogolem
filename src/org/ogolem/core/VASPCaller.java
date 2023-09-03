@@ -297,7 +297,7 @@ class VASPCaller extends AbstractLocOpt {
 
       Runtime rt = Runtime.getRuntime();
       File dir = new File(folder);
-      proc = rt.exec(vaspCmd, null, dir);
+      proc = rt.exec(new String[] {vaspCmd}, null, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

@@ -155,8 +155,11 @@ final class OpenBabelLocOpt implements LocalOptimization {
     String[] saErrOut;
     try {
       Runtime rt = Runtime.getRuntime();
-      Process proc =
-          rt.exec("obminimize -ff " + sForceField + " -n " + iNoOfIterations + " " + sGeometryFile);
+      String[] saCmd =
+          new String[] {
+            "obminimize", "-ff", sForceField, "-n", "" + iNoOfIterations, sGeometryFile
+          };
+      Process proc = rt.exec(saCmd);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

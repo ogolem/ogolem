@@ -180,17 +180,23 @@ public class FullSpectrum implements Spectrum {
     return out;
   }
 
-  /** @return the offset */
+  /**
+   * @return the offset
+   */
   public double getOffset() {
     return offset;
   }
 
-  /** @return the incr */
+  /**
+   * @return the incr
+   */
   public double getIncr() {
     return incr;
   }
 
-  /** @return the intensities */
+  /**
+   * @return the intensities
+   */
   public double[] getIntensities() {
     return intensities;
   }

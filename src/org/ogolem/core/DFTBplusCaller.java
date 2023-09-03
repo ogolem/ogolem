@@ -69,7 +69,7 @@ public class DFTBplusCaller extends AbstractLocOpt {
   private String[] dftbAtomTypes = null;
   private final int maxIter;
   private final double maxForce;
-  private final String cmd;
+  private final String[] cmd;
   private final boolean custom;
   private final String[] auxInp;
 
@@ -92,9 +92,9 @@ public class DFTBplusCaller extends AbstractLocOpt {
     this.maxForce = globConf.threshLocOptGradient;
     final String tmp = System.getenv("OGO_DFTBPCMD");
     if (tmp == null) {
-      cmd = "dftb+";
+      cmd = new String[] {"dftb+"};
     } else {
-      cmd = tmp;
+      cmd = new String[] {tmp};
     }
 
     // read aux file if custom

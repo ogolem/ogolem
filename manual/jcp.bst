@@ -183,14 +183,14 @@ FUNCTION {emphasize}
 FUNCTION {caps}
 { duplicate$ empty$
     { pop$ "" }
-    { "{\sc " swap$ * "}" * }
+    { "\textsc{ " swap$ * "}" * }
   if$
 }
 
 FUNCTION {embolden}
 { duplicate$ empty$
     { pop$ "" }
-    { "{\bf " swap$ * "}" * }
+    { "\textbf{ " swap$ * "}" * }
   if$
 }
 

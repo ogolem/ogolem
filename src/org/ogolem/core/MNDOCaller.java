@@ -233,10 +233,10 @@ class MNDOCaller extends AbstractLocOpt {
     Process proc;
     try {
       Runtime rt = Runtime.getRuntime();
-      String sCommand = "mndo.sh " + sMNDOInput + " " + sMNDOOutput;
+      String[] saCmd = new String[] {"mndo.sh", sMNDOInput, sMNDOOutput};
       String[] saEnvp = new String[0];
       File dir = new File(sMNDOBasis);
-      proc = rt.exec(sCommand, saEnvp, dir);
+      proc = rt.exec(saCmd, saEnvp, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

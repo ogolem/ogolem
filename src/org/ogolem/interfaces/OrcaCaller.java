@@ -864,7 +864,8 @@ public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBac
   private static String[] runOrca(final String orcaCmd, final String orcaInput) throws Exception {
 
     final Runtime rt = Runtime.getRuntime();
-    final Process proc = rt.exec(orcaCmd + " " + orcaInput);
+    final String[] cmdArr = new String[] {orcaCmd, orcaInput};
+    final Process proc = rt.exec(cmdArr);
 
     // any error message?
     final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

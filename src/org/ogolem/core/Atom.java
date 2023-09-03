@@ -147,7 +147,10 @@ class Atom implements Serializable, Copyable {
   }
 
   private void readObject(ObjectInputStream ois)
-      throws IOException, ClassNotFoundException, ClassCastException, IllegalAccessException,
+      throws IOException,
+          ClassNotFoundException,
+          ClassCastException,
+          IllegalAccessException,
           NoSuchFieldException {
 
     energyPart = ois.readDouble();

@@ -1,4 +1,4 @@
-/**
+/*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
 All rights reserved.
 
@@ -44,197 +44,213 @@ import org.ogolem.core.StreamGobbler;
 
 /**
  * Uses MNDOs GugaCI for calculating excitation energies.
+ *
  * @author Johannes Dieterich
  * @version 2009-11-23
  */
-final class GugaCI implements Excitor{
+final class GugaCI implements Excitor {
 
-    private final int iWhichBackend;
+  private final int iWhichBackend;
 
-    private final boolean bCOSMOWater;
+  private final boolean bCOSMOWater;
 
-    // these are not used at the moment
-    private static final int iCharge=0;
-    private static final int iSpin=0;
+  // these are not used at the moment
+  private static final int iCharge = 0;
+  private static final int iSpin = 0;
+
+  /*
+   * GUGA-CI related options
+   */
+  private final int iActiveOcc;
+  private final int iActiveNonOcc;
+  private final int iOccPi;
+  private final int iNonOccPi;
+  private final int iOrbDef;
+  private final int iNoOfRefOcc;
+  private final int iDefOfRefOcc;
+  private final int iMaxExcitLevel;
+  private final int iNoOfLowestStates;
+  private final int iWantedCIState;
+
+  GugaCI(final SwitchesConfig swConfig, final int iWhichMethod, final boolean bWaterSolv) {
+    this.iWhichBackend = iWhichMethod;
+    this.bCOSMOWater = bWaterSolv;
+    this.iActiveOcc = swConfig.iActiveOcc;
+    this.iActiveNonOcc = swConfig.iActiveNonOcc;
+    this.iOccPi = swConfig.iOccPi;
+    this.iNonOccPi = swConfig.iNonOccPi;
+    this.iOrbDef = swConfig.iOrbDef;
+    this.iNoOfRefOcc = swConfig.iNoOfRefOcc;
+    this.iDefOfRefOcc = swConfig.iDefOfRefOcc;
+    this.iMaxExcitLevel = swConfig.iMaxExcitLevel;
+    this.iNoOfLowestStates = swConfig.iNoOfLowestStates;
+    this.iWantedCIState = swConfig.iWantedCiState;
+  }
+
+  @Override
+  public double s0s1TransitionEnergy(final CartesianCoordinates cartes, final int iID) {
+
+    final String sMNDOInput = "mndo" + iID + ".inp";
+    final String sMNDOOutput = "mndo" + iID + ".out";
+    final String sMNDOBasis = "mndo" + iID;
+
+    // get the atomic numbers together
+    int[] iaCurrAtNos = new int[cartes.getAllAtomTypes().length];
+    final String[] saAtoms = cartes.getAllAtomTypes();
+
+    if (saAtoms.length != cartes.getAllXYZCoordsCopy()[0].length) {
+      System.err.println("ERROR: Atom types and coordinates not of same dimension.");
+      return FixedValues.UNEXCITABLEENERGY;
+    }
+
+    for (int i = 0; i < saAtoms.length; i++) {
+      iaCurrAtNos[i] = AtomicProperties.giveAtomicNumber(saAtoms[i]);
+    }
 
     /*
-     * GUGA-CI related options
+     * create a folder for this run
      */
-    private final int iActiveOcc;
-    private final int iActiveNonOcc;
-    private final int iOccPi;
-    private final int iNonOccPi;
-    private final int iOrbDef;
-    private final int iNoOfRefOcc;
-    private final int iDefOfRefOcc;
-    private final int iMaxExcitLevel;
-    private final int iNoOfLowestStates;
-    private final int iWantedCIState;
-
-    GugaCI(final SwitchesConfig swConfig, final int iWhichMethod, final boolean bWaterSolv){
-        this.iWhichBackend = iWhichMethod;
-        this.bCOSMOWater = bWaterSolv;
-        this.iActiveOcc = swConfig.iActiveOcc;
-        this.iActiveNonOcc = swConfig.iActiveNonOcc;
-        this.iOccPi = swConfig.iOccPi;
-        this.iNonOccPi = swConfig.iNonOccPi;
-        this.iOrbDef = swConfig.iOrbDef;
-        this.iNoOfRefOcc = swConfig.iNoOfRefOcc;
-        this.iDefOfRefOcc = swConfig.iDefOfRefOcc;
-        this.iMaxExcitLevel = swConfig.iMaxExcitLevel;
-        this.iNoOfLowestStates = swConfig.iNoOfLowestStates;
-        this.iWantedCIState = swConfig.iWantedCiState;
+    try {
+      Output.createAFolder(sMNDOBasis);
+    } catch (Exception e) {
+      System.err.println("ERROR: Can't creat folder. " + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
     }
 
-    @Override
-    public double s0s1TransitionEnergy(final CartesianCoordinates cartes, final int iID){
-
-        final String sMNDOInput = "mndo" + iID + ".inp";
-        final String sMNDOOutput = "mndo" + iID + ".out";
-        final String sMNDOBasis = "mndo" + iID;
-
-        // get the atomic numbers together
-        int[] iaCurrAtNos = new int[cartes.getAllAtomTypes().length];
-        final String[] saAtoms = cartes.getAllAtomTypes();
-
-        if(saAtoms.length != cartes.getAllXYZCoordsCopy()[0].length){
-            System.err.println("ERROR: Atom types and coordinates not of same dimension.");
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        for (int i = 0; i < saAtoms.length; i++) {
-            iaCurrAtNos[i] = AtomicProperties.giveAtomicNumber(saAtoms[i]);
-        }
-
-
-        /*
-         * create a folder for this run
-         */
-        try{
-            Output.createAFolder(sMNDOBasis);
-        } catch(Exception e){
-            System.err.println("ERROR: Can't creat folder. " + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * write the output aka input for the to be called program
-         */
-        try{
-            Output.writeMNDOInput(sMNDOBasis, sMNDOInput, iWhichBackend, cartes.getAllXYZCoordsCopy(), iaCurrAtNos,
-                    iCharge, iSpin, bCOSMOWater, iActiveOcc, iActiveNonOcc, iOccPi, iNonOccPi, iOrbDef,
-                    iNoOfRefOcc, iDefOfRefOcc, iMaxExcitLevel, iNoOfLowestStates, iWantedCIState);
-        } catch(InitIOException e){
-            System.err.println("WARNING: Problem in writing geometry for MNDO input (S0/S1 calculation)." + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * call mndo
-         */
-        Process proc = null;
-        try{
-            final Runtime rt = Runtime.getRuntime();
-            final String sCommand = "mndo.sh " + sMNDOInput + " " + sMNDOOutput;
-            final String[] saEnvp = new String[0];
-            final File dir = new File(sMNDOBasis);
-
-            proc = rt.exec(sCommand,saEnvp,dir);
-
-            // any error message?
-            final StreamGobbler errorGobbler = new
-                StreamGobbler(proc.getErrorStream(), "ERROR");
-
-            // any output?
-            final StreamGobbler outputGobbler = new
-                StreamGobbler(proc.getInputStream(), "OUTPUT");
-
-            // kick them off
-            errorGobbler.start();
-            outputGobbler.start();
-
-            // any error???
-            final int iExitValue = proc.waitFor();
-            if(iExitValue != 0){
-                System.err.println("WARNING: MNDO returns non-zero return value (local optimization).");
-                return FixedValues.UNEXCITABLEENERGY;
-            } else{
-                // mndo should(!) have completed normally...
-            }
-
-
-        } catch(Exception e){
-            System.err.println("WARNING: MNDO has a problem (local optimization)." + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * read mndo's output in
-         */
-        String[] saOutput;
-        try{
-            saOutput = SwitchesInput.readFileIn(sMNDOBasis + System.getProperty("file.separator") + sMNDOOutput);
-        } catch(Exception e){
-            System.err.println("WARNING: Couldn't read in MNDO output." + e.toString());
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-
-        /*
-         * translate mndo's output
-         */
-        double dS0S1Energy = 0.0;
-        try{
-            dS0S1Energy = readEnergyIn(saOutput);
-        } catch(Exception e){
-            System.err.println("WARNING: Problem in translating the output of MNDO." + e);
-            return FixedValues.UNEXCITABLEENERGY;
-        }
-
-        /*
-         * clean up
-         */
-        try{
-            SwitchesInput.removeFolder(sMNDOBasis);
-        }catch(Exception e){
-            System.err.println("WARNING: Problem cleaning MNDO files up." + e.toString());
-        }
-
-        /*
-         * return it
-         */
-        return dS0S1Energy;
+    /*
+     * write the output aka input for the to be called program
+     */
+    try {
+      Output.writeMNDOInput(
+          sMNDOBasis,
+          sMNDOInput,
+          iWhichBackend,
+          cartes.getAllXYZCoordsCopy(),
+          iaCurrAtNos,
+          iCharge,
+          iSpin,
+          bCOSMOWater,
+          iActiveOcc,
+          iActiveNonOcc,
+          iOccPi,
+          iNonOccPi,
+          iOrbDef,
+          iNoOfRefOcc,
+          iDefOfRefOcc,
+          iMaxExcitLevel,
+          iNoOfLowestStates,
+          iWantedCIState);
+    } catch (InitIOException e) {
+      System.err.println(
+          "WARNING: Problem in writing geometry for MNDO input (S0/S1 calculation)."
+              + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
     }
 
-    private static double readEnergyIn(final String[] saOutput){
+    /*
+     * call mndo
+     */
+    Process proc = null;
+    try {
+      final Runtime rt = Runtime.getRuntime();
+      final String[] saCommand = new String[] {"mndo.sh", sMNDOInput, sMNDOOutput};
+      final String[] saEnvp = new String[0];
+      final File dir = new File(sMNDOBasis);
 
-        double dEnergy = FixedValues.UNEXCITABLEENERGY;
+      proc = rt.exec(saCommand, saEnvp, dir);
 
-        // first check whether we even were successful
-        for(int iLine = saOutput.length - 50; iLine < saOutput.length; iLine++){
-            // should be within the last 50 lines
-            final String sLine = saOutput[iLine].trim();
-            if(sLine.equalsIgnoreCase("UNSUCCESSFUL GEOMETRY OPTIMIZATION.")){
-                return FixedValues.UNEXCITABLEENERGY;
-            }
-        }
+      // any error message?
+      final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
 
-        for(int iLine = saOutput.length -1; iLine > -1; iLine--){
-            final String sLine = saOutput[iLine].trim();
-            if(sLine.startsWith("State  2,")){
-                // correct line found
-                String sEnergy = sLine.substring(28).trim();
-                sEnergy = sEnergy.substring(0,sEnergy.indexOf("eV,")).trim();
-                // now we should have the proper value
-                try{
-                    dEnergy = Double.parseDouble(sEnergy) * org.ogolem.core.Constants.EVTOHARTREE;
-                } catch(Exception e){
-                    System.err.println("WARNING: Couldn't parse energy difference in MNDO run. " + e.toString());
-                    return FixedValues.UNEXCITABLEENERGY;
-                }
-            }
-        }
+      // any output?
+      final StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");
 
-        return dEnergy;
+      // kick them off
+      errorGobbler.start();
+      outputGobbler.start();
+
+      // any error???
+      final int iExitValue = proc.waitFor();
+      if (iExitValue != 0) {
+        System.err.println("WARNING: MNDO returns non-zero return value (local optimization).");
+        return FixedValues.UNEXCITABLEENERGY;
+      } else {
+        // mndo should(!) have completed normally...
+      }
+
+    } catch (Exception e) {
+      System.err.println("WARNING: MNDO has a problem (local optimization)." + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
     }
+
+    /*
+     * read mndo's output in
+     */
+    String[] saOutput;
+    try {
+      saOutput =
+          SwitchesInput.readFileIn(sMNDOBasis + System.getProperty("file.separator") + sMNDOOutput);
+    } catch (Exception e) {
+      System.err.println("WARNING: Couldn't read in MNDO output." + e.toString());
+      return FixedValues.UNEXCITABLEENERGY;
+    }
+
+    /*
+     * translate mndo's output
+     */
+    double dS0S1Energy = 0.0;
+    try {
+      dS0S1Energy = readEnergyIn(saOutput);
+    } catch (Exception e) {
+      System.err.println("WARNING: Problem in translating the output of MNDO." + e);
+      return FixedValues.UNEXCITABLEENERGY;
+    }
+
+    /*
+     * clean up
+     */
+    try {
+      SwitchesInput.removeFolder(sMNDOBasis);
+    } catch (Exception e) {
+      System.err.println("WARNING: Problem cleaning MNDO files up." + e.toString());
+    }
+
+    /*
+     * return it
+     */
+    return dS0S1Energy;
+  }
+
+  private static double readEnergyIn(final String[] saOutput) {
+
+    double dEnergy = FixedValues.UNEXCITABLEENERGY;
+
+    // first check whether we even were successful
+    for (int iLine = saOutput.length - 50; iLine < saOutput.length; iLine++) {
+      // should be within the last 50 lines
+      final String sLine = saOutput[iLine].trim();
+      if (sLine.equalsIgnoreCase("UNSUCCESSFUL GEOMETRY OPTIMIZATION.")) {
+        return FixedValues.UNEXCITABLEENERGY;
+      }
+    }
+
+    for (int iLine = saOutput.length - 1; iLine > -1; iLine--) {
+      final String sLine = saOutput[iLine].trim();
+      if (sLine.startsWith("State  2,")) {
+        // correct line found
+        String sEnergy = sLine.substring(28).trim();
+        sEnergy = sEnergy.substring(0, sEnergy.indexOf("eV,")).trim();
+        // now we should have the proper value
+        try {
+          dEnergy = Double.parseDouble(sEnergy) * org.ogolem.core.Constants.EVTOHARTREE;
+        } catch (Exception e) {
+          System.err.println(
+              "WARNING: Couldn't parse energy difference in MNDO run. " + e.toString());
+          return FixedValues.UNEXCITABLEENERGY;
+        }
+      }
+    }
+
+    return dEnergy;
+  }
 }

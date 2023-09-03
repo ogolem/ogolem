@@ -269,7 +269,8 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
     String[] saOutput;
     try {
       Runtime rt = Runtime.getRuntime();
-      Process proc = rt.exec("orca " + sOrcaInput);
+      String[] saCmd = new String[] {"orca", sOrcaInput};
+      Process proc = rt.exec(saCmd);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
@@ -346,7 +347,8 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
     String[] saOutput;
     try {
       Runtime rt = Runtime.getRuntime();
-      Process proc = rt.exec("orca " + sOrcaInput);
+      String[] saCmd = new String[] {"orca", sOrcaInput};
+      Process proc = rt.exec(saCmd);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
@@ -526,7 +528,8 @@ public final class AdaptiveOrcaCaller extends AbstractAdaptivable implements New
     String[] saOutput;
     try {
       Runtime rt = Runtime.getRuntime();
-      Process proc = rt.exec("orca " + sOrcaInput);
+      String[] saCmd = new String[] {"orca", sOrcaInput};
+      Process proc = rt.exec(saCmd);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

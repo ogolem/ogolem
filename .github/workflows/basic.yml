@@ -18,10 +18,10 @@ jobs:
     - uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '19'
         cache: 'gradle'
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      uses: gradle/gradle-build-action@v2.3.3
       with:
         arguments: build
         gradle-version: current
@@ -29,6 +29,8 @@ jobs:
       uses: xu-cheng/latex-action@v2
       with:
         root_file: manual/manual.tex
+        continue_on_error: true
+        work_in_root_file_dir: true
     - name: Setup MPI
       uses: mpi4py/setup-mpi@v1
       with:
@@ -36,9 +38,9 @@ jobs:
     - name: Build MPI helper library
       run: cd mpi_helper && mpicc -fPIC -shared -O3 -o libogompi.so ogompi.c && cd ..
     - name: Run adaptive macrobenchmarks
-      run: java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -adaptive adaptive-macrobenchs.csv 2
+      run: java --add-modules jdk.incubator.vector --enable-preview -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -adaptive adaptive-macrobenchs.csv 2
     - name: Run cluster macrobenchmarks
-      run: java --add-modules jdk.incubator.vector -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -cluster cluster-internal-macrobenchs.csv 2
+      run: java --add-modules jdk.incubator.vector --enable-preview -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -cluster cluster-internal-macrobenchs.csv 2
     #- name: Run simple MPI test
     #  run: cd examples/clusteropt/ar55 && mpirun -n 2 java --add-modules=jdk.incubator.vector --add-modules=jdk.incubator.foreign -Dforeign.restricted=permit -jar ../../../build/libs/ogolem-snapshot.jar --core ar38_sweden.ogo && cd -
     - name: Store artifacts
@@ -47,6 +49,6 @@ jobs:
         name: ogolem_artifacts
         path: |
           build/libs/ogolem-snapshot.jar
-          manual.pdf
+          manual/manual.pdf
           build/reports/spotbugs/main.html
         if-no-files-found: error

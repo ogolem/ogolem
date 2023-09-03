@@ -196,12 +196,9 @@ class OpenBabelCaller extends AbstractLocOpt {
       Runtime rt = Runtime.getRuntime();
       Process proc =
           rt.exec(
-              "obminimize -ff "
-                  + forceField.name()
-                  + " -n "
-                  + iNoOfIterations
-                  + " "
-                  + sGeometryFile);
+              new String[] {
+                "obminimize", "-ff", forceField.name(), "-n", "" + iNoOfIterations, sGeometryFile
+              });
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
