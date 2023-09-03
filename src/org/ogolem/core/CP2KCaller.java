@@ -225,10 +225,10 @@ final class CP2KCaller extends AbstractLocOpt {
     try {
       final Runtime rt = Runtime.getRuntime();
       final String sLocalInp = sCP2KFolder + ".inp";
-      final String sCommand = "cp2k.sopt " + sLocalInp;
+      final String[] saCommand = new String[] {"cp2k.sopt", sLocalInp};
       final File dir = new File(sCP2KFolder);
 
-      proc = rt.exec(sCommand, null, dir);
+      proc = rt.exec(saCommand, null, dir);
 
       // any error message?
       final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

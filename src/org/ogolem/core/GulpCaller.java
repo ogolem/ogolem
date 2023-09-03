@@ -174,7 +174,7 @@ class GulpCaller extends AbstractLocOpt {
   private static String[] runGulp(final String gulpCmd, final String input) throws Exception {
 
     final Runtime rt = Runtime.getRuntime();
-    final Process proc = rt.exec(gulpCmd + " " + input);
+    final Process proc = rt.exec(new String[] {gulpCmd, input});
 
     // any error message?
     final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

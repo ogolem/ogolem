@@ -199,7 +199,7 @@ final class MopacCaller extends AbstractLocOpt {
         // default
         sMOPACCmd = "mopac";
       }
-      Process proc = rt.exec(sMOPACCmd + " " + sMopacBasis);
+      Process proc = rt.exec(new String[] {sMOPACCmd, sMopacBasis});
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

@@ -480,7 +480,9 @@ public class Topology implements Copyable, Serializable {
     this(orig, false);
   }
 
-  /** @return a shallow copy of this topology */
+  /**
+   * @return a shallow copy of this topology
+   */
   @Override
   public Topology copy() {
     return new Topology(this, true);

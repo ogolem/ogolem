@@ -23,16 +23,16 @@ NOTE: Above needs to be adjusted for the used environment just as the wrapped co
 
 Place the library in a location to be provided at runtime to the `java` command. Here, we placed it in the installed Open MPI `lib` directory. If this is not possible, place in a different directory and ensure BOTH the MPI library directory as well as the directory containing the wrapper library are passed to `-Djava.library.path` below.
 
-A JDK16 is required with support for the foreign linker incubating feature.
+A JDK19 is required with support for the foreign linker preview feature.
 
-The actual command willl be highly specific to your environment (thanks to MPI) but we will highlight some common requirements using an example:
+The actual command will be highly specific to your environment (thanks to MPI) but we will highlight some common requirements using an example:
 
 ```
-~/software/openmpi_install/bin/mpirun -np 4 ~/software/jdk16/jdk-16.jdk/Contents/Home/bin/java --add-modules=jdk.incubator.vector --add-modules=jdk.incubator.foreign -Dforeign.restricted=permit -Djava.library.path=~/software/openmpi_install/lib -jar ogolem-snapshot.jar --core ar38_sweden.ogo
+~/software/openmpi_install/bin/mpirun -np 4 ~/software/jdk16/jdk-16.jdk/Contents/Home/bin/java --add-modules=jdk.incubator.vector --enable-preview --enable-native-access=ALL-UNNAMED -Djava.library.path=~/software/openmpi_install/lib -jar ogolem-snapshot.jar --core ar38_sweden.ogo
 ```
 
 This assumes the `ogolem-snapshot.jar` in a directory together with the input file (here: `ar38_sweden.ogo`). `--core` selects the MPI backend.
 
-You must enable the `foreign` incubator using `--add-modules jdk.incubator.foreign` and grant permissions to it using `-Dforeign.restricted=permit`. Also, the vectorAPI incubator must be enabled as usual.
+You must enable the `foreign` preview using `--enable-preview` and grant permissions to it using `--enable-native-access=ALL-UNNAMED`. Also, the vectorAPI incubator must be enabled as usual.
 
 The location of the previously compiled `libogompi.dylib` is provided using `-Djava.library.path=~/software/openmpi_install/lib` and MUST match the `mpirun` used. Here, we use `mpirun` with 4  processes.

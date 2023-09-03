@@ -282,10 +282,10 @@ final class CPMDCaller extends AbstractLocOpt {
     String[] saOutput;
     try {
       Runtime rt = Runtime.getRuntime();
-      String sCommand = "cpmd.x run.in";
+      String[] saCommand = new String[] {"cpmd.x", "run.in"};
       String[] saEnvp = new String[0];
       File dir = new File(sCPMDFolder);
-      proc = rt.exec(sCommand, saEnvp, dir);
+      proc = rt.exec(saCommand, saEnvp, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

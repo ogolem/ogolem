@@ -28,7 +28,7 @@ error or uncertainty, please do also contact us.
 \section{Licensing}
 \ogo{} is distributed under the following license
 \begin{verbatim}
-Copyright (c) 2009-2021, J. M. Dieterich and B. Hartke
+Copyright (c) 2009-2023, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -164,11 +164,11 @@ flags are
      for the OGOLEM snapshot version
 \end{verbatim}
 Please note here that you should have installed a Java runtime environment (JRE)
-complying at least to the JAVA16 standard. Additionally, for above command to
+complying at least to the JAVA19 standard. Additionally, for above command to
 work, the java binary should be in your path, otherwise you will need to
 explicitly specify the path to it.
 
-If you have a choice, use the newest openJDK (currently openJDK9) in server mode
+If you have a choice, use the newest openJDK (currently openJDK19) in server mode
 (the latter is really important for general performance and seems to be the
 default for most JREs for most UNIX incarnations). Also, the author(s) want to
 note that they could not see any performance gain on standard hardware
@@ -2952,10 +2952,10 @@ failures, and parallelization across arbitrarily heterogenous ad-hoc networks,
 only needing a standard JVM on each node and standard TCP/IP connections
 between them.
 
-In order for this parallelization scheme to work, a standard java distribution 
+In order for this parallelization scheme to work, a standard Java distribution 
 must be used, there need be two open TCP ports dedicated on the server and 
-(if applicable) proxy nodes. Please note that we do not support running 
-multiple proxies or server and proxies on the same machine.
+(if applicable) proxy nodes. While not recommended, one can run a server and
+(multiple) proxies on the same machine if different TCP ports are used.
 
 Also, some installation-dependent flags to the JVM must be passed for security 
 policies, CLASSPATH settings etc. These are included in the startup syntax
@@ -3144,6 +3144,8 @@ where
   be merged with the server's pool. Default: -1 (full pool) (optional).
   Note that the proxy pool size need not be equal to the server pool size,
   since the proxy has its own input (where a pool size is specified).
+\item \texttt{client.policy} is an optional setting to specify restrictions on
+  the client JVM. Please see JVM documentation for options and syntax.
 \end{itemize}
 After \verb|--rmiproxy|, the following flags can occur in any order.
 

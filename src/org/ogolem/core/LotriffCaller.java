@@ -141,7 +141,7 @@ final class LotriffCaller extends AbstractLocOpt {
         sLotriffCmd = "lotriff";
       }
       File dir = new File(sFolder);
-      Process proc = rt.exec(sLotriffCmd, null, dir);
+      Process proc = rt.exec(new String[] {sLotriffCmd}, null, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

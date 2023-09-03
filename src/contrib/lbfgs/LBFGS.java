@@ -99,6 +99,7 @@ public class LBFGS implements Serializable {
       return getMessage() + " (iflag == " + iflag + ")";
     }
   }
+
   /**
    * Controls the accuracy of the line search <code>mcsrch</code>. If the function and gradient
    * evaluations are inexpensive with respect to the cost of the iteration (which is sometimes the
@@ -107,18 +108,21 @@ public class LBFGS implements Serializable {
    * than 1e-4.
    */
   public final double gtol;
+
   /**
    * Specify lower bound for the step in the line search. The default value is 1e-20. This value
    * need not be modified unless the exponent is too large for the machine being used, or unless the
    * problem is extremely badly scaled (in which case the exponent should be increased).
    */
   public final double stpmin = 1e-20;
+
   /**
    * Specify upper bound for the step in the line search. The default value is 1e20. This value need
    * not be modified unless the exponent is too large for the machine being used, or unless the
    * problem is extremely badly scaled (in which case the exponent should be increased).
    */
   public final double stpmax = 1e20;
+
   /**
    * The solution vector as it was at the end of the most recently completed line search. This will
    * usually be different from the return value of the parameter <var>x</var> of <var>lbfgs</var>,

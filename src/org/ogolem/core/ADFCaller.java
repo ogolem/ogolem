@@ -120,8 +120,16 @@ class ADFCaller extends AbstractLocOpt {
       final File direc = new File(dir);
 
       // first prepare the input using adfprep
-      final String comPrep =
-          adfbinDir + File.separator + "adfprep -t " + inputStub + " -m geom.xyz -j adfjob";
+      final String[] comPrep =
+          new String[] {
+            adfbinDir + File.separator + "adfprep",
+            "-t",
+            inputStub,
+            "-m",
+            "geom.xyz",
+            "-j",
+            "adfjob"
+          };
       procPrep = rt.exec(comPrep, null, direc);
 
       // prep gobblers
@@ -152,7 +160,7 @@ class ADFCaller extends AbstractLocOpt {
 
       // now execute said jobfile
       ManipulationPrimitives.markExecutable(jobFile);
-      final String comRun = "." + File.separator + "jobfile";
+      final String[] comRun = new String[] {"." + File.separator + "jobfile"};
       procRun = rt.exec(comRun, null, direc);
 
       // run gobblers
@@ -196,8 +204,10 @@ class ADFCaller extends AbstractLocOpt {
       }
 
       // get the results, energy and optimized geometry
-      final String comRep =
-          adfbinDir + File.separator + "adfreport " + resultsFile + " geometry-b energy -plain";
+      final String[] comRep =
+          new String[] {
+            adfbinDir + File.separator + "adfreport", resultsFile, "geometry-b", "energy", "-plain"
+          };
       procRep = rt.exec(comRep, null, direc);
 
       // run gobblers

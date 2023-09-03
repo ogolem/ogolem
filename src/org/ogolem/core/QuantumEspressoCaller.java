@@ -56,6 +56,7 @@ final class QuantumEspressoCaller extends AbstractLocOpt {
   QuantumEspressoCaller(final GlobalConfig globconf) {
     super(globconf);
   }
+
   // TODO everything
 
   private QuantumEspressoCaller(final QuantumEspressoCaller orig) {

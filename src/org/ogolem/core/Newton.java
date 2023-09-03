@@ -83,7 +83,9 @@ public interface Newton extends Copyable, Serializable {
 
   String myIDandMethod();
 
-  /** @return The Backend, if available. Else null. */
+  /**
+   * @return The Backend, if available. Else null.
+   */
   CartesianFullBackend getBackend();
 
   long getNumberOfGeomLocalOpts();

@@ -291,8 +291,8 @@ class GromacsCaller extends AbstractLocOpt {
       String grompp = System.getenv("OGO_GROMACSMPP");
       if (grompp == null) grompp = "grompp";
 
-      final String cmd1 =
-          grompp + " -f " + paramFile + " -c " + g96File + " -p " + topFile + " -n " + ndxFile;
+      final String[] cmd1 =
+          new String[] {grompp, "-f", paramFile, "-c", g96File, "-p", topFile, "-n", ndxFile};
 
       Process proc = rt.exec(cmd1, saEnvp, dir);
 
@@ -316,7 +316,7 @@ class GromacsCaller extends AbstractLocOpt {
       String mdrun = System.getenv("OGO_GROMACSCMD");
       if (mdrun == null) mdrun = "mdrun";
 
-      final String cmd2 = mdrun + " -c coords.g96 -nt 1";
+      final String[] cmd2 = new String[] {mdrun, "-c", "coords.g96", "-nt", "1"};
 
       proc = rt.exec(cmd2, saEnvp, dir);
 

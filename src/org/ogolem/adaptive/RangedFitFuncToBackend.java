@@ -59,6 +59,7 @@ class RangedFitFuncToBackend implements GenericBackend<Double, AdaptiveParameter
   private final double[] fullLowerParamBound;
   private final double[] fullUpperParamBound;
   private AdaptiveParameters paramCache;
+
   // private double[] fullGradCache;
 
   public RangedFitFuncToBackend(

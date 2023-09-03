@@ -272,9 +272,9 @@ public final class AdaptiveMopacCaller extends AbstractAdaptivable implements Ne
     Process proc;
     try {
       final Runtime rt = Runtime.getRuntime();
-      final String sCommand = "mopac " + sMopacBasis;
+      final String[] saCommand = new String[] {"mopac", sMopacBasis};
       final File dir = new File(sMopacFolder);
-      proc = rt.exec(sCommand, null, dir);
+      proc = rt.exec(saCommand, null, dir);
 
       // any error message?
       final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

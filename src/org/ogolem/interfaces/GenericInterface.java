@@ -69,30 +69,33 @@ import org.ogolem.io.OutputPrimitives;
 public class GenericInterface extends AbstractLocOpt implements CartesianFullBackend {
 
   private static final long serialVersionUID = (long) 20130927;
-  private final String cmd;
-  private final String opts;
+  private final String[] cmdArr;
 
   public GenericInterface(final GlobalConfig globconf) throws Exception {
     super(globconf);
-    final String tmp = System.getenv("OGO_GENERALCMD");
-    if (tmp == null) {
+    final String cmd = System.getenv("OGO_GENERALCMD");
+    if (cmd == null) {
       throw new Exception("OGO_GENERALCMD not specified in environment.");
-    } else {
-      cmd = tmp;
     }
     final String tmp2 = System.getenv("OGO_GENERALOPTS");
+    String[] opts;
     if (tmp2 == null) {
       System.err.println("WARNING: OGO_GENERALOPTS not specified in environment.");
-      opts = "";
+      opts = new String[0];
     } else {
-      opts = tmp2;
+      opts = tmp2.trim().split("\\s+");
+    }
+
+    cmdArr = new String[opts.length + 1];
+    cmdArr[0] = cmd;
+    for (int i = 0; i < opts.length; i++) {
+      cmdArr[i + 1] = opts[i];
     }
   }
 
   private GenericInterface(final GenericInterface orig) {
     super(orig);
-    this.cmd = orig.cmd;
-    this.opts = orig.opts;
+    this.cmdArr = orig.cmdArr.clone();
   }
 
   @Override
@@ -102,17 +105,17 @@ public class GenericInterface extends AbstractLocOpt implements CartesianFullBac
 
   @Override
   public String myID() {
-    return "Generic interface calling: " + cmd;
+    return "Generic interface calling: " + cmdArr[0];
   }
 
   @Override
   public String myIDandMethod() {
-    return "Generic interface calling: " + cmd;
+    return "Generic interface calling: " + cmdArr[0];
   }
 
   @Override
   public String getMethodID() {
-    return "Generic interface calling: " + cmd;
+    return "Generic interface calling: " + cmdArr[0];
   }
 
   @Override
@@ -136,7 +139,7 @@ public class GenericInterface extends AbstractLocOpt implements CartesianFullBac
 
     // execute the command
     final Runtime rt = Runtime.getRuntime();
-    final Process proc = rt.exec(cmd + " " + opts, null, new File(dirName));
+    final Process proc = rt.exec(cmdArr, null, new File(dirName));
 
     // any error message?
     final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
@@ -150,7 +153,7 @@ public class GenericInterface extends AbstractLocOpt implements CartesianFullBac
 
     // any error???
     if (proc.waitFor() != 0) {
-      throw new Exception(cmd + " returns non-zero return value (local optimization).");
+      throw new Exception(cmdArr[0] + " returns non-zero return value (local optimization).");
     } // cmd should(!) have completed normally...
 
     // read the output back in
@@ -178,7 +181,7 @@ public class GenericInterface extends AbstractLocOpt implements CartesianFullBac
         xyz[2][i - 2] = Double.parseDouble(line[3]) * Constants.ANGTOBOHR;
       }
     } catch (Exception e) {
-      throw new Exception("Failure to read output of generic code " + cmd, e);
+      throw new Exception("Failure to read output of generic code " + cmdArr[0], e);
     }
 
     // cleanup

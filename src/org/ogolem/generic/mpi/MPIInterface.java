@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020-2021, J. M. Dieterich and B. Hartke
+Copyright (c) 2020-2022, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,12 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.generic.mpi;
 
-import static jdk.incubator.foreign.CLinker.*;
-
 import java.io.Serializable;
+import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-import jdk.incubator.foreign.*;
 import org.ogolem.helpers.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * everywhere. Tested with OpenMPI.
  *
  * @author Johannes M Dieterich
- * @version 2021-07-27
+ * @version 2022-11-14
  */
 public class MPIInterface {
 
@@ -63,7 +60,6 @@ public class MPIInterface {
 
   private final boolean debug;
   private final String soName;
-  private final LibraryLookup libmpi;
   private final MethodHandle mpiInitH;
   private final MethodHandle mpiAbortH;
   private final MethodHandle mpiFinalizeH;
@@ -81,93 +77,81 @@ public class MPIInterface {
 
     this.debug = debug;
     this.soName = soName;
-    this.libmpi = LibraryLookup.ofLibrary(soName);
 
-    final LibraryLookup.Symbol mpiInitSym = libmpi.lookup("ogo_MPI_Init").get();
-    final LibraryLookup.Symbol mpiAbortSym = libmpi.lookup("ogo_MPI_Abort").get();
-    final LibraryLookup.Symbol mpiFinalizeSym = libmpi.lookup("ogo_MPI_Finalize").get();
-    final LibraryLookup.Symbol mpiWtimeSym = libmpi.lookup("ogo_MPI_Wtime").get();
-    final LibraryLookup.Symbol mpiRankSym = libmpi.lookup("ogo_MPI_Comm_rank").get();
-    final LibraryLookup.Symbol mpiSizeSym = libmpi.lookup("ogo_MPI_Comm_size").get();
-    final LibraryLookup.Symbol mpiProbeSym = libmpi.lookup("ogo_MPI_Probe_bytes").get();
-    final LibraryLookup.Symbol mpiSendSym = libmpi.lookup("ogo_MPI_Send_bytes").get();
-    final LibraryLookup.Symbol mpiRecvSym = libmpi.lookup("ogo_MPI_Recv_bytes").get();
-    final LibraryLookup.Symbol mpiBcastSym = libmpi.lookup("ogo_MPI_Bcast_char").get();
+    Linker linker = Linker.nativeLinker();
 
-    this.mpiInitH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiInitSym, MethodType.methodType(int.class), FunctionDescriptor.of(C_INT));
+    try (MemorySession session = MemorySession.openConfined()) {
 
-    this.mpiAbortH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiAbortSym,
-                MethodType.methodType(int.class, int.class),
-                FunctionDescriptor.of(C_INT, C_INT));
+      System.loadLibrary(soName);
+      final SymbolLookup libmpi = SymbolLookup.loaderLookup();
+      final MemorySegment mpiInitSeg = libmpi.lookup("ogo_MPI_Init").orElseThrow();
+      final MemorySegment mpiAbortSeg = libmpi.lookup("ogo_MPI_Abort").orElseThrow();
+      final MemorySegment mpiFinalizeSeg = libmpi.lookup("ogo_MPI_Finalize").orElseThrow();
+      final MemorySegment mpiWtimeSeg = libmpi.lookup("ogo_MPI_Wtime").orElseThrow();
+      final MemorySegment mpiRankSeg = libmpi.lookup("ogo_MPI_Comm_rank").orElseThrow();
+      final MemorySegment mpiSizeSeg = libmpi.lookup("ogo_MPI_Comm_size").orElseThrow();
+      final MemorySegment mpiProbeSeg = libmpi.lookup("ogo_MPI_Probe_bytes").orElseThrow();
+      final MemorySegment mpiSendSeg = libmpi.lookup("ogo_MPI_Send_bytes").orElseThrow();
+      final MemorySegment mpiRecvSeg = libmpi.lookup("ogo_MPI_Recv_bytes").orElseThrow();
+      final MemorySegment mpiBcastSeg = libmpi.lookup("ogo_MPI_Bcast_char").orElseThrow();
 
-    this.mpiFinalizeH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiFinalizeSym, MethodType.methodType(int.class), FunctionDescriptor.of(C_INT));
+      final var mpiInitF = FunctionDescriptor.of(ValueLayout.JAVA_INT);
+      this.mpiInitH = linker.downcallHandle(mpiInitSeg, mpiInitF);
 
-    this.mpiWtimeH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiWtimeSym, MethodType.methodType(double.class), FunctionDescriptor.of(C_DOUBLE));
+      final var mpiAbortF = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT);
+      this.mpiAbortH = linker.downcallHandle(mpiAbortSeg, mpiAbortF);
 
-    this.mpiRankH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiRankSym,
-                MethodType.methodType(int.class, MemoryAddress.class),
-                FunctionDescriptor.of(C_INT, C_POINTER));
+      final var mpiFinalizeF = FunctionDescriptor.of(ValueLayout.JAVA_INT);
+      this.mpiFinalizeH = linker.downcallHandle(mpiFinalizeSeg, mpiFinalizeF);
 
-    this.mpiSizeH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiSizeSym,
-                MethodType.methodType(int.class, MemoryAddress.class),
-                FunctionDescriptor.of(C_INT, C_POINTER));
+      final var mpiWtimeF = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE);
+      this.mpiWtimeH = linker.downcallHandle(mpiWtimeSeg, mpiWtimeF);
 
-    this.mpiProbeH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiProbeSym,
-                MethodType.methodType(int.class, MemoryAddress.class),
-                FunctionDescriptor.of(C_INT, C_POINTER));
+      final var mpiRankF = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS);
+      this.mpiRankH = linker.downcallHandle(mpiRankSeg, mpiRankF);
 
-    this.mpiSendH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiSendSym,
-                MethodType.methodType(
-                    int.class, MemoryAddress.class, int.class, int.class, int.class),
-                FunctionDescriptor.of(C_INT, C_POINTER, C_INT, C_INT, C_INT));
+      final var mpiSizeF = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS);
+      this.mpiSizeH = linker.downcallHandle(mpiSizeSeg, mpiSizeF);
 
-    this.mpiRecvH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiRecvSym,
-                MethodType.methodType(
-                    int.class, MemoryAddress.class, int.class, int.class, int.class),
-                FunctionDescriptor.of(C_INT, C_POINTER, C_INT, C_INT, C_INT));
+      final var mpiProbeF = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS);
+      this.mpiProbeH = linker.downcallHandle(mpiProbeSeg, mpiProbeF);
 
-    this.mpiBcastH =
-        CLinker.getInstance()
-            .downcallHandle(
-                mpiBcastSym,
-                MethodType.methodType(int.class, MemoryAddress.class, int.class, int.class),
-                FunctionDescriptor.of(C_INT, C_POINTER, C_INT, C_INT));
+      final var mpiSendF =
+          FunctionDescriptor.of(
+              ValueLayout.JAVA_INT,
+              ValueLayout.ADDRESS,
+              ValueLayout.JAVA_INT,
+              ValueLayout.JAVA_INT,
+              ValueLayout.JAVA_INT);
+      this.mpiSendH = linker.downcallHandle(mpiSendSeg, mpiSendF);
+
+      final var mpiRecvF =
+          FunctionDescriptor.of(
+              ValueLayout.JAVA_INT,
+              ValueLayout.ADDRESS,
+              ValueLayout.JAVA_INT,
+              ValueLayout.JAVA_INT,
+              ValueLayout.JAVA_INT);
+      this.mpiRecvH = linker.downcallHandle(mpiRecvSeg, mpiRecvF);
+
+      final var mpiBcastF =
+          FunctionDescriptor.of(
+              ValueLayout.JAVA_INT,
+              ValueLayout.ADDRESS,
+              ValueLayout.JAVA_INT,
+              ValueLayout.JAVA_INT);
+      this.mpiBcastH = linker.downcallHandle(mpiBcastSeg, mpiBcastF);
+    }
   }
 
   public int mpiInit(final String[] args) {
 
     int initRet = 0;
-    try (MemorySegment argc = MemorySegment.allocateNative(4);
-        MemorySegment argv = MemorySegment.ofArray(new char[] {'o'})) {
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment argc = MemorySegment.allocateNative(4, session);
+      MemorySegment argv = MemorySegment.ofArray(new char[] {'o'});
       argc.copyFrom(MemorySegment.ofArray(new int[] {0}));
-      initRet = (int) mpiInitH.invokeExact();
+      initRet = (int) mpiInitH.invoke();
     } catch (Exception e) {
       e.printStackTrace(System.err);
       return 42;
@@ -183,7 +167,7 @@ public class MPIInterface {
 
   public int mpiAbort(final int errCode) {
     try {
-      final int ret = (int) mpiAbortH.invokeExact(errCode);
+      final int ret = (int) mpiAbortH.invoke(errCode);
       if (debug) LOG.info("Successful MPI_Abort() w/ " + errCode);
       return ret;
     } catch (Exception e) {
@@ -197,7 +181,7 @@ public class MPIInterface {
 
   public int mpiFinalize() {
     try {
-      final int ret = (int) mpiFinalizeH.invokeExact();
+      final int ret = (int) mpiFinalizeH.invoke();
       if (debug) LOG.info("Successful MPI_Finalize().");
       return ret;
     } catch (Exception e) {
@@ -211,7 +195,7 @@ public class MPIInterface {
 
   public double mpiWtime() {
     try {
-      final double wtime = (double) mpiWtimeH.invokeExact();
+      final double wtime = (double) mpiWtimeH.invoke();
       if (debug) LOG.info("Successful MPI_Wtime() w/ " + wtime);
       return wtime;
     } catch (Exception e) {
@@ -227,9 +211,10 @@ public class MPIInterface {
 
     int rank = -999;
     int ret = 0;
-    try (MemorySegment rankSeg = MemorySegment.allocateNative(4)) {
-      ret = (int) mpiRankH.invokeExact(rankSeg.address());
-      rank = rankSeg.toIntArray()[0];
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment rankSeg = MemorySegment.allocateNative(4, session);
+      ret = (int) mpiRankH.invoke(rankSeg.address());
+      rank = rankSeg.toArray(ValueLayout.JAVA_INT)[0];
     } catch (Exception e) {
       throw e;
     } catch (Throwable t) {
@@ -249,9 +234,10 @@ public class MPIInterface {
 
     int size = -999;
     int ret = 0;
-    try (MemorySegment sizeSeg = MemorySegment.allocateNative(4)) {
-      ret = (int) mpiSizeH.invokeExact(sizeSeg.address());
-      size = sizeSeg.toIntArray()[0];
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment sizeSeg = MemorySegment.allocateNative(4, session);
+      ret = (int) mpiSizeH.invoke(sizeSeg.address());
+      size = sizeSeg.toArray(ValueLayout.JAVA_INT)[0];
     } catch (Exception e) {
       throw e;
     } catch (Throwable t) {
@@ -273,13 +259,12 @@ public class MPIInterface {
     final int count = s.length();
 
     int ret = 0;
-    try (MemorySegment msgSeg =
-        MemorySegment.allocateNative(count + 1)) { // +1 for NULL termination
-      msgSeg.copyFrom(CLinker.toCString(s));
-      ret = (int) mpiBcastH.invokeExact(msgSeg.address(), count, root);
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment msgSeg = session.allocateUtf8String(s);
+      ret = (int) mpiBcastH.invoke(msgSeg.address(), count, root);
 
       if (myRank != root) {
-        message = CLinker.toJavaString(msgSeg).toCharArray();
+        message = msgSeg.getUtf8String(0).toCharArray();
       }
 
     } catch (Exception e) {
@@ -307,9 +292,10 @@ public class MPIInterface {
     final int count = message.length;
 
     int ret = 0;
-    try (MemorySegment msgSeg = MemorySegment.allocateNative(count)) {
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment msgSeg = MemorySegment.allocateNative(count, session);
       msgSeg.copyFrom(MemorySegment.ofArray(message));
-      ret = (int) mpiSendH.invokeExact(msgSeg.address(), count, toRank, tag);
+      ret = (int) mpiSendH.invoke(msgSeg.address(), count, toRank, tag);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -340,10 +326,11 @@ public class MPIInterface {
     int[] outputData;
 
     int ret = 0;
-    try (MemorySegment dataSeg = MemorySegment.allocateNative(3 * 4)) {
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment dataSeg = MemorySegment.allocateNative(3 * 4, session);
       dataSeg.copyFrom(MemorySegment.ofArray(inputData));
-      ret = (int) mpiProbeH.invokeExact(dataSeg.address());
-      outputData = dataSeg.toIntArray();
+      ret = (int) mpiProbeH.invoke(dataSeg.address());
+      outputData = dataSeg.toArray(ValueLayout.JAVA_INT);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -372,11 +359,10 @@ public class MPIInterface {
 
     // then actual Recv after allocating a fittingly sized buffer
     byte[] data;
-    try (MemorySegment dataSeg = MemorySegment.allocateNative(outputData[2])) {
-      ret =
-          (int)
-              mpiRecvH.invokeExact(dataSeg.address(), outputData[2], outputData[0], outputData[1]);
-      data = dataSeg.toByteArray();
+    try (MemorySession session = MemorySession.openConfined()) {
+      MemorySegment dataSeg = MemorySegment.allocateNative(outputData[2], session);
+      ret = (int) mpiRecvH.invoke(dataSeg.address(), outputData[2], outputData[0], outputData[1]);
+      data = dataSeg.toArray(ValueLayout.JAVA_BYTE);
 
     } catch (Exception e) {
       e.printStackTrace();

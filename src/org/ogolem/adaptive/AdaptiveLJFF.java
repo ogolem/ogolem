@@ -84,6 +84,7 @@ public final class AdaptiveLJFF extends AbstractAdaptiveBackend {
   private int[] paramOffsetCache;
   private int[] paramOffsetCache2b1;
   private int[][] paramOffsetCache3b;
+
   // TODO debug 3body
   // TODO allow coord gradient to be w/o 2body contrib
 

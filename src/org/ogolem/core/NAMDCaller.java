@@ -155,9 +155,9 @@ final class NAMDCaller extends AbstractLocOpt {
     String[] saOutput;
     try {
       Runtime rt = Runtime.getRuntime();
-      String sCommand = "namd2 configuration.conf";
+      String[] saCommand = new String[] {"namd2", "configuration.conf"};
       File dir = new File(sNAMDFolder);
-      proc = rt.exec(sCommand, null, dir);
+      proc = rt.exec(saCommand, null, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

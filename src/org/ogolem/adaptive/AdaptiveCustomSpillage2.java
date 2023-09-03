@@ -272,7 +272,7 @@ final class AdaptiveCustomSpillage2 extends AdaptiveCustomSpillage {
 
       Runtime rt = Runtime.getRuntime();
       File dir = new File(dirName);
-      proc = rt.exec(spillCmd, null, dir);
+      proc = rt.exec(new String[] {spillCmd}, null, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

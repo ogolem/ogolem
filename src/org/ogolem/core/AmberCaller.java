@@ -221,10 +221,21 @@ final class AmberCaller extends AbstractLocOpt {
     try {
       final Runtime rt = Runtime.getRuntime();
       final String localPRMTOP = name + ".prmtop";
-      final String command =
-          "sander -O -i optimization.in -o optimization.out -c coordinates.inpcrd -p "
-              + localPRMTOP
-              + " -r optimization.rst";
+      final String[] command =
+          new String[] {
+            "sander",
+            "-O",
+            "-i",
+            "optimization.in",
+            "-o",
+            "optimization.out",
+            "-c",
+            "coordinates.inpcrd",
+            "-p",
+            localPRMTOP,
+            "-r",
+            "optimization.rst"
+          };
       final File dir = new File(amberFolder);
       proc = rt.exec(command, null, dir);
 

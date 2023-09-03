@@ -209,7 +209,7 @@ final class AdaptivePolaris extends AbstractAdaptivable {
         sPolarisCmd = "Polaris";
       }
       File dir = new File(sFolder);
-      Process proc = rt.exec(sPolarisCmd, null, dir);
+      Process proc = rt.exec(new String[] {sPolarisCmd}, null, dir);
 
       // any error message?
       StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");

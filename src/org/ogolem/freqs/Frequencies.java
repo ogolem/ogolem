@@ -202,22 +202,30 @@ public final class Frequencies implements Serializable {
       return Double.compare(d1, d2);
     }
 
-    /** @return the intensity */
+    /**
+     * @return the intensity
+     */
     public double getIntensity() {
       return intensity;
     }
 
-    /** @return the frequency */
+    /**
+     * @return the frequency
+     */
     public double getFreq() {
       return freq;
     }
 
-    /** @return the eigen vector of this frequency */
+    /**
+     * @return the eigen vector of this frequency
+     */
     public double[] getEigenvec() {
       return eigenvec;
     }
 
-    /** @return wether it is imaginary */
+    /**
+     * @return wether it is imaginary
+     */
     public boolean isIsImaginary() {
       return isImaginary;
     }
