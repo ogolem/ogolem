@@ -38,7 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import contrib.jama.*;
 import java.util.List;
 import org.ogolem.core.CollisionInfo.Collision;
 import org.ogolem.core.Environment.ENVIRONMENTTYPE;
