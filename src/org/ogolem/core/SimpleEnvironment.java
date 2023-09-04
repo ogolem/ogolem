@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2022, J. M. Dieterich and B. Hartke
+              2015-2023, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,12 +38,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import contrib.jama.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.ogolem.core.CollisionInfo.Collision;
 import org.ogolem.helpers.Tuple;
+import org.ogolem.math.*;
 import org.ogolem.random.Lottery;
 import org.ogolem.random.RandomUtils;
 
@@ -51,11 +51,11 @@ import org.ogolem.random.RandomUtils;
  * Holds as the father of all environments for the cluster.
  *
  * @author Johannes Dieterich
- * @version 2022-02-05
+ * @version 2023-06-28
  */
 public class SimpleEnvironment implements Environment {
 
-  private static final long serialVersionUID = (long) 20200719;
+  private static final long serialVersionUID = (long) 20230628;
   protected static final boolean DEBUG = false;
 
   public static enum FITMODE {
@@ -63,7 +63,7 @@ public class SimpleEnvironment implements Environment {
     LAYERONLY
   };
 
-  public static final double THRESHENPOSSAME = 1e-6;
+  public static final double THRESHENPOSSAME = 1e-4;
 
   protected final Lottery random;
 
@@ -343,31 +343,38 @@ public class SimpleEnvironment implements Environment {
      */
 
     // first find out where our references are now
-    final double[] daRef1New =
-        completeCartes.getXYZCoordinatesOfAtom(referencePoints[0].getID() + iNoOfAtomsCluster);
-    final double[] daRef2New =
-        completeCartes.getXYZCoordinatesOfAtom(referencePoints[1].getID() + iNoOfAtomsCluster);
-    final double[] daRef3New =
-        completeCartes.getXYZCoordinatesOfAtom(referencePoints[2].getID() + iNoOfAtomsCluster);
+    final int idxRef0 = referencePoints[0].getID() + iNoOfAtomsCluster;
+    final int idxRef1 = referencePoints[1].getID() + iNoOfAtomsCluster;
+    final int idxRef2 = referencePoints[2].getID() + iNoOfAtomsCluster;
+    final double[][] xyzCoords = completeCartes.getAllXYZCoord();
+    final double ref1NewX = xyzCoords[0][idxRef0];
+    final double ref1NewY = xyzCoords[1][idxRef0];
+    final double ref1NewZ = xyzCoords[2][idxRef0];
+    final double ref2NewX = xyzCoords[0][idxRef1];
+    final double ref2NewY = xyzCoords[1][idxRef1];
+    final double ref2NewZ = xyzCoords[2][idxRef1];
+    final double ref3NewX = xyzCoords[0][idxRef2];
+    final double ref3NewY = xyzCoords[1][idxRef2];
+    final double ref3NewZ = xyzCoords[2][idxRef2];
 
     final double[] daRef1Old = referencePoints[0].getPosition();
     final double[] daRef2Old = referencePoints[1].getPosition();
     final double[] daRef3Old = referencePoints[2].getPosition();
 
-    final double diff1X = daRef1New[0] - daRef1Old[0];
-    final double diff1Y = daRef1New[1] - daRef1Old[1];
-    final double diff1Z = daRef1New[2] - daRef1Old[2];
-    final double diff1 = Math.abs(Math.sqrt(diff1X * diff1X + diff1Y * diff1Y + diff1Z + diff1Z));
+    final double diff1X = ref1NewX - daRef1Old[0];
+    final double diff1Y = ref1NewY - daRef1Old[1];
+    final double diff1Z = ref1NewZ - daRef1Old[2];
+    final double diff1 = Math.sqrt(diff1X * diff1X + diff1Y * diff1Y + diff1Z + diff1Z);
 
-    final double diff2X = daRef2New[0] - daRef2Old[0];
-    final double diff2Y = daRef2New[1] - daRef2Old[1];
-    final double diff2Z = daRef2New[2] - daRef2Old[2];
-    final double diff2 = Math.abs(Math.sqrt(diff2X * diff2X + diff2Y * diff2Y + diff2Z + diff2Z));
+    final double diff2X = ref2NewX - daRef2Old[0];
+    final double diff2Y = ref2NewY - daRef2Old[1];
+    final double diff2Z = ref2NewZ - daRef2Old[2];
+    final double diff2 = Math.sqrt(diff2X * diff2X + diff2Y * diff2Y + diff2Z + diff2Z);
 
-    final double diff3X = daRef3New[0] - daRef3Old[0];
-    final double diff3Y = daRef3New[1] - daRef3Old[1];
-    final double diff3Z = daRef3New[2] - daRef3Old[2];
-    final double diff3 = Math.abs(Math.sqrt(diff3X * diff3X + diff3Y * diff3Y + diff3Z + diff3Z));
+    final double diff3X = ref3NewX - daRef3Old[0];
+    final double diff3Y = ref3NewY - daRef3Old[1];
+    final double diff3Z = ref3NewZ - daRef3Old[2];
+    final double diff3 = Math.sqrt(diff3X * diff3X + diff3Y * diff3Y + diff3Z + diff3Z);
 
     // check if the environment position has changed significantly. should typically not be the
     // case, I think (i.e., when we run the environment constraint)
@@ -375,58 +382,48 @@ public class SimpleEnvironment implements Environment {
     if (diff1 > THRESHENPOSSAME || diff2 > THRESHENPOSSAME || diff3 > THRESHENPOSSAME) {
 
       // now build up two matrices
-      final double[][] daMatT1 = new double[3][3];
-      daMatT1[0][0] = daRef1Old[0];
-      daMatT1[1][0] = daRef1Old[1];
-      daMatT1[2][0] = daRef1Old[2];
-      daMatT1[0][1] = daRef2Old[0];
-      daMatT1[1][1] = daRef2Old[1];
-      daMatT1[2][1] = daRef2Old[2];
-      daMatT1[0][2] = daRef3Old[0];
-      daMatT1[1][2] = daRef3Old[1];
-      daMatT1[2][2] = daRef3Old[2];
+      final Matrix3x3 matT1 =
+          new Matrix3x3(
+                  daRef1Old[0],
+                  daRef2Old[0],
+                  daRef3Old[0],
+                  daRef1Old[1],
+                  daRef2Old[1],
+                  daRef3Old[1],
+                  daRef1Old[2],
+                  daRef2Old[2],
+                  daRef3Old[2])
+              .inverse();
+      if (matT1 == null) {
+        throw new RuntimeException("Cannot divorce coordinates as matT1 is singular.");
+      }
 
-      final double[][] daMatT2 = new double[3][3];
-      daMatT2[0][0] = daRef1New[0];
-      daMatT2[1][0] = daRef1New[1];
-      daMatT2[2][0] = daRef1New[2];
-      daMatT2[0][1] = daRef2New[0];
-      daMatT2[1][1] = daRef2New[1];
-      daMatT2[2][1] = daRef2New[2];
-      daMatT2[0][2] = daRef3New[0];
-      daMatT2[1][2] = daRef3New[1];
-      daMatT2[2][2] = daRef3New[2];
-
-      final Matrix matT1 = new Matrix(daMatT1);
-      final Matrix matT2 = new Matrix(daMatT2);
+      final Matrix3x3 matT2 =
+          new Matrix3x3(
+              ref1NewX, ref2NewX, ref3NewX, ref1NewY, ref2NewY, ref3NewY, ref1NewZ, ref2NewZ,
+              ref3NewZ);
 
       // calculate the transformation matrix
-      final Matrix matTrans = matT2.times(matT1.inverse());
+      final Matrix3x3 matTrans = matT2.multiply(matT1);
 
       // transform the cartesians
-      final Matrix matCartes = new Matrix(completeCartes.getAllXYZCoord());
-      final Matrix matNewCartes = matTrans.times(matCartes);
+      final double[][] xyzNew = new double[3][completeCartes.getNoOfAtoms()];
+      TrivialLinearAlgebra.matMult(matTrans, xyzCoords, completeCartes.getNoOfAtoms(), xyzNew);
 
-      completeCartes.setAllXYZ(matNewCartes.getArrayCopy());
+      completeCartes.setAllXYZ(xyzNew);
 
       // adjust the reference atoms
-      final double[] xyzRef1 =
-          completeCartes.getXYZCoordinatesOfAtom(referencePoints[0].getID() + iNoOfAtomsCluster);
-      daRef1Old[0] = xyzRef1[0];
-      daRef1Old[1] = xyzRef1[1];
-      daRef1Old[2] = xyzRef1[2];
+      daRef1Old[0] = xyzNew[0][idxRef0];
+      daRef1Old[1] = xyzNew[1][idxRef0];
+      daRef1Old[2] = xyzNew[2][idxRef0];
 
-      final double[] xyzRef2 =
-          completeCartes.getXYZCoordinatesOfAtom(referencePoints[1].getID() + iNoOfAtomsCluster);
-      daRef2Old[0] = xyzRef2[0];
-      daRef2Old[1] = xyzRef2[1];
-      daRef2Old[2] = xyzRef2[2];
+      daRef2Old[0] = xyzNew[0][idxRef1];
+      daRef2Old[1] = xyzNew[1][idxRef1];
+      daRef2Old[2] = xyzNew[2][idxRef1];
 
-      final double[] xyzRef3 =
-          completeCartes.getXYZCoordinatesOfAtom(referencePoints[2].getID() + iNoOfAtomsCluster);
-      daRef3Old[0] = xyzRef3[0];
-      daRef3Old[1] = xyzRef3[1];
-      daRef3Old[2] = xyzRef3[2];
+      daRef3Old[0] = xyzNew[0][idxRef2];
+      daRef3Old[1] = xyzNew[1][idxRef2];
+      daRef3Old[2] = xyzNew[2][idxRef2];
 
       adjusted = true;
     }
@@ -479,12 +476,14 @@ public class SimpleEnvironment implements Environment {
     // measure the translation from reference point [0] (daRef1Old) to the COM of the cluster
     // therefore, we first need to find out where the COM now is
     final double[] newCOM = clusterCartes.calculateTheCOM();
-    for (int i = 0; i < 3; i++) {
-      if (adjusted) {
-        distanceCOMs[i] = newCOM[i] - daRef1Old[i];
-      } else {
-        distanceCOMs[i] = newCOM[i] - daRef1New[i];
-      }
+    if (adjusted) {
+      distanceCOMs[0] = newCOM[0] - daRef1Old[0];
+      distanceCOMs[1] = newCOM[1] - daRef1Old[1];
+      distanceCOMs[2] = newCOM[2] - daRef1Old[2];
+    } else {
+      distanceCOMs[0] = newCOM[0] - ref1NewX;
+      distanceCOMs[1] = newCOM[1] - ref1NewY;
+      distanceCOMs[2] = newCOM[2] - ref1NewZ;
     }
 
     if (flexySurface) {

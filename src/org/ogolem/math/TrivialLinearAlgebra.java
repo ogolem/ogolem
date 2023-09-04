@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2021, J. M. Dieterich and B. Hartke
+              2015-2023, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.math;
 
+import java.util.Arrays;
 import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
@@ -46,7 +47,7 @@ import jdk.incubator.vector.VectorSpecies;
  * Performs some really trivial linear algebra.
  *
  * @author Johannes Dieterich
- * @version 2021-04-22
+ * @version 2023-06-28
  */
 public class TrivialLinearAlgebra {
 
@@ -103,9 +104,7 @@ public class TrivialLinearAlgebra {
 
       final double[] rowRes = res[i];
       // zero the result
-      for (int j = 0; j < s; j++) {
-        rowRes[j] = 0.0;
-      }
+      Arrays.fill(rowRes, 0.0);
 
       for (int l = 0; l < n; l++) {
         final double scalA = matrixA[i][l];
@@ -147,19 +146,29 @@ public class TrivialLinearAlgebra {
     assert (matrixB.length >= n);
     assert (matrixB[0].length >= s);
 
+    final int upperBound = SPECIES.loopBound(s);
+
     for (int i = 0; i < m; i++) {
 
       final double[] rowRes = res[i];
       // zero the result
-      for (int j = 0; j < s; j++) {
-        rowRes[j] = 0.0;
-      }
+      Arrays.fill(rowRes, 0.0);
 
       for (int l = 0; l < n; l++) {
         final double scalA = matrixA[i + offAX][l + offAY];
         final double[] rowB = matrixB[l + offBX];
-        for (int j = 0; j < s; j++) {
-          rowRes[j] += scalA * rowB[j + offBY];
+        int j = 0;
+        if (upperBound > 0) {
+          final var vScalA = DoubleVector.broadcast(SPECIES, scalA);
+          for (; j < upperBound; j += SPECIES.length()) {
+            final var vRowB = DoubleVector.fromArray(SPECIES, rowB, j + offBY);
+            final var vRowRes = DoubleVector.fromArray(SPECIES, rowRes, j);
+            final var vUpRes = vRowB.fma(vScalA, vRowRes);
+            vUpRes.intoArray(rowRes, j);
+          }
+        }
+        for (; j < s; j++) {
+          rowRes[j] = Math.fma(scalA, rowB[j + offBY], rowRes[j]);
         }
       }
     }
@@ -210,36 +219,36 @@ public class TrivialLinearAlgebra {
 
         final double b0j = matrixB[0][j];
 
-        final double res00j = matrixA.a00 * b0j;
-        final double res10j = matrixA.a10 * b0j;
-        final double res20j = matrixA.a20 * b0j;
+        final double res00j = matrixA.a00() * b0j;
+        final double res10j = matrixA.a10() * b0j;
+        final double res20j = matrixA.a20() * b0j;
 
         final double b1j = matrixB[1][j];
 
-        final double res01j = Math.fma(matrixA.a01, b1j, res00j);
-        final double res11j = Math.fma(matrixA.a11, b1j, res10j);
-        final double res21j = Math.fma(matrixA.a21, b1j, res20j);
+        final double res01j = Math.fma(matrixA.a01(), b1j, res00j);
+        final double res11j = Math.fma(matrixA.a11(), b1j, res10j);
+        final double res21j = Math.fma(matrixA.a21(), b1j, res20j);
 
         final double b2j = matrixB[2][j];
 
-        res0[j] = Math.fma(matrixA.a02, b2j, res01j);
-        res1[j] = Math.fma(matrixA.a12, b2j, res11j);
-        res2[j] = Math.fma(matrixA.a22, b2j, res21j);
+        res0[j] = Math.fma(matrixA.a02(), b2j, res01j);
+        res1[j] = Math.fma(matrixA.a12(), b2j, res11j);
+        res2[j] = Math.fma(matrixA.a22(), b2j, res21j);
       }
 
       return;
     }
 
     int j = 0;
-    final var vA00 = DoubleVector.broadcast(SPECIES, matrixA.a00);
-    final var vA10 = DoubleVector.broadcast(SPECIES, matrixA.a10);
-    final var vA20 = DoubleVector.broadcast(SPECIES, matrixA.a20);
-    final var vA01 = DoubleVector.broadcast(SPECIES, matrixA.a01);
-    final var vA11 = DoubleVector.broadcast(SPECIES, matrixA.a11);
-    final var vA21 = DoubleVector.broadcast(SPECIES, matrixA.a21);
-    final var vA02 = DoubleVector.broadcast(SPECIES, matrixA.a02);
-    final var vA12 = DoubleVector.broadcast(SPECIES, matrixA.a12);
-    final var vA22 = DoubleVector.broadcast(SPECIES, matrixA.a22);
+    final var vA00 = DoubleVector.broadcast(SPECIES, matrixA.a00());
+    final var vA10 = DoubleVector.broadcast(SPECIES, matrixA.a10());
+    final var vA20 = DoubleVector.broadcast(SPECIES, matrixA.a20());
+    final var vA01 = DoubleVector.broadcast(SPECIES, matrixA.a01());
+    final var vA11 = DoubleVector.broadcast(SPECIES, matrixA.a11());
+    final var vA21 = DoubleVector.broadcast(SPECIES, matrixA.a21());
+    final var vA02 = DoubleVector.broadcast(SPECIES, matrixA.a02());
+    final var vA12 = DoubleVector.broadcast(SPECIES, matrixA.a12());
+    final var vA22 = DoubleVector.broadcast(SPECIES, matrixA.a22());
 
     for (; j < upperBound; j += SPECIES.length()) {
       final var vB00 = DoubleVector.fromArray(SPECIES, matrixB[0], j);
@@ -265,21 +274,21 @@ public class TrivialLinearAlgebra {
 
       final double b0j = matrixB[0][j];
 
-      final double res00j = matrixA.a00 * b0j;
-      final double res10j = matrixA.a10 * b0j;
-      final double res20j = matrixA.a20 * b0j;
+      final double res00j = matrixA.a00() * b0j;
+      final double res10j = matrixA.a10() * b0j;
+      final double res20j = matrixA.a20() * b0j;
 
       final double b1j = matrixB[1][j];
 
-      final double res01j = Math.fma(matrixA.a01, b1j, res00j);
-      final double res11j = Math.fma(matrixA.a11, b1j, res10j);
-      final double res21j = Math.fma(matrixA.a21, b1j, res20j);
+      final double res01j = Math.fma(matrixA.a01(), b1j, res00j);
+      final double res11j = Math.fma(matrixA.a11(), b1j, res10j);
+      final double res21j = Math.fma(matrixA.a21(), b1j, res20j);
 
       final double b2j = matrixB[2][j];
 
-      res0[j] = Math.fma(matrixA.a02, b2j, res01j);
-      res1[j] = Math.fma(matrixA.a12, b2j, res11j);
-      res2[j] = Math.fma(matrixA.a22, b2j, res21j);
+      res0[j] = Math.fma(matrixA.a02(), b2j, res01j);
+      res1[j] = Math.fma(matrixA.a12(), b2j, res11j);
+      res2[j] = Math.fma(matrixA.a22(), b2j, res21j);
     }
 
     return;

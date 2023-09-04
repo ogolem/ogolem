@@ -2109,8 +2109,8 @@ public final class CoordTranslation {
     }
 
     // calculate the eigenvectors of the tensors
-    EigenvalueDecomposition eigen1 = new EigenvalueDecomposition(tensor1);
-    EigenvalueDecomposition eigen2 = new EigenvalueDecomposition(tensor2);
+    EigenvalueDecomposition eigen1 = new EigenvalueDecomposition(tensor1, true);
+    EigenvalueDecomposition eigen2 = new EigenvalueDecomposition(tensor2, true);
 
     Matrix eigenvecs1 = eigen1.getV();
     Matrix eigenvecs2 = eigen2.getV();
