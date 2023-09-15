@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2023, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import org.ogolem.math.TrivialLinearAlgebra;
  * representations.
  *
  * @author Johannes Dieterich
- * @version 2020-12-30
+ * @version 2023-09-08
  */
 public final class CoordTranslation {
 
@@ -1219,11 +1219,6 @@ public final class CoordTranslation {
     final int noMols = geom.getNumberOfIndieParticles();
     final int noOfAtoms = geom.getNumberOfAtoms();
     final SimpleBondInfo bonds = new SimpleBondInfo(noOfAtoms);
-
-    for (int i = 0; i < noOfAtoms; i++) {
-      // of course between two identical atoms there is a bond. kind of...
-      bonds.setBond(i, i, BondInfo.UNCERTAIN);
-    }
 
     final List<double[][]> rotTransXYZ = new ArrayList<>();
     for (int part = 0; part < noMols; part++) {

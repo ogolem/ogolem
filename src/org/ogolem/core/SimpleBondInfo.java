@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2013, J. M. Dieterich
-              2016-2022, J. M. Dieterich and B. Hartke
+              2016-2023, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import org.ogolem.math.ShortSymmetricMatrixNoDiag;
  * A simple, double matrix-backed implementation of the BondInfo interface.
  *
  * @author Johannes Dieterich
- * @version 2022-01-07
+ * @version 2023-09-08
  */
 public class SimpleBondInfo extends AbstractBondInfo {
 
@@ -101,17 +101,20 @@ public class SimpleBondInfo extends AbstractBondInfo {
 
   @Override
   public boolean hasBond(final int atom1, final int atom2) {
+    assert (atom1 != atom2);
     return this.bonds.getElement(atom1, atom2);
   }
 
   @Override
   public short bondType(final int atom1, final int atom2) {
+    assert (atom1 != atom2);
     return this.bondTypes.getElement(atom1, atom2);
   }
 
   @Override
   public void setBond(final int atom1, final int atom2, final short bondType) {
 
+    assert (atom1 != atom2);
     assert (atom1 < noAtoms);
     assert (atom2 < noAtoms);
 
