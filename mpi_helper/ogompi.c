@@ -4,8 +4,8 @@
 int ogo_MPI_Init();
 int ogo_MPI_Abort(int);
 int ogo_MPI_Finalize();
-int ogo_MPI_Comm_rank();
-int ogo_MPI_Comm_size();
+int ogo_MPI_Comm_rank(int*);
+int ogo_MPI_Comm_size(int*);
 double ogo_MPI_Wtime();
 int ogo_MPI_Probe_bytes(int*);
 int ogo_MPI_Recv_bytes(void* buffer, int count, int source, int tag);

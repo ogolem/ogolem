@@ -23,7 +23,7 @@ NOTE: Above needs to be adjusted for the used environment just as the wrapped co
 
 Place the library in a location to be provided at runtime to the `java` command. Here, we placed it in the installed Open MPI `lib` directory. If this is not possible, place in a different directory and ensure BOTH the MPI library directory as well as the directory containing the wrapper library are passed to `-Djava.library.path` below.
 
-A JDK19 is required with support for the foreign linker preview feature.
+A JDK21 is required with support for the foreign linker preview feature.
 
 The actual command will be highly specific to your environment (thanks to MPI) but we will highlight some common requirements using an example:
 

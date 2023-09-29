@@ -1,7 +1,7 @@
 plugins {
-  id 'org.springframework.boot' version '3.1.3'
+  id 'org.springframework.boot' version '3.1.4'
   id 'com.diffplug.spotless' version '6.21.0'
-  id 'com.github.spotbugs' version '5.0.13'
+  id 'com.github.spotbugs' version '5.1.3'
   id 'java'
   id 'application'
 }
@@ -31,8 +31,8 @@ dependencies {
   implementation 'org.jgrapht:jgrapht-ext:1.3.1'
   implementation 'org.jgrapht:jgrapht-io:1.3.1'
   implementation 'org.scala-lang:scala3-library_3:3.3.0'
-  implementation 'org.slf4j:slf4j-api:2.0.7'
-  implementation 'org.slf4j:slf4j-simple:2.0.7'
+  implementation 'org.slf4j:slf4j-api:2.0.9'
+  implementation 'org.slf4j:slf4j-simple:2.0.9'
   testImplementation(
     'org.junit.jupiter:junit-jupiter-api:5.10.0'
   )
@@ -43,7 +43,7 @@ dependencies {
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(19)
+    languageVersion = JavaLanguageVersion.of(21)
   }
 }
 
@@ -82,6 +82,15 @@ spotless {
   ratchetFrom '00fb668'
   java {
     googleJavaFormat()
+  }
+}
+
+configurations.named('spotbugs').configure {
+  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+       if (details.requested.group == 'org.ow2.asm') {
+            details.useVersion '9.5'
+            details.because "Asm 9.5 is required for JDK 21 support"
+      }
   }
 }
 
