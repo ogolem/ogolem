@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020-2022, J. M. Dieterich and B. Hartke
+Copyright (c) 2020-2023, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * everywhere. Tested with OpenMPI.
  *
  * @author Johannes M Dieterich
- * @version 2022-11-14
+ * @version 2023-09-03
  */
 public class MPIInterface {
 
@@ -80,20 +80,20 @@ public class MPIInterface {
 
     Linker linker = Linker.nativeLinker();
 
-    try (MemorySession session = MemorySession.openConfined()) {
+    try (Arena arena = Arena.ofConfined()) {
 
       System.loadLibrary(soName);
       final SymbolLookup libmpi = SymbolLookup.loaderLookup();
-      final MemorySegment mpiInitSeg = libmpi.lookup("ogo_MPI_Init").orElseThrow();
-      final MemorySegment mpiAbortSeg = libmpi.lookup("ogo_MPI_Abort").orElseThrow();
-      final MemorySegment mpiFinalizeSeg = libmpi.lookup("ogo_MPI_Finalize").orElseThrow();
-      final MemorySegment mpiWtimeSeg = libmpi.lookup("ogo_MPI_Wtime").orElseThrow();
-      final MemorySegment mpiRankSeg = libmpi.lookup("ogo_MPI_Comm_rank").orElseThrow();
-      final MemorySegment mpiSizeSeg = libmpi.lookup("ogo_MPI_Comm_size").orElseThrow();
-      final MemorySegment mpiProbeSeg = libmpi.lookup("ogo_MPI_Probe_bytes").orElseThrow();
-      final MemorySegment mpiSendSeg = libmpi.lookup("ogo_MPI_Send_bytes").orElseThrow();
-      final MemorySegment mpiRecvSeg = libmpi.lookup("ogo_MPI_Recv_bytes").orElseThrow();
-      final MemorySegment mpiBcastSeg = libmpi.lookup("ogo_MPI_Bcast_char").orElseThrow();
+      final MemorySegment mpiInitSeg = libmpi.find("ogo_MPI_Init").orElseThrow();
+      final MemorySegment mpiAbortSeg = libmpi.find("ogo_MPI_Abort").orElseThrow();
+      final MemorySegment mpiFinalizeSeg = libmpi.find("ogo_MPI_Finalize").orElseThrow();
+      final MemorySegment mpiWtimeSeg = libmpi.find("ogo_MPI_Wtime").orElseThrow();
+      final MemorySegment mpiRankSeg = libmpi.find("ogo_MPI_Comm_rank").orElseThrow();
+      final MemorySegment mpiSizeSeg = libmpi.find("ogo_MPI_Comm_size").orElseThrow();
+      final MemorySegment mpiProbeSeg = libmpi.find("ogo_MPI_Probe_bytes").orElseThrow();
+      final MemorySegment mpiSendSeg = libmpi.find("ogo_MPI_Send_bytes").orElseThrow();
+      final MemorySegment mpiRecvSeg = libmpi.find("ogo_MPI_Recv_bytes").orElseThrow();
+      final MemorySegment mpiBcastSeg = libmpi.find("ogo_MPI_Bcast_char").orElseThrow();
 
       final var mpiInitF = FunctionDescriptor.of(ValueLayout.JAVA_INT);
       this.mpiInitH = linker.downcallHandle(mpiInitSeg, mpiInitF);
@@ -147,8 +147,8 @@ public class MPIInterface {
   public int mpiInit(final String[] args) {
 
     int initRet = 0;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment argc = MemorySegment.allocateNative(4, session);
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment argc = arena.allocate(4);
       MemorySegment argv = MemorySegment.ofArray(new char[] {'o'});
       argc.copyFrom(MemorySegment.ofArray(new int[] {0}));
       initRet = (int) mpiInitH.invoke();
@@ -211,9 +211,9 @@ public class MPIInterface {
 
     int rank = -999;
     int ret = 0;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment rankSeg = MemorySegment.allocateNative(4, session);
-      ret = (int) mpiRankH.invoke(rankSeg.address());
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment rankSeg = arena.allocate(4);
+      ret = (int) mpiRankH.invoke(rankSeg);
       rank = rankSeg.toArray(ValueLayout.JAVA_INT)[0];
     } catch (Exception e) {
       throw e;
@@ -234,9 +234,9 @@ public class MPIInterface {
 
     int size = -999;
     int ret = 0;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment sizeSeg = MemorySegment.allocateNative(4, session);
-      ret = (int) mpiSizeH.invoke(sizeSeg.address());
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment sizeSeg = arena.allocate(4);
+      ret = (int) mpiSizeH.invoke(sizeSeg);
       size = sizeSeg.toArray(ValueLayout.JAVA_INT)[0];
     } catch (Exception e) {
       throw e;
@@ -259,9 +259,9 @@ public class MPIInterface {
     final int count = s.length();
 
     int ret = 0;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment msgSeg = session.allocateUtf8String(s);
-      ret = (int) mpiBcastH.invoke(msgSeg.address(), count, root);
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment msgSeg = arena.allocateUtf8String(s);
+      ret = (int) mpiBcastH.invoke(msgSeg, count, root);
 
       if (myRank != root) {
         message = msgSeg.getUtf8String(0).toCharArray();
@@ -292,10 +292,10 @@ public class MPIInterface {
     final int count = message.length;
 
     int ret = 0;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment msgSeg = MemorySegment.allocateNative(count, session);
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment msgSeg = arena.allocate(count);
       msgSeg.copyFrom(MemorySegment.ofArray(message));
-      ret = (int) mpiSendH.invoke(msgSeg.address(), count, toRank, tag);
+      ret = (int) mpiSendH.invoke(msgSeg, count, toRank, tag);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -326,10 +326,10 @@ public class MPIInterface {
     int[] outputData;
 
     int ret = 0;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment dataSeg = MemorySegment.allocateNative(3 * 4, session);
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment dataSeg = arena.allocate(3 * 4);
       dataSeg.copyFrom(MemorySegment.ofArray(inputData));
-      ret = (int) mpiProbeH.invoke(dataSeg.address());
+      ret = (int) mpiProbeH.invoke(dataSeg);
       outputData = dataSeg.toArray(ValueLayout.JAVA_INT);
 
     } catch (Exception e) {
@@ -359,9 +359,9 @@ public class MPIInterface {
 
     // then actual Recv after allocating a fittingly sized buffer
     byte[] data;
-    try (MemorySession session = MemorySession.openConfined()) {
-      MemorySegment dataSeg = MemorySegment.allocateNative(outputData[2], session);
-      ret = (int) mpiRecvH.invoke(dataSeg.address(), outputData[2], outputData[0], outputData[1]);
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment dataSeg = arena.allocate(outputData[2]);
+      ret = (int) mpiRecvH.invoke(dataSeg, outputData[2], outputData[0], outputData[1]);
       data = dataSeg.toArray(ValueLayout.JAVA_BYTE);
 
     } catch (Exception e) {

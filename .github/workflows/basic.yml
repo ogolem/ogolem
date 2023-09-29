@@ -17,8 +17,8 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-java@v3
       with:
-        distribution: 'temurin'
-        java-version: '19'
+        distribution: 'oracle'
+        java-version: '21'
         cache: 'gradle'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2.3.3
@@ -41,8 +41,8 @@ jobs:
       run: java --add-modules jdk.incubator.vector --enable-preview -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -adaptive adaptive-macrobenchs.csv 2
     - name: Run cluster macrobenchmarks
       run: java --add-modules jdk.incubator.vector --enable-preview -jar build/libs/ogolem-snapshot.jar --macrobenchmarks -cluster cluster-internal-macrobenchs.csv 2
-    #- name: Run simple MPI test
-    #  run: cd examples/clusteropt/ar55 && mpirun -n 2 java --add-modules=jdk.incubator.vector --add-modules=jdk.incubator.foreign -Dforeign.restricted=permit -jar ../../../build/libs/ogolem-snapshot.jar --core ar38_sweden.ogo && cd -
+    - name: Run simple MPI test (execution success only)
+      run: cd examples/clusteropt/ar55 && mpirun -n 2 java --add-modules=jdk.incubator.vector --enable-preview -Dforeign.restricted=permit -Djava.library.path=../../../mpi_helper -jar ../../../build/libs/ogolem-snapshot.jar --core ar55_sweden.ogo && cd -
     - name: Store artifacts
       uses: actions/upload-artifact@v3
       with:
