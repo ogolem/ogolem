@@ -169,6 +169,11 @@ public final class Input {
           if (configInput[j].trim().equalsIgnoreCase("</GEOMETRY>")) {
             geomEnd = j;
             continue MainParser;
+          } else if (configInput[j].trim().startsWith("</")
+              && !configInput[j].trim().startsWith("</MOLECULE>")) {
+            // catch all other tags through their closing tags
+            throw new RuntimeException(
+                "Unexpected tag " + configInput[j].trim() + " found inside <GEOMETRY> environment");
           }
         }
         throw new Exception("No end </GEOMETRY> tag found.");
