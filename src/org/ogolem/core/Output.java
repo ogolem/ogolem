@@ -72,7 +72,7 @@ public final class Output {
           "",
           "",
           "",
-          "Copyright (c) 2009-2022, J. M. Dieterich and B. Hartke",
+          "Copyright (c) 2009-2026, J. M. Dieterich and B. Hartke",
           "All rights reserved.",
           "",
           "Redistribution and use in source and binary forms, with or without",

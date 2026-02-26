@@ -193,7 +193,7 @@ class GromacsCaller extends AbstractLocOpt {
 
     // depending upon what QM part we want to use, switch statement
     switch (whichQM) {
-        // only orca needs special attention
+      // only orca needs special attention
       case Orca:
         setupForOrca(sGromacsFolder);
         break;

@@ -505,7 +505,7 @@ final class MolproCaller implements CartesianFullBackend, Newton {
     System.arraycopy(daXYZ1D, iAtoms * 2, daXYZ[2], 0, iAtoms);
     switch (whichMethod) {
       case CUSTOMNOLOCOPT:
-        // also custom, same behaviour
+      // also custom, same behaviour
       case CUSTOM:
         // custom
         final String[] geom = new String[iAtoms + 2];

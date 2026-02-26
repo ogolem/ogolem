@@ -305,11 +305,8 @@ public class MainOGOLEM {
       final int retFinal = mpi.mpiFinalize();
       if (retFinal != 0) {
         System.err.println("Couldn't finalize the MPI processes. Aborting.");
-        final int retAbort = mpi.mpiAbort(1000);
-        if (retAbort != 0) {
-          System.err.println("Failure to MPI abort (finalize)");
-          System.exit(1000);
-        }
+        mpi.mpiAbort(1000);
+        System.exit(1000);
       }
     }
   }

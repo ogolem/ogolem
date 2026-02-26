@@ -54,12 +54,16 @@ public class MPIInterface {
 
   private static final Logger LOG = LoggerFactory.getLogger(MPIInterface.class);
 
+  private static boolean initialized = false;
+  private static boolean finalized = false;
+
   /* the following constants are our internal choices for ANY_SOURCE, ANY_TAG which the wrapper translates into the platform-dependent ones */
   public static final int ANY_SOURCE = -42;
   public static final int ANY_TAG = -42;
 
   private final boolean debug;
   private final String soName;
+  private final Arena arena;
   private final MethodHandle mpiInitH;
   private final MethodHandle mpiAbortH;
   private final MethodHandle mpiFinalizeH;
@@ -77,6 +81,7 @@ public class MPIInterface {
 
     this.debug = debug;
     this.soName = soName;
+    this.arena = Arena.ofShared();
 
     Linker linker = Linker.nativeLinker();
 
@@ -105,7 +110,7 @@ public class MPIInterface {
       this.mpiFinalizeH = linker.downcallHandle(mpiFinalizeSeg, mpiFinalizeF);
 
       final var mpiWtimeF = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE);
-      this.mpiWtimeH = linker.downcallHandle(mpiWtimeSeg, mpiWtimeF);
+      this.mpiWtimeH = linker.downcallHandle(mpiWtimeSeg, mpiWtimeF, Linker.Option.critical(true));
 
       final var mpiRankF = FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS);
       this.mpiRankH = linker.downcallHandle(mpiRankSeg, mpiRankF);
@@ -146,12 +151,24 @@ public class MPIInterface {
 
   public int mpiInit(final String[] args) {
 
+    if (initialized) {
+      LOG.warn("MPI_Init() already called. Ignoring.");
+      return 0;
+    }
+
     int initRet = 0;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment argc = arena.allocate(4);
-      MemorySegment argv = MemorySegment.ofArray(new char[] {'o'});
-      argc.copyFrom(MemorySegment.ofArray(new int[] {0}));
+    try {
       initRet = (int) mpiInitH.invoke();
+      initialized = true;
+      Runtime.getRuntime()
+          .addShutdownHook(
+              new Thread(
+                  () -> {
+                    if (initialized && !finalized) {
+                      LOG.info("Shutdown hook: finalizing MPI.");
+                      mpiFinalize();
+                    }
+                  }));
     } catch (Exception e) {
       e.printStackTrace(System.err);
       return 42;
@@ -180,8 +197,15 @@ public class MPIInterface {
   }
 
   public int mpiFinalize() {
+
+    if (finalized) {
+      LOG.warn("MPI_Finalize() already called. Ignoring.");
+      return 0;
+    }
+
     try {
       final int ret = (int) mpiFinalizeH.invoke();
+      finalized = true;
       if (debug) LOG.info("Successful MPI_Finalize().");
       return ret;
     } catch (Exception e) {
@@ -211,10 +235,10 @@ public class MPIInterface {
 
     int rank = -999;
     int ret = 0;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment rankSeg = arena.allocate(4);
+    MemorySegment rankSeg = arena.allocate(ValueLayout.JAVA_INT);
+    try {
       ret = (int) mpiRankH.invoke(rankSeg);
-      rank = rankSeg.toArray(ValueLayout.JAVA_INT)[0];
+      rank = rankSeg.getAtIndex(ValueLayout.JAVA_INT, 0);
     } catch (Exception e) {
       throw e;
     } catch (Throwable t) {
@@ -234,10 +258,10 @@ public class MPIInterface {
 
     int size = -999;
     int ret = 0;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment sizeSeg = arena.allocate(4);
+    MemorySegment sizeSeg = arena.allocate(ValueLayout.JAVA_INT);
+    try {
       ret = (int) mpiSizeH.invoke(sizeSeg);
-      size = sizeSeg.toArray(ValueLayout.JAVA_INT)[0];
+      size = sizeSeg.getAtIndex(ValueLayout.JAVA_INT, 0);
     } catch (Exception e) {
       throw e;
     } catch (Throwable t) {
@@ -255,16 +279,19 @@ public class MPIInterface {
 
   public Tuple<Integer, char[]> mpiBcast(char[] message, final int myRank, final int root) {
 
-    final String s = new String(message);
-    final int count = s.length();
+    final int count = message.length;
 
     int ret = 0;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment msgSeg = arena.allocateUtf8String(s);
-      ret = (int) mpiBcastH.invoke(msgSeg, count, root);
+    try {
+      final byte[] bytes = new String(message).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+      MemorySegment msgSeg = arena.allocateFrom(ValueLayout.JAVA_BYTE, bytes);
+      ret = (int) mpiBcastH.invoke(msgSeg, bytes.length, root);
 
       if (myRank != root) {
-        message = msgSeg.getUtf8String(0).toCharArray();
+        final byte[] rcvBytes = msgSeg.toArray(ValueLayout.JAVA_BYTE);
+        final String s = new String(rcvBytes, java.nio.charset.StandardCharsets.UTF_8);
+        final char[] c = s.toCharArray();
+        System.arraycopy(c, 0, message, 0, Math.min(c.length, message.length));
       }
 
     } catch (Exception e) {
@@ -292,9 +319,8 @@ public class MPIInterface {
     final int count = message.length;
 
     int ret = 0;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment msgSeg = arena.allocate(count);
-      msgSeg.copyFrom(MemorySegment.ofArray(message));
+    try {
+      MemorySegment msgSeg = arena.allocateFrom(ValueLayout.JAVA_BYTE, message);
       ret = (int) mpiSendH.invoke(msgSeg, count, toRank, tag);
 
     } catch (Exception e) {
@@ -326,43 +352,39 @@ public class MPIInterface {
     int[] outputData;
 
     int ret = 0;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment dataSeg = arena.allocate(3 * 4);
-      dataSeg.copyFrom(MemorySegment.ofArray(inputData));
+    try {
+      MemorySegment dataSeg = arena.allocateFrom(ValueLayout.JAVA_INT, inputData);
       ret = (int) mpiProbeH.invoke(dataSeg);
       outputData = dataSeg.toArray(ValueLayout.JAVA_INT);
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      return new MPIStatus(null, sourceRank, tag, 42);
-    } catch (Throwable t) {
-      t.printStackTrace();
-      return new MPIStatus(null, sourceRank, tag, 43);
-    }
+      if (ret != 0) return new MPIStatus(null, sourceRank, tag, ret);
 
-    if (ret != 0) return new MPIStatus(null, sourceRank, tag, ret);
+      if (debug)
+        LOG.info(
+            "Successful MPI_Probe() on "
+                + myRank
+                + " from "
+                + sourceRank
+                + " with tag "
+                + tag
+                + ", probe results: "
+                + outputData[0]
+                + " "
+                + outputData[1]
+                + " "
+                + outputData[2]);
 
-    if (debug)
-      LOG.info(
-          "Successful MPI_Probe() on "
-              + myRank
-              + " from "
-              + sourceRank
-              + " with tag "
-              + tag
-              + ", probe results: "
-              + outputData[0]
-              + " "
-              + outputData[1]
-              + " "
-              + outputData[2]);
+      // then actual Recv after allocating a fittingly sized buffer
+      byte[] data;
+      MemorySegment recvSeg = arena.allocate(outputData[2]);
+      ret = (int) mpiRecvH.invoke(recvSeg, outputData[2], outputData[0], outputData[1]);
+      data = recvSeg.toArray(ValueLayout.JAVA_BYTE);
 
-    // then actual Recv after allocating a fittingly sized buffer
-    byte[] data;
-    try (Arena arena = Arena.ofConfined()) {
-      MemorySegment dataSeg = arena.allocate(outputData[2]);
-      ret = (int) mpiRecvH.invoke(dataSeg, outputData[2], outputData[0], outputData[1]);
-      data = dataSeg.toArray(ValueLayout.JAVA_BYTE);
+      if (debug)
+        LOG.info("Successful MPI_Recv() from " + sourceRank + " on " + myRank + " with tag " + tag);
+
+      // assemble the status object to return
+      return new MPIStatus(data, outputData[0], outputData[1], ret);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -371,12 +393,6 @@ public class MPIInterface {
       t.printStackTrace();
       return new MPIStatus(null, sourceRank, tag, 43);
     }
-
-    if (debug)
-      LOG.info("Successful MPI_Recv() from " + sourceRank + " on " + myRank + " with tag " + tag);
-
-    // assemble the status object to return
-    return new MPIStatus(data, outputData[0], outputData[1], ret);
   }
 
   public static class MPIStatus implements Serializable {
