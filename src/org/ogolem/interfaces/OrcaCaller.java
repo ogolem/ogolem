@@ -427,7 +427,7 @@ public final class OrcaCaller extends AbstractLocOpt implements CartesianFullBac
 
     switch (iWhichMethod) {
       case -2:
-        // custom, same case
+      // custom, same case
       case -1:
         // custom, glue input together
         final String[] geom = new String[saAtoms.length + 2];

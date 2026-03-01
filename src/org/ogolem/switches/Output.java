@@ -269,7 +269,7 @@ final class Output {
     final int iMultiplicity = 1 * iTotalSpin + 1;
 
     switch (iMultiplicity) {
-        // it is a singlet, but we omit the keyword since it is default
+      // it is a singlet, but we omit the keyword since it is default
       case 1:
         sSpin = "";
         break;
@@ -374,7 +374,7 @@ final class Output {
     final int iMultiplicity = 1 * iTotalSpin + 1;
 
     switch (iMultiplicity) {
-        // it is a singlet, but we omit the keyword since it is default
+      // it is a singlet, but we omit the keyword since it is default
       case 1:
         sSpin = "SINGLET";
         break;

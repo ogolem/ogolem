@@ -444,15 +444,15 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
     }
 
     for (int i = 0; i < noWat; i++) {
-      coordCache[i][0] = coords[3 * i] * BOHRTOANG; // oxygen
-      coordCache[i][1] = coords[noAts + 3 * i] * BOHRTOANG; // oxygen
-      coordCache[i][2] = coords[2 * noAts + 3 * i] * BOHRTOANG; // oxygen
-      coordCache[noWat + 2 * i][0] = coords[3 * i + 1] * BOHRTOANG; // hydrogen 1
-      coordCache[noWat + 2 * i][1] = coords[noAts + 3 * i + 1] * BOHRTOANG; // hydrogen 1
-      coordCache[noWat + 2 * i][2] = coords[2 * noAts + 3 * i + 1] * BOHRTOANG; // hydrogen 1
-      coordCache[noWat + 2 * i + 1][0] = coords[3 * i + 2] * BOHRTOANG; // hydrogen 2
-      coordCache[noWat + 2 * i + 1][1] = coords[noAts + 3 * i + 2] * BOHRTOANG; // hydrogen 2
-      coordCache[noWat + 2 * i + 1][2] = coords[2 * noAts + 3 * i + 2] * BOHRTOANG; // hydrogen 2
+      coordCache[i * 3][0] = coords[3 * i] * BOHRTOANG; // oxygen
+      coordCache[i * 3][1] = coords[noAts + 3 * i] * BOHRTOANG; // oxygen
+      coordCache[i * 3][2] = coords[2 * noAts + 3 * i] * BOHRTOANG; // oxygen
+      coordCache[i * 3 + 1][0] = coords[3 * i + 1] * BOHRTOANG; // hydrogen 1
+      coordCache[i * 3 + 1][1] = coords[noAts + 3 * i + 1] * BOHRTOANG; // hydrogen 1
+      coordCache[i * 3 + 1][2] = coords[2 * noAts + 3 * i + 1] * BOHRTOANG; // hydrogen 1
+      coordCache[i * 3 + 2][0] = coords[3 * i + 2] * BOHRTOANG; // hydrogen 2
+      coordCache[i * 3 + 2][1] = coords[noAts + 3 * i + 2] * BOHRTOANG; // hydrogen 2
+      coordCache[i * 3 + 2][2] = coords[2 * noAts + 3 * i + 2] * BOHRTOANG; // hydrogen 2
     }
 
     if (DEBUG) {
@@ -460,7 +460,7 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
       int c = 0;
       for (int i = 0; i < noAts; i++) {
         c++;
-        String s = (c <= noWat) ? "O" : "H";
+        String s = (c % 3 == 0) ? "O" : "H";
         for (int j = 0; j < 3; j++) {
           s += "\t" + coordCache[i][j];
         }
@@ -474,15 +474,15 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
     System.err.println(noAts);
     System.err.println();
     for (int i = 0; i < noWat; i++) {
-      final double oX = coordCache[i][0]; // oxygen
-      final double oY = coordCache[i][1]; // oxygen
-      final double oZ = coordCache[i][2]; // oxygen
-      final double h1X = coordCache[noWat + 2 * i][0]; // hydrogen 1
-      final double h1Y = coordCache[noWat + 2 * i][1]; // hydrogen 1
-      final double h1Z = coordCache[noWat + 2 * i][2]; // hydrogen 1
-      final double h2X = coordCache[noWat + 2 * i + 1][0]; // hydrogen 2
-      final double h2Y = coordCache[noWat + 2 * i + 1][1]; // hydrogen 2
-      final double h2Z = coordCache[noWat + 2 * i + 1][2]; // hydrogen 2
+      final double oX = coordCache[i * 3][0]; // oxygen
+      final double oY = coordCache[i * 3][1]; // oxygen
+      final double oZ = coordCache[i * 3][2]; // oxygen
+      final double h1X = coordCache[i * 3 + 1][0]; // hydrogen 1
+      final double h1Y = coordCache[i * 3 + 1][1]; // hydrogen 1
+      final double h1Z = coordCache[i * 3 + 1][2]; // hydrogen 1
+      final double h2X = coordCache[i * 3 + 2][0]; // hydrogen 2
+      final double h2Y = coordCache[i * 3 + 2][1]; // hydrogen 2
+      final double h2Z = coordCache[i * 3 + 2][2]; // hydrogen 2
       System.err.println("O\t" + oX + "\t" + oY + "\t" + oZ);
       System.err.println("H\t" + h1X + "\t" + h1Y + "\t" + h1Z);
       System.err.println("H\t" + h2X + "\t" + h2Y + "\t" + h2Z);
@@ -493,9 +493,9 @@ public class ScaTTM3FBackend implements CartesianFullBackend {
 
     for (int i = 0; i < noWat; i++) {
       for (int j = 0; j < 3; j++) {
-        grad[j][3 * i] = gradCache[i][j] * KCALTOHARTREE * BOHRTOANG;
-        grad[j][3 * i + 1] = gradCache[noWat + 2 * i][j] * KCALTOHARTREE * BOHRTOANG;
-        grad[j][3 * i + 2] = gradCache[noWat + 2 * i + 1][j] * KCALTOHARTREE * BOHRTOANG;
+        grad[j][3 * i] = gradCache[i * 3][j] * KCALTOHARTREE * BOHRTOANG;
+        grad[j][3 * i + 1] = gradCache[i * 3 + 1][j] * KCALTOHARTREE * BOHRTOANG;
+        grad[j][3 * i + 2] = gradCache[i * 3 + 2][j] * KCALTOHARTREE * BOHRTOANG;
       }
     }
 

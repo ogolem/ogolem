@@ -1372,7 +1372,7 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
       case 2:
         diver = new ParameterDiversityCheckers.ParamsDiversityChecker(paramDiversityThresh);
         break;
-        // TODO more!!!
+      // TODO more!!!
       default:
         diver = new GenericDiversityCheckers.FitnessDiversityChecker<>(energyDiversity);
         break;
@@ -1741,7 +1741,7 @@ public class AdaptiveConf implements Configuration<Double, AdaptiveParameters> {
             }
           }
 
-          if (pointID == Integer.MAX_VALUE || typeID == Integer.MAX_VALUE || dat == Double.NaN) {
+          if (pointID == Integer.MAX_VALUE || typeID == Integer.MAX_VALUE || Double.isNaN(dat)) {
             throw new RuntimeException(
                 "Illegal point / type ID or data for generic scalar reference point.");
           }
