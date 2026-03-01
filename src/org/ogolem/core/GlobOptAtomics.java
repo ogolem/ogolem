@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2020-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * classes. Ideally a globoptatomics subpackage.
  *
  * @author Johannes Dieterich
- * @version 2020-04-25
+ * @version 2026-02-26
  */
 class GlobOptAtomics {
 
@@ -148,25 +148,20 @@ class GlobOptAtomics {
     NORMDISTR
   };
 
-  static double randomCuttingZPlane(
-      final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random) {
-
-    return randomCuttingPlane(whichMode, coms1, random, 2);
-  }
-
-  static double randomCuttingYPlane(
-      final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random) {
-
-    return randomCuttingPlane(whichMode, coms1, random, 1);
-  }
-
-  static double randomCuttingXPlane(
-      final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random) {
-
-    return randomCuttingPlane(whichMode, coms1, random, 0);
-  }
-
-  private static double randomCuttingPlane(
+  /**
+   * Returns a cutting plane height that is guaranteed to have at least one COM strictly below and
+   * one strictly above (no retry loop). Uses sorted COMs and places the plane between two
+   * consecutive values. More stable than random sampling when COMs are clustered or when GAUSSDISTR
+   * would often sample outside [min,max].
+   *
+   * @param whichMode cutting mode: ZEROZ uses 0 if it lies between min and max, else deterministic;
+   *     GAUSSDISTR/NORMDISTR choose a random split index in [1, n-1] with plane in the gap.
+   * @param coms1 COMs[coord][particle] (length 3 for x,y,z).
+   * @param random RNG for choosing split index and optional jitter.
+   * @param coord axis index (0=x, 1=y, 2=z).
+   * @return plane height, or Double.NaN if all COMs have the same coordinate (no valid split).
+   */
+  static double guaranteedCuttingPlaneHeight(
       final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random, final int coord) {
 
     assert (coms1 != null);
@@ -174,31 +169,104 @@ class GlobOptAtomics {
     assert (coord >= 0);
     assert (coord < 3);
 
-    if (whichMode == CUTTINGMODE.ZEROZ) return 0.0; // stays on 0.0
-
-    double plane = 0.0;
-    // the plane is on coord between the maxima (+/-)
-
-    // 1) find the max and min coord value for 1 and 2
-    double max = Double.NEGATIVE_INFINITY;
-    double min = Double.POSITIVE_INFINITY;
-
-    for (int i = 0; i < coms1[coord].length; i++) {
-      max = Math.max(coms1[coord][i], max);
-      min = Math.min(coms1[coord][i], min);
+    final int n = coms1[coord].length;
+    if (n < 2) {
+      log.warn(
+          "Cutting plane unavailable: fewer than 2 particles (n="
+              + n
+              + ", axis="
+              + axisName(coord)
+              + ")");
+      return Double.NaN;
     }
 
-    // 2) take the SMALLER max and the BIGGER min value
+    final double[] sorted = coms1[coord].clone();
+    Arrays.sort(sorted);
+    final double min = sorted[0];
+    final double max = sorted[n - 1];
+    final double range = max - min;
+    if (Math.abs(range) < 1E-8) {
+      log.warn(
+          "Cutting plane unavailable: all COMs have same coordinate on axis "
+              + axisName(coord)
+              + " (value="
+              + min
+              + ", range="
+              + range
+              + ", tolerance=1E-8)");
+      return Double.NaN;
+    }
+
+    if (whichMode == CUTTINGMODE.ZEROZ) {
+      if (min < 0.0 && 0.0 < max) return 0.0;
+    }
+
+    // Choose how many COMs should be below the plane (1 .. n-1).
+    int noUnder;
     if (whichMode == CUTTINGMODE.GAUSSDISTR) {
-      // Gauss distribution, maximum on coord = 0
-      final double gauss = RandomUtils.gaussDouble(-1.0, 1.0);
-      plane = (gauss >= 0.0) ? gauss * max : gauss * min;
-    } else if (whichMode == CUTTINGMODE.NORMDISTR) {
-      // even distribution
-      plane = random.nextDouble() * (max - min) + min;
+      // Gaussian-like choice around center: map gauss in (-1,1) to index in [1, n-1]
+      final double g = RandomUtils.gaussDouble(-1.0, 1.0);
+      final double t = (g + 1.0) * 0.5; // in [0,1]
+      noUnder = 1 + (int) (t * (n - 1));
+      if (noUnder > n - 1) noUnder = n - 1;
+      if (noUnder < 1) noUnder = 1;
+    } else {
+      // NORMDISTR or ZEROZ fallback: uniform split index
+      noUnder = 1 + random.nextInt(n - 1);
     }
 
-    return plane;
+    final double below = sorted[noUnder - 1];
+    final double above = sorted[noUnder];
+    final double gap = above - below;
+    if (Math.abs(gap) < 1E-8) {
+      log.warn(
+          "Cutting plane unavailable: degenerate gap at split (axis="
+              + axisName(coord)
+              + ", noUnder="
+              + noUnder
+              + ", n="
+              + n
+              + ", below="
+              + below
+              + ", above="
+              + above
+              + ", gap="
+              + gap
+              + ")");
+      return Double.NaN;
+    }
+    // midpoint
+    final double cuttingPlaneHeight = below + gap * 0.5;
+
+    return cuttingPlaneHeight;
+  }
+
+  static double guaranteedCuttingZPlane(
+      final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random) {
+    return guaranteedCuttingPlaneHeight(whichMode, coms1, random, 2);
+  }
+
+  static double guaranteedCuttingYPlane(
+      final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random) {
+    return guaranteedCuttingPlaneHeight(whichMode, coms1, random, 1);
+  }
+
+  static double guaranteedCuttingXPlane(
+      final CUTTINGMODE whichMode, final double[][] coms1, final Lottery random) {
+    return guaranteedCuttingPlaneHeight(whichMode, coms1, random, 0);
+  }
+
+  private static String axisName(final int coord) {
+    switch (coord) {
+      case 0:
+        return "x";
+      case 1:
+        return "y";
+      case 2:
+        return "z";
+      default:
+        return "coord" + coord;
+    }
   }
 
   static double findOptimalZPlaneHeight(final double[][] coords, final int noUnder) {
@@ -233,7 +301,7 @@ class GlobOptAtomics {
 
     if (noUnder == coordVals.length) {
       // everything is underneath (should also never happen as it is pointless)
-      return coordVals[coordVals.length] + 1.0;
+      return coordVals[coordVals.length - 1] + 1.0;
     }
 
     final double valFirstBelow = coordVals[noUnder - 1];
@@ -241,11 +309,20 @@ class GlobOptAtomics {
     final double diff = valFirstAbove - valFirstBelow;
 
     if (Math.abs(diff) < 1E-8) {
-      // we return NaN since two COMs are too close together
-      log.info("Absolute difference " + Math.abs(diff) + " too small. Tried to find " + noUnder);
-      if (log.isDebugEnabled()) {
-        log.debug(Arrays.toString(coordVals));
-      }
+      // we return NaN since two COMs are too close together (mother / findOptimalPlaneHeight)
+      System.err.println(
+          "Cutting plane unavailable (mother/optimal): two COMs too close on axis "
+              + axisName(coord)
+              + " (noUnder="
+              + noUnder
+              + ", diff="
+              + diff
+              + ", valFirstBelow="
+              + valFirstBelow
+              + ", valFirstAbove="
+              + valFirstAbove
+              + ")");
+      System.err.flush();
       return Double.NaN;
     }
 

@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.ogolem.core;
 
-import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.ogolem.generic.GenericMutation;
@@ -54,7 +52,7 @@ import org.ogolem.random.RandomUtils;
  * stretching ALL bond lengths of flexible molecules. (yeah... not yet...)
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2026-02-26
  */
 public class FinlandGeometryMutation implements GenericMutation<Molecule, Geometry> {
 
@@ -126,7 +124,8 @@ public class FinlandGeometryMutation implements GenericMutation<Molecule, Geomet
      * now we want to take a plane cutting through both
      * 1) which heigth on the z axis?
      */
-    final double planeHeigth = randomCuttingZPlane(whichGlobOpt, rotated, random);
+    final double planeHeigth =
+        GlobOptAtomics.guaranteedCuttingZPlane(whichGlobOpt, rotated, random);
 
     // check which COMs are above and underneath the plane
     final List<Integer> above = new ArrayList<>(rotated[0].length);

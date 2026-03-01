@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2014, J. M. Dieterich
               2016, J. M. Dieterich and B. Hartke
-              2018-2020, J. M. Dieterich and B. Hartke
+              2018-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,9 +42,9 @@ import static org.ogolem.core.GlobOptAtomics.assignMolecularTypes;
 import static org.ogolem.core.GlobOptAtomics.findOptimalXPlaneHeight;
 import static org.ogolem.core.GlobOptAtomics.findOptimalYPlaneHeight;
 import static org.ogolem.core.GlobOptAtomics.findOptimalZPlaneHeight;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingXPlane;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingYPlane;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
+import static org.ogolem.core.GlobOptAtomics.guaranteedCuttingXPlane;
+import static org.ogolem.core.GlobOptAtomics.guaranteedCuttingYPlane;
+import static org.ogolem.core.GlobOptAtomics.guaranteedCuttingZPlane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * Our basic N-type phenotype X-Over in a user-specified plane. Rotates the input structures.
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2026-02-26
  */
 public class NorrbottenGeometryXOver implements GenericCrossover<Molecule, Geometry> {
 
@@ -199,57 +199,33 @@ public class NorrbottenGeometryXOver implements GenericCrossover<Molecule, Geome
 
     double dPlaneHeightFather = 0.0;
     short lookAtCoord = 0;
-    int ec = 0;
-    boolean cont;
-    int noFatherUnder = -1;
-    do {
-      switch (plane) {
-        case XY:
-          dPlaneHeightFather = randomCuttingXPlane(whichGlobOpt, daFatherCOMs, random);
-          lookAtCoord = 0;
-          break;
-        case XZ:
-          dPlaneHeightFather = randomCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
-          lookAtCoord = 2;
-          break;
-        case YZ:
-          dPlaneHeightFather = randomCuttingYPlane(whichGlobOpt, daFatherCOMs, random);
-          lookAtCoord = 1;
-          break;
-      }
-      // check which COMs are above and underneath the plane (for the father)
-      for (int i = 0; i < noMols; i++) {
-        if (daFatherCOMs[lookAtCoord][i] <= dPlaneHeightFather) {
-          // "underneath"
-          fatherUnder.add(i);
-        } else {
-          // "above"
-          fatherAbove.add(i);
-        }
-      }
-
-      noFatherUnder = fatherUnder.size();
-      if (noFatherUnder == 0) {
-        // then there was none underneath the plane, this is NOT ok.
-        cont = true;
-        fatherUnder.clear();
-        fatherAbove.clear();
-      } else if (noFatherUnder >= noMols) {
-        // all are above the plane, also not OK.
-        cont = true;
-        fatherUnder.clear();
-        fatherAbove.clear();
-      } else {
-        cont = false;
-      }
-
-      ec++;
-    } while (cont && ec < FixedValues.MAXTOEMERGENCY);
-
-    if (cont) {
-      System.err.println("Too many attemps in finding a first plane height!");
+    switch (plane) {
+      case XY:
+        dPlaneHeightFather = guaranteedCuttingXPlane(whichGlobOpt, daFatherCOMs, random);
+        lookAtCoord = 0;
+        break;
+      case XZ:
+        dPlaneHeightFather = guaranteedCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
+        lookAtCoord = 2;
+        break;
+      case YZ:
+        dPlaneHeightFather = guaranteedCuttingYPlane(whichGlobOpt, daFatherCOMs, random);
+        lookAtCoord = 1;
+        break;
+    }
+    if (Double.isNaN(dPlaneHeightFather)) {
+      System.err.println(
+          "WARNING: Could not find a valid cutting plane for father (all COMs on same height).");
       return new Tuple<>(null, null);
     }
+    for (int i = 0; i < noMols; i++) {
+      if (daFatherCOMs[lookAtCoord][i] <= dPlaneHeightFather) {
+        fatherUnder.add(i);
+      } else {
+        fatherAbove.add(i);
+      }
+    }
+    final int noFatherUnder = fatherUnder.size();
 
     // now move the plane in the mother geometry till enough COMs are above/underneath
     double dPlaneHeightMother = 0.0;
