@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2009-2010, J. M. Dieterich and B. Hartke
               2010-2014, J. M. Dieterich
-              2015-2023, J. M. Dieterich and B. Hartke
+              2015-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import org.ogolem.math.TrivialLinearAlgebra;
  * representations.
  *
  * @author Johannes Dieterich
- * @version 2023-09-08
+ * @version 2026-02-21
  */
 public final class CoordTranslation {
 
@@ -2475,6 +2475,21 @@ public final class CoordTranslation {
     assert (point != null);
     assert (point.length == 3);
 
+    final double pXSq = point[0] * point[0];
+    final double pYSq = point[1] * point[1];
+    final double pZSq = point[2] * point[2];
+    final double dist = sqrt(pXSq + pYSq + pZSq);
+    final double dist2 = sqrt(pXSq + pYSq);
+    final double tol = 1E-10;
+    // Degenerate: zero vector or already on z-axis. Return copy (no rotation).
+    if (dist < tol || dist2 < tol) {
+      final double[][] copy = new double[3][ats];
+      for (int i = 0; i < 3; i++) {
+        System.arraycopy(xyz[i], 0, copy[i], 0, ats);
+      }
+      return copy;
+    }
+
     // strategy: use the Euler angle rotation and determine the necessary Euler angles
 
     /*
@@ -2496,10 +2511,6 @@ public final class CoordTranslation {
      * axis about which the z-axis is rotated; more simply: the line of nodes is
      * perpendicular to the plane spanned by the z-axis and the vector (xx,yy,zz))
      */
-    final double pXSq = point[0] * point[0];
-    final double pYSq = point[1] * point[1];
-    final double pZSq = point[2] * point[2];
-    final double dist2 = sqrt(pXSq + pYSq);
     final double ca = point[0] / dist2;
     final double alpha = acos(ca);
 
@@ -2509,7 +2520,6 @@ public final class CoordTranslation {
      * not zz and not the length of the vector (xx,yy,zz), and this determines the
      * angle, so the first rotation does not affect this angle.)
      */
-    final double dist = sqrt(pXSq + pYSq + pZSq);
     final double cb = point[2] / dist;
     final double beta = acos(cb);
 

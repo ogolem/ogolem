@@ -1,6 +1,5 @@
 /*
-Copyright (c) 2014, J. M. Dieterich
-              2019-2021, J. M. Dieterich and B. Hartke
+Copyright (c) 2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -44,7 +43,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * @author Johannes Dieterich
- * @version 2021-07-17
+ * @version 2026-02-21
  */
 public class CoordTranslationTest {
 
@@ -272,5 +271,171 @@ public class CoordTranslationTest {
     xyz[2][3] = -1.0;
     dihedral = CoordTranslation.calcDihedral(xyz, 0, 1, 2, 3);
     assertEquals(3 * Math.PI / 4, dihedral, NUMACC);
+  }
+
+  private static final double ROT_TOL = 1e-8;
+
+  /** Helper: assert that (x,y,z) lies on the z-axis (x and y negligible). */
+  private static void assertOnZAxis(
+      final double x, final double y, final double z, final double tol) {
+    assertEquals(0.0, x, tol, "x should be 0 (on z-axis)");
+    assertEquals(0.0, y, tol, "y should be 0 (on z-axis)");
+    assertTrue(Math.abs(z) >= 0.0, "z component");
+  }
+
+  /** Helper: rotate point onto z-axis and verify the rotated point is on z-axis. */
+  private static void assertRotatesPointToZAxis(final double px, final double py, final double pz) {
+    final double[][] xyz = new double[3][1];
+    xyz[0][0] = px;
+    xyz[1][0] = py;
+    xyz[2][0] = pz;
+    final double[] point = new double[] {px, py, pz};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 1);
+    assertNotNull(result);
+    assertEquals(3, result.length);
+    assertEquals(1, result[0].length);
+    final double norm = Math.sqrt(px * px + py * py + pz * pz);
+    assertOnZAxis(result[0][0], result[1][0], result[2][0], ROT_TOL);
+    assertEquals(norm, Math.abs(result[2][0]), ROT_TOL);
+  }
+
+  /** Degenerate: zero vector returns copy of xyz unchanged. */
+  @Test
+  public void testRotatePointToZAxisZeroVector() {
+    final double[][] xyz = new double[3][2];
+    xyz[0][0] = 1.0;
+    xyz[1][0] = 2.0;
+    xyz[2][0] = 3.0;
+    xyz[0][1] = 4.0;
+    xyz[1][1] = 5.0;
+    xyz[2][1] = 6.0;
+    final double[] point = new double[] {0.0, 0.0, 0.0};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 2);
+    assertNotNull(result);
+    assertNotSame(xyz, result);
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 2; j++) {
+        assertEquals(xyz[i][j], result[i][j], NUMACC);
+      }
+    }
+  }
+
+  /** Degenerate: point already on z-axis (0, 0, z) returns copy. */
+  @Test
+  public void testRotatePointToZAxisAlreadyOnZAxis() {
+    final double[][] xyz = new double[3][1];
+    xyz[0][0] = 10.0;
+    xyz[1][0] = 20.0;
+    xyz[2][0] = 30.0;
+    final double[] point = new double[] {0.0, 0.0, 5.0};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 1);
+    assertNotNull(result);
+    assertNotSame(xyz, result);
+    assertEquals(10.0, result[0][0], NUMACC);
+    assertEquals(20.0, result[1][0], NUMACC);
+    assertEquals(30.0, result[2][0], NUMACC);
+  }
+
+  /** Degenerate: point on z-axis negative (0, 0, -1). */
+  @Test
+  public void testRotatePointToZAxisAlreadyOnZAxisNegative() {
+    final double[][] xyz = new double[3][1];
+    xyz[0][0] = 7.0;
+    xyz[1][0] = 8.0;
+    xyz[2][0] = 9.0;
+    final double[] point = new double[] {0.0, 0.0, -1.0};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 1);
+    assertNotNull(result);
+    assertNotSame(xyz, result);
+    assertEquals(7.0, result[0][0], NUMACC);
+    assertEquals(8.0, result[1][0], NUMACC);
+    assertEquals(9.0, result[2][0], NUMACC);
+  }
+
+  /** Normal: point on x-axis (1,0,0) rotates to positive z. */
+  @Test
+  public void testRotatePointToZAxisPointOnXAxis() {
+    assertRotatesPointToZAxis(1.0, 0.0, 0.0);
+  }
+
+  /** Normal: point in xy-plane (1,1,0) rotates to z. */
+  @Test
+  public void testRotatePointToZAxisPointInXYPlane() {
+    assertRotatesPointToZAxis(1.0, 1.0, 0.0);
+  }
+
+  /** Normal: general point (1,2,3). */
+  @Test
+  public void testRotatePointToZAxisGeneralPoint() {
+    assertRotatesPointToZAxis(1.0, 2.0, 3.0);
+  }
+
+  /** Extreme: very small point below tolerance → degenerate, returns copy. */
+  @Test
+  public void testRotatePointToZAxisVerySmallPoint() {
+    final double[][] xyz = new double[3][1];
+    xyz[0][0] = 100.0;
+    xyz[1][0] = 200.0;
+    xyz[2][0] = 300.0;
+    final double[] point = new double[] {1e-12, 1e-12, 1e-12};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 1);
+    assertNotNull(result);
+    assertNotSame(xyz, result);
+    assertEquals(100.0, result[0][0], NUMACC);
+    assertEquals(200.0, result[1][0], NUMACC);
+    assertEquals(300.0, result[2][0], NUMACC);
+  }
+
+  /** Extreme: very large coordinates. */
+  @Test
+  public void testRotatePointToZAxisVeryLargePoint() {
+    final double scale = 1e10;
+    assertRotatesPointToZAxis(scale, 0.0, 0.0);
+    assertRotatesPointToZAxis(scale * 0.6, scale * 0.8, 0.0);
+  }
+
+  /** Extreme: ats = 0 (empty coordinates). */
+  @Test
+  public void testRotatePointToZAxisZeroAtoms() {
+    final double[][] xyz = new double[3][1];
+    xyz[0][0] = 1.0;
+    xyz[1][0] = 0.0;
+    xyz[2][0] = 0.0;
+    final double[] point = new double[] {1.0, 0.0, 0.0};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 0);
+    assertNotNull(result);
+    assertEquals(3, result.length);
+    assertEquals(0, result[0].length);
+  }
+
+  /** Multiple atoms: rotation is by same matrix; one column was the point. */
+  @Test
+  public void testRotatePointToZAxisMultipleAtoms() {
+    final double px = 1.0;
+    final double py = 2.0;
+    final double pz = 3.0;
+    final double norm = Math.sqrt(px * px + py * py + pz * pz);
+    final double[][] xyz = new double[3][3];
+    xyz[0][0] = px;
+    xyz[1][0] = py;
+    xyz[2][0] = pz;
+    xyz[0][1] = 0.0;
+    xyz[1][1] = 0.0;
+    xyz[2][1] = 1.0;
+    xyz[0][2] = -1.0;
+    xyz[1][2] = 0.0;
+    xyz[2][2] = 0.0;
+    final double[] point = new double[] {px, py, pz};
+    final double[][] result = CoordTranslation.rotatePointToZAxis(xyz, point, 3);
+    assertNotNull(result);
+    assertEquals(3, result[0].length);
+    assertOnZAxis(result[0][0], result[1][0], result[2][0], ROT_TOL);
+    assertEquals(norm, Math.abs(result[2][0]), ROT_TOL);
+  }
+
+  /** Point with negative y (triggers sign flip in implementation). */
+  @Test
+  public void testRotatePointToZAxisNegativeY() {
+    assertRotatesPointToZAxis(1.0, -1.0, 1.0);
   }
 }
