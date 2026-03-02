@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2014, J. M. Dieterich
-              2016-2020, J. M. Dieterich and B. Hartke
+              2016-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.ogolem.core;
 
 import static org.ogolem.core.GlobOptAtomics.findOptimalZPlaneHeight;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
+import static org.ogolem.core.GlobOptAtomics.guaranteedCuttingZPlane;
 import static org.ogolem.core.GlobOptAtomics.randomRotation;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ import org.ogolem.random.Lottery;
  * Phenotype algorithm with implicit exchange of atom types. Like Sweden, just different. ;-)
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2026-02-26
  */
 public class LaplandGeometryXOver implements GenericCrossover<Molecule, Geometry> {
 
@@ -155,45 +155,20 @@ public class LaplandGeometryXOver implements GenericCrossover<Molecule, Geometry
     final ArrayList<Integer> alFatherAbove = new ArrayList<>(iNoOfMolecules);
     final ArrayList<Integer> alFatherUnder = new ArrayList<>(iNoOfMolecules);
 
-    double dPlaneHeightFather;
-    int ec = 0;
-    boolean cont;
-    int iFatherCOMs = -1;
-    do {
-      dPlaneHeightFather = randomCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
-      // check which COMs are above and underneath the plane (for the father)
-      for (int i = 0; i < iNoOfMolecules; i++) {
-        if (daFatherCOMs[2][i] <= dPlaneHeightFather) {
-          // underneath
-          alFatherUnder.add(i);
-        } else {
-          // above
-          alFatherAbove.add(i);
-        }
-      }
-
-      iFatherCOMs = alFatherUnder.size();
-      if (iFatherCOMs == 0) {
-        // then there was none underneath the plane, this is NOT ok.
-        cont = true;
-        alFatherUnder.clear();
-        alFatherAbove.clear();
-      } else if (iFatherCOMs >= iNoOfMolecules) {
-        // all are above the plane, also not OK.
-        cont = true;
-        alFatherUnder.clear();
-        alFatherAbove.clear();
-      } else {
-        cont = false;
-      }
-
-      ec++;
-    } while (cont && ec < FixedValues.MAXTOEMERGENCY);
-
-    if (cont) {
-      System.err.print("Too many attemps in finding a first plane height!");
+    final double dPlaneHeightFather = guaranteedCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
+    if (Double.isNaN(dPlaneHeightFather)) {
+      System.err.println(
+          "WARNING: Could not find a valid cutting plane for father (all COMs on same height).");
       return new Tuple<>(null, null);
     }
+    for (int i = 0; i < iNoOfMolecules; i++) {
+      if (daFatherCOMs[2][i] <= dPlaneHeightFather) {
+        alFatherUnder.add(i);
+      } else {
+        alFatherAbove.add(i);
+      }
+    }
+    final int iFatherCOMs = alFatherUnder.size();
 
     // now move the plane in the mother geometry till enough COMs are above/underneath
     final double dPlaneHeightMother = findOptimalZPlaneHeight(daMotherCOMs, iFatherCOMs);

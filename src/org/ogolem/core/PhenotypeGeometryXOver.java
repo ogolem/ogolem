@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2014, J. M. Dieterich
-              2020, J. M. Dieterich and B. Hartke
+              2020-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ package org.ogolem.core;
 
 import static org.ogolem.core.GlobOptAtomics.assignMolecularTypes;
 import static org.ogolem.core.GlobOptAtomics.findOptimalZPlaneHeight;
-import static org.ogolem.core.GlobOptAtomics.randomCuttingZPlane;
+import static org.ogolem.core.GlobOptAtomics.guaranteedCuttingZPlane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * of Mr Mats Eriksson, the hardest rocker of them all!
  *
  * @author Johannes Dieterich
- * @version 2020-12-29
+ * @version 2026-02-26
  */
 public class PhenotypeGeometryXOver implements GenericCrossover<Molecule, Geometry> {
 
@@ -112,45 +112,20 @@ public class PhenotypeGeometryXOver implements GenericCrossover<Molecule, Geomet
     final List<Integer> fatherAbove = new ArrayList<>(noMols);
     final List<Integer> fatherUnder = new ArrayList<>(noMols);
 
-    double dPlaneHeightFather;
-    int ec = 0;
-    boolean cont;
-    int noFatherUnder = -1;
-    do {
-      dPlaneHeightFather = randomCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
-      // check which COMs are above and underneath the plane (for the father)
-      for (int i = 0; i < noMols; i++) {
-        if (daFatherCOMs[2][i] <= dPlaneHeightFather) {
-          // underneath
-          fatherUnder.add(i);
-        } else {
-          // above
-          fatherAbove.add(i);
-        }
-      }
-
-      noFatherUnder = fatherUnder.size();
-      if (noFatherUnder == 0) {
-        // then there was none underneath the plane, this is NOT ok.
-        cont = true;
-        fatherUnder.clear();
-        fatherAbove.clear();
-      } else if (noFatherUnder >= noMols) {
-        // all are above the plane, also not OK.
-        cont = true;
-        fatherUnder.clear();
-        fatherAbove.clear();
-      } else {
-        cont = false;
-      }
-
-      ec++;
-    } while (cont && ec < FixedValues.MAXTOEMERGENCY);
-
-    if (cont) {
-      System.err.println("Too many attemps in finding a first plane height!");
+    final double dPlaneHeightFather = guaranteedCuttingZPlane(whichGlobOpt, daFatherCOMs, random);
+    if (Double.isNaN(dPlaneHeightFather)) {
+      System.err.println(
+          "WARNING: Could not find a valid cutting plane for father (all COMs on same height).");
       return new Tuple<>(null, null);
     }
+    for (int i = 0; i < noMols; i++) {
+      if (daFatherCOMs[2][i] <= dPlaneHeightFather) {
+        fatherUnder.add(i);
+      } else {
+        fatherAbove.add(i);
+      }
+    }
+    final int noFatherUnder = fatherUnder.size();
 
     // now move the plane in the mother geometry till enough COMs are above/underneath
     final double dPlaneHeightMother = findOptimalZPlaneHeight(daMotherCOMs, noFatherUnder);

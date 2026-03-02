@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2013-2014, J. M. Dieterich
-              2015-2020, J. M. Dieterich and B. Hartke
+              2015-2026, J. M. Dieterich and B. Hartke
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ import org.ogolem.random.RandomUtils;
  * all bugs are mine, all ideas are Bernds).
  *
  * @author Johannes Dieterich
- * @version 2020-12-30
+ * @version 2026-02-26
  */
 public class MergingPhenoXOver implements GenericCrossover<Molecule, Geometry> {
 
@@ -146,45 +146,21 @@ public class MergingPhenoXOver implements GenericCrossover<Molecule, Geometry> {
     final int noMols = gChild1.getNumberOfIndieParticles();
     final List<Integer> fatherAbove = new ArrayList<>(noMols);
     final List<Integer> fatherUnder = new ArrayList<>(noMols);
-    double planeHeightFather;
-    int ec = 0;
-    boolean cont;
-    int noFatherUnder;
-    do {
-      planeHeightFather = GlobOptAtomics.randomCuttingZPlane(config.planeMode, fatherCOMs, random);
-      // check which COMs are above and underneath the plane (for the father)
-      for (int i = 0; i < noMols; i++) {
-        if (fatherCOMs[2][i] <= planeHeightFather) {
-          // underneath
-          fatherUnder.add(i);
-        } else {
-          // above
-          fatherAbove.add(i);
-        }
-      }
-
-      noFatherUnder = fatherUnder.size();
-      if (noFatherUnder == 0) {
-        // then there was none underneath the plane, this is NOT ok.
-        cont = true;
-        fatherUnder.clear();
-        fatherAbove.clear();
-      } else if (noFatherUnder >= noMols) {
-        // all are above the plane, also not OK.
-        cont = true;
-        fatherUnder.clear();
-        fatherAbove.clear();
-      } else {
-        cont = false;
-      }
-
-      ec++;
-    } while (cont && ec < FixedValues.MAXTOEMERGENCY);
-
-    if (cont) {
-      System.err.println("Too many attemps in finding a first plane height!");
+    final double planeHeightFather =
+        GlobOptAtomics.guaranteedCuttingZPlane(config.planeMode, fatherCOMs, random);
+    if (Double.isNaN(planeHeightFather)) {
+      System.err.println(
+          "WARNING: Could not find a valid cutting plane for father (all COMs on same height).");
       return new Tuple<>(null, null);
     }
+    for (int i = 0; i < noMols; i++) {
+      if (fatherCOMs[2][i] <= planeHeightFather) {
+        fatherUnder.add(i);
+      } else {
+        fatherAbove.add(i);
+      }
+    }
+    final int noFatherUnder = fatherUnder.size();
 
     // now move the plane in the mother geometry till enough COMs are above/underneath
     final double planeHeightMum = GlobOptAtomics.findOptimalZPlaneHeight(motherCOMs, noFatherUnder);
